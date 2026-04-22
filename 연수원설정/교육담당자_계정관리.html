@@ -569,7 +569,7 @@
           </td>
         </tr>
         <tr>
-          <th>휴대전화번호 <span class="required-mark">*</span></th>
+          <th>휴대전화번호</th>
           <td>
             <input class="form-input" id="reg-phone" type="tel" placeholder="010-0000-0000">
           </td>
@@ -615,7 +615,7 @@
           </td>
         </tr>
         <tr>
-          <th>휴대전화번호 <span class="required-mark">*</span></th>
+          <th>휴대전화번호</th>
           <td>
             <input class="form-input" id="edit-phone" type="tel">
           </td>
@@ -846,7 +846,6 @@ function submitReg() {
   if (!emailChecked) { alert('이메일 중복 확인을 완료해주세요.'); return; }
   if (!name) { alert('이름을 입력해주세요.'); return; }
   if (!company) { alert('기업을 선택해주세요.'); return; }
-  if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
@@ -877,7 +876,6 @@ function submitEdit() {
   if (!r) return;
   const phone = document.getElementById('edit-phone').value.trim();
   const status = document.querySelector('input[name="edit-status"]:checked').value;
-  if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
   r.phone = phone;
   r.status = status;
   closeModal('modal-edit');
