@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS ADMIN - 개인별 신청 현황</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #cdd3da;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --admin-accent: #d32f2f;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg);
+    color: #fff;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .admin-badge {
+    background: var(--admin-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+  }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .btn-header:hover { background: #4a6278; }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 210px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7;
+    background: rgba(126,184,247,0.07);
+    border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow {
+    font-size: 9px; color: #556;
+    transition: transform 0.2s; display: inline-block; line-height: 1;
+  }
+  .nav-group.open > .nav-group-header .nav-arrow {
+    transform: rotate(90deg); color: #7eb8f7;
+  }
+  .nav-sub {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding: 0;
+  }
+  .nav-group.open > .nav-sub {
+    max-height: 1200px;
+    padding: 2px 0 6px;
+  }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+
+  /* 2단계 그룹 (3depth) */
+  .nav-group-sub { }
+  .nav-group-sub > .nav-group-header {
+    padding-left: 22px; font-size: 11px; color: #8da0b0;
+    font-weight: 600;
+  }
+  .nav-group-sub.open > .nav-group-header {
+    color: #b8c4ce;
+    background: transparent;
+    border-left-color: transparent;
+  }
+  .nav-group-sub > .nav-sub .nav-item {
+    padding-left: 34px;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+
+  /* PAGE HEADER */
+  .page-header-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 2px;
+  }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* SEARCH 폼 */
+  .search-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin-top: 12px; }
+  .search-grid.single { grid-template-columns: 1fr; }
+  .search-field { display: flex; flex-direction: column; gap: 6px; }
+  .search-field-label { font-size: 12px; font-weight: 600; color: #444; }
+  .search-inline { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+  .input, .select {
+    height: 34px; border: 1px solid #d0d5dd; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.10); }
+  .input { min-width: 140px; flex: 1; }
+  .select {
+    cursor: pointer; padding-right: 28px; appearance: none; flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .input-date { width: 140px; }
+  .search-input-wrap { position: relative; display: inline-flex; align-items: center; flex: 1; }
+  .search-input-wrap .ico-search {
+    position: absolute; left: 10px; color: #aaa; font-size: 14px; pointer-events: none; line-height: 1;
+  }
+  .search-input-wrap .input { padding-left: 30px; width: 100%; }
+
+  .search-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 16px; }
+  .btn { height: 34px; padding: 0 20px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-dark { background: #1a1a2e; color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-outline { background: #fff; color: #333; border: 1px solid #ccc; }
+
+  /* 요약 카드 */
+  .summary-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+  .summary-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .summary-table th {
+    background: var(--table-header); border: 1px solid var(--border);
+    padding: 8px 6px; font-weight: 600; color: #555; text-align: center;
+  }
+  .summary-table td {
+    border: 1px solid #e8eaed; padding: 10px 6px; text-align: center;
+    font-size: 14px; font-weight: 700; color: #1a1a2e;
+  }
+  .summary-table td.sum-money { color: var(--primary); }
+
+  /* TABLE */
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .result-count { font-size: 13px; color: #333; }
+  .result-count strong { color: var(--primary); font-weight: 700; }
+  .result-right { display: flex; align-items: center; gap: 8px; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: var(--table-header); border: 1px solid var(--border); padding: 8px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .main-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-approved { background: #e8f5e9; color: #2e7d32; }
+  .badge-wait { background: #fff8e1; color: #f57c00; }
+  .badge-cancel { background: #ffebee; color: #c62828; }
+  .badge-type-on { background: #e3f2fd; color: #1565c0; }
+  .badge-type-micro { background: #f3e5f5; color: #7b1fa2; }
+
+  /* PAGINATION */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .page-size-wrap .select { height: 28px; font-size: 12px; }
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; color: #555; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="subtitle">본사 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <!-- 임직원 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">임직원 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 조회</a>
+      </div>
+    </div>
+    <!-- 거래처 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">거래처 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업 관리</a>
+        <a class="nav-item" href="#">연수원 관리</a>
+        <a class="nav-item" href="#">CP 관리</a>
+        <a class="nav-item" href="#">파트너 관리</a>
+        <a class="nav-item" href="#">배송사 관리</a>
+      </div>
+    </div>
+    <!-- 상품 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">상품 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업별 상품 관리</a>
+        <a class="nav-item" href="#">상품별 기업 관리</a>
+      </div>
+    </div>
+    <!-- 카테고리/Skill 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">카테고리/Skill 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">카테고리 관리</a>
+        <a class="nav-item" href="#">스킬 관리</a>
+      </div>
+    </div>
+    <!-- 계약 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">계약 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업 계약 관리</a>
+        <a class="nav-item" href="#">CP 계약 관리</a>
+        <a class="nav-item" href="#">파트너 계약 관리</a>
+        <a class="nav-item" href="#">배송 관리</a>
+        <a class="nav-item" href="#">강사 관리</a>
+      </div>
+    </div>
+    <!-- 매출 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">매출 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정별 매출 관리</a>
+        <a class="nav-item" href="#">개인별 매출 관리</a>
+        <a class="nav-item" href="#">기업별 매출 관리</a>
+      </div>
+    </div>
+    <!-- 학습 관리 (활성) -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학습 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub open">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)">
+            <span class="nav-group-label">신청관리</span>
+            <span class="nav-arrow">▶</span>
+          </div>
+          <div class="nav-sub">
+            <a class="nav-item active" href="#">개인별</a>
+            <a class="nav-item" href="#">과정별</a>
+            <a class="nav-item" href="#">기업별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)">
+            <span class="nav-group-label">학습관리</span>
+            <span class="nav-arrow">▶</span>
+          </div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">개인별</a>
+            <a class="nav-item" href="#">과정별</a>
+            <a class="nav-item" href="#">기업별</a>
+            <a class="nav-item" href="#">콘텐츠별</a>
+            <a class="nav-item" href="#">코스별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)">
+            <span class="nav-group-label">결과관리</span>
+            <span class="nav-arrow">▶</span>
+          </div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">수료결과 조회</a>
+            <a class="nav-item" href="#">교육비용 조회</a>
+            <a class="nav-item" href="#">결과보고서</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)">
+            <span class="nav-group-label">알림 관리</span>
+            <span class="nav-arrow">▶</span>
+          </div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">알림 현황</a>
+            <a class="nav-item" href="#">알림 설정</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 고객행복센터 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">고객행복센터</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">상담 관리</a>
+        <a class="nav-item" href="#">메시지 관리</a>
+        <a class="nav-item" href="#">FAQ 관리</a>
+        <a class="nav-item" href="#">공지관리</a>
+      </div>
+    </div>
+    <!-- 통합 관리 -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">통합 관리</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">어드민 권한 계정 관리</a>
+        <a class="nav-item" href="#">통합 앱 버전 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+        <a class="nav-item" href="#">메일 발송 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header-row">
+      <div class="page-header-title">개인별 신청 현황</div>
+      <div class="breadcrumb">학습 관리 &gt; 신청관리 &gt; 개인별</div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <!-- 신청일 -->
+      <div class="search-grid single">
+        <div class="search-field">
+          <div class="search-field-label">신청일</div>
+          <div class="search-inline">
+            <input class="input input-date" type="date" id="s-date-from" value="2026-04-01">
+            <span>~</span>
+            <input class="input input-date" type="date" id="s-date-to" value="2026-04-30">
+          </div>
+        </div>
+      </div>
+
+      <!-- 학습자검색 / 과정검색 -->
+      <div class="search-grid">
+        <div class="search-field">
+          <div class="search-field-label">학습자검색</div>
+          <div class="search-inline">
+            <select class="select" id="s-learner-field" style="width:100px;">
+              <option value="name">이름</option>
+              <option value="id">아이디</option>
+            </select>
+            <div class="search-input-wrap">
+              <span class="ico-search">&#x1F50D;</span>
+              <input class="input" id="s-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
+            </div>
+            <select class="select" id="s-learner-status" style="width:120px;">
+              <option value="">전체</option>
+              <option value="active">재직</option>
+              <option value="leave">휴직</option>
+              <option value="retire">퇴직</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-field">
+          <div class="search-field-label">과정검색</div>
+          <div class="search-inline">
+            <select class="select" id="s-course-field" style="width:100px;">
+              <option value="name">과정명</option>
+              <option value="code">과정코드</option>
+            </select>
+            <div class="search-input-wrap">
+              <span class="ico-search">&#x1F50D;</span>
+              <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
+            </div>
+            <select class="select" id="s-course-type" style="width:130px;">
+              <option value="">과정유형</option>
+              <option value="online">온라인</option>
+              <option value="offline">오프라인</option>
+              <option value="hybrid">하이브리드</option>
+              <option value="micro">마이크로러닝</option>
+            </select>
+            <select class="select" id="s-course-cat" style="width:130px;">
+              <option value="">과정분류</option>
+              <option>직무</option>
+              <option>리더십</option>
+              <option>어학</option>
+              <option>IT</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 회사검색 / 부서검색 -->
+      <div class="search-grid">
+        <div class="search-field">
+          <div class="search-field-label">회사검색</div>
+          <div class="search-inline">
+            <select class="select" id="s-company" style="width:100%;">
+              <option value="">전체 회사</option>
+              <option>LABS 연수원</option>
+              <option>휴넷</option>
+              <option>ABC마트</option>
+              <option>건강보험공단</option>
+              <option>국민연금공단</option>
+              <option>포스코</option>
+              <option>삼성전자</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-field">
+          <div class="search-field-label">부서검색</div>
+          <div class="search-inline">
+            <input class="input" id="s-dept" type="text" placeholder="부서명을 입력해주세요." style="width:100%;">
+          </div>
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="search-actions">
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        <button class="btn btn-reset" onclick="doReset()">초기화</button>
+      </div>
+    </div>
+
+    <!-- 검색결과 요약 -->
+    <div class="card">
+      <div class="summary-title">검색결과 요약</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>전체 과정 수</th>
+            <th>온라인 과정</th>
+            <th>마이크로러닝 과정</th>
+            <th>신청 수</th>
+            <th>승인 수</th>
+            <th>승인대기 수</th>
+            <th>취소 수</th>
+            <th>교육비 합계</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="sum-total">0</td>
+            <td id="sum-online">0</td>
+            <td id="sum-micro">0</td>
+            <td id="sum-apply">0</td>
+            <td id="sum-approve">0</td>
+            <td id="sum-wait">0</td>
+            <td id="sum-cancel">0</td>
+            <td id="sum-money" class="sum-money">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 결과 목록 -->
+    <div class="card">
+      <div class="result-header">
+        <div class="result-count">검색결과 <strong id="total-count">0</strong>건</div>
+        <div class="result-right">
+          <button class="btn btn-outline" onclick="downloadExcel()">엑셀 다운로드</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="main-table">
+          <thead>
+            <tr>
+              <th style="width:44px;">No.</th>
+              <th style="width:90px;">회사</th>
+              <th style="width:100px;">부서</th>
+              <th style="width:80px;">이름</th>
+              <th style="width:140px;">아이디</th>
+              <th style="width:100px;">과정유형</th>
+              <th>과정명</th>
+              <th style="width:180px;">학습자 학습기간</th>
+              <th style="width:100px;">교육비(청구)</th>
+              <th style="width:110px;">신청일</th>
+              <th style="width:80px;">승인상태</th>
+              <th style="width:110px;">승인일</th>
+            </tr>
+          </thead>
+          <tbody id="list-tbody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <div class="page-size-wrap">
+          페이지당
+          <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+          건
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── 사이드바 토글 ──
+function toggleNavGroup(header) {
+  event.stopPropagation();
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+
+// ── 샘플 데이터 ──
+const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', '포스코', '삼성전자'];
+const DEPTS = ['인사팀', '교육팀', '기획팀', '영업팀', '개발팀', '운영팀', '총무팀', '마케팅팀', '재무팀'];
+const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름', '양이름', '홍길동', '유이름'];
+const COURSE_TYPES = [
+  { code: 'online', label: '온라인', badge: 'badge-type-on' },
+  { code: 'micro',  label: '마이크로러닝', badge: 'badge-type-micro' },
+];
+const COURSE_NAMES = [
+  'AI 에이전트 시대가 온다',
+  '데이터 리터러시 기본',
+  '스토리텔링 프레젠테이션',
+  '리더의 코칭 대화법',
+  '업무 자동화 with Python',
+  'MS 365 실무 활용',
+  '영어 비즈니스 이메일',
+  '중국어 회화 입문',
+  'ESG 경영 이해',
+  '조직문화와 소통',
+  '마케팅 전략 수립',
+  '재무제표 읽는 법',
+  '협상의 기술',
+  '퍼포먼스 마케팅 이해',
+  '갈등관리 리더십',
+];
+const STATUS = [
+  { code: 'approve', label: '승인', badge: 'badge-approved' },
+  { code: 'wait',    label: '승인대기', badge: 'badge-wait' },
+  { code: 'cancel',  label: '취소', badge: 'badge-cancel' },
+];
+
+// 마스킹
+const maskName = n => {
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+};
+const maskId = id => {
+  // id가 이메일 형태 가정
+  if (id.includes('@')) {
+    const [u, d] = id.split('@');
+    return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
+  }
+  if (id.length <= 2) return id;
+  return id[0] + '*'.repeat(Math.min(id.length - 2, 7)) + id[id.length - 1];
+};
+
+// 랜덤 데이터 생성 (130건)
+function rand(n) { return Math.floor(Math.random() * n); }
+function randomDate(y, mFrom, mTo) {
+  const m = mFrom + rand(mTo - mFrom + 1);
+  const d = 1 + rand(28);
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
+}
+
+let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
+  const type = COURSE_TYPES[rand(COURSE_TYPES.length)];
+  const name = NAMES[rand(NAMES.length)];
+  const company = COMPANIES[rand(COMPANIES.length)];
+  const applyDate = `2026-04-${String(1 + rand(30)).padStart(2,'0')}`;
+  const st = rand(100);
+  const status = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
+  const fee = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
+  return {
+    id: 130 - i,
+    company,
+    dept: DEPTS[rand(DEPTS.length)],
+    name,
+    userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
+    courseType: type,
+    courseName: COURSE_NAMES[rand(COURSE_NAMES.length)],
+    studyFrom: applyDate,
+    studyTo: addDays(applyDate, 30 + rand(300)),
+    fee,
+    applyDate,
+    status,
+    approveDate: status.code === 'approve' ? applyDate : '',
+  };
+});
+
+let filteredData = [...ALL_DATA];
+let currentPage = 1;
+let pageSize = 50;
+
+// ── 정렬: 신청일 DESC ──
+function sortByApplyDateDesc(arr) {
+  return arr.sort((a, b) => {
+    if (a.applyDate !== b.applyDate) return b.applyDate.localeCompare(a.applyDate);
+    return b.id - a.id;
+  });
+}
+
+// ── 검색 ──
+function doSearch() {
+  const dFrom = document.getElementById('s-date-from').value;
+  const dTo = document.getElementById('s-date-to').value;
+  const learnerField = document.getElementById('s-learner-field').value;
+  const learnerKw = document.getElementById('s-learner-kw').value.trim().toLowerCase();
+  const courseField = document.getElementById('s-course-field').value;
+  const courseKw = document.getElementById('s-course-kw').value.trim().toLowerCase();
+  const courseType = document.getElementById('s-course-type').value;
+  const company = document.getElementById('s-company').value;
+  const dept = document.getElementById('s-dept').value.trim();
+
+  filteredData = ALL_DATA.filter(r => {
+    if (dFrom && r.applyDate < dFrom) return false;
+    if (dTo && r.applyDate > dTo) return false;
+    if (learnerKw) {
+      if (learnerField === 'name' && !r.name.includes(learnerKw)) return false;
+      if (learnerField === 'id'   && !r.userId.toLowerCase().includes(learnerKw)) return false;
+    }
+    if (courseKw && !r.courseName.toLowerCase().includes(courseKw)) return false;
+    if (courseType && r.courseType.code !== courseType) return false;
+    if (company && r.company !== company) return false;
+    if (dept && !r.dept.includes(dept)) return false;
+    return true;
+  });
+  sortByApplyDateDesc(filteredData);
+  currentPage = 1;
+  renderSummary();
+  renderTable();
+}
+
+function doReset() {
+  document.getElementById('s-date-from').value = '2026-04-01';
+  document.getElementById('s-date-to').value = '2026-04-30';
+  document.getElementById('s-learner-field').selectedIndex = 0;
+  document.getElementById('s-learner-kw').value = '';
+  document.getElementById('s-learner-status').selectedIndex = 0;
+  document.getElementById('s-course-field').selectedIndex = 0;
+  document.getElementById('s-course-kw').value = '';
+  document.getElementById('s-course-type').selectedIndex = 0;
+  document.getElementById('s-course-cat').selectedIndex = 0;
+  document.getElementById('s-company').selectedIndex = 0;
+  document.getElementById('s-dept').value = '';
+  doSearch();
+}
+
+// ── 요약 계산 ──
+function renderSummary() {
+  const uniqueCourses = new Set(filteredData.map(r => r.courseName));
+  const uniqueOnline = new Set(filteredData.filter(r => r.courseType.code === 'online').map(r => r.courseName));
+  const uniqueMicro = new Set(filteredData.filter(r => r.courseType.code === 'micro').map(r => r.courseName));
+  const applyCount = filteredData.length;
+  const approveCount = filteredData.filter(r => r.status.code === 'approve').length;
+  const waitCount = filteredData.filter(r => r.status.code === 'wait').length;
+  const cancelCount = filteredData.filter(r => r.status.code === 'cancel').length;
+  const totalFee = filteredData.filter(r => r.status.code === 'approve').reduce((s, r) => s + r.fee, 0);
+
+  document.getElementById('sum-total').textContent = uniqueCourses.size.toLocaleString();
+  document.getElementById('sum-online').textContent = uniqueOnline.size.toLocaleString();
+  document.getElementById('sum-micro').textContent = uniqueMicro.size.toLocaleString();
+  document.getElementById('sum-apply').textContent = applyCount.toLocaleString();
+  document.getElementById('sum-approve').textContent = approveCount.toLocaleString();
+  document.getElementById('sum-wait').textContent = waitCount.toLocaleString();
+  document.getElementById('sum-cancel').textContent = cancelCount.toLocaleString();
+  document.getElementById('sum-money').textContent = totalFee.toLocaleString();
+}
+
+// ── 테이블 렌더링 ──
+function renderTable() {
+  const tbody = document.getElementById('list-tbody');
+  document.getElementById('total-count').textContent = filteredData.length.toLocaleString();
+  const start = (currentPage - 1) * pageSize;
+  const slice = filteredData.slice(start, start + pageSize);
+
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:#aaa;">현재 조회된 데이터가 없습니다.</td></tr>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map((r, idx) => `
+    <tr>
+      <td>${filteredData.length - start - idx}</td>
+      <td>${r.company}</td>
+      <td>${r.dept}</td>
+      <td>${maskName(r.name)}</td>
+      <td style="text-align:left;padding-left:10px">${maskId(r.userId)}</td>
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:10px">${r.courseName}</td>
+      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td style="text-align:right;padding-right:10px">${r.fee.toLocaleString()}</td>
+      <td>${r.applyDate.replace(/-/g,'.')}</td>
+      <td><span class="badge ${r.status.badge}">${r.status.label}</span></td>
+      <td>${r.approveDate ? r.approveDate.replace(/-/g,'.') : '-'}</td>
+    </tr>
+  `).join('');
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filteredData.length / pageSize);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(total, start + 4);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="pg-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>&#8250;</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData.length / pageSize);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+}
+
+function downloadExcel() {
+  alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건');
+}
+
+// ── 초기 렌더 ──
+doSearch();
+</script>
+</body>
+</html>
