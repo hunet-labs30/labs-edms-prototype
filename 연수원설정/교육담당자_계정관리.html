@@ -606,7 +606,7 @@
         <tr>
           <th>이름</th>
           <td>
-            <input class="form-input" id="edit-name" type="text" readonly style="background:#f5f5f5;color:#888;cursor:default;">
+            <input class="form-input readonly" id="edit-name" type="text" readonly>
             <div class="form-hint">이름은 변경할 수 없습니다.</div>
           </td>
         </tr>
@@ -681,7 +681,11 @@ const EDMS_USERS = [
   { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', phone: '010-1157-8439' },
 ];
 
-const maskName = n => n.length <= 1 ? n : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+const maskName = n => {
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+};
 const maskEmail = e => {
   const [u, d] = e.split('@');
   return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
@@ -715,13 +719,9 @@ function doSearch() {
   filteredData = ALL_DATA.filter(r => {
     if (company && r.company !== company) return false;
     if (kw) {
-      if (field === 'name'    && !r.name.includes(kw)) return false;
-      if (field === 'email'   && !r.email.toLowerCase().includes(kw)) return false;
-      if (field === 'sabun'   && !r.sabun.toLowerCase().includes(kw)) return false;
-      if (field === 'company' && !r.company.includes(kw)) return false;
-      if (field === 'dept'    && !r.dept.includes(kw)) return false;
-      if (field === 'grade'   && !r.grade.includes(kw)) return false;
-      if (field === 'phone'   && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
+      if (field === 'name'  && !r.name.includes(kw)) return false;
+      if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
+      if (field === 'phone' && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
     }
     return true;
   });
@@ -864,10 +864,8 @@ function submitReg() {
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
   ALL_DATA.unshift({ id: newId, name, email, phone, company, regDate });
-  filteredData = [...ALL_DATA];
-  currentPage = 1;
   closeModal('modal-reg');
-  renderTable();
+  doSearch();
   alert(name + ' 담당자 계정이 등록되었습니다.');
 }
 
@@ -909,7 +907,7 @@ function submitDelete() {
   closeModal('modal-delete');
   if ((currentPage - 1) * pageSize >= filteredData.length && currentPage > 1) currentPage--;
   renderTable();
-  alert('계정이 삭제되었습니다.');
+  alert('교육담당자 권한이 삭제되었습니다.');
 }
 
 // ── 이메일 재수정 시 자동 리셋 ──
