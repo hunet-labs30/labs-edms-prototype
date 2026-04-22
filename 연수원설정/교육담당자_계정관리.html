@@ -479,8 +479,12 @@
         </select>
         <select class="select" id="s-field" style="width:100px;">
           <option value="name">이름</option>
-          <option value="email">이메일</option>
-          <option value="phone">휴대폰</option>
+          <option value="email">아이디</option>
+          <option value="sabun">사번</option>
+          <option value="company">회사</option>
+          <option value="dept">부서</option>
+          <option value="grade">직급</option>
+          <option value="phone">휴대번호</option>
         </select>
         <div class="search-input-wrap">
           <span class="ico-search">&#x1F50D;</span>
@@ -669,6 +673,8 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 // ── 샘플 데이터 ──
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
 const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
+const DEPTS = ['인사팀', '교육팀', '기획팀', '영업팀', '개발팀', '운영팀', '총무팀'];
+const GRADES = ['사원', '대리', '과장', '차장', '부장', '팀장', '임원'];
 
 // 연수원 가입 계정 DB (교육담당자 미등록 회원)
 const EDMS_USERS = [
@@ -690,8 +696,11 @@ let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
   id: 22 - i,
   name: NAMES[i % NAMES.length],
   email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
+  sabun: 'EMP' + String(10001 + i * 7),
   phone: '010-' + String(1000 + i * 31).slice(-4) + '-' + String(5000 + i * 17).slice(-4),
   company: COMPANIES[i % COMPANIES.length],
+  dept: DEPTS[i % DEPTS.length],
+  grade: GRADES[i % GRADES.length],
   regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
 }));
 
@@ -710,9 +719,13 @@ function doSearch() {
   filteredData = ALL_DATA.filter(r => {
     if (company && r.company !== company) return false;
     if (kw) {
-      if (field === 'name'  && !r.name.includes(kw)) return false;
-      if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
-      if (field === 'phone' && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
+      if (field === 'name'    && !r.name.includes(kw)) return false;
+      if (field === 'email'   && !r.email.toLowerCase().includes(kw)) return false;
+      if (field === 'sabun'   && !r.sabun.toLowerCase().includes(kw)) return false;
+      if (field === 'company' && !r.company.includes(kw)) return false;
+      if (field === 'dept'    && !r.dept.includes(kw)) return false;
+      if (field === 'grade'   && !r.grade.includes(kw)) return false;
+      if (field === 'phone'   && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
     }
     return true;
   });
