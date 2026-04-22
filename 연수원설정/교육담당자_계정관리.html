@@ -520,7 +520,8 @@
     </div>
     <div class="modal-body">
       <div class="info-box">
-        New EDMS에 접속할 이메일을 입력해주세요.
+        New EDMS에 접속할 이메일을 입력해주세요.<br>
+        연수원 계정으로 이미 등록된 이메일만 등록이 가능합니다.
       </div>
       <table class="form-table">
         <tr>
@@ -534,28 +535,22 @@
           </td>
         </tr>
         <tr>
-          <th>이름 <span class="required-mark">*</span></th>
+          <th>이름</th>
           <td>
-            <input class="form-input" id="reg-name" type="text" placeholder="이름 입력">
+            <input class="form-input readonly" id="reg-name" type="text" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
           </td>
         </tr>
         <tr>
-          <th>기업 <span class="required-mark">*</span></th>
+          <th>기업</th>
           <td>
-            <select class="form-input" id="reg-company" style="cursor:pointer;">
-              <option value="">기업 선택</option>
-              <option>LABS 연수원</option>
-              <option>휴넷</option>
-              <option>ABC마트</option>
-              <option>건강보험공단</option>
-              <option>국민연금공단</option>
-            </select>
+            <input class="form-input readonly" id="reg-company" type="text" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
           </td>
         </tr>
         <tr>
           <th>휴대전화번호</th>
           <td>
-            <input class="form-input" id="reg-phone" type="tel" placeholder="010-0000-0000">
+            <input class="form-input readonly" id="reg-phone" type="tel" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
+            <div class="form-hint" id="reg-phone-hint" style="display:none;">자동 입력된 번호를 수정할 수 있습니다.</div>
           </td>
         </tr>
       </table>
@@ -651,6 +646,15 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 // ── 샘플 데이터 ──
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
 const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
+
+// 연수원 가입 계정 DB (교육담당자 미등록 회원)
+const EDMS_USERS = [
+  { email: 'kim.manager@company.co.kr', name: '김관리', company: '건강보험공단', phone: '010-5521-3847' },
+  { email: 'lee.admin@corp.com',         name: '이담당', company: '휴넷',         phone: '010-3318-7624' },
+  { email: 'park.edu@org.kr',            name: '박교육', company: 'ABC마트',      phone: '010-7742-9051' },
+  { email: 'choi.hr@company.co.kr',      name: '최인사', company: 'LABS 연수원',  phone: '010-9934-2168' },
+  { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', phone: '010-1157-8439' },
+];
 
 const maskName = n => n.length <= 1 ? n : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
 const maskEmail = e => {
@@ -751,10 +755,14 @@ function goPage(p) {
 function openRegModal() {
   emailChecked = false;
   document.getElementById('reg-email').value = '';
-  document.getElementById('reg-name').value = '';
-  document.getElementById('reg-company').selectedIndex = 0;
-  document.getElementById('reg-phone').value = '';
   document.getElementById('email-check-msg').innerHTML = '';
+  const name = document.getElementById('reg-name');
+  const company = document.getElementById('reg-company');
+  const phone = document.getElementById('reg-phone');
+  name.value = ''; name.placeholder = '이메일 확인 후 자동 입력'; name.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  company.value = ''; company.placeholder = '이메일 확인 후 자동 입력'; company.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력'; phone.readOnly = true; phone.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  document.getElementById('reg-phone-hint').style.display = 'none';
   document.getElementById('reg-modal-title').textContent = '교육담당자 계정 등록';
   openModal('modal-reg');
 }
@@ -762,30 +770,53 @@ function openRegModal() {
 function checkEmail() {
   const email = document.getElementById('reg-email').value.trim();
   const msg = document.getElementById('email-check-msg');
+  const name = document.getElementById('reg-name');
+  const company = document.getElementById('reg-company');
+  const phone = document.getElementById('reg-phone');
+
+  // 자동입력 필드 초기화
+  name.value = ''; company.value = ''; phone.value = '';
+  phone.readOnly = true; phone.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  document.getElementById('reg-phone-hint').style.display = 'none';
+  emailChecked = false;
+
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     msg.innerHTML = '<div class="check-fail">올바른 이메일 형식을 입력해주세요.</div>';
-    emailChecked = false;
     return;
   }
-  const dup = ALL_DATA.some(r => r.email === email);
-  if (dup) {
-    msg.innerHTML = '<div class="check-fail">이미 등록된 이메일입니다.</div>';
-    emailChecked = false;
-  } else {
-    msg.innerHTML = '<div class="check-ok">사용 가능한 이메일입니다.</div>';
-    emailChecked = true;
+
+  // 이미 교육담당자로 등록된 이메일
+  if (ALL_DATA.some(r => r.email === email)) {
+    msg.innerHTML = '<div class="check-fail">이미 교육담당자로 등록된 이메일입니다.</div>';
+    return;
   }
+
+  // 연수원 계정 조회
+  const user = EDMS_USERS.find(u => u.email === email);
+  if (!user) {
+    msg.innerHTML = '<div class="check-fail">연수원에 등록되지 않은 이메일입니다.</div>';
+    return;
+  }
+
+  // 자동 입력
+  name.value = user.name;
+  company.value = user.company;
+  phone.value = user.phone;
+  phone.readOnly = false;
+  phone.style.cssText = '';
+  phone.placeholder = '';
+  document.getElementById('reg-phone-hint').style.display = 'block';
+  msg.innerHTML = '<div class="check-ok">등록 가능한 계정입니다.</div>';
+  emailChecked = true;
 }
 
 function submitReg() {
   const email = document.getElementById('reg-email').value.trim();
   const name = document.getElementById('reg-name').value.trim();
-  const company = document.getElementById('reg-company').value;
+  const company = document.getElementById('reg-company').value.trim();
   const phone = document.getElementById('reg-phone').value.trim();
   if (!email) { alert('이메일을 입력해주세요.'); return; }
-  if (!emailChecked) { alert('이메일 중복 확인을 완료해주세요.'); return; }
-  if (!name) { alert('이름을 입력해주세요.'); return; }
-  if (!company) { alert('기업을 선택해주세요.'); return; }
+  if (!emailChecked) { alert('이메일 확인을 완료해주세요.'); return; }
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
