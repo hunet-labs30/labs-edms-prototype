@@ -471,14 +471,7 @@
       <div class="search-row">
         <span class="label">이름/이메일</span>
         <input class="input" id="s-keyword" style="width:200px" placeholder="이름 또는 이메일 입력">
-        <span class="label" style="margin-left:8px;">권한등급</span>
-        <select class="select" id="s-grade" style="width:130px">
-          <option value="">전체</option>
-          <option value="교육담당자">교육담당자</option>
-          <option value="그룹사 담당자">그룹사 담당자</option>
-          <option value="가나다">가나다</option>
-        </select>
-        <span class="label" style="margin-left:8px;">상태</span>
+<span class="label" style="margin-left:8px;">상태</span>
         <select class="select" id="s-status" style="width:90px">
           <option value="">전체</option>
           <option value="활성">활성</option>
@@ -507,7 +500,6 @@
             <th style="width:80px;">이름</th>
             <th>이메일</th>
             <th style="width:120px;">휴대폰</th>
-            <th style="width:110px;">권한등급</th>
             <th style="width:64px;">상태</th>
             <th style="width:110px;">등록일</th>
             <th style="width:160px;">관리</th>
@@ -583,22 +575,6 @@
             <div class="form-hint blue">입력한 휴대전화번호로 2factor 인증을 하므로 정확히 입력해주세요.</div>
           </td>
         </tr>
-        <tr>
-          <th>메뉴 권한등급 <span class="required-mark">*</span></th>
-          <td>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="reg-grade" value="교육담당자" checked> 교육담당자
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="reg-grade" value="그룹사 담당자"> 그룹사 담당자
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="reg-grade" value="가나다"> 가나다
-              </label>
-            </div>
-          </td>
-        </tr>
       </table>
     </div>
     <div class="modal-footer">
@@ -643,22 +619,6 @@
           <td>
             <input class="form-input" id="edit-phone" type="tel">
             <div class="form-hint blue">2factor 인증에 사용됩니다. 변경 시 정확히 입력해주세요.</div>
-          </td>
-        </tr>
-        <tr>
-          <th>메뉴 권한등급 <span class="required-mark">*</span></th>
-          <td>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="edit-grade" value="교육담당자"> 교육담당자
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="edit-grade" value="그룹사 담당자"> 그룹사 담당자
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="edit-grade" value="가나다"> 가나다
-              </label>
-            </div>
           </td>
         </tr>
         <tr>
@@ -747,7 +707,6 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 });
 
 // ── 샘플 데이터 ──
-const GRADES = ['교육담당자', '그룹사 담당자', '교육담당자', '교육담당자', '그룹사 담당자', '가나다', '교육담당자', '그룹사 담당자', '교육담당자', '교육담당자', '교육담당자', '그룹사 담당자', '가나다', '교육담당자', '교육담당자'];
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
 const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
 
@@ -763,7 +722,6 @@ let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
   name: NAMES[i % NAMES.length],
   email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
   phone: '010-' + String(1000 + i * 31).slice(-4) + '-' + String(5000 + i * 17).slice(-4),
-  grade: GRADES[i % GRADES.length],
   status: i % 7 === 6 ? '비활성' : '활성',
   company: COMPANIES[i % COMPANIES.length],
   regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
@@ -780,11 +738,9 @@ let emailChecked = false;
 // ── 검색 ──
 function doSearch() {
   const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
-  const grade = document.getElementById('s-grade').value;
   const status = document.getElementById('s-status').value;
   filteredData = ALL_DATA.filter(r => {
     if (kw && !r.name.includes(kw) && !r.email.toLowerCase().includes(kw)) return false;
-    if (grade && r.grade !== grade) return false;
     if (status && r.status !== status) return false;
     return true;
   });
@@ -794,7 +750,6 @@ function doSearch() {
 
 function doReset() {
   document.getElementById('s-keyword').value = '';
-  document.getElementById('s-grade').selectedIndex = 0;
   document.getElementById('s-status').selectedIndex = 0;
   filteredData = [...ALL_DATA];
   currentPage = 1;
@@ -813,7 +768,7 @@ function renderTable() {
   const start = (currentPage - 1) * pageSize;
   const slice = filteredData.slice(start, start + pageSize);
   if (!slice.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
@@ -824,7 +779,6 @@ function renderTable() {
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
       <td>${maskPhone(r.phone)}</td>
-      <td>${r.grade}</td>
       <td><span class="badge ${r.status === '활성' ? 'badge-active' : 'badge-inactive'}">${r.status}</span></td>
       <td>${r.regDate.replace(/-/g, '.')}</td>
       <td>
@@ -865,7 +819,6 @@ function openRegModal() {
   document.getElementById('reg-name').value = '';
   document.getElementById('reg-company').selectedIndex = 0;
   document.getElementById('reg-phone').value = '';
-  document.querySelector('input[name="reg-grade"][value="교육담당자"]').checked = true;
   document.getElementById('email-check-msg').innerHTML = '';
   document.getElementById('reg-modal-title').textContent = '교육담당자 계정 등록';
   openModal('modal-reg');
@@ -894,7 +847,6 @@ function submitReg() {
   const name = document.getElementById('reg-name').value.trim();
   const company = document.getElementById('reg-company').value;
   const phone = document.getElementById('reg-phone').value.trim();
-  const grade = document.querySelector('input[name="reg-grade"]:checked').value;
   if (!email) { alert('이메일을 입력해주세요.'); return; }
   if (!emailChecked) { alert('이메일 중복 확인을 완료해주세요.'); return; }
   if (!name) { alert('이름을 입력해주세요.'); return; }
@@ -903,7 +855,7 @@ function submitReg() {
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  ALL_DATA.unshift({ id: newId, name, email, phone, grade, status: '활성', company, regDate });
+  ALL_DATA.unshift({ id: newId, name, email, phone, status: '활성', company, regDate });
   filteredData = [...ALL_DATA];
   currentPage = 1;
   closeModal('modal-reg');
@@ -920,8 +872,6 @@ function openEditModal(id) {
   document.getElementById('edit-name').value = r.name;
   document.getElementById('edit-company').value = r.company;
   document.getElementById('edit-phone').value = r.phone;
-  const gradeRadio = document.querySelector(`input[name="edit-grade"][value="${r.grade}"]`);
-  if (gradeRadio) gradeRadio.checked = true;
   const statusRadio = document.querySelector(`input[name="edit-status"][value="${r.status}"]`);
   if (statusRadio) statusRadio.checked = true;
   openModal('modal-edit');
@@ -932,13 +882,11 @@ function submitEdit() {
   if (!r) return;
   const name = document.getElementById('edit-name').value.trim();
   const phone = document.getElementById('edit-phone').value.trim();
-  const grade = document.querySelector('input[name="edit-grade"]:checked').value;
   const status = document.querySelector('input[name="edit-status"]:checked').value;
   if (!name) { alert('이름을 입력해주세요.'); return; }
   if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
   r.name = name;
   r.phone = phone;
-  r.grade = grade;
   r.status = status;
   closeModal('modal-edit');
   renderTable();
