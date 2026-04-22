@@ -504,7 +504,6 @@
       <table class="main-table">
         <thead>
           <tr>
-            <th style="width:40px;"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
             <th style="width:44px;">No.</th>
             <th style="width:80px;">이름</th>
             <th>이메일</th>
@@ -519,9 +518,10 @@
         <div class="page-size-wrap">
           페이지당
           <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
           </select>
           건
         </div>
@@ -702,7 +702,7 @@ let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
 
 let filteredData = [...ALL_DATA];
 let currentPage = 1;
-let pageSize = 10;
+let pageSize = 50;
 let editTargetId = null;
 let deleteTargetId = null;
 let emailChecked = false;
@@ -738,11 +738,6 @@ function doReset() {
   renderTable();
 }
 
-// ── 전체 선택 ──
-function toggleAll(chk) {
-  document.querySelectorAll('#acc-tbody input[type=checkbox]').forEach(c => c.checked = chk.checked);
-}
-
 // ── 테이블 렌더링 ──
 function renderTable() {
   const tbody = document.getElementById('acc-tbody');
@@ -750,13 +745,12 @@ function renderTable() {
   const start = (currentPage - 1) * pageSize;
   const slice = filteredData.slice(start, start + pageSize);
   if (!slice.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">현재 조회된 데이터가 없습니다.</td></tr>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
   tbody.innerHTML = slice.map(r => `
     <tr>
-      <td><input type="checkbox" class="row-chk" data-id="${r.id}"></td>
       <td>${r.id}</td>
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
@@ -851,6 +845,13 @@ function checkEmail() {
   emailChecked = true;
 }
 
+// 휴대폰 형식 검증: 숫자 9~11자, 하이픈 허용(숫자만 카운트)
+function isValidPhone(phone) {
+  if (!/^[\d-]+$/.test(phone)) return false;
+  const digits = phone.replace(/-/g, '');
+  return digits.length >= 9 && digits.length <= 11;
+}
+
 function submitReg() {
   const email = document.getElementById('reg-email').value.trim();
   const name = document.getElementById('reg-name').value.trim();
@@ -858,6 +859,7 @@ function submitReg() {
   const phone = document.getElementById('reg-phone').value.trim();
   if (!email) { alert('이메일을 입력해주세요.'); return; }
   if (!emailChecked) { alert('이메일 확인을 완료해주세요.'); return; }
+  if (!isValidPhone(phone)) { alert('휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)'); return; }
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
@@ -884,7 +886,9 @@ function openEditModal(id) {
 function submitEdit() {
   const r = ALL_DATA.find(d => d.id === editTargetId);
   if (!r) return;
-  r.phone = document.getElementById('edit-phone').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  if (!isValidPhone(phone)) { alert('휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)'); return; }
+  r.phone = phone;
   closeModal('modal-edit');
   renderTable();
   alert('계정 정보가 수정되었습니다.');
@@ -907,6 +911,21 @@ function submitDelete() {
   renderTable();
   alert('계정이 삭제되었습니다.');
 }
+
+// ── 이메일 재수정 시 자동 리셋 ──
+document.getElementById('reg-email').addEventListener('input', function () {
+  if (!emailChecked && !document.getElementById('email-check-msg').innerHTML) return;
+  emailChecked = false;
+  document.getElementById('email-check-msg').innerHTML = '';
+  const name = document.getElementById('reg-name');
+  const company = document.getElementById('reg-company');
+  const phone = document.getElementById('reg-phone');
+  name.value = ''; name.placeholder = '이메일 확인 후 자동 입력';
+  company.value = ''; company.placeholder = '이메일 확인 후 자동 입력';
+  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력';
+  phone.readOnly = true;
+  document.getElementById('reg-phone-hint').style.display = 'none';
+});
 
 // ── 초기 렌더 ──
 doReset();
