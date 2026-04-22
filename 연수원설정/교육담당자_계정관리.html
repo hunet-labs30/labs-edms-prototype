@@ -136,17 +136,25 @@
   .breadcrumb { font-size: 11px; color: #999; }
 
   /* SEARCH */
-  .search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px 0; }
+  .search-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; }
   .label { width: 72px; font-size: 12px; font-weight: 600; color: #555; flex-shrink: 0; }
   .input, .select {
-    height: 28px; border: 1px solid #ccc; border-radius: 3px;
-    padding: 0 8px; font-size: 12px; color: var(--text);
+    height: 34px; border: 1px solid #d0d5dd; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
     background: #fff; outline: none; transition: border-color 0.15s;
   }
-  .input:focus, .select:focus { border-color: var(--primary); }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.10); }
   .input { min-width: 140px; }
-  .select { cursor: pointer; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
   .search-actions { display: flex; gap: 6px; margin-left: auto; }
+  .search-input-wrap { position: relative; display: inline-flex; align-items: center; }
+  .search-input-wrap .ico-search {
+    position: absolute; left: 10px; color: #aaa; font-size: 14px; pointer-events: none; line-height: 1;
+  }
+  .search-input-wrap .input { padding-left: 30px; width: 240px; }
   .btn { height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px; font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.88; }
   .btn-primary { background: var(--primary); color: #fff; }
@@ -461,8 +469,22 @@
     <!-- 검색 -->
     <div class="card">
       <div class="search-row">
-        <span class="label">이름/이메일</span>
-        <input class="input" id="s-keyword" style="width:200px" placeholder="이름 또는 이메일 입력">
+        <select class="select" id="s-company" style="width:140px;">
+          <option value="">회사 선택</option>
+          <option>LABS 연수원</option>
+          <option>휴넷</option>
+          <option>ABC마트</option>
+          <option>건강보험공단</option>
+          <option>국민연금공단</option>
+        </select>
+        <select class="select" id="s-field" style="width:100px;">
+          <option value="name">이름</option>
+          <option value="email">이메일</option>
+        </select>
+        <div class="search-input-wrap">
+          <span class="ico-search">&#x1F50D;</span>
+          <input class="input" id="s-keyword" type="text" placeholder="검색어를 입력해주세요.">
+        </div>
         <div class="search-actions">
           <button class="btn btn-primary" onclick="doSearch()">검색</button>
           <button class="btn btn-reset" onclick="doReset()">초기화</button>
@@ -682,8 +704,14 @@ let emailChecked = false;
 // ── 검색 ──
 function doSearch() {
   const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
+  const field = document.getElementById('s-field').value;
+  const company = document.getElementById('s-company').value;
   filteredData = ALL_DATA.filter(r => {
-    if (kw && !r.name.includes(kw) && !r.email.toLowerCase().includes(kw)) return false;
+    if (company && r.company !== company) return false;
+    if (kw) {
+      if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
+      if (field === 'name' && !r.name.includes(kw)) return false;
+    }
     return true;
   });
   currentPage = 1;
@@ -692,6 +720,8 @@ function doSearch() {
 
 function doReset() {
   document.getElementById('s-keyword').value = '';
+  document.getElementById('s-field').selectedIndex = 0;
+  document.getElementById('s-company').selectedIndex = 0;
   filteredData = [...ALL_DATA];
   currentPage = 1;
   renderTable();
