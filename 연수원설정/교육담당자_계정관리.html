@@ -549,7 +549,7 @@
         <tr>
           <th>휴대전화번호</th>
           <td>
-            <input class="form-input readonly" id="reg-phone" type="tel" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
+            <input class="form-input" id="reg-phone" type="tel" readonly placeholder="이메일 확인 후 자동 입력">
             <div class="form-hint" id="reg-phone-hint" style="display:none;">자동 입력된 번호를 수정할 수 있습니다.</div>
           </td>
         </tr>
@@ -761,7 +761,7 @@ function openRegModal() {
   const phone = document.getElementById('reg-phone');
   name.value = ''; name.placeholder = '이메일 확인 후 자동 입력'; name.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
   company.value = ''; company.placeholder = '이메일 확인 후 자동 입력'; company.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
-  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력'; phone.readOnly = true; phone.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력'; phone.readOnly = true; phone.style.cssText = '';
   document.getElementById('reg-phone-hint').style.display = 'none';
   document.getElementById('reg-modal-title').textContent = '교육담당자 계정 등록';
   openModal('modal-reg');
@@ -776,7 +776,7 @@ function checkEmail() {
 
   // 자동입력 필드 초기화
   name.value = ''; company.value = ''; phone.value = '';
-  phone.readOnly = true; phone.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
+  phone.readOnly = true; phone.style.cssText = '';
   document.getElementById('reg-phone-hint').style.display = 'none';
   emailChecked = false;
 
