@@ -220,6 +220,23 @@
   .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
   .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
   .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+  /* Typeahead */
+  .typeahead-wrap { position: relative; display: inline-block; }
+  .typeahead-list {
+    position: absolute; top: 100%; left: 0; width: 320px;
+    background: #fff; border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 4px 4px; box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    list-style: none; max-height: 200px; overflow-y: auto; z-index: 500;
+  }
+  .typeahead-list li { padding: 7px 12px; cursor: pointer; font-size: 13px; }
+  .typeahead-list li:hover, .typeahead-list li.ta-active { background: #e8f0fe; color: var(--primary); }
+  .typeahead-clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; font-size: 17px;
+    color: #aaa; line-height: 1; padding: 0;
+  }
+  .typeahead-clear:hover { color: #555; }
 </style>
 </head>
 <body>
@@ -423,6 +440,7 @@
             <select class="select" id="s-learner-field" style="width:100px;">
               <option value="name">이름</option>
               <option value="id">아이디</option>
+              <option value="empNo">사번</option>
             </select>
             <div class="search-input-wrap">
               <span class="ico-search">&#x1F50D;</span>
@@ -431,8 +449,7 @@
             <select class="select" id="s-learner-status" style="width:120px;">
               <option value="">전체</option>
               <option value="active">재직</option>
-              <option value="leave">휴직</option>
-              <option value="retire">퇴직</option>
+              <option value="monitoring">모니터링</option>
             </select>
           </div>
         </div>
@@ -470,16 +487,13 @@
         <div class="search-field">
           <div class="search-field-label">회사검색</div>
           <div class="search-inline">
-            <select class="select" id="s-company" style="width:320px;">
-              <option value="">전체 회사</option>
-              <option>LABS 연수원</option>
-              <option>휴넷</option>
-              <option>ABC마트</option>
-              <option>건강보험공단</option>
-              <option>국민연금공단</option>
-              <option>포스코</option>
-              <option>삼성전자</option>
-            </select>
+            <div class="typeahead-wrap">
+              <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
+                autocomplete="off" style="width:320px;padding-right:26px;"
+                oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
+              <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
+              <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
+            </div>
           </div>
         </div>
       </div>
@@ -643,12 +657,15 @@ let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
   const applyDate = `2026-04-${String(1 + rand(30)).padStart(2,'0')}`;
   const st = rand(100);
   const status = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
+  const learnerStatus = rand(10) < 2 ? 'monitoring' : 'active';
   const fee = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
   return {
     id: 130 - i,
     company,
     dept: DEPTS[rand(DEPTS.length)],
     name,
+    learnerStatus,
+    empNo: String(20000 + i * 13).slice(-6),
     userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
     courseType: type,
     courseName: COURSE_NAMES[rand(COURSE_NAMES.length)],
@@ -665,6 +682,51 @@ let filteredData = [...ALL_DATA];
 let currentPage = 1;
 let pageSize = 50;
 
+// ── Typeahead (회사검색) ──
+let selectedCompany = '';
+let _companyBlurTimer = null;
+
+function onCompanyInput() {
+  selectedCompany = '';
+  document.getElementById('company-clear').style.display = 'none';
+  _renderCompanyList(document.getElementById('s-company-input').value.trim());
+}
+function onCompanyFocus() {
+  _renderCompanyList(document.getElementById('s-company-input').value.trim());
+}
+function onCompanyBlur() {
+  _companyBlurTimer = setTimeout(() => {
+    document.getElementById('company-list').style.display = 'none';
+    if (!selectedCompany) document.getElementById('s-company-input').value = '';
+  }, 150);
+}
+function _renderCompanyList(query) {
+  const list = document.getElementById('company-list');
+  const filtered = query
+    ? COMPANIES.filter(c => c.toLowerCase().includes(query.toLowerCase()))
+    : COMPANIES;
+  if (!filtered.length) { list.style.display = 'none'; return; }
+  list.innerHTML = filtered.map(c =>
+    `<li onmousedown="selectCompany(this,'${c.replace(/'/g,"\\'")}')">
+      ${query ? c.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>') : c}
+    </li>`
+  ).join('');
+  list.style.display = 'block';
+}
+function selectCompany(el, name) {
+  if (_companyBlurTimer) clearTimeout(_companyBlurTimer);
+  selectedCompany = name;
+  document.getElementById('s-company-input').value = name;
+  document.getElementById('company-list').style.display = 'none';
+  document.getElementById('company-clear').style.display = 'block';
+}
+function clearCompany() {
+  selectedCompany = '';
+  document.getElementById('s-company-input').value = '';
+  document.getElementById('company-clear').style.display = 'none';
+  document.getElementById('company-list').style.display = 'none';
+}
+
 // ── 정렬: 신청일 DESC ──
 function sortByApplyDateDesc(arr) {
   return arr.sort((a, b) => {
@@ -678,19 +740,22 @@ function doSearch() {
   const dFrom = document.getElementById('s-date-from').value;
   const dTo = document.getElementById('s-date-to').value;
   const learnerField = document.getElementById('s-learner-field').value;
-  const learnerKw = document.getElementById('s-learner-kw').value.trim().toLowerCase();
+  const learnerKw = document.getElementById('s-learner-kw').value.trim();
+  const learnerStatus = document.getElementById('s-learner-status').value;
   const courseField = document.getElementById('s-course-field').value;
   const courseKw = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType = document.getElementById('s-course-type').value;
-  const company = document.getElementById('s-company').value;
+  const company = selectedCompany;
 
   filteredData = ALL_DATA.filter(r => {
     if (dFrom && r.applyDate < dFrom) return false;
     if (dTo && r.applyDate > dTo) return false;
     if (learnerKw) {
-      if (learnerField === 'name' && !r.name.includes(learnerKw)) return false;
-      if (learnerField === 'id'   && !r.userId.toLowerCase().includes(learnerKw)) return false;
+      if (learnerField === 'name'  && r.name !== learnerKw) return false;
+      if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
+      if (learnerField === 'empNo' && !r.empNo.includes(learnerKw)) return false;
     }
+    if (learnerStatus && r.learnerStatus !== learnerStatus) return false;
     if (courseKw && !r.courseName.toLowerCase().includes(courseKw)) return false;
     if (courseType && r.courseType.code !== courseType) return false;
     if (company && r.company !== company) return false;
@@ -712,7 +777,7 @@ function doReset() {
   document.getElementById('s-course-kw').value = '';
   document.getElementById('s-course-type').selectedIndex = 0;
   document.getElementById('s-course-cat').selectedIndex = 0;
-  document.getElementById('s-company').selectedIndex = 0;
+  clearCompany();
   doSearch();
 }
 
