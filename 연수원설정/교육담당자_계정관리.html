@@ -180,15 +180,6 @@
   .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
   .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
 
-  /* STATUS BADGE */
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 11px; font-weight: 600; white-space: nowrap;
-  }
-  .badge-active { background: #e8f5e9; color: #2e7d32; }
-  .badge-inactive { background: #fce4ec; color: #c62828; }
-  .badge-pending { background: #fff8e1; color: #f57f17; }
-
   /* MODAL */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 9000;
@@ -472,12 +463,6 @@
       <div class="search-row">
         <span class="label">이름/이메일</span>
         <input class="input" id="s-keyword" style="width:200px" placeholder="이름 또는 이메일 입력">
-<span class="label" style="margin-left:8px;">상태</span>
-        <select class="select" id="s-status" style="width:90px">
-          <option value="">전체</option>
-          <option value="활성">활성</option>
-          <option value="비활성">비활성</option>
-        </select>
         <div class="search-actions">
           <button class="btn btn-primary" onclick="doSearch()">검색</button>
           <button class="btn btn-reset" onclick="doReset()">초기화</button>
@@ -501,7 +486,6 @@
             <th style="width:80px;">이름</th>
             <th>이메일</th>
             <th style="width:120px;">휴대폰</th>
-            <th style="width:64px;">상태</th>
             <th style="width:110px;">등록일</th>
             <th style="width:160px;">관리</th>
           </tr>
@@ -620,48 +604,11 @@
             <input class="form-input" id="edit-phone" type="tel">
           </td>
         </tr>
-        <tr>
-          <th>상태</th>
-          <td>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="edit-status" value="활성"> 활성
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="edit-status" value="비활성"> 비활성
-              </label>
-            </div>
-          </td>
-        </tr>
       </table>
     </div>
     <div class="modal-footer">
       <button class="mbtn mbtn-gray" onclick="closeModal('modal-edit')">취소</button>
       <button class="mbtn mbtn-blue" onclick="submitEdit()">저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════ -->
-<!-- 등록 메일 재발송 확인 모달              -->
-<!-- ══════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-resend">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <h3>등록 메일 재발송</h3>
-      <button class="modal-close" onclick="closeModal('modal-resend')">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="confirm-msg">
-        <strong id="resend-name"></strong> 계정으로<br>등록 메일을 재발송하시겠습니까?
-      </div>
-      <div class="confirm-sub">
-        최초 로그인 전(대기) 상태 계정에만 재발송이 가능합니다.
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="mbtn mbtn-gray" onclick="closeModal('modal-resend')">취소</button>
-      <button class="mbtn mbtn-blue" onclick="submitResend()">재발송</button>
     </div>
   </div>
 </div>
@@ -717,7 +664,6 @@ let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
   name: NAMES[i % NAMES.length],
   email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
   phone: '010-' + String(1000 + i * 31).slice(-4) + '-' + String(5000 + i * 17).slice(-4),
-  status: i % 7 === 6 ? '비활성' : (i % 7 === 3 ? '대기' : '활성'),
   company: COMPANIES[i % COMPANIES.length],
   regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
 }));
@@ -727,16 +673,13 @@ let currentPage = 1;
 let pageSize = 10;
 let editTargetId = null;
 let deleteTargetId = null;
-let resendTargetId = null;
 let emailChecked = false;
 
 // ── 검색 ──
 function doSearch() {
   const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
-  const status = document.getElementById('s-status').value;
   filteredData = ALL_DATA.filter(r => {
     if (kw && !r.name.includes(kw) && !r.email.toLowerCase().includes(kw)) return false;
-    if (status && r.status !== status) return false;
     return true;
   });
   currentPage = 1;
@@ -745,7 +688,6 @@ function doSearch() {
 
 function doReset() {
   document.getElementById('s-keyword').value = '';
-  document.getElementById('s-status').selectedIndex = 0;
   filteredData = [...ALL_DATA];
   currentPage = 1;
   renderTable();
@@ -763,7 +705,7 @@ function renderTable() {
   const start = (currentPage - 1) * pageSize;
   const slice = filteredData.slice(start, start + pageSize);
   if (!slice.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
     document.getElementById('pagination').innerHTML = '';
     return;
   }
@@ -774,11 +716,9 @@ function renderTable() {
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
       <td>${maskPhone(r.phone)}</td>
-      <td><span class="badge ${r.status === '활성' ? 'badge-active' : r.status === '대기' ? 'badge-pending' : 'badge-inactive'}">${r.status}</span></td>
       <td>${r.regDate.replace(/-/g, '.')}</td>
       <td>
         <button class="btn-sm btn-sm-outline" onclick="openEditModal(${r.id})">수정</button>
-        ${r.status === '대기' ? `<button class="btn-sm btn-sm-gray" style="margin:0 4px;" onclick="openResendModal(${r.id})">재발송</button>` : ''}
         <button class="btn-sm btn-sm-red" onclick="openDeleteModal(${r.id})">삭제</button>
       </td>
     </tr>
@@ -849,7 +789,7 @@ function submitReg() {
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  ALL_DATA.unshift({ id: newId, name, email, phone, status: '활성', company, regDate });
+  ALL_DATA.unshift({ id: newId, name, email, phone, company, regDate });
   filteredData = [...ALL_DATA];
   currentPage = 1;
   closeModal('modal-reg');
@@ -866,36 +806,16 @@ function openEditModal(id) {
   document.getElementById('edit-name').value = r.name;
   document.getElementById('edit-company').value = r.company;
   document.getElementById('edit-phone').value = r.phone;
-  const statusRadio = document.querySelector(`input[name="edit-status"][value="${r.status}"]`);
-  if (statusRadio) statusRadio.checked = true;
   openModal('modal-edit');
 }
 
 function submitEdit() {
   const r = ALL_DATA.find(d => d.id === editTargetId);
   if (!r) return;
-  const phone = document.getElementById('edit-phone').value.trim();
-  const status = document.querySelector('input[name="edit-status"]:checked').value;
-  r.phone = phone;
-  r.status = status;
+  r.phone = document.getElementById('edit-phone').value.trim();
   closeModal('modal-edit');
   renderTable();
   alert('계정 정보가 수정되었습니다.');
-}
-
-// ── 등록 메일 재발송 모달 ──
-function openResendModal(id) {
-  const r = ALL_DATA.find(d => d.id === id);
-  if (!r) return;
-  resendTargetId = id;
-  document.getElementById('resend-name').textContent = maskName(r.name) + ' (' + maskEmail(r.email) + ')';
-  openModal('modal-resend');
-}
-
-function submitResend() {
-  const r = ALL_DATA.find(d => d.id === resendTargetId);
-  closeModal('modal-resend');
-  alert(maskName(r.name) + ' 담당자에게 등록 메일이 재발송되었습니다.');
 }
 
 // ── 계정 삭제 모달 ──
