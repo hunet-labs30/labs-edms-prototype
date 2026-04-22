@@ -620,6 +620,7 @@
           <th>휴대전화번호</th>
           <td>
             <input class="form-input" id="edit-phone" type="tel">
+            <div class="form-hint red" id="edit-phone-err" style="display:none;"></div>
           </td>
         </tr>
       </table>
@@ -878,14 +879,32 @@ function openEditModal(id) {
   document.getElementById('edit-name').value = r.name;
   document.getElementById('edit-company').value = r.company;
   document.getElementById('edit-phone').value = r.phone;
+  clearEditPhoneErr();
   openModal('modal-edit');
+}
+
+function clearEditPhoneErr() {
+  const err = document.getElementById('edit-phone-err');
+  err.textContent = '';
+  err.style.display = 'none';
 }
 
 function submitEdit() {
   const r = ALL_DATA.find(d => d.id === editTargetId);
   if (!r) return;
   const phone = document.getElementById('edit-phone').value.trim();
-  if (!isValidPhone(phone)) { alert('휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)'); return; }
+  const err = document.getElementById('edit-phone-err');
+  if (!phone) {
+    err.textContent = '휴대폰 번호를 입력해주세요.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!isValidPhone(phone)) {
+    err.textContent = '휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)';
+    err.style.display = 'block';
+    return;
+  }
+  clearEditPhoneErr();
   r.phone = phone;
   closeModal('modal-edit');
   renderTable();
@@ -909,6 +928,9 @@ function submitDelete() {
   renderTable();
   alert('교육담당자 권한이 삭제되었습니다.');
 }
+
+// ── 수정 모달 휴대폰 입력 시 에러 자동 제거 ──
+document.getElementById('edit-phone').addEventListener('input', clearEditPhoneErr);
 
 // ── 이메일 재수정 시 자동 리셋 ──
 document.getElementById('reg-email').addEventListener('input', function () {
