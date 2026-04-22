@@ -602,9 +602,10 @@
           </td>
         </tr>
         <tr>
-          <th>이름 <span class="required-mark">*</span></th>
+          <th>이름</th>
           <td>
-            <input class="form-input" id="edit-name" type="text">
+            <input class="form-input" id="edit-name" type="text" readonly style="background:#f5f5f5;color:#888;cursor:default;">
+            <div class="form-hint">이름은 변경할 수 없습니다.</div>
           </td>
         </tr>
         <tr>
@@ -877,12 +878,9 @@ function openEditModal(id) {
 function submitEdit() {
   const r = ALL_DATA.find(d => d.id === editTargetId);
   if (!r) return;
-  const name = document.getElementById('edit-name').value.trim();
   const phone = document.getElementById('edit-phone').value.trim();
   const status = document.querySelector('input[name="edit-status"]:checked').value;
-  if (!name) { alert('이름을 입력해주세요.'); return; }
   if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
-  r.name = name;
   r.phone = phone;
   r.status = status;
   closeModal('modal-edit');
