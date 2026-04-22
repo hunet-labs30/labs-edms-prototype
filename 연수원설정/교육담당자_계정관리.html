@@ -712,6 +712,14 @@ let editTargetId = null;
 let deleteTargetId = null;
 let emailChecked = false;
 
+// ── 정렬: 등록일 DESC (동일 일자는 id DESC로 보조 정렬) ──
+function sortByRegDateDesc(arr) {
+  return arr.sort((a, b) => {
+    if (a.regDate !== b.regDate) return b.regDate.localeCompare(a.regDate);
+    return b.id - a.id;
+  });
+}
+
 // ── 검색 ──
 function doSearch() {
   const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
@@ -726,6 +734,7 @@ function doSearch() {
     }
     return true;
   });
+  sortByRegDateDesc(filteredData);
   currentPage = 1;
   renderTable();
 }
@@ -735,6 +744,7 @@ function doReset() {
   document.getElementById('s-field').selectedIndex = 0;
   document.getElementById('s-company').selectedIndex = 0;
   filteredData = [...ALL_DATA];
+  sortByRegDateDesc(filteredData);
   currentPage = 1;
   renderTable();
 }
