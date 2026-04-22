@@ -480,6 +480,7 @@
         <select class="select" id="s-field" style="width:100px;">
           <option value="name">이름</option>
           <option value="email">이메일</option>
+          <option value="phone">휴대폰</option>
         </select>
         <div class="search-input-wrap">
           <span class="ico-search">&#x1F50D;</span>
@@ -709,8 +710,9 @@ function doSearch() {
   filteredData = ALL_DATA.filter(r => {
     if (company && r.company !== company) return false;
     if (kw) {
+      if (field === 'name'  && !r.name.includes(kw)) return false;
       if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
-      if (field === 'name' && !r.name.includes(kw)) return false;
+      if (field === 'phone' && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
     }
     return true;
   });
