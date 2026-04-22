@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #cdd3da;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg);
+    color: #fff;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .btn-header:hover { background: #4a6278; }
+  .top-header .lang-select {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group { }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7;
+    background: rgba(126,184,247,0.07);
+    border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow {
+    font-size: 9px; color: #556;
+    transition: transform 0.2s; display: inline-block; line-height: 1;
+  }
+  .nav-group.open > .nav-group-header .nav-arrow {
+    transform: rotate(90deg); color: #7eb8f7;
+  }
+  .nav-sub {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding: 0;
+  }
+  .nav-group.open > .nav-sub {
+    max-height: 300px;
+    padding: 2px 0 6px;
+  }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-flat {
+    display: block; padding: 10px 14px;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-flat.active { background: var(--primary); color: #fff; border-left-color: #fff; }
+  .sidebar-company {
+    padding: 10px 14px 6px;
+    font-size: 11px; color: #6a7f8e; font-weight: 600;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+
+  /* PAGE HEADER */
+  .page-header-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 2px;
+  }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* SEARCH */
+  .search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px 0; }
+  .label { width: 72px; font-size: 12px; font-weight: 600; color: #555; flex-shrink: 0; }
+  .input, .select {
+    height: 28px; border: 1px solid #ccc; border-radius: 3px;
+    padding: 0 8px; font-size: 12px; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); }
+  .input { min-width: 140px; }
+  .select { cursor: pointer; }
+  .search-actions { display: flex; gap: 6px; margin-left: auto; }
+  .btn { height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px; font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-dark { background: #1a1a2e; color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm { height: 26px; padding: 0 10px; border-radius: 3px; font-size: 11px; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn-sm:hover { opacity: 0.85; }
+  .btn-sm-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-sm-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm-red { background: #fff; color: #e53935; border: 1px solid #e53935; }
+
+  /* TABLE */
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .result-count { font-size: 12px; color: #666; }
+  .result-count strong { color: var(--primary); }
+  .result-right { display: flex; align-items: center; gap: 8px; }
+  .btn-excel { background: #fff; border: 1px solid #ccc; color: #444; padding: 4px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .btn-excel:hover { background: #f5f5f5; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: var(--table-header); border: 1px solid var(--border); padding: 8px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .main-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+
+  /* PAGINATION */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .page-size-wrap .select { height: 26px; font-size: 12px; }
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; color: #555; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+  /* STATUS BADGE */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .badge-active { background: #e8f5e9; color: #2e7d32; }
+  .badge-inactive { background: #fce4ec; color: #c62828; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.45);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 8px; width: 520px;
+    max-height: 90vh; display: flex; flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+  .modal-close {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    color: #888; line-height: 1; padding: 0 2px;
+  }
+  .modal-close:hover { color: #333; }
+  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 14px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0;
+  }
+  .mbtn {
+    height: 32px; padding: 0 16px; border-radius: 3px; font-size: 13px;
+    font-weight: 400; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; white-space: nowrap;
+    transition: opacity .15s; border: none;
+  }
+  .mbtn:hover { opacity: .85; }
+  .mbtn-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .mbtn-blue { background: var(--primary); color: #fff; }
+  .mbtn-dark { background: #1a1a2e; color: #fff; }
+  .mbtn-red { background: #e53935; color: #fff; }
+
+  /* FORM TABLE (모달 내 입력 폼) */
+  .form-table { width: 100%; border-collapse: collapse; }
+  .form-table th {
+    width: 130px; background: #f8f9fb;
+    border: 1px solid #e0e3e8; padding: 10px 14px;
+    text-align: left; font-size: 12px; font-weight: 600; color: #444;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  .form-table td {
+    border: 1px solid #e0e3e8; padding: 8px 12px;
+    font-size: 12px; color: #333;
+    vertical-align: top;
+  }
+  .required-mark { color: #e53935; margin-left: 2px; }
+  .form-input {
+    width: 100%; height: 32px; border: 1px solid #ccc; border-radius: 4px;
+    padding: 0 10px; font-size: 12px; font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--primary); }
+  .form-input.readonly { background: #f5f6fa; color: #888; cursor: default; }
+  .form-input-row { display: flex; gap: 6px; align-items: center; }
+  .form-hint { font-size: 11px; color: #888; margin-top: 4px; line-height: 1.5; }
+  .form-hint.blue { color: #1a73e8; }
+  .form-hint.red { color: #e53935; }
+  .radio-group { display: flex; align-items: center; gap: 16px; padding-top: 4px; }
+  .radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
+  .radio-label input[type="radio"] { cursor: pointer; accent-color: var(--primary); }
+  .btn-check {
+    height: 32px; padding: 0 12px; border-radius: 4px; font-size: 12px;
+    font-family: inherit; cursor: pointer; border: 1px solid #1a1a2e;
+    background: #1a1a2e; color: #fff; white-space: nowrap; flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .btn-check:hover { opacity: 0.85; }
+  .check-ok { color: #2e7d32; font-size: 11px; font-weight: 600; margin-top: 3px; }
+  .check-fail { color: #e53935; font-size: 11px; font-weight: 600; margin-top: 3px; }
+
+  /* 비밀번호 초기화 확인 모달 (작은 사이즈) */
+  .modal-sm { width: 420px; }
+  .confirm-msg { font-size: 13px; color: #333; line-height: 1.8; }
+  .confirm-msg strong { color: #1a1a2e; }
+  .confirm-sub { font-size: 12px; color: #888; margin-top: 8px; }
+
+  /* INFO BOX */
+  .info-box {
+    background: #fffde7; border: 1px solid #fdd835;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #6d4c00; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  /* DATE PICKER */
+  .date-wrap { position: relative; display: inline-flex; align-items: center; }
+  .date-wrap .input-date {
+    width: 112px; height: 28px; border: 1px solid #ccc; border-radius: 3px;
+    padding: 0 28px 0 8px; font-size: 12px; color: var(--text);
+    background: #fff; outline: none; cursor: pointer; transition: border-color 0.15s;
+  }
+  .date-wrap .cal-icon {
+    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+    color: #aaa; font-size: 13px; pointer-events: none;
+  }
+  .cal-popup {
+    position: absolute; top: 32px; left: 0; z-index: 500;
+    background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13); padding: 10px;
+    display: none; min-width: 230px;
+  }
+  .cal-popup.open { display: block; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-header span { font-size: 13px; font-weight: 700; color: #333; }
+  .cal-nav { background: none; border: none; cursor: pointer; color: #555; font-size: 18px; padding: 0 4px; line-height: 1; }
+  .cal-nav:hover { color: var(--primary); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-dow { text-align: center; font-size: 10px; font-weight: 600; color: #999; padding: 3px 0; }
+  .cal-dow:first-child { color: #e53935; }
+  .cal-dow:last-child { color: #1a73e8; }
+  .cal-day { text-align: center; font-size: 12px; padding: 5px 2px; border-radius: 4px; cursor: pointer; color: #333; }
+  .cal-day:hover { background: #e8f0fe; color: var(--primary); }
+  .cal-day.today { font-weight: 700; color: var(--primary); }
+  .cal-day.selected { background: var(--primary) !important; color: #fff !important; border-radius: 50%; }
+  .cal-day.other-month { color: #ccc; }
+  .cal-day.sun { color: #e53935; }
+  .cal-day.sat { color: #1a73e8; }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">임직원</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학습</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">결과</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">교육비용</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">사외교육</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">러닝메이커</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">커넥트</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">게시글</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">부가서비스</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item" href="#">역량진단 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <!-- 연수원 설정 (활성) -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">연수원 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item active" href="#">교육담당자 계정 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header-row">
+      <div class="page-header-title">교육담당자 계정 관리</div>
+      <div class="breadcrumb">연수원 설정 &gt; 교육담당자 계정 관리</div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <div class="search-row">
+        <span class="label">이름/이메일</span>
+        <input class="input" id="s-keyword" style="width:200px" placeholder="이름 또는 이메일 입력">
+        <span class="label" style="margin-left:8px;">권한등급</span>
+        <select class="select" id="s-grade" style="width:130px">
+          <option value="">전체</option>
+          <option value="교육담당자">교육담당자</option>
+          <option value="그룹사 담당자">그룹사 담당자</option>
+          <option value="가나다">가나다</option>
+        </select>
+        <span class="label" style="margin-left:8px;">상태</span>
+        <select class="select" id="s-status" style="width:90px">
+          <option value="">전체</option>
+          <option value="활성">활성</option>
+          <option value="비활성">비활성</option>
+        </select>
+        <div class="search-actions">
+          <button class="btn btn-primary" onclick="doSearch()">검색</button>
+          <button class="btn btn-reset" onclick="doReset()">초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card">
+      <div class="result-header">
+        <div class="result-count">총 <strong id="total-count">0</strong>명</div>
+        <div class="result-right">
+          <button class="btn-excel" onclick="alert('엑셀 다운로드')">📥 엑셀</button>
+          <button class="btn btn-dark" onclick="openRegModal()">+ 계정 등록</button>
+        </div>
+      </div>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th style="width:40px;"><input type="checkbox" id="chk-all" onclick="toggleAll(this)"></th>
+            <th style="width:44px;">No.</th>
+            <th style="width:80px;">이름</th>
+            <th>이메일</th>
+            <th style="width:120px;">휴대폰</th>
+            <th style="width:110px;">권한등급</th>
+            <th style="width:64px;">상태</th>
+            <th style="width:110px;">등록일</th>
+            <th style="width:160px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="acc-tbody"></tbody>
+      </table>
+      <div class="table-footer">
+        <div class="page-size-wrap">
+          페이지당
+          <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          건
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 등록 모달                          -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-reg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="reg-modal-title">교육담당자 계정 등록</h3>
+      <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        New EDMS에 접속할 이메일을 입력해주세요.<br>
+        등록 완료 후 입력한 이메일로 초기 비밀번호가 발송됩니다.
+      </div>
+      <table class="form-table">
+        <tr>
+          <th>이메일 <span class="required-mark">*</span></th>
+          <td>
+            <div class="form-input-row">
+              <input class="form-input" id="reg-email" type="email" placeholder="example@company.com">
+              <button class="btn-check" onclick="checkEmail()">중복 확인</button>
+            </div>
+            <div id="email-check-msg"></div>
+          </td>
+        </tr>
+        <tr>
+          <th>이름 <span class="required-mark">*</span></th>
+          <td>
+            <input class="form-input" id="reg-name" type="text" placeholder="이름 입력">
+          </td>
+        </tr>
+        <tr>
+          <th>기업 <span class="required-mark">*</span></th>
+          <td>
+            <select class="form-input" id="reg-company" style="cursor:pointer;">
+              <option value="">기업 선택</option>
+              <option>LABS 연수원</option>
+              <option>휴넷</option>
+              <option>ABC마트</option>
+              <option>건강보험공단</option>
+              <option>국민연금공단</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>휴대전화번호 <span class="required-mark">*</span></th>
+          <td>
+            <input class="form-input" id="reg-phone" type="tel" placeholder="010-0000-0000">
+            <div class="form-hint blue">입력한 휴대전화번호로 2factor 인증을 하므로 정확히 입력해주세요.</div>
+          </td>
+        </tr>
+        <tr>
+          <th>메뉴 권한등급 <span class="required-mark">*</span></th>
+          <td>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="reg-grade" value="교육담당자" checked> 교육담당자
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="reg-grade" value="그룹사 담당자"> 그룹사 담당자
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="reg-grade" value="가나다"> 가나다
+              </label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-reg')">취소</button>
+      <button class="mbtn mbtn-dark" onclick="submitReg()">등록 메일 발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 수정 모달                          -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-edit">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>교육담당자 계정 수정</h3>
+      <button class="modal-close" onclick="closeModal('modal-edit')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table class="form-table">
+        <tr>
+          <th>이메일</th>
+          <td>
+            <input class="form-input readonly" id="edit-email" type="text" readonly>
+            <div class="form-hint">이메일(로그인 아이디)은 변경할 수 없습니다.</div>
+          </td>
+        </tr>
+        <tr>
+          <th>이름 <span class="required-mark">*</span></th>
+          <td>
+            <input class="form-input" id="edit-name" type="text">
+          </td>
+        </tr>
+        <tr>
+          <th>기업</th>
+          <td>
+            <input class="form-input readonly" id="edit-company" type="text" readonly>
+          </td>
+        </tr>
+        <tr>
+          <th>휴대전화번호 <span class="required-mark">*</span></th>
+          <td>
+            <input class="form-input" id="edit-phone" type="tel">
+            <div class="form-hint blue">2factor 인증에 사용됩니다. 변경 시 정확히 입력해주세요.</div>
+          </td>
+        </tr>
+        <tr>
+          <th>메뉴 권한등급 <span class="required-mark">*</span></th>
+          <td>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="edit-grade" value="교육담당자"> 교육담당자
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="edit-grade" value="그룹사 담당자"> 그룹사 담당자
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="edit-grade" value="가나다"> 가나다
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>상태</th>
+          <td>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="edit-status" value="활성"> 활성
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="edit-status" value="비활성"> 비활성
+              </label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-edit')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="submitEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 비밀번호 초기화 확인 모달               -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-pw-reset">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>비밀번호 초기화</h3>
+      <button class="modal-close" onclick="closeModal('modal-pw-reset')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        <strong id="pw-reset-name"></strong> 계정의 비밀번호를 초기화하시겠습니까?
+      </div>
+      <div class="confirm-sub">
+        초기화 후 등록된 이메일로 임시 비밀번호가 발송됩니다.<br>
+        담당자는 최초 로그인 후 반드시 비밀번호를 변경해야 합니다.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-pw-reset')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="submitPwReset()">초기화 메일 발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 삭제 확인 모달                     -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>계정 삭제</h3>
+      <button class="modal-close" onclick="closeModal('modal-delete')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        <strong id="delete-name"></strong> 계정을 삭제하시겠습니까?
+      </div>
+      <div class="confirm-sub" style="color:#e53935;">
+        삭제된 계정은 복구할 수 없습니다.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-delete')">취소</button>
+      <button class="mbtn mbtn-red" onclick="submitDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 사이드바 토글 ──
+function toggleNavGroup(header) {
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+
+// ── 모달 ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ── 샘플 데이터 ──
+const GRADES = ['교육담당자', '그룹사 담당자', '교육담당자', '교육담당자', '그룹사 담당자', '가나다', '교육담당자', '그룹사 담당자', '교육담당자', '교육담당자', '교육담당자', '그룹사 담당자', '가나다', '교육담당자', '교육담당자'];
+const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
+const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
+
+const maskName = n => n.length <= 1 ? n : n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+const maskEmail = e => {
+  const [u, d] = e.split('@');
+  return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
+};
+const maskPhone = p => p.replace(/(\d{3})-(\d{4})-(\d{4})/, '$1-****-$3');
+
+let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
+  id: 22 - i,
+  name: NAMES[i % NAMES.length],
+  email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
+  phone: '010-' + String(1000 + i * 31).slice(-4) + '-' + String(5000 + i * 17).slice(-4),
+  grade: GRADES[i % GRADES.length],
+  status: i % 7 === 6 ? '비활성' : '활성',
+  company: COMPANIES[i % COMPANIES.length],
+  regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
+}));
+
+let filteredData = [...ALL_DATA];
+let currentPage = 1;
+let pageSize = 10;
+let editTargetId = null;
+let deleteTargetId = null;
+let pwResetTargetId = null;
+let emailChecked = false;
+
+// ── 검색 ──
+function doSearch() {
+  const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
+  const grade = document.getElementById('s-grade').value;
+  const status = document.getElementById('s-status').value;
+  filteredData = ALL_DATA.filter(r => {
+    if (kw && !r.name.includes(kw) && !r.email.toLowerCase().includes(kw)) return false;
+    if (grade && r.grade !== grade) return false;
+    if (status && r.status !== status) return false;
+    return true;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function doReset() {
+  document.getElementById('s-keyword').value = '';
+  document.getElementById('s-grade').selectedIndex = 0;
+  document.getElementById('s-status').selectedIndex = 0;
+  filteredData = [...ALL_DATA];
+  currentPage = 1;
+  renderTable();
+}
+
+// ── 전체 선택 ──
+function toggleAll(chk) {
+  document.querySelectorAll('#acc-tbody input[type=checkbox]').forEach(c => c.checked = chk.checked);
+}
+
+// ── 테이블 렌더링 ──
+function renderTable() {
+  const tbody = document.getElementById('acc-tbody');
+  document.getElementById('total-count').textContent = filteredData.length.toLocaleString();
+  const start = (currentPage - 1) * pageSize;
+  const slice = filteredData.slice(start, start + pageSize);
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#aaa;">조회된 데이터가 없습니다.</td></tr>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  tbody.innerHTML = slice.map(r => `
+    <tr>
+      <td><input type="checkbox" class="row-chk" data-id="${r.id}"></td>
+      <td>${r.id}</td>
+      <td>${maskName(r.name)}</td>
+      <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
+      <td>${maskPhone(r.phone)}</td>
+      <td>${r.grade}</td>
+      <td><span class="badge ${r.status === '활성' ? 'badge-active' : 'badge-inactive'}">${r.status}</span></td>
+      <td>${r.regDate.replace(/-/g, '.')}</td>
+      <td>
+        <button class="btn-sm btn-sm-outline" onclick="openEditModal(${r.id})">수정</button>
+        <button class="btn-sm btn-sm-gray" style="margin:0 4px;" onclick="openPwResetModal(${r.id})">비밀번호 초기화</button>
+        <button class="btn-sm btn-sm-red" onclick="openDeleteModal(${r.id})">삭제</button>
+      </td>
+    </tr>
+  `).join('');
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filteredData.length / pageSize);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(total, start + 4);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="pg-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>&#8250;</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData.length / pageSize);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+}
+
+// ── 계정 등록 모달 ──
+function openRegModal() {
+  emailChecked = false;
+  document.getElementById('reg-email').value = '';
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-company').selectedIndex = 0;
+  document.getElementById('reg-phone').value = '';
+  document.querySelector('input[name="reg-grade"][value="교육담당자"]').checked = true;
+  document.getElementById('email-check-msg').innerHTML = '';
+  document.getElementById('reg-modal-title').textContent = '교육담당자 계정 등록';
+  openModal('modal-reg');
+}
+
+function checkEmail() {
+  const email = document.getElementById('reg-email').value.trim();
+  const msg = document.getElementById('email-check-msg');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.innerHTML = '<div class="check-fail">올바른 이메일 형식을 입력해주세요.</div>';
+    emailChecked = false;
+    return;
+  }
+  const dup = ALL_DATA.some(r => r.email === email);
+  if (dup) {
+    msg.innerHTML = '<div class="check-fail">이미 등록된 이메일입니다.</div>';
+    emailChecked = false;
+  } else {
+    msg.innerHTML = '<div class="check-ok">사용 가능한 이메일입니다.</div>';
+    emailChecked = true;
+  }
+}
+
+function submitReg() {
+  const email = document.getElementById('reg-email').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const company = document.getElementById('reg-company').value;
+  const phone = document.getElementById('reg-phone').value.trim();
+  const grade = document.querySelector('input[name="reg-grade"]:checked').value;
+  if (!email) { alert('이메일을 입력해주세요.'); return; }
+  if (!emailChecked) { alert('이메일 중복 확인을 완료해주세요.'); return; }
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!company) { alert('기업을 선택해주세요.'); return; }
+  if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
+  const newId = ALL_DATA.length + 1;
+  const today = new Date();
+  const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  ALL_DATA.unshift({ id: newId, name, email, phone, grade, status: '활성', company, regDate });
+  filteredData = [...ALL_DATA];
+  currentPage = 1;
+  closeModal('modal-reg');
+  renderTable();
+  alert(name + ' 담당자 계정이 등록되었습니다.\n입력한 이메일로 초기 비밀번호가 발송됩니다.');
+}
+
+// ── 계정 수정 모달 ──
+function openEditModal(id) {
+  const r = ALL_DATA.find(d => d.id === id);
+  if (!r) return;
+  editTargetId = id;
+  document.getElementById('edit-email').value = r.email;
+  document.getElementById('edit-name').value = r.name;
+  document.getElementById('edit-company').value = r.company;
+  document.getElementById('edit-phone').value = r.phone;
+  const gradeRadio = document.querySelector(`input[name="edit-grade"][value="${r.grade}"]`);
+  if (gradeRadio) gradeRadio.checked = true;
+  const statusRadio = document.querySelector(`input[name="edit-status"][value="${r.status}"]`);
+  if (statusRadio) statusRadio.checked = true;
+  openModal('modal-edit');
+}
+
+function submitEdit() {
+  const r = ALL_DATA.find(d => d.id === editTargetId);
+  if (!r) return;
+  const name = document.getElementById('edit-name').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  const grade = document.querySelector('input[name="edit-grade"]:checked').value;
+  const status = document.querySelector('input[name="edit-status"]:checked').value;
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!phone) { alert('휴대전화번호를 입력해주세요.'); return; }
+  r.name = name;
+  r.phone = phone;
+  r.grade = grade;
+  r.status = status;
+  closeModal('modal-edit');
+  renderTable();
+  alert('계정 정보가 수정되었습니다.');
+}
+
+// ── 비밀번호 초기화 모달 ──
+function openPwResetModal(id) {
+  const r = ALL_DATA.find(d => d.id === id);
+  if (!r) return;
+  pwResetTargetId = id;
+  document.getElementById('pw-reset-name').textContent = maskName(r.name) + ' (' + maskEmail(r.email) + ')';
+  openModal('modal-pw-reset');
+}
+
+function submitPwReset() {
+  const r = ALL_DATA.find(d => d.id === pwResetTargetId);
+  closeModal('modal-pw-reset');
+  alert(maskName(r.name) + ' 담당자에게 임시 비밀번호 메일이 발송되었습니다.');
+}
+
+// ── 계정 삭제 모달 ──
+function openDeleteModal(id) {
+  const r = ALL_DATA.find(d => d.id === id);
+  if (!r) return;
+  deleteTargetId = id;
+  document.getElementById('delete-name').textContent = maskName(r.name) + ' (' + maskEmail(r.email) + ')';
+  openModal('modal-delete');
+}
+
+function submitDelete() {
+  ALL_DATA = ALL_DATA.filter(d => d.id !== deleteTargetId);
+  filteredData = filteredData.filter(d => d.id !== deleteTargetId);
+  closeModal('modal-delete');
+  if ((currentPage - 1) * pageSize >= filteredData.length && currentPage > 1) currentPage--;
+  renderTable();
+  alert('계정이 삭제되었습니다.');
+}
+
+// ── 초기 렌더 ──
+doReset();
+</script>
+</body>
+</html>
