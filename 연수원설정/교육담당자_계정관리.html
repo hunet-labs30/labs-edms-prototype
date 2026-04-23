@@ -222,6 +222,7 @@
     transition: opacity .15s; border: none;
   }
   .mbtn:hover { opacity: .85; }
+  .mbtn:disabled { opacity: .45; cursor: default; pointer-events: none; }
   .mbtn-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
   .mbtn-blue { background: var(--primary); color: #fff; }
   .mbtn-dark { background: #1a1a2e; color: #fff; }
@@ -263,8 +264,6 @@
     transition: opacity 0.15s;
   }
   .btn-check:hover { opacity: 0.85; }
-  .check-ok { color: #2e7d32; font-size: 11px; font-weight: 600; margin-top: 3px; }
-  .check-fail { color: #e53935; font-size: 11px; font-weight: 600; margin-top: 3px; }
 
   /* 비밀번호 초기화 확인 모달 (작은 사이즈) */
   .modal-sm { width: 420px; }
@@ -280,39 +279,18 @@
     margin-bottom: 16px;
   }
 
-  /* DATE PICKER */
-  .date-wrap { position: relative; display: inline-flex; align-items: center; }
-  .date-wrap .input-date {
-    width: 112px; height: 28px; border: 1px solid #ccc; border-radius: 3px;
-    padding: 0 28px 0 8px; font-size: 12px; color: var(--text);
-    background: #fff; outline: none; cursor: pointer; transition: border-color 0.15s;
+  /* 등록 모달 검색 결과 */
+  .reg-search-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 0; }
+  .reg-search-table th { background: #f0f2f5; border: 1px solid #e0e3e8; padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .reg-search-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .reg-search-table tbody tr:hover td { background: #f5f8ff; }
+  .already-reg { font-size: 11px; color: #e53935; }
+  .selected-info-box {
+    background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #1b5e20; line-height: 1.7;
+    margin-top: 12px;
   }
-  .date-wrap .cal-icon {
-    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
-    color: #aaa; font-size: 13px; pointer-events: none;
-  }
-  .cal-popup {
-    position: absolute; top: 32px; left: 0; z-index: 500;
-    background: #fff; border: 1px solid #ccc; border-radius: 6px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.13); padding: 10px;
-    display: none; min-width: 230px;
-  }
-  .cal-popup.open { display: block; }
-  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .cal-header span { font-size: 13px; font-weight: 700; color: #333; }
-  .cal-nav { background: none; border: none; cursor: pointer; color: #555; font-size: 18px; padding: 0 4px; line-height: 1; }
-  .cal-nav:hover { color: var(--primary); }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .cal-dow { text-align: center; font-size: 10px; font-weight: 600; color: #999; padding: 3px 0; }
-  .cal-dow:first-child { color: #e53935; }
-  .cal-dow:last-child { color: #1a73e8; }
-  .cal-day { text-align: center; font-size: 12px; padding: 5px 2px; border-radius: 4px; cursor: pointer; color: #333; }
-  .cal-day:hover { background: #e8f0fe; color: var(--primary); }
-  .cal-day.today { font-weight: 700; color: var(--primary); }
-  .cal-day.selected { background: var(--primary) !important; color: #fff !important; border-radius: 50%; }
-  .cal-day.other-month { color: #ccc; }
-  .cal-day.sun { color: #e53935; }
-  .cal-day.sat { color: #1a73e8; }
 </style>
 </head>
 <body>
@@ -480,7 +458,6 @@
         <select class="select" id="s-field" style="width:100px;">
           <option value="name">이름</option>
           <option value="email">아이디</option>
-          <option value="phone">휴대번호</option>
         </select>
         <div class="search-input-wrap">
           <span class="ico-search">&#x1F50D;</span>
@@ -498,7 +475,7 @@
       <div class="result-header">
         <div class="result-count">총 <strong id="total-count">0</strong>명</div>
         <div class="result-right">
-<button class="btn btn-dark" onclick="openRegModal()">+ 계정 등록</button>
+          <button class="btn btn-dark" onclick="openRegModal()">+ 계정 등록</button>
         </div>
       </div>
       <table class="main-table">
@@ -507,7 +484,7 @@
             <th style="width:44px;">No.</th>
             <th style="width:80px;">이름</th>
             <th>이메일</th>
-            <th style="width:120px;">휴대폰</th>
+            <th style="width:100px;">부서</th>
             <th style="width:110px;">등록일</th>
             <th style="width:160px;">관리</th>
           </tr>
@@ -536,51 +513,49 @@
 <!-- 계정 등록 모달                          -->
 <!-- ══════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-reg">
-  <div class="modal">
+  <div class="modal" style="width:620px;">
     <div class="modal-header">
-      <h3 id="reg-modal-title">교육담당자 계정 등록</h3>
+      <h3>교육담당자 계정 등록</h3>
       <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
     </div>
     <div class="modal-body">
       <div class="info-box">
-        New EDMS에 접속할 이메일을 입력해주세요.<br>
-        연수원 계정으로 이미 등록된 이메일만 등록이 가능합니다.
+        교육담당자로 등록할 담당자의 이름으로 검색하세요.<br>
+        연수원 계정으로 등록된 담당자만 등록이 가능합니다.
       </div>
-      <table class="form-table">
-        <tr>
-          <th>이메일 <span class="required-mark">*</span></th>
-          <td>
-            <div class="form-input-row">
-              <input class="form-input" id="reg-email" type="email" placeholder="example@company.com">
-              <button class="btn-check" onclick="checkEmail()">중복 확인</button>
-            </div>
-            <div id="email-check-msg"></div>
-          </td>
-        </tr>
-        <tr>
-          <th>이름</th>
-          <td>
-            <input class="form-input readonly" id="reg-name" type="text" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
-          </td>
-        </tr>
-        <tr>
-          <th>기업</th>
-          <td>
-            <input class="form-input readonly" id="reg-company" type="text" readonly placeholder="이메일 확인 후 자동 입력" style="background:#f5f6fa;color:#888;cursor:default;">
-          </td>
-        </tr>
-        <tr>
-          <th>휴대전화번호</th>
-          <td>
-            <input class="form-input" id="reg-phone" type="tel" readonly placeholder="이메일 확인 후 자동 입력">
-            <div class="form-hint" id="reg-phone-hint" style="display:none;">자동 입력된 번호를 수정할 수 있습니다.</div>
-          </td>
-        </tr>
-      </table>
+      <!-- 이름 검색 -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input class="form-input" id="reg-name-kw" type="text" placeholder="이름을 입력해주세요."
+          style="flex:1;"
+          onkeydown="if(event.key==='Enter') searchByName()">
+        <button class="btn-check" onclick="searchByName()">검색</button>
+      </div>
+      <!-- 검색 결과 목록 -->
+      <div id="reg-search-result" style="display:none;">
+        <table class="reg-search-table">
+          <thead>
+            <tr>
+              <th style="width:70px;">이름</th>
+              <th>아이디(이메일)</th>
+              <th style="width:110px;">기업</th>
+              <th style="width:80px;">부서</th>
+              <th style="width:100px;"></th>
+            </tr>
+          </thead>
+          <tbody id="reg-search-tbody"></tbody>
+        </table>
+      </div>
+      <!-- 선택된 계정 정보 -->
+      <div class="selected-info-box" id="reg-selected-info" style="display:none;">
+        선택된 계정: <strong id="reg-selected-name"></strong>
+        (<span id="reg-selected-email"></span>) &nbsp;/&nbsp;
+        <span id="reg-selected-company"></span> &nbsp;/&nbsp;
+        <span id="reg-selected-dept"></span>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="mbtn mbtn-gray" onclick="closeModal('modal-reg')">취소</button>
-      <button class="mbtn mbtn-dark" onclick="submitReg()">등록</button>
+      <button class="mbtn mbtn-dark" id="btn-reg-submit" onclick="submitReg()" disabled>등록</button>
     </div>
   </div>
 </div>
@@ -617,17 +592,16 @@
           </td>
         </tr>
         <tr>
-          <th>휴대전화번호</th>
+          <th>부서</th>
           <td>
-            <input class="form-input" id="edit-phone" type="tel">
-            <div class="form-hint red" id="edit-phone-err" style="display:none;"></div>
+            <input class="form-input readonly" id="edit-dept" type="text" readonly>
+            <div class="form-hint">부서 정보는 변경할 수 없습니다.</div>
           </td>
         </tr>
       </table>
     </div>
     <div class="modal-footer">
-      <button class="mbtn mbtn-gray" onclick="closeModal('modal-edit')">취소</button>
-      <button class="mbtn mbtn-blue" onclick="submitEdit()">저장</button>
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-edit')">닫기</button>
     </div>
   </div>
 </div>
@@ -671,15 +645,20 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
 const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
 const DEPTS = ['인사팀', '교육팀', '기획팀', '영업팀', '개발팀', '운영팀', '총무팀'];
-const GRADES = ['사원', '대리', '과장', '차장', '부장', '팀장', '임원'];
 
 // 연수원 가입 계정 DB (교육담당자 미등록 회원)
 const EDMS_USERS = [
-  { email: 'kim.manager@company.co.kr', name: '김관리', company: '건강보험공단', phone: '010-5521-3847' },
-  { email: 'lee.admin@corp.com',         name: '이담당', company: '휴넷',         phone: '010-3318-7624' },
-  { email: 'park.edu@org.kr',            name: '박교육', company: 'ABC마트',      phone: '010-7742-9051' },
-  { email: 'choi.hr@company.co.kr',      name: '최인사', company: 'LABS 연수원',  phone: '010-9934-2168' },
-  { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', phone: '010-1157-8439' },
+  { email: 'kim.manager@company.co.kr', name: '김관리', company: '건강보험공단', dept: '교육팀' },
+  { email: 'lee.admin@corp.com',         name: '이담당', company: '휴넷',         dept: '인사팀' },
+  { email: 'park.edu@org.kr',            name: '박교육', company: 'ABC마트',      dept: '기획팀' },
+  { email: 'choi.hr@company.co.kr',      name: '최인사', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', dept: '총무팀' },
+  { email: 'kang.lead@company.co.kr',    name: '강리더', company: '건강보험공단', dept: '인사팀' },
+  { email: 'yoon.edu@corp.com',          name: '윤교육', company: '휴넷',         dept: '교육팀' },
+  { email: 'lim.hr@org.kr',              name: '임인사', company: 'ABC마트',      dept: '인사팀' },
+  // 동명이인 예시
+  { email: 'kim.edu1@company.co.kr',     name: '김교육', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'kim.edu2@corp.com',          name: '김교육', company: '휴넷',         dept: '기획팀' },
 ];
 
 const maskName = n => {
@@ -691,17 +670,13 @@ const maskEmail = e => {
   const [u, d] = e.split('@');
   return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
 };
-const maskPhone = p => p.replace(/(\d{3})-(\d{4})-(\d{4})/, '$1-****-$3');
 
 let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
   id: 22 - i,
   name: NAMES[i % NAMES.length],
   email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
-  sabun: 'EMP' + String(10001 + i * 7),
-  phone: '010-' + String(1000 + i * 31).slice(-4) + '-' + String(5000 + i * 17).slice(-4),
   company: COMPANIES[i % COMPANIES.length],
   dept: DEPTS[i % DEPTS.length],
-  grade: GRADES[i % GRADES.length],
   regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
 }));
 
@@ -710,7 +685,8 @@ let currentPage = 1;
 let pageSize = 50;
 let editTargetId = null;
 let deleteTargetId = null;
-let emailChecked = false;
+let selectedUser = null;
+let _regSearchResults = [];
 
 // ── 정렬: 등록일 DESC (동일 일자는 id DESC로 보조 정렬) ──
 function sortByRegDateDesc(arr) {
@@ -730,7 +706,6 @@ function doSearch() {
     if (kw) {
       if (field === 'name'  && !r.name.includes(kw)) return false;
       if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
-      if (field === 'phone' && !r.phone.replace(/-/g, '').includes(kw.replace(/-/g, ''))) return false;
     }
     return true;
   });
@@ -765,7 +740,7 @@ function renderTable() {
       <td>${r.id}</td>
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
-      <td>${maskPhone(r.phone)}</td>
+      <td>${r.dept || '-'}</td>
       <td>${r.regDate.replace(/-/g, '.')}</td>
       <td>
         <button class="btn-sm btn-sm-outline" onclick="openEditModal(${r.id})">수정</button>
@@ -799,85 +774,83 @@ function goPage(p) {
 
 // ── 계정 등록 모달 ──
 function openRegModal() {
-  emailChecked = false;
-  document.getElementById('reg-email').value = '';
-  document.getElementById('email-check-msg').innerHTML = '';
-  const name = document.getElementById('reg-name');
-  const company = document.getElementById('reg-company');
-  const phone = document.getElementById('reg-phone');
-  name.value = ''; name.placeholder = '이메일 확인 후 자동 입력'; name.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
-  company.value = ''; company.placeholder = '이메일 확인 후 자동 입력'; company.style.cssText = 'background:#f5f6fa;color:#888;cursor:default;';
-  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력'; phone.readOnly = true; phone.style.cssText = '';
-  document.getElementById('reg-phone-hint').style.display = 'none';
-  document.getElementById('reg-modal-title').textContent = '교육담당자 계정 등록';
+  selectedUser = null;
+  _regSearchResults = [];
+  document.getElementById('reg-name-kw').value = '';
+  document.getElementById('reg-search-result').style.display = 'none';
+  document.getElementById('reg-search-tbody').innerHTML = '';
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
   openModal('modal-reg');
+  setTimeout(() => document.getElementById('reg-name-kw').focus(), 100);
 }
 
-function checkEmail() {
-  const email = document.getElementById('reg-email').value.trim();
-  const msg = document.getElementById('email-check-msg');
-  const name = document.getElementById('reg-name');
-  const company = document.getElementById('reg-company');
-  const phone = document.getElementById('reg-phone');
+function searchByName() {
+  const kw = document.getElementById('reg-name-kw').value.trim();
+  if (!kw) { alert('이름을 입력해주세요.'); return; }
 
-  // 자동입력 필드 초기화
-  name.value = ''; company.value = ''; phone.value = '';
-  phone.readOnly = true; phone.style.cssText = '';
-  document.getElementById('reg-phone-hint').style.display = 'none';
-  emailChecked = false;
+  const results = EDMS_USERS.filter(u => u.name.includes(kw));
+  _regSearchResults = results;
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    msg.innerHTML = '<div class="check-fail">올바른 이메일 형식을 입력해주세요.</div>';
+  const resultDiv = document.getElementById('reg-search-result');
+  const tbody = document.getElementById('reg-search-tbody');
+
+  if (!results.length) {
+    resultDiv.style.display = 'block';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
     return;
   }
 
-  // 이미 교육담당자로 등록된 이메일
-  if (ALL_DATA.some(r => r.email === email)) {
-    msg.innerHTML = '<div class="check-fail">이미 교육담당자로 등록된 이메일입니다.</div>';
-    return;
-  }
+  tbody.innerHTML = results.map((u, idx) => {
+    const alreadyReg = ALL_DATA.some(r => r.email === u.email);
+    return `<tr>
+      <td>${u.name}</td>
+      <td style="text-align:left;padding-left:10px;">${u.email}</td>
+      <td>${u.company}</td>
+      <td>${u.dept}</td>
+      <td>${alreadyReg
+        ? '<span class="already-reg">이미 등록된 계정입니다.</span>'
+        : `<button class="btn-sm btn-sm-outline" onclick="selectUser(${idx})">선택</button>`
+      }</td>
+    </tr>`;
+  }).join('');
 
-  // 연수원 계정 조회
-  const user = EDMS_USERS.find(u => u.email === email);
-  if (!user) {
-    msg.innerHTML = '<div class="check-fail">연수원에 등록되지 않은 이메일입니다.</div>';
-    return;
-  }
+  resultDiv.style.display = 'block';
 
-  // 자동 입력
-  name.value = user.name;
-  company.value = user.company;
-  phone.value = user.phone;
-  phone.readOnly = false;
-  phone.style.cssText = '';
-  phone.placeholder = '';
-  document.getElementById('reg-phone-hint').style.display = 'block';
-  msg.innerHTML = '<div class="check-ok">등록 가능한 계정입니다.</div>';
-  emailChecked = true;
+  // 이전 선택 초기화
+  selectedUser = null;
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
 }
 
-// 휴대폰 형식 검증: 숫자 9~11자, 하이픈 허용(숫자만 카운트)
-function isValidPhone(phone) {
-  if (!/^[\d-]+$/.test(phone)) return false;
-  const digits = phone.replace(/-/g, '');
-  return digits.length >= 9 && digits.length <= 11;
+function selectUser(idx) {
+  const user = _regSearchResults[idx];
+  if (!user) return;
+  selectedUser = user;
+  document.getElementById('reg-selected-name').textContent = user.name;
+  document.getElementById('reg-selected-email').textContent = user.email;
+  document.getElementById('reg-selected-company').textContent = user.company;
+  document.getElementById('reg-selected-dept').textContent = user.dept;
+  document.getElementById('reg-selected-info').style.display = 'block';
+  document.getElementById('btn-reg-submit').disabled = false;
 }
 
 function submitReg() {
-  const email = document.getElementById('reg-email').value.trim();
-  const name = document.getElementById('reg-name').value.trim();
-  const company = document.getElementById('reg-company').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  if (!email) { alert('이메일을 입력해주세요.'); return; }
-  if (!emailChecked) { alert('이메일 확인을 완료해주세요.'); return; }
-  if (!isValidPhone(phone)) { alert('휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)'); return; }
+  if (!selectedUser) { alert('등록할 계정을 선택해주세요.'); return; }
   const newId = ALL_DATA.length + 1;
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  ALL_DATA.unshift({ id: newId, name, email, phone, company, regDate });
+  ALL_DATA.unshift({
+    id: newId,
+    name: selectedUser.name,
+    email: selectedUser.email,
+    company: selectedUser.company,
+    dept: selectedUser.dept,
+    regDate,
+  });
   closeModal('modal-reg');
   doSearch();
-  alert(name + ' 담당자 계정이 등록되었습니다.');
+  alert(selectedUser.name + ' 담당자 계정이 등록되었습니다.');
 }
 
 // ── 계정 수정 모달 ──
@@ -888,37 +861,8 @@ function openEditModal(id) {
   document.getElementById('edit-email').value = r.email;
   document.getElementById('edit-name').value = r.name;
   document.getElementById('edit-company').value = r.company;
-  document.getElementById('edit-phone').value = r.phone;
-  clearEditPhoneErr();
+  document.getElementById('edit-dept').value = r.dept || '';
   openModal('modal-edit');
-}
-
-function clearEditPhoneErr() {
-  const err = document.getElementById('edit-phone-err');
-  err.textContent = '';
-  err.style.display = 'none';
-}
-
-function submitEdit() {
-  const r = ALL_DATA.find(d => d.id === editTargetId);
-  if (!r) return;
-  const phone = document.getElementById('edit-phone').value.trim();
-  const err = document.getElementById('edit-phone-err');
-  if (!phone) {
-    err.textContent = '휴대폰 번호를 입력해주세요.';
-    err.style.display = 'block';
-    return;
-  }
-  if (!isValidPhone(phone)) {
-    err.textContent = '휴대폰 번호 형식을 확인해주세요. (숫자 9~11자, 하이픈 입력 가능)';
-    err.style.display = 'block';
-    return;
-  }
-  clearEditPhoneErr();
-  r.phone = phone;
-  closeModal('modal-edit');
-  renderTable();
-  alert('계정 정보가 수정되었습니다.');
 }
 
 // ── 계정 삭제 모달 ──
@@ -938,24 +882,6 @@ function submitDelete() {
   renderTable();
   alert('교육담당자 권한이 삭제되었습니다.');
 }
-
-// ── 수정 모달 휴대폰 입력 시 에러 자동 제거 ──
-document.getElementById('edit-phone').addEventListener('input', clearEditPhoneErr);
-
-// ── 이메일 재수정 시 자동 리셋 ──
-document.getElementById('reg-email').addEventListener('input', function () {
-  if (!emailChecked && !document.getElementById('email-check-msg').innerHTML) return;
-  emailChecked = false;
-  document.getElementById('email-check-msg').innerHTML = '';
-  const name = document.getElementById('reg-name');
-  const company = document.getElementById('reg-company');
-  const phone = document.getElementById('reg-phone');
-  name.value = ''; name.placeholder = '이메일 확인 후 자동 입력';
-  company.value = ''; company.placeholder = '이메일 확인 후 자동 입력';
-  phone.value = ''; phone.placeholder = '이메일 확인 후 자동 입력';
-  phone.readOnly = true;
-  document.getElementById('reg-phone-hint').style.display = 'none';
-});
 
 // ── 초기 렌더 ──
 doReset();
