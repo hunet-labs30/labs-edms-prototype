@@ -475,7 +475,7 @@
       <div class="result-header">
         <div class="result-count">총 <strong id="total-count">0</strong>명</div>
         <div class="result-right">
-          <button class="btn btn-dark" onclick="openRegModal()">+ 계정 등록</button>
+          <button class="btn btn-dark" onclick="openRegModal()">+ 권한 등록</button>
         </div>
       </div>
       <table class="main-table">
@@ -515,7 +515,7 @@
 <div class="modal-overlay" id="modal-reg">
   <div class="modal" style="width:620px;">
     <div class="modal-header">
-      <h3>교육담당자 계정 등록</h3>
+      <h3>교육담당자 권한 등록</h3>
       <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
     </div>
     <div class="modal-body">
@@ -561,47 +561,24 @@
 </div>
 
 <!-- ══════════════════════════════════════ -->
-<!-- 계정 수정 모달                          -->
+<!-- 계정 안내 메일 재발송 확인 모달          -->
 <!-- ══════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-edit">
-  <div class="modal">
+<div class="modal-overlay" id="modal-resend">
+  <div class="modal modal-sm">
     <div class="modal-header">
-      <h3>교육담당자 계정 수정</h3>
-      <button class="modal-close" onclick="closeModal('modal-edit')">&times;</button>
+      <h3>계정 안내 메일 재발송</h3>
+      <button class="modal-close" onclick="closeModal('modal-resend')">&times;</button>
     </div>
     <div class="modal-body">
-      <table class="form-table">
-        <tr>
-          <th>이메일</th>
-          <td>
-            <input class="form-input readonly" id="edit-email" type="text" readonly>
-            <div class="form-hint">이메일(로그인 아이디)은 변경할 수 없습니다.</div>
-          </td>
-        </tr>
-        <tr>
-          <th>이름</th>
-          <td>
-            <input class="form-input readonly" id="edit-name" type="text" readonly>
-            <div class="form-hint">이름은 변경할 수 없습니다.</div>
-          </td>
-        </tr>
-        <tr>
-          <th>기업</th>
-          <td>
-            <input class="form-input readonly" id="edit-company" type="text" readonly>
-          </td>
-        </tr>
-        <tr>
-          <th>부서</th>
-          <td>
-            <input class="form-input readonly" id="edit-dept" type="text" readonly>
-            <div class="form-hint">부서 정보는 변경할 수 없습니다.</div>
-          </td>
-        </tr>
-      </table>
+      <div class="confirm-msg">
+        <strong id="resend-name"></strong>님께<br>
+        교육담당자 계정 안내 메일을 재발송하시겠습니까?
+      </div>
+      <div class="confirm-sub" id="resend-email"></div>
     </div>
     <div class="modal-footer">
-      <button class="mbtn mbtn-gray" onclick="closeModal('modal-edit')">닫기</button>
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-resend')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="submitResend()">재발송</button>
     </div>
   </div>
 </div>
@@ -743,7 +720,7 @@ function renderTable() {
       <td>${r.dept || '-'}</td>
       <td>${r.regDate.replace(/-/g, '.')}</td>
       <td>
-        <button class="btn-sm btn-sm-outline" onclick="openEditModal(${r.id})">수정</button>
+        <button class="btn-sm btn-sm-outline" onclick="openResendModal(${r.id})">재발송</button>
         <button class="btn-sm btn-sm-red" onclick="openDeleteModal(${r.id})">삭제</button>
       </td>
     </tr>
@@ -850,19 +827,23 @@ function submitReg() {
   });
   closeModal('modal-reg');
   doSearch();
-  alert(selectedUser.name + ' 담당자 계정이 등록되었습니다.');
+  alert(selectedUser.name + ' 담당자 권한이 등록되었습니다.');
 }
 
-// ── 계정 수정 모달 ──
-function openEditModal(id) {
+// ── 계정 안내 메일 재발송 모달 ──
+function openResendModal(id) {
   const r = ALL_DATA.find(d => d.id === id);
   if (!r) return;
   editTargetId = id;
-  document.getElementById('edit-email').value = r.email;
-  document.getElementById('edit-name').value = r.name;
-  document.getElementById('edit-company').value = r.company;
-  document.getElementById('edit-dept').value = r.dept || '';
-  openModal('modal-edit');
+  document.getElementById('resend-name').textContent = r.name;
+  document.getElementById('resend-email').textContent = r.email;
+  openModal('modal-resend');
+}
+
+function submitResend() {
+  const r = ALL_DATA.find(d => d.id === editTargetId);
+  closeModal('modal-resend');
+  if (r) alert(r.name + '님께 교육담당자 계정 안내 메일이 발송되었습니다.');
 }
 
 // ── 계정 삭제 모달 ──
