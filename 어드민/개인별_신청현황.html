@@ -262,7 +262,6 @@
   .pg-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
 
   /* ── TYPEAHEAD ── */
-  .typeahead-wrap { position: relative; display: inline-flex; align-items: center; }
   .typeahead-list {
     position: absolute; top: calc(100% + 2px); left: 0; min-width: 260px;
     background: #fff; border: 1px solid var(--border);
@@ -273,12 +272,40 @@
   .typeahead-list li:first-child { border-radius: 8px 8px 0 0; }
   .typeahead-list li:last-child { border-radius: 0 0 8px 8px; }
   .typeahead-list li:hover { background: var(--primary-light); color: var(--primary); }
-  .typeahead-clear {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer; font-size: 16px;
-    color: #94a3b8; line-height: 1; padding: 0;
+
+  /* ── MULTISELECT (회사 다중 선택) ── */
+  .multiselect-wrap {
+    position: relative;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    width: 340px; min-height: 34px;
+    border: 1px solid #cbd5e1; border-radius: 6px;
+    padding: 3px 6px; background: #fff;
+    cursor: text;
   }
-  .typeahead-clear:hover { color: #475569; }
+  .multiselect-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+  }
+  .multiselect-input {
+    flex: 1; min-width: 100px; border: none; outline: none;
+    font-size: 13px; padding: 3px 4px; background: transparent;
+    font-family: inherit; color: var(--text);
+  }
+  .company-chip {
+    display: inline-flex; align-items: center;
+    background: var(--primary-light); color: var(--primary);
+    font-size: 12px; font-weight: 500;
+    padding: 2px 2px 2px 8px; border-radius: 4px;
+  }
+  .company-chip .chip-x {
+    background: none; border: none; cursor: pointer;
+    color: var(--primary); font-size: 14px; line-height: 1;
+    padding: 0 6px; font-family: inherit;
+  }
+  .company-chip .chip-x:hover { color: #1d4ed8; }
+
+  /* 비활성화 버튼 */
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -445,10 +472,10 @@
       <div class="search-row">
         <div class="search-label">신청일</div>
         <div class="search-body">
-          <!-- 기본값: 현재월 1일~말일 (JS에서 동적 설정) -->
-          <input class="input input-date" type="date" id="s-date-from">
+          <!-- 기본값: 현재월 1일~말일 (JS에서 동적 설정) / 키보드 입력 차단, 캘린더 선택만 허용 -->
+          <input class="input input-date" type="date" id="s-date-from" onchange="onDateFromChange()" onkeydown="return false;">
           <span class="date-sep">~</span>
-          <input class="input input-date" type="date" id="s-date-to">
+          <input class="input input-date" type="date" id="s-date-to" onchange="onDateToChange()" onkeydown="return false;">
         </div>
       </div>
       <!-- 학습자검색 -->
@@ -502,15 +529,15 @@
           </select>
         </div>
       </div>
-      <!-- 회사검색 -->
+      <!-- 회사검색 (다중 선택) -->
       <div class="search-row">
         <div class="search-label">회사검색</div>
         <div class="search-body">
-          <div class="typeahead-wrap">
-            <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
-              autocomplete="off" style="width:260px;padding-right:26px;"
-              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
-            <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
+          <div class="multiselect-wrap" id="company-multiselect" onclick="focusCompanyInput(event)">
+            <input type="text" class="multiselect-input" id="s-company-input"
+              placeholder="회사 검색 (복수 선택 가능)"
+              autocomplete="off"
+              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onkeydown="onCompanyKeydown(event)">
             <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
           </div>
         </div>
@@ -566,7 +593,7 @@
       <div class="result-header">
         <div class="result-count">검색결과 <strong id="total-count">0</strong>건</div>
         <div>
-          <button class="btn btn-outline btn-sm" onclick="downloadExcel()">엑셀 다운로드</button>
+          <button class="btn btn-outline btn-sm" id="btn-excel" onclick="downloadExcel()">엑셀 다운로드</button>
         </div>
       </div>
       <div style="overflow-x:auto;">
@@ -615,7 +642,7 @@
     <div class="modal-body">엑셀 다운로드 페이지로 이동하시겠습니까?</div>
     <div class="modal-footer">
       <button class="btn btn-modal-no" onclick="closeExcelModal()">아니오</button>
-      <button class="btn btn-modal-yes" onclick="closeExcelModal()">예</button>
+      <button class="btn btn-modal-yes" onclick="goToDownloadPage()">예</button>
     </div>
   </div>
 </div>
@@ -708,10 +735,12 @@ let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
   const dayPad   = String(1 + rand(DAYS_IN_MONTH)).padStart(2, '0');
   const applyDate = `${BASE_YEAR_MONTH}-${dayPad}`;
   const st       = rand(100);
-  const status   = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
+  let status     = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
   const learnerStatus = LEARNER_STATUS_LIST[rand(LEARNER_STATUS_LIST.length)];
   const course   = COURSE_POOL[rand(COURSE_POOL.length)];
   const fee      = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
+  // 교육비 0원(무료 과정): 승인 절차 없이 자동 승인. 신청일 = 승인일
+  if (fee === 0) status = STATUS[0];
   return {
     id: 130 - i, company,
     dept: DEPTS[rand(DEPTS.length)], name, learnerStatus,
@@ -728,45 +757,80 @@ let filteredData = [...ALL_DATA];
 let currentPage = 1;
 let pageSize = 50;
 
-// ── Typeahead ──
-let selectedCompany = '';
-let _companyBlurTimer = null;
+// ── 회사 다중 선택 ──
+let selectedCompanies = [];
 
+function focusCompanyInput(e) {
+  if (!e.target.closest('.chip-x')) {
+    document.getElementById('s-company-input').focus();
+  }
+}
 function onCompanyInput() {
-  selectedCompany = '';
-  document.getElementById('company-clear').style.display = 'none';
   _renderCompanyList(document.getElementById('s-company-input').value.trim());
 }
-function onCompanyFocus() { _renderCompanyList(document.getElementById('s-company-input').value.trim()); }
-function onCompanyBlur() {
-  _companyBlurTimer = setTimeout(() => {
+function onCompanyFocus() {
+  _renderCompanyList(document.getElementById('s-company-input').value.trim());
+}
+function onCompanyKeydown(e) {
+  const input = document.getElementById('s-company-input');
+  if (e.key === 'Backspace' && !input.value && selectedCompanies.length) {
+    selectedCompanies.pop();
+    renderCompanyChips();
+    _renderCompanyList('');
+  } else if (e.key === 'Escape') {
     document.getElementById('company-list').style.display = 'none';
-    if (!selectedCompany) document.getElementById('s-company-input').value = '';
-  }, 150);
+  }
 }
 function _renderCompanyList(query) {
   const list = document.getElementById('company-list');
-  const filtered = query ? COMPANIES.filter(c => c.toLowerCase().includes(query.toLowerCase())) : COMPANIES;
+  const pool = COMPANIES.filter(c => !selectedCompanies.includes(c));
+  const filtered = query ? pool.filter(c => c.toLowerCase().includes(query.toLowerCase())) : pool;
   if (!filtered.length) { list.style.display = 'none'; return; }
   list.innerHTML = filtered.map(c =>
-    `<li onmousedown="selectCompany(this,'${c.replace(/'/g, "\\'")}')">
+    `<li onmousedown="selectCompany('${c.replace(/'/g, "\\'")}')">
       ${query ? c.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>') : c}
     </li>`
   ).join('');
   list.style.display = 'block';
 }
-function selectCompany(el, name) {
-  if (_companyBlurTimer) clearTimeout(_companyBlurTimer);
-  selectedCompany = name;
-  document.getElementById('s-company-input').value = name;
-  document.getElementById('company-list').style.display = 'none';
-  document.getElementById('company-clear').style.display = 'block';
+function selectCompany(name) {
+  if (!selectedCompanies.includes(name)) selectedCompanies.push(name);
+  const input = document.getElementById('s-company-input');
+  input.value = '';
+  renderCompanyChips();
+  _renderCompanyList('');
+  input.focus();
 }
-function clearCompany() {
-  selectedCompany = '';
-  document.getElementById('s-company-input').value = '';
-  document.getElementById('company-clear').style.display = 'none';
-  document.getElementById('company-list').style.display = 'none';
+function removeCompany(name) {
+  selectedCompanies = selectedCompanies.filter(c => c !== name);
+  renderCompanyChips();
+}
+function renderCompanyChips() {
+  const wrap = document.getElementById('company-multiselect');
+  wrap.querySelectorAll('.company-chip').forEach(el => el.remove());
+  const input = document.getElementById('s-company-input');
+  const html = selectedCompanies.map(c =>
+    `<span class="company-chip">${c}<button class="chip-x" onclick="removeCompany('${c.replace(/'/g, "\\'")}')">×</button></span>`
+  ).join('');
+  input.insertAdjacentHTML('beforebegin', html);
+}
+
+// 외부 클릭 시 드롭다운 닫기
+document.addEventListener('mousedown', function(e) {
+  const wrap = document.getElementById('company-multiselect');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('company-list').style.display = 'none';
+  }
+});
+
+// ── 날짜 상호 제한 (from > to 방지) ──
+function onDateFromChange() {
+  const from = document.getElementById('s-date-from').value;
+  document.getElementById('s-date-to').min = from || '';
+}
+function onDateToChange() {
+  const to = document.getElementById('s-date-to').value;
+  document.getElementById('s-date-from').max = to || '';
 }
 
 function sortByApplyDateDesc(arr) {
@@ -782,7 +846,6 @@ function doSearch() {
   const courseField  = document.getElementById('s-course-field').value;
   const courseKw     = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType   = document.getElementById('s-course-type').value;
-  const company      = selectedCompany;
 
   filteredData = ALL_DATA.filter(r => {
     if (dFrom && r.applyDate < dFrom) return false;
@@ -804,7 +867,7 @@ function doSearch() {
     }
 
     if (courseType && r.courseType.code !== courseType) return false;
-    if (company    && r.company !== company)             return false;
+    if (selectedCompanies.length && !selectedCompanies.includes(r.company)) return false;
     return true;
   });
   sortByApplyDateDesc(filteredData);
@@ -824,7 +887,8 @@ function doReset() {
   document.getElementById('s-course-kw').value              = '';
   document.getElementById('s-course-type').selectedIndex    = 0;
   document.getElementById('s-course-cat').selectedIndex     = 0;
-  clearCompany();
+  selectedCompanies = [];
+  renderCompanyChips();
   doSearch();
 }
 
@@ -854,6 +918,8 @@ function renderSummary() {
 function renderTable() {
   const tbody = document.getElementById('list-tbody');
   document.getElementById('total-count').textContent = filteredData.length.toLocaleString();
+  // 검색결과 0건일 때 엑셀 다운로드 버튼 비활성화
+  document.getElementById('btn-excel').disabled = filteredData.length === 0;
   const start = (currentPage - 1) * pageSize;
   const slice = filteredData.slice(start, start + pageSize);
 
@@ -866,8 +932,8 @@ function renderTable() {
   tbody.innerHTML = slice.map((r, idx) => `
     <tr>
       <td>${filteredData.length - start - idx}</td>
-      <td>${r.company}</td>
-      <td>${r.dept}</td>
+      <td>${r.company || '-'}</td>
+      <td>${r.dept || '-'}</td>
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
@@ -909,12 +975,21 @@ function downloadExcel() {
 function closeExcelModal() {
   document.getElementById('excel-modal').style.display = 'none';
 }
+function goToDownloadPage() {
+  // 통합 관리 > 파일 다운로드 페이지로 이동 (별도 구현 예정)
+  // 파일명 규칙: Hunet_개인별 신청현황_[yyMMdd]_[HHmm].xlsx (기획 확정 전 잠정안)
+  closeExcelModal();
+  alert('파일 다운로드 페이지로 이동합니다.\n(통합 관리 > 파일 다운로드)');
+}
 
 // ── 초기 실행 ──
 (function init() {
   const { from, to } = getThisMonthRange();
   document.getElementById('s-date-from').value = from;
   document.getElementById('s-date-to').value   = to;
+  // 날짜 상호 제한 초기 설정 (from ≤ to)
+  onDateFromChange();
+  onDateToChange();
   doSearch();
 })();
 </script>
