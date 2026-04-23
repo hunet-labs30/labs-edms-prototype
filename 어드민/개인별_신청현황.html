@@ -450,8 +450,7 @@
           <select class="select" id="s-learner-status" style="width:110px;">
             <option value="">재직상태 전체</option>
             <option value="active">재직</option>
-            <option value="leave">휴직</option>
-            <option value="resigned">퇴직</option>
+            <option value="monitoring">모니터링</option>
           </select>
         </div>
       </div>
@@ -651,8 +650,8 @@ const STATUS = [
   { code: 'cancel',  label: '취소',    badge: 'badge-cancel' },
 ];
 
-// 재직상태: 재직/휴직/퇴직
-const LEARNER_STATUS_LIST = ['active', 'active', 'active', 'active', 'active', 'active', 'active', 'leave', 'leave', 'resigned'];
+// 재직상태: 재직/모니터링
+const LEARNER_STATUS_LIST = ['active', 'active', 'active', 'active', 'active', 'active', 'active', 'monitoring', 'monitoring', 'active'];
 
 const maskName = n => {
   if (n.length <= 1) return n;
