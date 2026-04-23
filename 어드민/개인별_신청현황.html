@@ -609,9 +609,9 @@
               <th>과정명</th>
               <th style="width:190px;">학습자 학습기간</th>
               <th style="width:100px;">교육비(청구)</th>
-              <th style="width:100px;">신청일</th>
+              <th style="width:130px;">신청일</th>
               <th style="width:88px;">승인상태</th>
-              <th style="width:100px;">승인일</th>
+              <th style="width:130px;">승인일</th>
             </tr>
           </thead>
           <tbody id="list-tbody"></tbody>
@@ -733,7 +733,9 @@ let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
   const name     = NAMES[rand(NAMES.length)];
   const company  = COMPANIES[rand(COMPANIES.length)];
   const dayPad   = String(1 + rand(DAYS_IN_MONTH)).padStart(2, '0');
-  const applyDate = `${BASE_YEAR_MONTH}-${dayPad}`;
+  const hourPad  = String(rand(24)).padStart(2, '0');
+  const minPad   = String(rand(60)).padStart(2, '0');
+  const applyDate = `${BASE_YEAR_MONTH}-${dayPad} ${hourPad}:${minPad}`;
   const st       = rand(100);
   let status     = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
   const learnerStatus = LEARNER_STATUS_LIST[rand(LEARNER_STATUS_LIST.length)];
@@ -747,7 +749,7 @@ let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
     empNo: String(20000 + i * 13).slice(-6),
     userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
     courseType: type, courseName: course.name, courseCode: course.code,
-    studyFrom: applyDate, studyTo: addDays(applyDate, 30 + rand(300)),
+    studyFrom: applyDate.slice(0, 10), studyTo: addDays(applyDate.slice(0, 10), 30 + rand(300)),
     fee, applyDate, status,
     approveDate: status.code === 'approve' ? applyDate : '',
   };
@@ -848,8 +850,10 @@ function doSearch() {
   const courseType   = document.getElementById('s-course-type').value;
 
   filteredData = ALL_DATA.filter(r => {
-    if (dFrom && r.applyDate < dFrom) return false;
-    if (dTo   && r.applyDate > dTo)   return false;
+    // 신청일 범위 비교는 날짜 부분(YYYY-MM-DD)만 사용
+    const applyDateOnly = r.applyDate.slice(0, 10);
+    if (dFrom && applyDateOnly < dFrom) return false;
+    if (dTo   && applyDateOnly > dTo)   return false;
 
     // 이름·아이디: 일치검색 / 사번: like 검색
     if (learnerKw) {
