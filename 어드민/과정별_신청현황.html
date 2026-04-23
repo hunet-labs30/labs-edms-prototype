@@ -642,18 +642,43 @@ const ALL_DATA = COURSE_DEFS.map((name, i) => {
   // 과정 학습기간 (과정이 개설되는 기간)
   const courseStart = `2026-04-${String(1 + (i * 2) % 28).padStart(2, '0')}`;
   const courseEnd   = addDays(courseStart, 30 + rand(60));
-  const apply   = 5 + rand(30);
-  const approve = Math.floor(apply * (0.6 + Math.random() * 0.3));
-  const cancel  = rand(Math.floor(apply * 0.15) + 1);
-  const wait    = Math.max(apply - approve - cancel, 0);
   const fee     = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
-  const companies = COMPANIES.slice(0, 2 + rand(COMPANIES.length - 1));
+  // 과정에 포함된 회사 목록 (랜덤 2~7개)
+  const shuffled = [...COMPANIES].sort(() => 0.5 - Math.random());
+  const companies = shuffled.slice(0, 2 + rand(COMPANIES.length - 1));
+  // 회사별 집계 데이터 (회사 필터 적용 시 선택 회사 기준으로 합산)
+  const companyStats = {};
+  companies.forEach(c => {
+    const a = 1 + rand(15);
+    const ap = Math.floor(a * (0.6 + Math.random() * 0.3));
+    const ca = rand(Math.floor(a * 0.15) + 1);
+    const w = Math.max(a - ap - ca, 0);
+    companyStats[c] = { apply: a, approve: ap, wait: w, cancel: ca, totalFee: ap * fee };
+  });
   return {
     id: i + 1, name, code, type, cat,
     applyStart, applyEnd, courseStart, courseEnd,
-    apply, approve, wait, cancel, fee, totalFee: approve * fee, companies
+    fee, companies, companyStats
   };
 });
+
+// 회사 필터 적용 시 해당 과정의 집계를 선택 회사 기준으로 계산
+function aggregateForRow(r) {
+  const targets = selectedCompanies.length
+    ? selectedCompanies.filter(c => r.companies.includes(c))
+    : r.companies;
+  return targets.reduce((acc, c) => {
+    const s = r.companyStats[c];
+    if (!s) return acc;
+    return {
+      apply:    acc.apply    + s.apply,
+      approve:  acc.approve  + s.approve,
+      wait:     acc.wait     + s.wait,
+      cancel:   acc.cancel   + s.cancel,
+      totalFee: acc.totalFee + s.totalFee,
+    };
+  }, { apply:0, approve:0, wait:0, cancel:0, totalFee:0 });
+}
 
 let filteredData = [...ALL_DATA];
 let currentPage = 1;
@@ -787,11 +812,12 @@ function renderSummary() {
   summaryCard.style.display = 'block';
   const online  = filteredData.filter(r => r.type.code === 'online').length;
   const micro   = filteredData.filter(r => r.type.code === 'micro').length;
-  const apply   = filteredData.reduce((s, r) => s + r.apply,    0);
-  const approve = filteredData.reduce((s, r) => s + r.approve,  0);
-  const wait    = filteredData.reduce((s, r) => s + r.wait,     0);
-  const cancel  = filteredData.reduce((s, r) => s + r.cancel,   0);
-  const money   = filteredData.reduce((s, r) => s + r.totalFee, 0);
+  // 집계는 회사 필터 적용 결과(aggregateForRow) 기준으로 합산
+  let apply = 0, approve = 0, wait = 0, cancel = 0, money = 0;
+  filteredData.forEach(r => {
+    const s = aggregateForRow(r);
+    apply += s.apply; approve += s.approve; wait += s.wait; cancel += s.cancel; money += s.totalFee;
+  });
   document.getElementById('sum-total').textContent   = filteredData.length.toLocaleString();
   document.getElementById('sum-online').textContent  = online.toLocaleString();
   document.getElementById('sum-micro').textContent   = micro.toLocaleString();
@@ -814,7 +840,9 @@ function renderTable() {
     document.getElementById('pagination').innerHTML = '';
     return;
   }
-  tbody.innerHTML = slice.map((r, idx) => `
+  tbody.innerHTML = slice.map((r, idx) => {
+    const s = aggregateForRow(r);
+    return `
     <tr>
       <td>${filteredData.length - start - idx}</td>
       <td><span class="badge ${r.type.badge}">${r.type.label}</span></td>
@@ -823,13 +851,14 @@ function renderTable() {
       <td>${r.applyStart.replace(/-/g,'.')} ~ ${r.applyEnd.replace(/-/g,'.')}</td>
       <td>${r.courseStart.replace(/-/g,'.')} ~ ${r.courseEnd.replace(/-/g,'.')}</td>
       <td class="num">${r.fee.toLocaleString()}</td>
-      <td class="num">${r.apply.toLocaleString()}</td>
-      <td class="num" style="color:#16a34a;font-weight:600;">${r.approve.toLocaleString()}</td>
-      <td class="num" style="color:#d97706;">${r.wait.toLocaleString()}</td>
-      <td class="num" style="color:#dc2626;">${r.cancel.toLocaleString()}</td>
-      <td class="num">${r.totalFee.toLocaleString()}</td>
+      <td class="num">${s.apply.toLocaleString()}</td>
+      <td class="num" style="color:#16a34a;font-weight:600;">${s.approve.toLocaleString()}</td>
+      <td class="num" style="color:#d97706;">${s.wait.toLocaleString()}</td>
+      <td class="num" style="color:#dc2626;">${s.cancel.toLocaleString()}</td>
+      <td class="num">${s.totalFee.toLocaleString()}</td>
     </tr>
-  `).join('');
+    `;
+  }).join('');
   renderPagination();
 }
 
