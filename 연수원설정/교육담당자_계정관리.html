@@ -714,7 +714,7 @@ function renderTable() {
   }
   tbody.innerHTML = slice.map((r, idx) => `
     <tr>
-      <td>${start + idx + 1}</td>
+      <td>${filteredData.length - start - idx}</td>
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
       <td>${r.dept || '-'}</td>
