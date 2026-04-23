@@ -781,8 +781,8 @@ function searchByName() {
   tbody.innerHTML = results.map((u, idx) => {
     const alreadyReg = ALL_DATA.some(r => r.email === u.email);
     return `<tr>
-      <td>${u.name}</td>
-      <td style="text-align:left;padding-left:10px;">${u.email}</td>
+      <td>${maskName(u.name)}</td>
+      <td style="text-align:left;padding-left:10px;">${maskEmail(u.email)}</td>
       <td>${u.company}</td>
       <td>${u.dept}</td>
       <td>${alreadyReg
@@ -804,8 +804,8 @@ function selectUser(idx) {
   const user = _regSearchResults[idx];
   if (!user) return;
   selectedUser = user;
-  document.getElementById('reg-selected-name').textContent = user.name;
-  document.getElementById('reg-selected-email').textContent = user.email;
+  document.getElementById('reg-selected-name').textContent = maskName(user.name);
+  document.getElementById('reg-selected-email').textContent = maskEmail(user.email);
   document.getElementById('reg-selected-company').textContent = user.company;
   document.getElementById('reg-selected-dept').textContent = user.dept;
   document.getElementById('reg-selected-info').style.display = 'block';
