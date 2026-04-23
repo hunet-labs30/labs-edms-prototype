@@ -418,7 +418,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="summary-card" style="display:none;">
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-label">전체 기업 수</div>
@@ -577,9 +577,19 @@ function doSearch() {
   renderTable();
 }
 
+function getThisMonthRange() {
+  const now = new Date();
+  const y = now.getFullYear(); const m = now.getMonth();
+  const from = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  const to = `${y}-${String(m + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+  return { from, to };
+}
+
 function doReset() {
-  document.getElementById('s-date-from').value = '2026-04-01';
-  document.getElementById('s-date-to').value   = '2026-04-30';
+  const { from, to } = getThisMonthRange();
+  document.getElementById('s-date-from').value = from;
+  document.getElementById('s-date-to').value   = to;
   document.getElementById('s-course-kw').value = '';
   document.getElementById('s-course-type').selectedIndex = 0;
   clearCompany();
@@ -587,6 +597,12 @@ function doReset() {
 }
 
 function renderSummary() {
+  const summaryCard = document.getElementById('summary-card');
+  if (!filteredData.length) {
+    summaryCard.style.display = 'none';
+    return;
+  }
+  summaryCard.style.display = 'block';
   const totalCourses = filteredData.reduce((s, r) => s + r.courseCount, 0);
   const apply   = filteredData.reduce((s, r) => s + r.apply, 0);
   const approve = filteredData.reduce((s, r) => s + r.approve, 0);
@@ -653,7 +669,12 @@ function goPage(p) {
 
 function downloadExcel() { alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건'); }
 
-doSearch();
+(function init() {
+  const { from, to } = getThisMonthRange();
+  document.getElementById('s-date-from').value = from;
+  document.getElementById('s-date-to').value   = to;
+  doSearch();
+})();
 </script>
 </body>
 </html>
