@@ -835,8 +835,8 @@ function openResendModal(id) {
   const r = ALL_DATA.find(d => d.id === id);
   if (!r) return;
   editTargetId = id;
-  document.getElementById('resend-name').textContent = r.name;
-  document.getElementById('resend-email').textContent = r.email;
+  document.getElementById('resend-name').textContent = maskName(r.name);
+  document.getElementById('resend-email').textContent = maskEmail(r.email);
   openModal('modal-resend');
 }
 
