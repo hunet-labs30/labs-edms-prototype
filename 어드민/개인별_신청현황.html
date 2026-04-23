@@ -139,9 +139,22 @@
   .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .search-actions {
     padding: 12px 20px 14px;
-    display: flex; justify-content: flex-end; gap: 6px;
+    display: flex; justify-content: center; gap: 6px;
     border-top: 1px solid #f1f5f9;
   }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .modal-box {
+    background: #fff; border-radius: 10px; padding: 28px 32px;
+    max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+  .modal-body { font-size: 13px; color: #475569; line-height: 1.7; margin-bottom: 22px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; }
 
   /* inputs */
   .input, .select {
@@ -433,9 +446,9 @@
           <input class="input input-date" type="date" id="s-date-to">
         </div>
       </div>
-      <!-- 학습자 -->
+      <!-- 학습자검색 -->
       <div class="search-row">
-        <div class="search-label">학습자</div>
+        <div class="search-label">학습자검색</div>
         <div class="search-body">
           <select class="select" id="s-learner-field" style="width:88px;">
             <option value="name">이름</option>
@@ -447,16 +460,17 @@
             <span class="ico">&#128269;</span>
             <input class="input" id="s-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
-          <select class="select" id="s-learner-status" style="width:110px;">
-            <option value="">재직상태 전체</option>
-            <option value="active">재직</option>
-            <option value="monitoring">모니터링</option>
+          <select class="select" id="s-approval-status" style="width:120px;">
+            <option value="">승인상태 전체</option>
+            <option value="approve">승인</option>
+            <option value="wait">승인대기</option>
+            <option value="cancel">취소</option>
           </select>
         </div>
       </div>
-      <!-- 과정 -->
+      <!-- 과정검색 -->
       <div class="search-row">
-        <div class="search-label">과정</div>
+        <div class="search-label">과정검색</div>
         <div class="search-body">
           <select class="select" id="s-course-field" style="width:88px;">
             <option value="name">과정명</option>
@@ -475,16 +489,17 @@
           </select>
           <select class="select" id="s-course-cat" style="width:120px;">
             <option value="">과정분류 전체</option>
-            <option>직무</option>
-            <option>리더십</option>
-            <option>어학</option>
-            <option>IT</option>
+            <option>외국어</option>
+            <option>자격/공인</option>
+            <option>자기개발</option>
+            <option>전문직무</option>
+            <option>직무공통</option>
           </select>
         </div>
       </div>
-      <!-- 회사 -->
+      <!-- 회사검색 -->
       <div class="search-row">
-        <div class="search-label">회사</div>
+        <div class="search-label">회사검색</div>
         <div class="search-body">
           <div class="typeahead-wrap">
             <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
@@ -586,6 +601,21 @@
     </div>
 
   </main>
+</div>
+
+<!-- 엑셀 다운로드 안내 팝업 -->
+<div id="excel-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">엑셀 다운로드 안내</div>
+    <div class="modal-body">
+      엑셀 파일 다운로드는 기존 엑셀 다운로드 페이지에서 진행해 주세요.<br>
+      해당 페이지에서 조회 조건을 설정한 후 다운로드할 수 있습니다.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-reset btn-sm" onclick="closeExcelModal()">닫기</button>
+      <button class="btn btn-primary btn-sm" onclick="closeExcelModal()">확인</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -746,7 +776,7 @@ function doSearch() {
   const dTo          = document.getElementById('s-date-to').value;
   const learnerField = document.getElementById('s-learner-field').value;
   const learnerKw    = document.getElementById('s-learner-kw').value.trim();
-  const learnerSt    = document.getElementById('s-learner-status').value;
+  const approvalSt   = document.getElementById('s-approval-status').value;
   const courseField  = document.getElementById('s-course-field').value;
   const courseKw     = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType   = document.getElementById('s-course-type').value;
@@ -763,7 +793,7 @@ function doSearch() {
       if (learnerField === 'empNo' && !r.empNo.includes(learnerKw)) return false;
     }
 
-    if (learnerSt && r.learnerStatus !== learnerSt) return false;
+    if (approvalSt && r.status.code !== approvalSt) return false;
 
     // 과정명·과정코드: like 검색
     if (courseKw) {
@@ -787,7 +817,7 @@ function doReset() {
   document.getElementById('s-date-to').value   = to;
   document.getElementById('s-learner-field').selectedIndex  = 0;
   document.getElementById('s-learner-kw').value             = '';
-  document.getElementById('s-learner-status').selectedIndex = 0;
+  document.getElementById('s-approval-status').selectedIndex = 0;
   document.getElementById('s-course-field').selectedIndex   = 0;
   document.getElementById('s-course-kw').value              = '';
   document.getElementById('s-course-type').selectedIndex    = 0;
@@ -870,7 +900,13 @@ function goPage(p) {
   renderTable();
 }
 
-function downloadExcel() { alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건'); }
+function downloadExcel() {
+  const modal = document.getElementById('excel-modal');
+  modal.style.display = 'flex';
+}
+function closeExcelModal() {
+  document.getElementById('excel-modal').style.display = 'none';
+}
 
 // ── 초기 실행 ──
 (function init() {
