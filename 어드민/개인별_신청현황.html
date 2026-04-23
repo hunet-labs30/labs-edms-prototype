@@ -182,6 +182,7 @@
   .btn-sm { height: 30px; padding: 0 14px; font-size: 12px; border-radius: 5px; }
 
   /* ── STAT CARDS ── */
+  /* 과정유형 열은 고객상품유형 확정 후 추가/삭제 예정 (현재 온라인/마이크로러닝 임시 적용) */
   .stat-grid { display: grid; grid-template-columns: repeat(8, 1fr); }
   .stat-card {
     padding: 16px 12px; text-align: center;
@@ -356,7 +357,7 @@
         </div>
         <div class="nav-group nav-group-sub">
           <div class="nav-group-header" onclick="toggleNavGroup(this)">
-            <span class="nav-group-label">학습관리</span><span class="nav-arrow">▶</span>
+            <span class="nav-group-label">학습현황</span><span class="nav-arrow">▶</span>
           </div>
           <div class="nav-sub">
             <a class="nav-item" href="#">개인별</a>
@@ -426,9 +427,10 @@
       <div class="search-row">
         <div class="search-label">신청일</div>
         <div class="search-body">
-          <input class="input input-date" type="date" id="s-date-from" value="2026-04-01">
+          <!-- 기본값: 현재월 1일~말일 (JS에서 동적 설정) -->
+          <input class="input input-date" type="date" id="s-date-from">
           <span class="date-sep">~</span>
-          <input class="input input-date" type="date" id="s-date-to" value="2026-04-30">
+          <input class="input input-date" type="date" id="s-date-to">
         </div>
       </div>
       <!-- 학습자 -->
@@ -440,6 +442,7 @@
             <option value="id">아이디</option>
             <option value="empNo">사번</option>
           </select>
+          <!-- 이름·아이디: 일치검색 / 사번: like 검색 -->
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
             <input class="input" id="s-learner-kw" type="text" placeholder="검색어 입력">
@@ -447,8 +450,19 @@
           <select class="select" id="s-learner-status" style="width:110px;">
             <option value="">재직상태 전체</option>
             <option value="active">재직</option>
-            <option value="monitoring">모니터링</option>
+            <option value="leave">휴직</option>
+            <option value="resigned">퇴직</option>
           </select>
+        </div>
+      </div>
+      <!-- 부서 (like 검색) -->
+      <div class="search-row">
+        <div class="search-label">부서</div>
+        <div class="search-body">
+          <div class="search-icon-wrap">
+            <span class="ico">&#128269;</span>
+            <input class="input" id="s-dept-kw" type="text" placeholder="부서명 입력 (like 검색)">
+          </div>
         </div>
       </div>
       <!-- 과정 -->
@@ -459,15 +473,15 @@
             <option value="name">과정명</option>
             <option value="code">과정코드</option>
           </select>
+          <!-- 과정명·과정코드: like 검색 -->
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
             <input class="input" id="s-course-kw" type="text" placeholder="검색어 입력">
           </div>
-          <select class="select" id="s-course-type" style="width:120px;">
+          <!-- 과정유형: 고객상품유형 확정 후 옵션 변경 예정 (현재 임시 적용) -->
+          <select class="select" id="s-course-type" style="width:130px;">
             <option value="">과정유형 전체</option>
             <option value="online">온라인</option>
-            <option value="offline">오프라인</option>
-            <option value="hybrid">하이브리드</option>
             <option value="micro">마이크로러닝</option>
           </select>
           <select class="select" id="s-course-cat" style="width:120px;">
@@ -499,13 +513,14 @@
       </div>
     </div>
 
-    <!-- 검색결과 요약 -->
-    <div class="card">
+    <!-- 검색결과 요약 (결과 0건이면 미노출) -->
+    <div class="card" id="summary-card" style="display:none;">
       <div class="stat-grid">
         <div class="stat-card">
           <div class="stat-label">전체 과정 수</div>
           <div class="stat-val" id="sum-total">0</div>
         </div>
+        <!-- 과정유형 열: 고객상품유형 확정 후 추가/삭제 예정 -->
         <div class="stat-card">
           <div class="stat-label">온라인 과정</div>
           <div class="stat-val blue" id="sum-online">0</div>
@@ -551,6 +566,7 @@
             <tr>
               <th style="width:44px;">No.</th>
               <th style="width:110px;">회사</th>
+              <th style="width:100px;">부서</th>
               <th style="width:76px;">이름</th>
               <th style="width:160px;">아이디</th>
               <th style="width:110px;">과정유형</th>
@@ -589,24 +605,54 @@ function toggleNavGroup(header) {
   header.parentElement.classList.toggle('open');
 }
 
+// ── 현재월 1일~말일 동적 계산 ──
+function getThisMonthRange() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const from = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  const to = `${y}-${String(m + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+  return { from, to };
+}
+
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', '포스코', '삼성전자'];
 const DEPTS = ['인사팀', '교육팀', '기획팀', '영업팀', '개발팀', '운영팀', '총무팀', '마케팅팀', '재무팀'];
 const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름', '양이름', '홍길동', '유이름'];
+
+// 과정유형: 고객상품유형 확정 후 변경 예정 (현재 온라인/마이크로러닝 임시 적용)
 const COURSE_TYPES = [
   { code: 'online', label: '온라인',      badge: 'badge-type-on' },
   { code: 'micro',  label: '마이크로러닝', badge: 'badge-type-micro' },
 ];
-const COURSE_NAMES = [
-  'AI 에이전트 시대가 온다','데이터 리터러시 기본','스토리텔링 프레젠테이션',
-  '리더의 코칭 대화법','업무 자동화 with Python','MS 365 실무 활용',
-  '영어 비즈니스 이메일','중국어 회화 입문','ESG 경영 이해','조직문화와 소통',
-  '마케팅 전략 수립','재무제표 읽는 법','협상의 기술','퍼포먼스 마케팅 이해','갈등관리 리더십',
+
+const COURSE_POOL = [
+  { name: 'AI 에이전트 시대가 온다',     code: 'CRS-001' },
+  { name: '데이터 리터러시 기본',        code: 'CRS-002' },
+  { name: '스토리텔링 프레젠테이션',     code: 'CRS-003' },
+  { name: '리더의 코칭 대화법',          code: 'CRS-004' },
+  { name: '업무 자동화 with Python',     code: 'CRS-005' },
+  { name: 'MS 365 실무 활용',            code: 'CRS-006' },
+  { name: '영어 비즈니스 이메일',        code: 'CRS-007' },
+  { name: '중국어 회화 입문',            code: 'CRS-008' },
+  { name: 'ESG 경영 이해',               code: 'CRS-009' },
+  { name: '조직문화와 소통',             code: 'CRS-010' },
+  { name: '마케팅 전략 수립',            code: 'CRS-011' },
+  { name: '재무제표 읽는 법',            code: 'CRS-012' },
+  { name: '협상의 기술',                 code: 'CRS-013' },
+  { name: '퍼포먼스 마케팅 이해',        code: 'CRS-014' },
+  { name: '갈등관리 리더십',             code: 'CRS-015' },
 ];
+
+// 승인상태: 승인/승인대기/취소
 const STATUS = [
   { code: 'approve', label: '승인',    badge: 'badge-approved' },
   { code: 'wait',    label: '승인대기', badge: 'badge-wait' },
   { code: 'cancel',  label: '취소',    badge: 'badge-cancel' },
 ];
+
+// 재직상태: 재직/휴직/퇴직
+const LEARNER_STATUS_LIST = ['active', 'active', 'active', 'active', 'active', 'active', 'active', 'leave', 'leave', 'resigned'];
 
 const maskName = n => {
   if (n.length <= 1) return n;
@@ -629,21 +675,28 @@ function addDays(dateStr, days) {
   return d.toISOString().slice(0, 10);
 }
 
+// 신청일 기준 데이터 (현재월 내 분포)
+const { from: DEFAULT_FROM, to: DEFAULT_TO } = getThisMonthRange();
+const BASE_YEAR_MONTH = DEFAULT_FROM.slice(0, 7); // 'YYYY-MM'
+const DAYS_IN_MONTH = new Date(DEFAULT_TO).getDate();
+
 let ALL_DATA = Array.from({ length: 130 }, (_, i) => {
-  const type = COURSE_TYPES[rand(COURSE_TYPES.length)];
-  const name = NAMES[rand(NAMES.length)];
-  const company = COMPANIES[rand(COMPANIES.length)];
-  const applyDate = `2026-04-${String(1 + rand(30)).padStart(2, '0')}`;
-  const st = rand(100);
-  const status = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
-  const learnerStatus = rand(10) < 2 ? 'monitoring' : 'active';
-  const fee = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
+  const type     = COURSE_TYPES[rand(COURSE_TYPES.length)];
+  const name     = NAMES[rand(NAMES.length)];
+  const company  = COMPANIES[rand(COMPANIES.length)];
+  const dayPad   = String(1 + rand(DAYS_IN_MONTH)).padStart(2, '0');
+  const applyDate = `${BASE_YEAR_MONTH}-${dayPad}`;
+  const st       = rand(100);
+  const status   = st < 80 ? STATUS[0] : (st < 90 ? STATUS[1] : STATUS[2]);
+  const learnerStatus = LEARNER_STATUS_LIST[rand(LEARNER_STATUS_LIST.length)];
+  const course   = COURSE_POOL[rand(COURSE_POOL.length)];
+  const fee      = type.code === 'online' ? [0, 15000, 22000, 35000, 48000][rand(5)] : [0, 8000, 12000][rand(3)];
   return {
     id: 130 - i, company,
     dept: DEPTS[rand(DEPTS.length)], name, learnerStatus,
     empNo: String(20000 + i * 13).slice(-6),
     userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
-    courseType: type, courseName: COURSE_NAMES[rand(COURSE_NAMES.length)],
+    courseType: type, courseName: course.name, courseCode: course.code,
     studyFrom: applyDate, studyTo: addDays(applyDate, 30 + rand(300)),
     fee, applyDate, status,
     approveDate: status.code === 'approve' ? applyDate : '',
@@ -700,28 +753,41 @@ function sortByApplyDateDesc(arr) {
 }
 
 function doSearch() {
-  const dFrom = document.getElementById('s-date-from').value;
-  const dTo   = document.getElementById('s-date-to').value;
-  const learnerField  = document.getElementById('s-learner-field').value;
-  const learnerKw     = document.getElementById('s-learner-kw').value.trim();
-  const learnerStatus = document.getElementById('s-learner-status').value;
-  const courseField   = document.getElementById('s-course-field').value;
-  const courseKw      = document.getElementById('s-course-kw').value.trim().toLowerCase();
-  const courseType    = document.getElementById('s-course-type').value;
-  const company       = selectedCompany;
+  const dFrom        = document.getElementById('s-date-from').value;
+  const dTo          = document.getElementById('s-date-to').value;
+  const learnerField = document.getElementById('s-learner-field').value;
+  const learnerKw    = document.getElementById('s-learner-kw').value.trim();
+  const learnerSt    = document.getElementById('s-learner-status').value;
+  const deptKw       = document.getElementById('s-dept-kw').value.trim().toLowerCase();
+  const courseField  = document.getElementById('s-course-field').value;
+  const courseKw     = document.getElementById('s-course-kw').value.trim().toLowerCase();
+  const courseType   = document.getElementById('s-course-type').value;
+  const company      = selectedCompany;
 
   filteredData = ALL_DATA.filter(r => {
     if (dFrom && r.applyDate < dFrom) return false;
     if (dTo   && r.applyDate > dTo)   return false;
+
+    // 이름·아이디: 일치검색 / 사번: like 검색
     if (learnerKw) {
       if (learnerField === 'name'  && r.name !== learnerKw) return false;
       if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
       if (learnerField === 'empNo' && !r.empNo.includes(learnerKw)) return false;
     }
-    if (learnerStatus && r.learnerStatus !== learnerStatus) return false;
-    if (courseKw && !r.courseName.toLowerCase().includes(courseKw)) return false;
+
+    if (learnerSt && r.learnerStatus !== learnerSt) return false;
+
+    // 부서명: like 검색
+    if (deptKw && !r.dept.toLowerCase().includes(deptKw)) return false;
+
+    // 과정명·과정코드: like 검색
+    if (courseKw) {
+      if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
+      if (courseField === 'code' && !r.courseCode.toLowerCase().includes(courseKw)) return false;
+    }
+
     if (courseType && r.courseType.code !== courseType) return false;
-    if (company && r.company !== company) return false;
+    if (company    && r.company !== company)             return false;
     return true;
   });
   sortByApplyDateDesc(filteredData);
@@ -731,11 +797,13 @@ function doSearch() {
 }
 
 function doReset() {
-  document.getElementById('s-date-from').value = '2026-04-01';
-  document.getElementById('s-date-to').value   = '2026-04-30';
+  const { from, to } = getThisMonthRange();
+  document.getElementById('s-date-from').value = from;
+  document.getElementById('s-date-to').value   = to;
   document.getElementById('s-learner-field').selectedIndex  = 0;
   document.getElementById('s-learner-kw').value             = '';
   document.getElementById('s-learner-status').selectedIndex = 0;
+  document.getElementById('s-dept-kw').value                = '';
   document.getElementById('s-course-field').selectedIndex   = 0;
   document.getElementById('s-course-kw').value              = '';
   document.getElementById('s-course-type').selectedIndex    = 0;
@@ -745,9 +813,16 @@ function doReset() {
 }
 
 function renderSummary() {
-  const uniq   = new Set(filteredData.map(r => r.courseName));
-  const online = new Set(filteredData.filter(r => r.courseType.code === 'online').map(r => r.courseName));
-  const micro  = new Set(filteredData.filter(r => r.courseType.code === 'micro').map(r => r.courseName));
+  const summaryCard = document.getElementById('summary-card');
+  if (!filteredData.length) {
+    summaryCard.style.display = 'none';
+    return;
+  }
+  summaryCard.style.display = 'block';
+
+  const uniq     = new Set(filteredData.map(r => r.courseName));
+  const online   = new Set(filteredData.filter(r => r.courseType.code === 'online').map(r => r.courseName));
+  const micro    = new Set(filteredData.filter(r => r.courseType.code === 'micro').map(r => r.courseName));
   const totalFee = filteredData.filter(r => r.status.code === 'approve').reduce((s, r) => s + r.fee, 0);
 
   document.getElementById('sum-total').textContent   = uniq.size.toLocaleString();
@@ -767,7 +842,7 @@ function renderTable() {
   const slice = filteredData.slice(start, start + pageSize);
 
   if (!slice.length) {
-    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">현재 조회된 데이터가 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">현재 조회된 데이터가 없습니다.</td></tr>`;
     document.getElementById('pagination').innerHTML = '';
     return;
   }
@@ -776,6 +851,7 @@ function renderTable() {
     <tr>
       <td>${filteredData.length - start - idx}</td>
       <td>${r.company}</td>
+      <td>${r.dept}</td>
       <td>${maskName(r.name)}</td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
@@ -812,7 +888,13 @@ function goPage(p) {
 
 function downloadExcel() { alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건'); }
 
-doSearch();
+// ── 초기 실행 ──
+(function init() {
+  const { from, to } = getThisMonthRange();
+  document.getElementById('s-date-from').value = from;
+  document.getElementById('s-date-to').value   = to;
+  doSearch();
+})();
 </script>
 </body>
 </html>
