@@ -445,23 +445,13 @@
           <!-- 이름·아이디: 일치검색 / 사번: like 검색 -->
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
-            <input class="input" id="s-learner-kw" type="text" placeholder="검색어 입력">
+            <input class="input" id="s-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
           <select class="select" id="s-learner-status" style="width:110px;">
             <option value="">재직상태 전체</option>
             <option value="active">재직</option>
             <option value="monitoring">모니터링</option>
           </select>
-        </div>
-      </div>
-      <!-- 부서 (like 검색) -->
-      <div class="search-row">
-        <div class="search-label">부서</div>
-        <div class="search-body">
-          <div class="search-icon-wrap">
-            <span class="ico">&#128269;</span>
-            <input class="input" id="s-dept-kw" type="text" placeholder="부서명 입력 (like 검색)">
-          </div>
         </div>
       </div>
       <!-- 과정 -->
@@ -475,7 +465,7 @@
           <!-- 과정명·과정코드: like 검색 -->
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
-            <input class="input" id="s-course-kw" type="text" placeholder="검색어 입력">
+            <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
           <!-- 과정유형: 고객상품유형 확정 후 옵션 변경 예정 (현재 임시 적용) -->
           <select class="select" id="s-course-type" style="width:130px;">
@@ -757,7 +747,6 @@ function doSearch() {
   const learnerField = document.getElementById('s-learner-field').value;
   const learnerKw    = document.getElementById('s-learner-kw').value.trim();
   const learnerSt    = document.getElementById('s-learner-status').value;
-  const deptKw       = document.getElementById('s-dept-kw').value.trim().toLowerCase();
   const courseField  = document.getElementById('s-course-field').value;
   const courseKw     = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType   = document.getElementById('s-course-type').value;
@@ -775,9 +764,6 @@ function doSearch() {
     }
 
     if (learnerSt && r.learnerStatus !== learnerSt) return false;
-
-    // 부서명: like 검색
-    if (deptKw && !r.dept.toLowerCase().includes(deptKw)) return false;
 
     // 과정명·과정코드: like 검색
     if (courseKw) {
@@ -802,7 +788,6 @@ function doReset() {
   document.getElementById('s-learner-field').selectedIndex  = 0;
   document.getElementById('s-learner-kw').value             = '';
   document.getElementById('s-learner-status').selectedIndex = 0;
-  document.getElementById('s-dept-kw').value                = '';
   document.getElementById('s-course-field').selectedIndex   = 0;
   document.getElementById('s-course-kw').value              = '';
   document.getElementById('s-course-type').selectedIndex    = 0;
