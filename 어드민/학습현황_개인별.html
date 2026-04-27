@@ -666,7 +666,7 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
 
 /* ── 고정 샘플 (예정·종료·수료·미수료 확인용) ── */
 ALL_DATA.push(
-  { id:201, company:'LABS 연수원', dept:'기획팀',   name:'김예정', learnerStatus:'active', empNo:'299001', userId:'sample01@hunet.co.kr', phone:'010-1111-0001', courseDiv:'정시', courseType:COURSE_TYPES[0], courseName:'AI 에이전트 시대가 온다',     courseCode:'ON-2604-S01', courseCategory:'전문직무', studyFrom:'2026-04-29', studyTo:'2026-07-29', learningStatus:LS[0], completeStatus:CS[0], totalScore:0,  completeDate:'' },
+  { id:201, company:'LABS 연수원', dept:'기획팀',   name:'김예정', learnerStatus:'active', empNo:'299001', userId:'sample01@hunet.co.kr', phone:'010-1111-0001', courseDiv:'정시', courseType:COURSE_TYPES[0], courseName:'AI 에이전트 시대가 온다',     courseCode:'ON-2609-S01', courseCategory:'전문직무', studyFrom:'2026-09-01', studyTo:'2026-11-30', learningStatus:LS[0], completeStatus:CS[0], totalScore:0,  completeDate:'' },
   { id:202, company:'휴넷',        dept:'교육팀',   name:'이수료', learnerStatus:'active', empNo:'299002', userId:'sample02@hunet.co.kr', phone:'010-1111-0002', courseDiv:'수시', courseType:COURSE_TYPES[1], courseName:'데이터 리터러시 기본',         courseCode:'ML-2604-S02', courseCategory:'자기개발', studyFrom:'2026-04-01', studyTo:'2026-04-20', learningStatus:LS[2], completeStatus:CS[1], totalScore:88, completeDate:'2026-04-18' },
   { id:203, company:'ABC마트',     dept:'인사팀',   name:'박미수', learnerStatus:'active', empNo:'299003', userId:'sample03@hunet.co.kr', phone:'010-1111-0003', courseDiv:'정시', courseType:COURSE_TYPES[0], courseName:'스토리텔링 프레젠테이션',       courseCode:'ON-2604-S03', courseCategory:'외국어',  studyFrom:'2026-04-05', studyTo:'2026-04-22', learningStatus:LS[2], completeStatus:CS[2], totalScore:44, completeDate:'' },
   { id:204, company:'포스코',      dept:'영업팀',   name:'최종료', learnerStatus:'active', empNo:'299004', userId:'sample04@hunet.co.kr', phone:'010-1111-0004', courseDiv:'수시', courseType:COURSE_TYPES[0], courseName:'리더의 코칭 대화법',           courseCode:'ON-2604-S04', courseCategory:'직무공통', studyFrom:'2026-04-03', studyTo:'2026-04-25', learningStatus:LS[2], completeStatus:CS[0], totalScore:0,  completeDate:'' },
@@ -883,7 +883,7 @@ function showDetail(id) {
       <td>${c.type}</td>
       <td style="text-align:left;padding-left:8px;">${c.name}</td>
       <td>${c.required}</td>
-      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td>${(c.contentFrom || r.studyFrom).replace(/-/g,'.')} ~ ${(c.contentTo || r.studyTo).replace(/-/g,'.')}</td>
       <td>${c.studyInfo}</td>
       <td>${c.progress}%</td>
       <td>${c.contentScore}</td>
@@ -912,17 +912,17 @@ function generateContents(r) {
   // id=201(첫 노출 레코드)에 11종 유형 전체를 한 번에 표시
   if (r.id === 201) {
     const allTypes = [
-      { type:'동영상',  name:'AI 에이전트 개요 영상',    studyInfo:'00:00:00', contentScore:'',  required:'Y' },
-      { type:'이미지',  name:'핵심 개념 인포그래픽',      studyInfo:'0/2',      contentScore:'',  required:'Y' },
-      { type:'아티클',  name:'관련 아티클 읽기',          studyInfo:'0/2',      contentScore:'',  required:'Y' },
-      { type:'첨부파일',name:'참고 자료 다운로드',        studyInfo:'0/2',      contentScore:'',  required:'Y' },
-      { type:'시험',    name:'중간 평가 시험',            studyInfo:'0/10',     contentScore:'-', required:'Y' },
-      { type:'과제',    name:'실습 과제 제출',            studyInfo:'0/1',      contentScore:'-', required:'Y' },
-      { type:'설문',    name:'학습 만족도 설문',          studyInfo:'0/1',      contentScore:'-', required:'N' },
-      { type:'퀴즈',    name:'단원 확인 퀴즈',            studyInfo:'0/5',      contentScore:'-', required:'N' },
-      { type:'PDF',     name:'PDF 교재',                  studyInfo:'0/5',      contentScore:'',  required:'N' },
-      { type:'외부링크',name:'외부 참고 링크',            studyInfo:'0/3',      contentScore:'',  required:'N' },
-      { type:'오프라인',name:'오프라인 강의',             studyInfo:'0/10',     contentScore:'',  required:'N' },
+      { type:'동영상',  name:'AI 에이전트 개요 영상',    studyInfo:'00:00:00', contentScore:'',  required:'Y', contentFrom:'2026-09-01', contentTo:'2026-09-15' },
+      { type:'이미지',  name:'핵심 개념 인포그래픽',      studyInfo:'0/2',      contentScore:'',  required:'Y', contentFrom:'2026-09-01', contentTo:'2026-09-30' },
+      { type:'아티클',  name:'관련 아티클 읽기',          studyInfo:'0/2',      contentScore:'',  required:'Y', contentFrom:'2026-09-15', contentTo:'2026-10-15' },
+      { type:'첨부파일',name:'참고 자료 다운로드',        studyInfo:'0/2',      contentScore:'',  required:'Y', contentFrom:'2026-09-15', contentTo:'2026-10-15' },
+      { type:'PDF',     name:'PDF 교재',                  studyInfo:'0/5',      contentScore:'',  required:'Y', contentFrom:'2026-09-01', contentTo:'2026-10-31' },
+      { type:'외부링크',name:'외부 참고 링크',            studyInfo:'0/3',      contentScore:'',  required:'N', contentFrom:'2026-10-01', contentTo:'2026-10-31' },
+      { type:'오프라인',name:'오프라인 집합교육',         studyInfo:'0/10',     contentScore:'',  required:'N', contentFrom:'2026-10-15', contentTo:'2026-10-15' },
+      { type:'퀴즈',    name:'단원 확인 퀴즈',            studyInfo:'0/5',      contentScore:'-', required:'N', contentFrom:'2026-09-30', contentTo:'2026-10-31' },
+      { type:'과제',    name:'실습 과제 제출',            studyInfo:'0/1',      contentScore:'-', required:'Y', contentFrom:'2026-10-15', contentTo:'2026-11-15' },
+      { type:'시험',    name:'중간 평가 시험',            studyInfo:'0/10',     contentScore:'-', required:'Y', contentFrom:'2026-11-15', contentTo:'2026-11-30' },
+      { type:'설문',    name:'학습 만족도 설문',          studyInfo:'0/1',      contentScore:'-', required:'N', contentFrom:'2026-11-25', contentTo:'2026-11-30' },
     ];
     return allTypes.map(c => ({ ...c, done: false, progress: 0, lastDate: '-' }));
   }
@@ -938,20 +938,40 @@ function generateContents(r) {
   const isComplete = r.completeStatus.code === 'complete';
   const isBefore   = r.completeStatus.code === 'before';
 
-  // 세트 인덱스에 따라 사용할 콘텐츠 유형 순서 지정
+  // 세트 인덱스에 따라 사용할 콘텐츠 유형 순서 지정 (11종이 골고루 분포되도록 재배치)
   const TYPE_SETS = [
-    ['동영상','아티클','과제','퀴즈','동영상','시험'],
-    ['동영상','이미지','설문','퀴즈','과제','시험'],
-    ['이미지','아티클','첨부파일','시험','과제','설문'],
-    ['PDF','외부링크','오프라인','설문','시험','퀴즈'],
+    ['동영상','PDF','과제','퀴즈','외부링크','시험'],
+    ['동영상','이미지','오프라인','퀴즈','과제','시험'],
+    ['이미지','아티클','첨부파일','PDF','외부링크','설문'],
+    ['오프라인','PDF','외부링크','설문','첨부파일','퀴즈'],
   ];
   const typeList = TYPE_SETS[r.id % 4];
+
+  // 콘텐츠별 학습기간 분할 (학습기간을 count 등분)
+  const fromDate = new Date(r.studyFrom);
+  const toDate   = new Date(r.studyTo);
+  const totalDays = Math.max(1, Math.round((toDate - fromDate) / 86400000));
+  const chunk = Math.max(1, Math.floor(totalDays / count));
+  const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
   return names.slice(0, count).map((name, i) => {
     const type = typeList[i] || CONTENT_TYPES[i % CONTENT_TYPES.length];
     const required = i < Math.ceil(count / 2) ? 'Y' : 'N';
     const done = isComplete || (!isBefore && i < Math.floor(count * 0.5));
     const progress = done ? 100 : (isBefore ? 0 : Math.min(90, 20 + i * 15));
+
+    // 콘텐츠별 기간: 시작일+구간*i ~ 시작일+구간*(i+1)-1, 마지막은 studyTo, 오프라인은 단일 일자
+    const cFromD = new Date(fromDate); cFromD.setDate(cFromD.getDate() + chunk * i);
+    let cToD;
+    if (type === '오프라인') {
+      cToD = new Date(cFromD);
+    } else if (i === count - 1) {
+      cToD = new Date(toDate);
+    } else {
+      cToD = new Date(fromDate); cToD.setDate(cToD.getDate() + chunk * (i + 1) - 1);
+    }
+    const contentFrom = fmt(cFromD);
+    const contentTo   = fmt(cToD);
 
     // 학습한 정보: 동영상=재생시간(HH:MM:SS), 나머지=완료수/전체수
     let studyInfo;
@@ -968,10 +988,17 @@ function generateContents(r) {
       studyInfo = `${numerator}/${total}`;
     }
 
-    // 콘텐츠 점수: 채점 필요 Y 유형만 점수, 미진행이면 '-', 그 외 공백
+    // 콘텐츠 점수: 채점 필요 유형만 점수, 진행 시 r.totalScore 기반 ±변동(0~100 클램프), 미진행이면 '-', 그 외 공백
     let contentScore;
     if (SCORED_TYPES.includes(type)) {
-      contentScore = (done || progress > 0) ? `${70 + ((r.id + i) % 30)}점` : '-';
+      if (done || progress > 0) {
+        const base = r.totalScore > 0 ? r.totalScore : (70 + ((r.id + i) % 25));
+        const delta = ((r.id + i * 7) % 7) - 3;
+        const score = Math.max(0, Math.min(100, base + delta));
+        contentScore = `${score}점`;
+      } else {
+        contentScore = '-';
+      }
     } else {
       contentScore = '';
     }
@@ -982,7 +1009,7 @@ function generateContents(r) {
       lastDate = d.replace(/-/g,'.');
     }
 
-    return { name, type, required, done, progress, studyInfo, contentScore, lastDate };
+    return { name, type, required, done, progress, studyInfo, contentScore, lastDate, contentFrom, contentTo };
   });
 }
 
