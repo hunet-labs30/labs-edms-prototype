@@ -812,7 +812,7 @@ function renderTable() {
       <td>${filteredData.length - start - idx}</td>
       <td>${r.company}</td>
       <td>${r.dept}</td>
-      <td><button class="name-link" onclick="showDetail(${r.id})">${r.name}</button></td>
+      <td><button class="name-link" onclick="showDetail(${r.id})">${maskName(r.name)}</button></td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
       <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
