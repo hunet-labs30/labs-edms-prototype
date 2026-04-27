@@ -909,7 +909,7 @@ function renderSummary() {
   const micro    = new Set(filteredData.filter(r => r.courseType.code === 'micro').map(r => r.courseName));
   const totalFee = filteredData.filter(r => r.status.code === 'approve').reduce((s, r) => s + r.fee, 0);
 
-  document.getElementById('sum-total').textContent   = uniq.size.toLocaleString();
+  document.getElementById('sum-total').textContent   = (online.size + micro.size).toLocaleString();
   document.getElementById('sum-online').textContent  = online.size.toLocaleString();
   document.getElementById('sum-micro').textContent   = micro.size.toLocaleString();
   document.getElementById('sum-apply').textContent   = filteredData.length.toLocaleString();

@@ -336,7 +336,6 @@
             <select class="select" id="s-learner-field" style="width:88px;">
               <option value="name">이름</option>
               <option value="id">아이디</option>
-              <option value="empNo">사번</option>
             </select>
             <div class="search-icon-wrap">
               <span class="ico">&#128269;</span>
@@ -489,16 +488,34 @@
         <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 개인별 &gt; 학습 상세</div>
       </div>
 
-      <div class="detail-nav">
-        <button class="btn btn-outline btn-sm" id="btn-prev" onclick="goPrev()">&#8249; 이전</button>
-        <button class="btn btn-outline btn-sm" onclick="goBack()">목록으로</button>
-      </div>
-
-      <!-- 기본 정보 -->
+      <!-- 개인별 학습현황 상세 -->
       <div class="card">
-        <div class="detail-section">
-          <div class="detail-section-title">기본 정보</div>
-          <table class="info-table" id="detail-info-table"></table>
+        <div class="result-header">
+          <div class="detail-section-title" style="margin:0;padding:0;border:none;">개인별 학습현황 상세</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="goBack()">목록</button>
+            <button class="btn btn-outline btn-sm" id="btn-prev" onclick="goPrev()">이전</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th style="width:72px;">이름</th>
+                <th style="width:160px;">아이디</th>
+                <th style="width:96px;">과정유형</th>
+                <th>과정명</th>
+                <th style="width:186px;">학습자 학습기간</th>
+                <th style="width:72px;">학습상태</th>
+                <th style="width:56px;">총점</th>
+                <th style="width:88px;">수료여부</th>
+                <th style="width:96px;">수료일</th>
+                <th style="width:110px;">회사명</th>
+                <th style="width:80px;">부서명</th>
+              </tr>
+            </thead>
+            <tbody id="detail-info-table"></tbody>
+          </table>
         </div>
       </div>
 
@@ -511,15 +528,15 @@
               <thead>
                 <tr>
                   <th style="width:44px;">No.</th>
-                  <th style="min-width:160px;">콘텐츠명</th>
                   <th style="width:88px;">콘텐츠유형</th>
-                  <th style="width:92px;">학습시간(분)</th>
-                  <th style="width:140px;">최근학습일시</th>
+                  <th style="min-width:160px;">콘텐츠명</th>
+                  <th style="width:72px;">필수여부</th>
+                  <th style="width:200px;">학습자 콘텐츠 학습기간</th>
+                  <th style="width:96px;">학습한 정보</th>
+                  <th style="width:72px;">진행률(%)</th>
+                  <th style="width:80px;">콘텐츠 점수</th>
                   <th style="width:72px;">완료여부</th>
-                  <th style="width:60px;">진도율</th>
-                  <th style="width:72px;">시험점수</th>
-                  <th style="width:72px;">과제점수</th>
-                  <th style="width:56px;">총점</th>
+                  <th style="width:110px;">최근 학습일</th>
                 </tr>
               </thead>
               <tbody id="detail-content-tbody"></tbody>
@@ -724,10 +741,8 @@ function doSearch() {
     }
     /* 학습자 */
     if (learnerKw) {
-      if (learnerField === 'name'  && r.name !== learnerKw)                              return false;
-      if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
-      if (learnerField === 'phone' && r.phone !== learnerKw)                             return false;
-      if (learnerField === 'empNo' && !r.empNo.includes(learnerKw))                     return false;
+      if (learnerField === 'name' && r.name !== learnerKw)                               return false;
+      if (learnerField === 'id'   && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
     }
     if (completeStatus && r.completeStatus.code       !== completeStatus) return false;
     /* 과정 */
@@ -757,7 +772,6 @@ function doReset() {
   document.getElementById('s-period-to').value   = '2026-04-30';
   document.getElementById('s-learner-field').selectedIndex   = 0;
   document.getElementById('s-learner-kw').value              = '';
-  document.getElementById('s-learner-status').selectedIndex  = 0;
   document.getElementById('s-complete-status').selectedIndex = 0;
   document.getElementById('s-course-field').selectedIndex    = 0;
   document.getElementById('s-course-kw').value               = '';
@@ -771,7 +785,7 @@ function doReset() {
 function renderSummary() {
   const d = filteredData;
   document.getElementById('sum-courses').textContent   = new Set(d.map(r => r.courseCode)).size.toLocaleString();
-  document.getElementById('sum-total').textContent     = d.length.toLocaleString();
+  document.getElementById('sum-total').textContent     = new Set(d.map(r => r.userId)).size.toLocaleString();
   document.getElementById('sum-scheduled').textContent = d.filter(r => r.learningStatus.code === 'scheduled').length.toLocaleString();
   document.getElementById('sum-studying').textContent  = d.filter(r => r.learningStatus.code === 'studying').length.toLocaleString();
   document.getElementById('sum-ended').textContent     = d.filter(r => r.learningStatus.code === 'ended').length.toLocaleString();
@@ -798,7 +812,7 @@ function renderTable() {
       <td>${filteredData.length - start - idx}</td>
       <td>${r.company}</td>
       <td>${r.dept}</td>
-      <td><button class="name-link" onclick="showDetail(${r.id})">${maskName(r.name)}</button></td>
+      <td><button class="name-link" onclick="showDetail(${r.id})">${r.name}</button></td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
       <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
@@ -839,42 +853,32 @@ function showDetail(id) {
 
   document.getElementById('detail-info-table').innerHTML = `
     <tr>
-      <th>이름</th><td>${maskName(r.name)}</td>
-      <th>아이디</th><td>${maskId(r.userId)}</td>
-    </tr>
-    <tr>
-      <th>사번</th><td>${r.empNo}</td>
-      <th>휴대폰</th><td>${maskPhone(r.phone)}</td>
-    </tr>
-    <tr>
-      <th>회사명</th><td>${r.company}</td>
-      <th>부서명</th><td>${r.dept}</td>
-    </tr>
-    <tr>
-      <th>과정명</th><td colspan="3" style="text-align:left;">${r.courseName}</td>
-    </tr>
-    <tr>
-      <th>과정코드</th><td>${r.courseCode}</td>
-      <th>과정구분</th><td>${r.courseDiv}</td>
-    </tr>
-    <tr>
-      <th>학습자 학습기간</th><td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
-      <th>학습상태</th><td><span class="badge ${r.learningStatus.badge}">${r.learningStatus.label}</span></td>
+      <td>${r.name}</td>
+      <td style="text-align:left;padding-left:8px;">${r.userId}</td>
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:8px;">${r.courseName}</td>
+      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td><span class="badge ${r.learningStatus.badge}">${r.learningStatus.label}</span></td>
+      <td>${r.totalScore > 0 ? r.totalScore : '-'}</td>
+      <td><span class="badge ${r.completeStatus.badge}">${r.completeStatus.label}</span></td>
+      <td>${r.completeDate ? r.completeDate.replace(/-/g,'.') : '-'}</td>
+      <td>${r.company}</td>
+      <td>${r.dept}</td>
     </tr>`;
 
   const contents = generateContents(r);
   document.getElementById('detail-content-tbody').innerHTML = contents.map((c, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td style="text-align:left;padding-left:12px;">${c.name}</td>
       <td>${c.type}</td>
-      <td>${c.duration}</td>
-      <td>${c.lastDate}</td>
-      <td><span class="badge ${c.done ? 'badge-done' : 'badge-not-done'}">${c.done ? '완료' : '미완료'}</span></td>
+      <td style="text-align:left;padding-left:8px;">${c.name}</td>
+      <td>${c.required}</td>
+      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td>${c.watchTime}</td>
       <td>${c.progress}%</td>
-      <td>${c.examScore !== null ? c.examScore : '-'}</td>
-      <td>${c.assignScore !== null ? c.assignScore : '-'}</td>
-      <td>${c.totalScore !== null ? c.totalScore : '-'}</td>
+      <td>${c.contentScore !== null ? c.contentScore : '-'}</td>
+      <td><span class="badge ${c.done ? 'badge-done' : 'badge-not-done'}">${c.done ? 'Y' : 'N'}</span></td>
+      <td>${c.lastDate}</td>
     </tr>`).join('');
 
   const idx = filteredData.findIndex(d => d.id === id);
@@ -898,20 +902,28 @@ function generateContents(r) {
   return names.slice(0, count).map((name, i) => {
     const isLastTwo = i >= count - 2;
     const type = isLastTwo ? (i === count - 1 ? '퀴즈' : '과제') : (i % 2 === 0 ? '동영상' : '문서');
+    const required = i < Math.ceil(count / 2) ? 'Y' : 'N';
     const done = isComplete || (!isBefore && i < Math.floor(count * 0.5));
     const progress = done ? 100 : (isBefore ? 0 : Math.min(90, 20 + i * 15));
 
-    const examScore   = (type === '퀴즈' && done) ? 70 + (r.id % 30) : null;
-    const assignScore = (type === '과제' && done) ? 75 + (r.id % 20) : null;
-    const cScore = examScore !== null ? examScore : (assignScore !== null ? assignScore : null);
+    const durationSec = (15 + i * 10) * 60;
+    const watchSec    = Math.floor(durationSec * (progress / 100));
+    const wh = String(Math.floor(watchSec / 3600)).padStart(2,'0');
+    const wm = String(Math.floor((watchSec % 3600) / 60)).padStart(2,'0');
+    const ws = String(watchSec % 60).padStart(2,'0');
+    const watchTime = `${wh}:${wm}:${ws}`;
+
+    const examScore    = (type === '퀴즈' && done) ? 70 + (r.id % 30) : null;
+    const assignScore  = (type === '과제' && done) ? 75 + (r.id % 20) : null;
+    const contentScore = examScore !== null ? examScore : (assignScore !== null ? assignScore : null);
 
     let lastDate = '-';
     if (done || progress > 0) {
       const d = `2026-${String(actualMonth(r.studyFrom)).padStart(2,'0')}-${String(Math.min(28, 10 + i * 3)).padStart(2,'0')}`;
-      lastDate = `${d} ${String(9 + i).padStart(2,'0')}:${String(i * 7 % 60).padStart(2,'0')}`;
+      lastDate = d.replace(/-/g,'.');
     }
 
-    return { name, type, duration: 15 + i * 10, lastDate, done, progress, examScore, assignScore, totalScore: cScore };
+    return { name, type, required, done, progress, watchTime, contentScore, lastDate };
   });
 }
 
