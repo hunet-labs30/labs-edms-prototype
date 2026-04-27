@@ -70,6 +70,7 @@
   .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
   .main::-webkit-scrollbar { width: 5px; }
   .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  #list-view, #detail-view { display: flex; flex-direction: column; gap: 14px; }
   .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
   .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
   .breadcrumb { font-size: 11px; color: #94a3b8; }
@@ -79,27 +80,20 @@
   /* ── SEARCH ── */
   .search-wrap { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
   .search-row { display: flex; align-items: center; gap: 8px; min-height: 32px; }
-  .search-label { width: 52px; font-size: 12px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; text-align: right; padding-right: 4px; }
+  .search-label { width: 78px; font-size: 12px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; text-align: right; padding-right: 4px; }
   .search-body { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .input { height: 32px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; color: var(--text); outline: none; transition: border-color .15s; font-family: inherit; }
   .input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.1); }
+  .input:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
   .input-date { width: 132px; }
   .date-sep { color: #94a3b8; font-size: 13px; }
   .select { height: 32px; padding: 0 24px 0 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; color: var(--text); outline: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E") no-repeat right 8px center; -webkit-appearance: none; cursor: pointer; font-family: inherit; transition: border-color .15s; }
   .select:focus { border-color: var(--primary); }
+  .select:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
   .search-icon-wrap { position: relative; display: flex; align-items: center; }
   .search-icon-wrap .ico { position: absolute; left: 9px; font-size: 13px; color: #94a3b8; pointer-events: none; }
-  .search-icon-wrap .input { padding-left: 28px; width: 180px; }
+  .search-icon-wrap .input { padding-left: 28px; width: 220px; }
   .search-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 2px; }
-
-  /* ── TYPEAHEAD ── */
-  .typeahead-wrap { position: relative; }
-  .typeahead-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: none; background: none; font-size: 14px; color: #94a3b8; cursor: pointer; line-height: 1; padding: 2px 3px; }
-  .typeahead-clear:hover { color: #475569; }
-  .typeahead-list { position: absolute; top: calc(100% + 2px); left: 0; min-width: 100%; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.1); list-style: none; max-height: 200px; overflow-y: auto; z-index: 100; }
-  .typeahead-list li { padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text); transition: background .1s; }
-  .typeahead-list li:hover { background: var(--primary-light); }
-  .typeahead-list li strong { color: var(--primary); }
 
   /* ── BUTTONS ── */
   .btn { height: 32px; padding: 0 14px; border-radius: 5px; font-size: 13px; cursor: pointer; font-weight: 500; border: none; transition: opacity .15s; font-family: inherit; }
@@ -108,6 +102,8 @@
   .btn-reset { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
   .btn-outline { background: #fff; color: #475569; border: 1px solid #cbd5e1; }
   .btn-sm { height: 28px; font-size: 12px; padding: 0 12px; }
+  .btn-cert { height: 24px; padding: 0 10px; font-size: 11px; background: #fff; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; }
+  .btn-cert:hover { background: #f1f5f9; }
 
   /* ── STAT GRID ── */
   .stat-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 0; }
@@ -118,7 +114,10 @@
   .stat-val.blue   { color: #2563eb; }
   .stat-val.green  { color: #16a34a; }
   .stat-val.orange { color: #d97706; }
+  .stat-val.amber  { color: #d97706; }
   .stat-val.red    { color: #dc2626; }
+  .stat-val.slate  { color: #475569; }
+  .stat-val.gray   { color: #64748b; }
 
   /* ── TABLE ── */
   .result-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
@@ -130,10 +129,25 @@
   .main-table tbody tr:hover td { background: #f8fafc; }
   .main-table tbody tr:last-child td { border-bottom: none; }
 
+  /* ── DETAIL TABLE ── */
+  .detail-section-title { font-size: 14px; font-weight: 600; color: #0f172a; padding: 0; margin: 0; }
+  .detail-table { width: 100%; border-collapse: collapse; }
+  .detail-table th { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; padding: 9px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; text-align: center; }
+  .detail-table td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 12px; color: var(--text); text-align: center; white-space: nowrap; }
+
   /* ── BADGES ── */
   .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
   .badge-type-on    { background: #dbeafe; color: #1d4ed8; }
   .badge-type-micro { background: #fef3c7; color: #b45309; }
+  .badge-status-scheduled  { background: #e2e8f0; color: #475569; }
+  .badge-status-studying   { background: #dbeafe; color: #1d4ed8; }
+  .badge-status-ended      { background: #f1f5f9; color: #64748b; }
+  .badge-complete-before     { background: #fef3c7; color: #b45309; }
+  .badge-complete-complete   { background: #d1fae5; color: #15803d; }
+  .badge-complete-incomplete { background: #fee2e2; color: #b91c1c; }
+
+  .name-link { background: none; border: none; color: #2563eb; cursor: pointer; font-size: 12px; padding: 0; }
+  .name-link:hover { text-decoration: underline; }
 
   /* ── TABLE FOOTER ── */
   .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--border); }
@@ -143,6 +157,16 @@
   .pg-btn:hover:not(:disabled) { background: #f1f5f9; }
   .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
   .pg-btn:disabled { opacity: .35; cursor: default; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.4); display: none; align-items: center; justify-content: center; z-index: 500; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 8px; min-width: 320px; max-width: 420px; padding: 22px 24px; box-shadow: 0 12px 28px rgba(0,0,0,.18); }
+  .modal-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .modal-body { font-size: 13px; color: #475569; margin-bottom: 18px; line-height: 1.5; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; }
+  .btn-modal-yes { background: var(--primary); color: #fff; }
+  .btn-modal-no  { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 </style>
 </head>
 <body>
@@ -265,118 +289,271 @@
   </nav>
 
   <main class="main">
-    <div class="page-header">
-      <div class="page-title">과정별 학습 현황</div>
-      <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 과정별</div>
-    </div>
+    <!-- ── LIST VIEW ── -->
+    <div id="list-view">
 
-    <!-- 검색 -->
-    <div class="card search-wrap">
-      <div class="search-row">
-        <div class="search-label">학습기간</div>
-        <div class="search-body">
-          <input class="input input-date" type="date" id="s-date-from" value="2026-04-01">
-          <span class="date-sep">~</span>
-          <input class="input input-date" type="date" id="s-date-to" value="2026-04-30">
-        </div>
+      <div class="page-header">
+        <div class="page-title">과정별 학습 현황</div>
+        <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 과정별</div>
       </div>
-      <div class="search-row">
-        <div class="search-label">과정</div>
-        <div class="search-body">
-          <select class="select" id="s-course-field" style="width:88px;">
-            <option value="name">과정명</option>
-            <option value="code">과정코드</option>
-          </select>
-          <div class="search-icon-wrap">
-            <span class="ico">&#128269;</span>
-            <input class="input" id="s-course-kw" type="text" placeholder="검색어 입력">
-          </div>
-          <select class="select" id="s-course-type" style="width:120px;">
-            <option value="">과정유형 전체</option>
-            <option value="online">온라인</option>
-            <option value="micro">마이크로러닝</option>
-          </select>
-          <select class="select" id="s-course-cat" style="width:120px;">
-            <option value="">과정분류 전체</option>
-            <option>직무</option>
-            <option>리더십</option>
-            <option>어학</option>
-            <option>IT</option>
-          </select>
-        </div>
-      </div>
-      <div class="search-row">
-        <div class="search-label">회사</div>
-        <div class="search-body">
-          <div class="typeahead-wrap">
-            <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
-              autocomplete="off" style="width:260px;padding-right:26px;"
-              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
-            <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
-            <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
+
+      <!-- 검색 -->
+      <div class="card search-wrap">
+
+        <!-- 과정구분 + 과정 학습기간 -->
+        <div class="search-row">
+          <div class="search-label">과정구분</div>
+          <div class="search-body">
+            <select class="select" id="s-course-div" style="width:88px;" onchange="togglePeriodInputs()">
+              <option value="">전체</option>
+              <option>정시</option>
+              <option>수시</option>
+            </select>
+            <span class="search-label" style="width:auto;padding:0 4px 0 20px;white-space:nowrap;">과정 학습기간</span>
+            <select class="select" id="s-period-type" style="width:110px;" disabled>
+              <option value="start">학습시작일</option>
+              <option value="end">학습종료일</option>
+              <option value="range">기간검색</option>
+            </select>
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" disabled>
+            <span class="date-sep">~</span>
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" disabled>
           </div>
         </div>
-      </div>
-      <div class="search-actions">
-        <button class="btn btn-reset" onclick="doReset()">초기화</button>
-        <button class="btn btn-primary" onclick="doSearch()">검색</button>
-      </div>
-    </div>
 
-    <!-- 요약 -->
-    <div class="card">
-      <div class="stat-grid">
-        <div class="stat-card"><div class="stat-label">전체 과정 수</div><div class="stat-val" id="sum-total">0</div></div>
-        <div class="stat-card"><div class="stat-label">온라인 과정</div><div class="stat-val blue" id="sum-online">0</div></div>
-        <div class="stat-card"><div class="stat-label">마이크로러닝</div><div class="stat-val blue" id="sum-micro">0</div></div>
-        <div class="stat-card"><div class="stat-label">총 학습자 수</div><div class="stat-val" id="sum-learner">0</div></div>
-        <div class="stat-card"><div class="stat-label">수료 합계</div><div class="stat-val green" id="sum-complete">0</div></div>
-        <div class="stat-card"><div class="stat-label">미수료 합계</div><div class="stat-val red" id="sum-incomplete">0</div></div>
-        <div class="stat-card"><div class="stat-label">학습중 합계</div><div class="stat-val orange" id="sum-studying">0</div></div>
-        <div class="stat-card"><div class="stat-label">평균 수료율</div><div class="stat-val blue" id="sum-avg-rate">0%</div></div>
-      </div>
-    </div>
-
-    <!-- 목록 -->
-    <div class="card">
-      <div class="result-header">
-        <div class="result-count">검색결과 <strong id="total-count">0</strong>건</div>
-        <button class="btn btn-outline btn-sm" onclick="downloadExcel()">엑셀 다운로드</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="main-table">
-          <thead>
-            <tr>
-              <th style="width:44px;">No.</th>
-              <th style="width:110px;">과정유형</th>
-              <th style="width:100px;">과정코드</th>
-              <th>과정명</th>
-              <th style="width:190px;">과정기간</th>
-              <th style="width:72px;">총학습자</th>
-              <th style="width:60px;">수료</th>
-              <th style="width:60px;">미수료</th>
-              <th style="width:60px;">학습중</th>
-              <th style="width:90px;">수료율</th>
-            </tr>
-          </thead>
-          <tbody id="list-tbody"></tbody>
-        </table>
-      </div>
-      <div class="table-footer">
-        <div class="page-size-wrap">
-          페이지당
-          <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
-            <option value="30">30</option>
-            <option value="50" selected>50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-          </select>
-          건
+        <!-- 과정검색 -->
+        <div class="search-row">
+          <div class="search-label">과정검색</div>
+          <div class="search-body">
+            <select class="select" id="s-course-field" style="width:88px;">
+              <option value="name">과정명</option>
+              <option value="code">과정코드</option>
+            </select>
+            <div class="search-icon-wrap">
+              <span class="ico">&#128269;</span>
+              <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
+            </div>
+            <select class="select" id="s-course-type" style="width:130px;">
+              <option value="">과정유형 전체</option>
+              <option value="online">온라인</option>
+              <option value="micro">마이크로러닝</option>
+            </select>
+            <select class="select" id="s-course-cat" style="width:130px;">
+              <option value="">과정분류 전체</option>
+              <option>외국어</option>
+              <option>자격/공인</option>
+              <option>자기개발</option>
+              <option>전문직무</option>
+              <option>직무공통</option>
+            </select>
+          </div>
         </div>
-        <div class="pagination" id="pagination"></div>
+
+        <div class="search-actions">
+          <button class="btn btn-reset" onclick="doReset()">초기화</button>
+          <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        </div>
       </div>
-    </div>
+
+      <!-- 검색결과 요약 (8카드) -->
+      <div class="card">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">전체 과정수</div><div class="stat-val slate" id="sum-courses">0</div></div>
+          <div class="stat-card"><div class="stat-label">전체 학습자 수</div><div class="stat-val" id="sum-learner">0</div></div>
+          <div class="stat-card"><div class="stat-label">예정</div><div class="stat-val slate" id="sum-scheduled">0</div></div>
+          <div class="stat-card"><div class="stat-label">학습중</div><div class="stat-val blue" id="sum-studying">0</div></div>
+          <div class="stat-card"><div class="stat-label">종료</div><div class="stat-val gray" id="sum-ended">0</div></div>
+          <div class="stat-card"><div class="stat-label">수료처리전</div><div class="stat-val amber" id="sum-before">0</div></div>
+          <div class="stat-card"><div class="stat-label">수료</div><div class="stat-val green" id="sum-complete">0</div></div>
+          <div class="stat-card"><div class="stat-label">미수료</div><div class="stat-val red" id="sum-incomplete">0</div></div>
+        </div>
+      </div>
+
+      <!-- 결과 목록 (14컬럼) -->
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">검색결과 <strong id="total-count">0</strong>건</div>
+          <button class="btn btn-outline btn-sm" onclick="downloadExcel()">엑셀 다운로드</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:96px;">과정유형</th>
+                <th>과정명</th>
+                <th style="width:84px;">과정분류</th>
+                <th style="width:172px;">과정 학습기간</th>
+                <th style="width:64px;">학습자 수</th>
+                <th style="width:48px;">예정</th>
+                <th style="width:52px;">학습중</th>
+                <th style="width:48px;">종료</th>
+                <th style="width:72px;">수료처리전</th>
+                <th style="width:48px;">수료</th>
+                <th style="width:56px;">미수료</th>
+                <th style="width:64px;">수료율</th>
+                <th style="width:80px;">수료증 출력</th>
+              </tr>
+            </thead>
+            <tbody id="list-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="page-size-wrap">
+            페이지당
+            <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
+              <option value="30">30</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            건
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+
+    </div><!-- /#list-view -->
+
+    <!-- ── DETAIL VIEW ── -->
+    <div id="detail-view" style="display:none;">
+
+      <div class="page-header">
+        <div class="page-title">과정별 학습 현황</div>
+        <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 과정별 &gt; 학습 상세</div>
+      </div>
+
+      <!-- 과정 학습현황 상세 (가로형 단일행 12컬럼) -->
+      <div class="card">
+        <div class="result-header">
+          <div class="detail-section-title">과정 학습현황 상세</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" onclick="goBack()">목록</button>
+            <button class="btn btn-outline btn-sm" onclick="goPrev()">이전</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th style="width:96px;">과정유형</th>
+                <th>과정명</th>
+                <th style="width:84px;">과정분류</th>
+                <th style="width:172px;">과정 학습기간</th>
+                <th style="width:64px;">학습자 수</th>
+                <th style="width:48px;">예정</th>
+                <th style="width:52px;">학습중</th>
+                <th style="width:48px;">종료</th>
+                <th style="width:72px;">수료처리전</th>
+                <th style="width:48px;">수료</th>
+                <th style="width:56px;">미수료</th>
+                <th style="width:64px;">수료율</th>
+                <th style="width:80px;">수료증 출력</th>
+              </tr>
+            </thead>
+            <tbody id="detail-info-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 학습자 목록 검색 -->
+      <div class="card search-wrap">
+        <div class="search-row">
+          <div class="search-label">목차 검색</div>
+          <div class="search-body">
+            <select class="select" id="d-toc" style="width:240px;">
+              <option value="">전체 목차</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">학습자 검색</div>
+          <div class="search-body">
+            <select class="select" id="d-learner-field" style="width:88px;">
+              <option value="name">이름</option>
+              <option value="id">아이디</option>
+              <option value="empNo">사번</option>
+            </select>
+            <div class="search-icon-wrap">
+              <span class="ico">&#128269;</span>
+              <input class="input" id="d-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
+            </div>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">회사</div>
+          <div class="search-body">
+            <select class="select" id="d-company" style="width:200px;">
+              <option value="">전체</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">부서</div>
+          <div class="search-body">
+            <input class="input" id="d-dept" type="text" placeholder="부서명 입력 (Like 검색)" style="width:240px;">
+          </div>
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-reset" onclick="doDetailReset()">초기화</button>
+          <button class="btn btn-primary" onclick="doDetailSearch()">검색</button>
+        </div>
+      </div>
+
+      <!-- 학습자 목록 (11컬럼) -->
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">검색결과 <strong id="d-total-count">0</strong>건</div>
+          <button class="btn btn-outline btn-sm" onclick="downloadDetailExcel()">엑셀 다운로드</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:72px;">이름</th>
+                <th style="width:160px;">아이디</th>
+                <th style="width:172px;">학습자 학습기간</th>
+                <th style="width:72px;">학습상태</th>
+                <th style="width:108px;">필수평가항목 이수</th>
+                <th style="width:56px;">총점</th>
+                <th style="width:88px;">수료여부</th>
+                <th style="width:96px;">수료일</th>
+                <th style="width:128px;">회사명</th>
+                <th style="width:120px;">부서명</th>
+              </tr>
+            </thead>
+            <tbody id="d-list-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="page-size-wrap">
+            페이지당
+            <select class="select" id="d-page-size" onchange="dPageSize=parseInt(this.value);dCurrentPage=1;renderDetailTable()">
+              <option value="30">30</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            건
+          </div>
+          <div class="pagination" id="d-pagination"></div>
+        </div>
+      </div>
+
+    </div><!-- /#detail-view -->
   </main>
+</div>
+
+<div id="excel-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">안내</div>
+    <div class="modal-body">엑셀 다운로드 페이지로 이동하시겠습니까?</div>
+    <div class="modal-footer">
+      <button class="btn btn-modal-no" onclick="closeExcelModal()">아니오</button>
+      <button class="btn btn-modal-yes" onclick="goToDownloadPage()">예</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -385,135 +562,304 @@ function toggleNavGroup(header) {
   header.parentElement.classList.toggle('open');
 }
 
-const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', '포스코', '삼성전자'];
-const CATS = ['직무','리더십','어학','IT'];
-const TYPES = [
-  { code: 'online', label: '온라인',      badge: 'badge-type-on' },
-  { code: 'micro',  label: '마이크로러닝', badge: 'badge-type-micro' },
+const TODAY = '2026-04-28';
+
+const COURSE_TYPES = [
+  { code:'online', label:'온라인',      badge:'badge-type-on' },
+  { code:'micro',  label:'마이크로러닝', badge:'badge-type-micro' },
 ];
-const RAW_COURSES = [
-  'AI 에이전트 시대가 온다','데이터 리터러시 기본','스토리텔링 프레젠테이션',
-  '리더의 코칭 대화법','업무 자동화 with Python','MS 365 실무 활용',
-  '영어 비즈니스 이메일','중국어 회화 입문','ESG 경영 이해','조직문화와 소통',
-  '마케팅 전략 수립','재무제표 읽는 법','협상의 기술','퍼포먼스 마케팅 이해','갈등관리 리더십',
+const LS = [
+  { code:'scheduled', label:'예정',   badge:'badge-status-scheduled' },
+  { code:'studying',  label:'학습중', badge:'badge-status-studying' },
+  { code:'ended',     label:'종료',   badge:'badge-status-ended' },
 ];
+const CS = [
+  { code:'before',     label:'수료처리전', badge:'badge-complete-before' },
+  { code:'complete',   label:'수료',       badge:'badge-complete-complete' },
+  { code:'incomplete', label:'미수료',     badge:'badge-complete-incomplete' },
+];
+const CATS = ['외국어','자격/공인','자기개발','전문직무','직무공통'];
+const COMPANIES = ['(주)휴넷','LABS 연수원','삼성전자','포스코','ABC마트','건강보험공단','국민연금공단','네이버'];
+const DEPTS = ['LMS솔루션팀','LABS플랫폼팀','L&D테크본부','IT전략기획팀','HU플랫폼팀','FRONT개발팀','CMS솔루션팀','AI LAB','프런티어세일즈3팀','프런티어세일즈1팀','전략경영실','러닝메이커솔루션팀','대표이사','교육서비스본부','공통플랫폼팀','IT1팀','기획팀','교육팀','인사팀','개발팀','총무팀','영업팀'];
+const FAMILY = '김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허남심';
+const GIVEN  = '민서지우예준도현하은서연하준지호지민서윤시우주원하윤지유수아유진소율채원수빈은우민준현우다인주안유나연우';
+
+const COURSE_NAMES_MICRO = [
+  '스포츠카를 타는 남자의 유전자','300년 간 조선을 지킨 류성룡의 군사개혁','혼수모어, 물을 흐려 물고기를 잡다',
+  "'요우커' 왜 한국에 오고 무엇을 사는가?",'제로성장, 민첩성으로 돌파하라','신화와 전설, 역사와 사회의 관계',
+  '[영어 회화] 명전동후?','[영어 회화] 명사가 명사를 만났을 때','1분 안에 핵심을 말하라','[스낵Biz영어] 약속 잡기',
+  '인플루언서, 마케팅 교과서를 다시 쓰다','[스낵영어] 좋겠다','공감과 성격과의 관계','5가지 성격특성-외향성',
+  '부정적인 사람들-신경성','성실성의 특징','공감능력의 핵심, 친화성','고퀄리티 이미지 찾기',
+  '[스낵영어] 업그레이드된 자기소개','[스낵영어] 외국인과의 첫만남 준비','[스낵영어] 주말 계획','[스낵영어] 두근두근 연애',
+  '[프로젝트 관리 개요] 프로젝트의 정의','[프로젝트 관리 개요] 프로젝트 관리의 정의',
+  '[App 마케팅] Firebase Retention 데이터','시각화를 돕는 픽토그램 검색과 제작법','무료 이미지를 활용한 인포그래픽',
+  '욕망이 모인 거대한 용광로, 백화점','디지털 역량을 강화하라','[데이터 이해] 사라진 200만명',
+  '산업별 AI 비즈니스의 응용 사례','영업조직의 학습 시스템 점검','성공의 DNA를 남기는 영업관리자',
+  '[기업회계] 차입금 및 사채','[기업회계] 투자부동산의 이해','[데이터 타겟팅] 데이터 확보를 위한 3가지 역량',
+  '[데이터베이스] 보고서를 데이터베이스로 변환','[데이터베이스] 데이터베이스 작성 요령','[Pre-Sales] 클리셰와 헬렐레 멘트',
+  '[Sales]고객을 맞춤멘트로 재단하는 타깃의 기술','[Sales]상수를 변수로 바꾸는 플립플롭 기술',
+  'AI 에이전트: 개인화된 AI의 등장',
+];
+const COURSE_NAMES_ONLINE = [
+  "프롬프트 엔지니어링의 핵심, '좋은 질문'에 집중하라!",'HR도 ChatGPT로 하는 시대가 왔다',
+  '[북러닝] 회사에서 몰래 보는 일잘러의 AI 글쓰기','[레전드 스킬] 일 좀 하는 사람이라면 데이터 문해력',
+  '[레전드 스킬] AI는 못하는 진짜 창의력의 기술','[온보딩저니] 경력사원 과정','[북러닝] 세상을 공부하다',
+  '[북러닝] 아빠의 질문력','[북러닝] 바이브 코딩 혁명이 온다','[hunet MBAi Essential] 재무회계',
+  '[북러닝] 라이프 트렌드 2026','[북러닝] AI 2026 트렌드&활용백과','[북러닝] 시민 개발자의 시대',
+  '직장인 필수 AI 비서, MS Copilot','[북러닝] 팀장 리더십 수업','MZ 세대도 믿고 따르는 AI 시대의 팀장리더십',
+  '4주기 의료인증제 필수교육','[카드뉴스] 파이어족이 온다','[카드뉴스] 팬덤을 이끄는 브랜드의 법칙',
+  '2026 안전보건교육 상반기(사무 및 판매근로자_건설업)','2026 안전보건교육 상반기(사무 및 판매근로자_서비스업)',
+  '에코 라이프 시대, 친환경 컴퍼니를 만나다','미래를 위한 경영혁신, AI 드리븐 매니지먼트','GPT-X 시대의 마케팅',
+  '발표부터 분석까지, 리더의 AI 실무 활용법','ChatGPT 시대의 대체불가 인재스킬, 문해력',
+  '[리더의 착각] 리더는 왜 잘못된 의사결정을 할까','AI가 바꾼 보안의 룰, 지금 알아야 할 것들',
+  '대화로 시작하는 생성형 AI 코딩, 바이브코딩 입문','ChatGPT와 함께하는 엑셀 데이터 분석',
+  'AI는 어떻게 비즈니스를 지배하는가','[포사이트 코리아 2025] AI 혁명과 미래 경영','[포사이트 코리아 2026] 테크·AI',
+  '내일이 바뀌는 10분, 이제 영업도 AI로 합니다','HR, AI가 트렌드다 : 채용부터 퇴사까지',
+  '4차 산업혁명의 시대, 4C 역량을 키워라','VUCA 시대 빛나는 코칭 리더십','[리모트 워크] 슬기로운 조직관리 리더십',
+  'AI로 일하는 사람들의 협업 DNA','2차전지 트렌드 : 산업 및 기술 동향','내게는 특별한 스페인어를 부탁해 2',
+  '2주 완성 JLPT 족집게 특강 - N2','일본 여행은, 처음이라 (왕초보 일본어 첫걸음)','1일 1문장 중국어 명문장',
+  '[HD] 정보처리산업기사 필기','정복 산업안전기사 실기 이론','[2026 법정필수교육] 통합본',
+];
+
+const TOC_ITEMS = ['1차시. 개요','2차시. 핵심 개념','3차시. 응용 사례','4차시. 실습','5차시. 평가','6차시. 정리'];
 
 function rand(n) { return Math.floor(Math.random() * n); }
+function pad(n) { return String(n).padStart(2,'0'); }
+function addDays(date, n) { const d = new Date(date); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function fmtDate(s) { return s.replace(/-/g,'.'); }
 
-let ALL_DATA = RAW_COURSES.map((name, i) => {
-  const type      = TYPES[rand(TYPES.length)];
-  const cat       = CATS[rand(CATS.length)];
-  const total     = 8 + rand(50);
-  const complete  = Math.floor(total * (0.35 + Math.random() * 0.5));
-  const studying  = Math.floor((total - complete) * (0.4 + Math.random() * 0.4));
-  const incomplete = total - complete - studying;
-  const courseStart = `2026-0${3 + rand(2)}-${String(1 + rand(25)).padStart(2,'0')}`;
-  const courseEnd   = `2026-0${6 + rand(3)}-${String(1 + rand(25)).padStart(2,'0')}`;
-  const companies   = COMPANIES.slice(0, 2 + rand(COMPANIES.length - 1));
+function getLearningStatus(from, to) {
+  if (from > TODAY) return LS[0];
+  if (to   < TODAY) return LS[2];
+  return LS[1];
+}
+
+/* ── 과정 데이터 생성 ── */
+function buildCourse(id, name, type) {
+  // 정시(2/3) / 수시(1/3)
+  const isFixed = rand(3) !== 0;
+  const courseDiv = isFixed ? '정시' : '수시';
+  const cat = CATS[rand(CATS.length)];
+
+  let studyFrom, studyTo, periodLabel;
+  if (isFixed) {
+    const startMonth = 3 + rand(4); // 3~6월
+    const startDay   = 1 + rand(27);
+    studyFrom = `2026-${pad(startMonth)}-${pad(startDay)}`;
+    const dur = [30, 60, 92][rand(3)];
+    studyTo   = addDays(studyFrom, dur);
+    periodLabel = `${fmtDate(studyFrom)} ~ ${fmtDate(studyTo)}`;
+  } else {
+    studyFrom = '';
+    studyTo   = '';
+    periodLabel = '365일';
+  }
+
+  // 학습자 수: 1~30명 랜덤. 인기 과정은 더 많이
+  const learnerCount = (id % 13 === 0) ? 20 + rand(20) : 1 + rand(8);
+
+  const codePrefix = type.code === 'online' ? 'ON' : 'ML';
+  const codeMonth = isFixed ? studyFrom.slice(2,4) + studyFrom.slice(5,7) : '0000';
+  const courseCode = `${codePrefix}-${codeMonth}-${String(100 + (id % 900)).padStart(3,'0')}`;
+
   return {
-    id: i + 1, name, code: `C${String(1000 + i * 17).slice(-4)}`,
-    type, cat, courseStart, courseEnd,
-    total, complete, studying, incomplete,
-    companies,
+    id, courseName: name, courseType: type, courseCategory: cat,
+    courseDiv, studyFrom, studyTo, periodLabel, courseCode,
+    learnerCount,
   };
-});
+}
 
-let filteredData = [...ALL_DATA];
+const ALL_COURSES = [];
+let _id = 0;
+COURSE_NAMES_MICRO.forEach(n => { _id++; ALL_COURSES.push(buildCourse(_id, n, COURSE_TYPES[1])); });
+COURSE_NAMES_ONLINE.forEach(n => { _id++; ALL_COURSES.push(buildCourse(_id, n, COURSE_TYPES[0])); });
+
+/* ── 학습자 데이터 생성 (과정별) ── */
+const _learnerCache = new Map();
+function generateLearners(course) {
+  if (_learnerCache.has(course.id)) return _learnerCache.get(course.id);
+  const list = [];
+  for (let i = 0; i < course.learnerCount; i++) {
+    const f = FAMILY[rand(FAMILY.length)];
+    const g1 = GIVEN[rand(GIVEN.length)];
+    const g2 = GIVEN[rand(GIVEN.length)];
+    const name = f + g1 + g2;
+    const empNo = String(200000 + course.id * 31 + i * 13).slice(-6);
+    const idLocal = 'l' + String(100000 + course.id * 41 + i * 17).slice(-6);
+    const userId = `${idLocal}@hunet.co.kr`;
+
+    // 학습기간: 정시는 과정 기간, 수시는 학습자 신청일~+365일
+    let lFrom, lTo;
+    if (course.courseDiv === '정시') {
+      lFrom = course.studyFrom;
+      lTo   = course.studyTo;
+    } else {
+      const enrollMonth = 3 + rand(2); // 3~4월
+      const enrollDay   = 1 + rand(27);
+      lFrom = `2026-${pad(enrollMonth)}-${pad(enrollDay)}`;
+      lTo   = addDays(lFrom, 365);
+    }
+    const ls = getLearningStatus(lFrom, lTo);
+
+    // 수료여부: 종료 → complete/incomplete/before, 그 외는 before
+    let cs;
+    if (ls.code === 'ended') {
+      const r = rand(10);
+      cs = r < 5 ? CS[1] : (r < 8 ? CS[2] : CS[0]);
+    } else {
+      // 학습중일 때도 일부는 이미 수료처리됐을 수 있음 (수시 과정)
+      const r = rand(10);
+      if (course.courseDiv === '수시' && ls.code === 'studying' && r < 4) {
+        cs = CS[1];
+      } else {
+        cs = CS[0];
+      }
+    }
+
+    let totalScore = 0, completeDate = '';
+    if (cs.code === 'complete') {
+      totalScore = 70 + rand(31);
+      completeDate = addDays(lFrom, 5 + rand(40));
+      if (completeDate > TODAY) completeDate = TODAY;
+    } else if (cs.code === 'incomplete') {
+      totalScore = rand(70);
+    }
+
+    // 필수평가항목 이수
+    const evalTotal = rand(5);
+    const evalDone  = cs.code === 'complete' ? evalTotal : (cs.code === 'incomplete' ? Math.floor(evalTotal/2) : (evalTotal > 0 ? rand(evalTotal+1) : 0));
+
+    list.push({
+      no: course.learnerCount - i,
+      name, userId, empNo,
+      lFrom, lTo,
+      learningStatus: ls,
+      evalDone, evalTotal,
+      totalScore,
+      completeStatus: cs,
+      completeDate,
+      company: COMPANIES[rand(COMPANIES.length)],
+      dept: DEPTS[rand(DEPTS.length)],
+    });
+  }
+  _learnerCache.set(course.id, list);
+  return list;
+}
+
+/* ── 과정별 통계 집계 ── */
+function aggregateCourse(course) {
+  const learners = generateLearners(course);
+  const stats = {
+    learnerCount: learners.length,
+    scheduled: learners.filter(l => l.learningStatus.code === 'scheduled').length,
+    studying:  learners.filter(l => l.learningStatus.code === 'studying').length,
+    ended:     learners.filter(l => l.learningStatus.code === 'ended').length,
+    before:    learners.filter(l => l.completeStatus.code === 'before').length,
+    complete:  learners.filter(l => l.completeStatus.code === 'complete').length,
+    incomplete:learners.filter(l => l.completeStatus.code === 'incomplete').length,
+  };
+  stats.completeRate = stats.learnerCount > 0 ? Math.round(stats.complete / stats.learnerCount * 10000) / 100 : 0;
+  return stats;
+}
+
+ALL_COURSES.forEach(c => { c.stats = aggregateCourse(c); });
+
+/* ── 마스킹 ── */
+function maskName(n) {
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';
+  return n[0] + '*' + n.slice(2);
+}
+function maskId(id) {
+  if (id.includes('@')) {
+    const [u, d] = id.split('@');
+    return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
+  }
+  return id[0] + '*'.repeat(Math.min(id.length - 2, 5)) + id[id.length - 1];
+}
+
+/* ── 검색 / 정렬 ── */
+let filteredData = [...ALL_COURSES];
 let currentPage = 1;
 let pageSize = 50;
+let currentDetailId = null;
 
-// ── Typeahead ──
-let selectedCompany = '';
-let _companyBlurTimer = null;
-function onCompanyInput() {
-  selectedCompany = '';
-  document.getElementById('company-clear').style.display = 'none';
-  _renderCompanyList(document.getElementById('s-company-input').value.trim());
-}
-function onCompanyFocus() { _renderCompanyList(document.getElementById('s-company-input').value.trim()); }
-function onCompanyBlur() {
-  _companyBlurTimer = setTimeout(() => {
-    document.getElementById('company-list').style.display = 'none';
-    if (!selectedCompany) document.getElementById('s-company-input').value = '';
-  }, 150);
-}
-function _renderCompanyList(query) {
-  const list = document.getElementById('company-list');
-  const filtered = query ? COMPANIES.filter(c => c.toLowerCase().includes(query.toLowerCase())) : COMPANIES;
-  if (!filtered.length) { list.style.display = 'none'; return; }
-  list.innerHTML = filtered.map(c =>
-    `<li onmousedown="selectCompany(this,'${c.replace(/'/g,"\\'")}')">
-      ${query ? c.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>') : c}
-    </li>`
-  ).join('');
-  list.style.display = 'block';
-}
-function selectCompany(el, name) {
-  if (_companyBlurTimer) clearTimeout(_companyBlurTimer);
-  selectedCompany = name;
-  document.getElementById('s-company-input').value = name;
-  document.getElementById('company-list').style.display = 'none';
-  document.getElementById('company-clear').style.display = 'block';
-}
-function clearCompany() {
-  selectedCompany = '';
-  document.getElementById('s-company-input').value = '';
-  document.getElementById('company-clear').style.display = 'none';
-  document.getElementById('company-list').style.display = 'none';
+function togglePeriodInputs() {
+  const div = document.getElementById('s-course-div').value;
+  const enabled = div === '정시';
+  ['s-period-type','s-period-from','s-period-to'].forEach(id => {
+    document.getElementById(id).disabled = !enabled;
+  });
 }
 
 function doSearch() {
-  const courseField = document.getElementById('s-course-field').value;
-  const courseKw    = document.getElementById('s-course-kw').value.trim().toLowerCase();
-  const courseType  = document.getElementById('s-course-type').value;
-  const company     = selectedCompany;
+  const courseDiv  = document.getElementById('s-course-div').value;
+  const periodType = document.getElementById('s-period-type').value;
+  const periodFrom = document.getElementById('s-period-from').value;
+  const periodTo   = document.getElementById('s-period-to').value;
+  const courseField= document.getElementById('s-course-field').value;
+  const courseKw   = document.getElementById('s-course-kw').value.trim().toLowerCase();
+  const courseType = document.getElementById('s-course-type').value;
+  const courseCat  = document.getElementById('s-course-cat').value;
 
-  filteredData = ALL_DATA.filter(r => {
-    if (courseKw) {
-      if (courseField === 'name' && !r.name.toLowerCase().includes(courseKw)) return false;
-      if (courseField === 'code' && !r.code.toLowerCase().includes(courseKw)) return false;
+  const periodEnabled = courseDiv === '정시';
+
+  filteredData = ALL_COURSES.filter(r => {
+    if (periodEnabled && r.courseDiv === '정시') {
+      if (periodType === 'start') {
+        if (periodFrom && r.studyFrom < periodFrom) return false;
+        if (periodTo   && r.studyFrom > periodTo)   return false;
+      } else if (periodType === 'end') {
+        if (periodFrom && r.studyTo < periodFrom) return false;
+        if (periodTo   && r.studyTo > periodTo)   return false;
+      } else {
+        if (periodFrom && r.studyFrom < periodFrom) return false;
+        if (periodTo   && r.studyTo   > periodTo)   return false;
+      }
+    } else if (periodEnabled && r.courseDiv !== '정시') {
+      // 정시 필터 활성 상태에서는 수시 과정 제외
+      return false;
     }
-    if (courseType && r.type.code !== courseType) return false;
-    if (company && !r.companies.includes(company)) return false;
+    if (courseDiv && r.courseDiv !== courseDiv) return false;
+    if (courseKw) {
+      if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
+      if (courseField === 'code' && r.courseCode.toLowerCase() !== courseKw)        return false;
+    }
+    if (courseType && r.courseType.code  !== courseType) return false;
+    if (courseCat  && r.courseCategory   !== courseCat)  return false;
     return true;
   });
 
-  // 총 학습자 수 DESC 정렬
-  filteredData.sort((a, b) => b.total - a.total);
+  // 기본 정렬: id DESC (최신 등록 과정 우선)
+  filteredData.sort((a, b) => b.id - a.id);
   currentPage = 1;
   renderSummary();
   renderTable();
 }
 
 function doReset() {
-  document.getElementById('s-date-from').value = '2026-04-01';
-  document.getElementById('s-date-to').value   = '2026-04-30';
+  document.getElementById('s-course-div').selectedIndex   = 0;
+  document.getElementById('s-period-type').selectedIndex  = 0;
+  document.getElementById('s-period-from').value          = '2026-04-01';
+  document.getElementById('s-period-to').value            = '2026-04-30';
   document.getElementById('s-course-field').selectedIndex = 0;
-  document.getElementById('s-course-kw').value = '';
-  document.getElementById('s-course-type').selectedIndex = 0;
-  document.getElementById('s-course-cat').selectedIndex  = 0;
-  clearCompany();
+  document.getElementById('s-course-kw').value            = '';
+  document.getElementById('s-course-type').selectedIndex  = 0;
+  document.getElementById('s-course-cat').selectedIndex   = 0;
+  togglePeriodInputs();
   doSearch();
 }
 
 function renderSummary() {
-  const total      = filteredData.length;
-  const online     = filteredData.filter(r => r.type.code === 'online').length;
-  const micro      = filteredData.filter(r => r.type.code === 'micro').length;
-  const learner    = filteredData.reduce((s, r) => s + r.total, 0);
-  const complete   = filteredData.reduce((s, r) => s + r.complete, 0);
-  const incomplete = filteredData.reduce((s, r) => s + r.incomplete, 0);
-  const studying   = filteredData.reduce((s, r) => s + r.studying, 0);
-  const avgRate    = learner > 0 ? Math.round(complete / learner * 100) : 0;
-
-  document.getElementById('sum-total').textContent     = total.toLocaleString();
-  document.getElementById('sum-online').textContent    = online.toLocaleString();
-  document.getElementById('sum-micro').textContent     = micro.toLocaleString();
-  document.getElementById('sum-learner').textContent   = learner.toLocaleString();
-  document.getElementById('sum-complete').textContent  = complete.toLocaleString();
-  document.getElementById('sum-incomplete').textContent= incomplete.toLocaleString();
-  document.getElementById('sum-studying').textContent  = studying.toLocaleString();
-  document.getElementById('sum-avg-rate').textContent  = avgRate + '%';
+  const sum = (k) => filteredData.reduce((s, r) => s + r.stats[k], 0);
+  document.getElementById('sum-courses').textContent    = filteredData.length.toLocaleString();
+  document.getElementById('sum-learner').textContent    = sum('learnerCount').toLocaleString();
+  document.getElementById('sum-scheduled').textContent  = sum('scheduled').toLocaleString();
+  document.getElementById('sum-studying').textContent   = sum('studying').toLocaleString();
+  document.getElementById('sum-ended').textContent      = sum('ended').toLocaleString();
+  document.getElementById('sum-before').textContent     = sum('before').toLocaleString();
+  document.getElementById('sum-complete').textContent   = sum('complete').toLocaleString();
+  document.getElementById('sum-incomplete').textContent = sum('incomplete').toLocaleString();
 }
 
 function renderTable() {
@@ -523,28 +869,28 @@ function renderTable() {
   const slice = filteredData.slice(start, start + pageSize);
 
   if (!slice.length) {
-    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:32px;color:#94a3b8;">현재 조회된 데이터가 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14" style="text-align:center;padding:32px;color:#94a3b8;">현재 조회된 데이터가 없습니다.</td></tr>`;
     document.getElementById('pagination').innerHTML = '';
     return;
   }
 
-  tbody.innerHTML = slice.map((r, idx) => {
-    const rate      = r.total > 0 ? Math.round(r.complete / r.total * 100) : 0;
-    const rateColor = rate >= 80 ? '#16a34a' : rate >= 50 ? '#d97706' : '#dc2626';
-    return `
+  tbody.innerHTML = slice.map((r, idx) => `
     <tr>
       <td>${filteredData.length - start - idx}</td>
-      <td><span class="badge ${r.type.badge}">${r.type.label}</span></td>
-      <td>${r.code}</td>
-      <td style="text-align:left;padding-left:12px;">${r.name}</td>
-      <td>${r.courseStart.replace(/-/g,'.')} ~ ${r.courseEnd.replace(/-/g,'.')}</td>
-      <td><strong>${r.total.toLocaleString()}</strong></td>
-      <td style="color:#16a34a;font-weight:600;">${r.complete.toLocaleString()}</td>
-      <td style="color:#dc2626;">${r.incomplete.toLocaleString()}</td>
-      <td style="color:#d97706;">${r.studying.toLocaleString()}</td>
-      <td style="font-weight:700;color:${rateColor};">${rate}%</td>
-    </tr>`;
-  }).join('');
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:12px;"><button class="name-link" onclick="showDetail(${r.id})">${r.courseName}</button></td>
+      <td>${r.courseCategory}</td>
+      <td>${r.periodLabel}</td>
+      <td><strong>${r.stats.learnerCount}</strong></td>
+      <td>${r.stats.scheduled}</td>
+      <td>${r.stats.studying}</td>
+      <td>${r.stats.ended}</td>
+      <td>${r.stats.before}</td>
+      <td style="color:#15803d;font-weight:600;">${r.stats.complete}</td>
+      <td style="color:#b91c1c;">${r.stats.incomplete}</td>
+      <td><strong>${r.stats.completeRate}%</strong></td>
+      <td><button class="btn-cert" onclick="printCert(${r.id})">출력</button></td>
+    </tr>`).join('');
   renderPagination();
 }
 
@@ -567,8 +913,174 @@ function goPage(p) {
   renderTable();
 }
 
-function downloadExcel() { alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건'); }
+/* ── 상세 화면 ── */
+let dFiltered = [];
+let dCurrentPage = 1;
+let dPageSize = 50;
 
+function showDetail(id) {
+  currentDetailId = id;
+  const r = ALL_COURSES.find(c => c.id === id);
+  if (!r) return;
+
+  document.getElementById('detail-info-table').innerHTML = `
+    <tr>
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
+      <td>${r.courseCategory}</td>
+      <td>${r.periodLabel}</td>
+      <td><strong>${r.stats.learnerCount}</strong></td>
+      <td>${r.stats.scheduled}</td>
+      <td>${r.stats.studying}</td>
+      <td>${r.stats.ended}</td>
+      <td>${r.stats.before}</td>
+      <td style="color:#15803d;font-weight:600;">${r.stats.complete}</td>
+      <td style="color:#b91c1c;">${r.stats.incomplete}</td>
+      <td><strong>${r.stats.completeRate}%</strong></td>
+      <td><button class="btn-cert" onclick="printCert(${r.id})">출력</button></td>
+    </tr>`;
+
+  // 목차 옵션
+  const toc = document.getElementById('d-toc');
+  toc.innerHTML = `<option value="">전체 목차</option>` + TOC_ITEMS.map((t, i) => `<option value="${i}">${t}</option>`).join('');
+
+  // 회사 옵션 (해당 과정의 학습자가 속한 회사만)
+  const learners = generateLearners(r);
+  const companies = [...new Set(learners.map(l => l.company))];
+  const companySel = document.getElementById('d-company');
+  companySel.innerHTML = `<option value="">전체</option>` + companies.map(c => `<option>${c}</option>`).join('');
+
+  // 학습자 검색 초기화 + 렌더
+  document.getElementById('d-learner-field').selectedIndex = 0;
+  document.getElementById('d-learner-kw').value = '';
+  document.getElementById('d-dept').value = '';
+  doDetailSearch();
+
+  document.getElementById('list-view').style.display   = 'none';
+  document.getElementById('detail-view').style.display = 'flex';
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function doDetailSearch() {
+  const r = ALL_COURSES.find(c => c.id === currentDetailId);
+  if (!r) return;
+  const learners = generateLearners(r);
+
+  const field   = document.getElementById('d-learner-field').value;
+  const kw      = document.getElementById('d-learner-kw').value.trim();
+  const company = document.getElementById('d-company').value;
+  const dept    = document.getElementById('d-dept').value.trim();
+
+  dFiltered = learners.filter(l => {
+    if (kw) {
+      if (field === 'name'  && l.name  !== kw) return false;
+      if (field === 'id'    && l.userId.toLowerCase() !== kw.toLowerCase()) return false;
+      if (field === 'empNo' && l.empNo !== kw) return false;
+    }
+    if (company && l.company !== company) return false;
+    if (dept && !l.dept.toLowerCase().includes(dept.toLowerCase())) return false;
+    return true;
+  });
+  dCurrentPage = 1;
+  renderDetailTable();
+}
+
+function doDetailReset() {
+  document.getElementById('d-toc').selectedIndex = 0;
+  document.getElementById('d-learner-field').selectedIndex = 0;
+  document.getElementById('d-learner-kw').value = '';
+  document.getElementById('d-company').selectedIndex = 0;
+  document.getElementById('d-dept').value = '';
+  doDetailSearch();
+}
+
+function renderDetailTable() {
+  const tbody = document.getElementById('d-list-tbody');
+  document.getElementById('d-total-count').textContent = dFiltered.length.toLocaleString();
+  const start = (dCurrentPage - 1) * dPageSize;
+  const slice = dFiltered.slice(start, start + dPageSize);
+
+  if (!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:32px;color:#94a3b8;">현재 조회된 데이터가 없습니다.</td></tr>`;
+    document.getElementById('d-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map((l, idx) => `
+    <tr>
+      <td>${dFiltered.length - start - idx}</td>
+      <td>${maskName(l.name)}</td>
+      <td style="text-align:left;padding-left:12px;">${maskId(l.userId)}</td>
+      <td>${fmtDate(l.lFrom)} ~ ${fmtDate(l.lTo)}</td>
+      <td><span class="badge ${l.learningStatus.badge}">${l.learningStatus.label}</span></td>
+      <td>${l.evalDone} / ${l.evalTotal}</td>
+      <td>${l.totalScore}점</td>
+      <td><span class="badge ${l.completeStatus.badge}">${l.completeStatus.label}</span></td>
+      <td>${l.completeDate ? fmtDate(l.completeDate) : '-'}</td>
+      <td>${l.company}</td>
+      <td>${l.dept}</td>
+    </tr>`).join('');
+  renderDetailPagination();
+}
+
+function renderDetailPagination() {
+  const total = Math.ceil(dFiltered.length / dPageSize);
+  const pg = document.getElementById('d-pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goDetailPage(${dCurrentPage-1})" ${dCurrentPage===1?'disabled':''}>&#8249;</button>`;
+  const s = Math.max(1, dCurrentPage - 2), e = Math.min(total, s + 4);
+  for (let i = s; i <= e; i++)
+    html += `<button class="pg-btn${i===dCurrentPage?' active':''}" onclick="goDetailPage(${i})">${i}</button>`;
+  html += `<button class="pg-btn" onclick="goDetailPage(${dCurrentPage+1})" ${dCurrentPage===total?'disabled':''}>&#8250;</button>`;
+  pg.innerHTML = html;
+}
+
+function goDetailPage(p) {
+  const total = Math.ceil(dFiltered.length / dPageSize);
+  if (p < 1 || p > total) return;
+  dCurrentPage = p;
+  renderDetailTable();
+}
+
+function goPrev() {
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('list-view').style.display   = 'flex';
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function goBack() {
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('list-view').style.display   = 'flex';
+  doReset();
+}
+
+function printCert(id) {
+  const r = ALL_COURSES.find(c => c.id === id);
+  if (!r) return;
+  alert('수료증 출력 페이지로 이동합니다.\n과정명: ' + r.courseName);
+}
+
+function downloadExcel() {
+  document.getElementById('excel-modal').classList.add('open');
+}
+function closeExcelModal() {
+  document.getElementById('excel-modal').classList.remove('open');
+}
+function goToDownloadPage() {
+  closeExcelModal();
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = pad(now.getMonth()+1);
+  const dd = pad(now.getDate());
+  const HH = pad(now.getHours());
+  const MM = pad(now.getMinutes());
+  alert('다운로드 페이지로 이동합니다.\n파일명: Hunet_과정별 학습현황_' + yy+mm+dd+'_'+HH+MM+'.xlsx');
+}
+function downloadDetailExcel() {
+  alert('학습자 목록 엑셀 다운로드');
+}
+
+/* ── 초기 실행 ── */
 doSearch();
 </script>
 </body>
