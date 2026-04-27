@@ -312,20 +312,20 @@
         <div class="search-row">
           <div class="search-label">과정구분</div>
           <div class="search-body">
-            <select class="select" id="s-course-div" style="width:88px;">
+            <select class="select" id="s-course-div" style="width:88px;" onchange="togglePeriodInputs()">
               <option value="">전체</option>
               <option>정시</option>
               <option>수시</option>
             </select>
             <span class="search-label" style="width:auto;padding:0 4px 0 20px;white-space:nowrap;">과정 학습기간</span>
-            <select class="select" id="s-period-type" style="width:110px;">
+            <select class="select" id="s-period-type" style="width:110px;" disabled>
               <option value="start">학습시작일</option>
               <option value="end">학습종료일</option>
               <option value="range">기간검색</option>
             </select>
-            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01">
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" disabled>
             <span class="date-sep">~</span>
-            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30">
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" disabled>
           </div>
         </div>
 
@@ -737,17 +737,22 @@ function doSearch() {
   const courseType    = document.getElementById('s-course-type').value;
   const courseCat     = document.getElementById('s-course-cat').value;
 
+  // 과정 학습기간은 과정구분 = 정시일 때만 적용
+  const periodEnabled = courseDiv === '정시';
+
   filteredData = ALL_DATA.filter(r => {
-    /* 학습기간 */
-    if (periodType === 'start') {
-      if (periodFrom && r.studyFrom < periodFrom) return false;
-      if (periodTo   && r.studyFrom > periodTo)   return false;
-    } else if (periodType === 'end') {
-      if (periodFrom && r.studyTo < periodFrom) return false;
-      if (periodTo   && r.studyTo > periodTo)   return false;
-    } else {
-      if (periodFrom && r.studyFrom < periodFrom) return false;
-      if (periodTo   && r.studyTo   > periodTo)   return false;
+    /* 학습기간: 정시일 때만 필터링 */
+    if (periodEnabled) {
+      if (periodType === 'start') {
+        if (periodFrom && r.studyFrom < periodFrom) return false;
+        if (periodTo   && r.studyFrom > periodTo)   return false;
+      } else if (periodType === 'end') {
+        if (periodFrom && r.studyTo < periodFrom) return false;
+        if (periodTo   && r.studyTo > periodTo)   return false;
+      } else {
+        if (periodFrom && r.studyFrom < periodFrom) return false;
+        if (periodTo   && r.studyTo   > periodTo)   return false;
+      }
     }
     /* 학습자 */
     if (learnerKw) {
@@ -774,6 +779,15 @@ function doSearch() {
   renderTable();
 }
 
+/* ── 과정구분에 따른 학습기간 입력 토글 ── */
+function togglePeriodInputs() {
+  const div = document.getElementById('s-course-div').value;
+  const enabled = div === '정시';
+  ['s-period-type','s-period-from','s-period-to'].forEach(id => {
+    document.getElementById(id).disabled = !enabled;
+  });
+}
+
 /* ── 초기화 ── */
 function doReset() {
   document.getElementById('s-course-div').selectedIndex  = 0;
@@ -788,6 +802,7 @@ function doReset() {
   document.getElementById('s-course-type').selectedIndex     = 0;
   document.getElementById('s-course-cat').selectedIndex      = 0;
   selectedCompanies = []; renderCompanyChips();
+  togglePeriodInputs();
   doSearch();
 }
 
