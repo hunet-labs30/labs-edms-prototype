@@ -884,9 +884,9 @@ function showDetail(id) {
       <td style="text-align:left;padding-left:8px;">${c.name}</td>
       <td>${c.required}</td>
       <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
-      <td>${c.watchTime}</td>
+      <td>${c.studyInfo}</td>
       <td>${c.progress}%</td>
-      <td>${c.contentScore !== null ? c.contentScore : '-'}</td>
+      <td>${c.contentScore}</td>
       <td><span class="badge ${c.done ? 'badge-done' : 'badge-not-done'}">${c.done ? 'Y' : 'N'}</span></td>
       <td>${c.lastDate}</td>
     </tr>`).join('');
@@ -921,21 +921,43 @@ function generateContents(r) {
   ];
   const typeList = TYPE_SETS[r.id % 4];
 
+  // 콘텐츠 유형별 "학습한 정보" 전체 단위 (동영상은 시간 형식, 나머지는 X/전체)
+  const STUDY_TOTAL = {
+    '이미지': 2, '아티클': 2, '첨부파일': 2,
+    '시험': 10, '과제': 1, '설문': 1, '퀴즈': 5,
+    'PDF': 5, '외부링크': 3, '오프라인': 10,
+  };
+  // 채점 필요 유형: 진행 시 점수 표시, 미진행 시 '-', 나머지 유형은 공백
+  const SCORED_TYPES = ['시험','과제','설문','퀴즈'];
+
   return names.slice(0, count).map((name, i) => {
     const type = typeList[i] || CONTENT_TYPES[i % CONTENT_TYPES.length];
     const required = i < Math.ceil(count / 2) ? 'Y' : 'N';
     const done = isComplete || (!isBefore && i < Math.floor(count * 0.5));
     const progress = done ? 100 : (isBefore ? 0 : Math.min(90, 20 + i * 15));
 
-    const durationSec = (15 + i * 10) * 60;
-    const watchSec    = Math.floor(durationSec * (progress / 100));
-    const wh = String(Math.floor(watchSec / 3600)).padStart(2,'0');
-    const wm = String(Math.floor((watchSec % 3600) / 60)).padStart(2,'0');
-    const ws = String(watchSec % 60).padStart(2,'0');
-    const watchTime = `${wh}:${wm}:${ws}`;
+    // 학습한 정보: 동영상=재생시간(HH:MM:SS), 나머지=완료수/전체수
+    let studyInfo;
+    if (type === '동영상') {
+      const durationSec = (15 + i * 10) * 60;
+      const watchSec = Math.floor(durationSec * (progress / 100));
+      const wh = String(Math.floor(watchSec / 3600)).padStart(2,'0');
+      const wm = String(Math.floor((watchSec % 3600) / 60)).padStart(2,'0');
+      const ws = String(watchSec % 60).padStart(2,'0');
+      studyInfo = `${wh}:${wm}:${ws}`;
+    } else {
+      const total = STUDY_TOTAL[type] || 1;
+      const numerator = done ? total : Math.floor(total * progress / 100);
+      studyInfo = `${numerator}/${total}`;
+    }
 
-    const scoredTypes  = ['퀴즈','시험','과제'];
-    const contentScore = (scoredTypes.includes(type) && done) ? 70 + ((r.id + i) % 30) : null;
+    // 콘텐츠 점수: 채점 필요 Y 유형만 점수, 미진행이면 '-', 그 외 공백
+    let contentScore;
+    if (SCORED_TYPES.includes(type)) {
+      contentScore = (done || progress > 0) ? `${70 + ((r.id + i) % 30)}점` : '-';
+    } else {
+      contentScore = '';
+    }
 
     let lastDate = '-';
     if (done || progress > 0) {
@@ -943,7 +965,7 @@ function generateContents(r) {
       lastDate = d.replace(/-/g,'.');
     }
 
-    return { name, type, required, done, progress, watchTime, contentScore, lastDate };
+    return { name, type, required, done, progress, studyInfo, contentScore, lastDate };
   });
 }
 
