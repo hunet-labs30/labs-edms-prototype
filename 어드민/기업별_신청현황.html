@@ -409,18 +409,6 @@
         </div>
       </div>
       <div class="search-row">
-        <div class="search-label">과정</div>
-        <div class="search-body">
-          <select class="select" id="s-course-type" style="width:120px;">
-            <option value="">과정유형 전체</option>
-            <option value="online">온라인</option>
-            <option value="offline">오프라인</option>
-            <option value="hybrid">하이브리드</option>
-            <option value="micro">마이크로러닝</option>
-          </select>
-        </div>
-      </div>
-      <div class="search-row">
         <div class="search-label">회사검색</div>
         <div class="search-body">
           <div class="multiselect-wrap" id="company-multiselect" onclick="focusCompanyInput(event)">
@@ -634,7 +622,6 @@ function doReset() {
   const { from, to } = getThisMonthRange();
   document.getElementById('s-date-from').value = from;
   document.getElementById('s-date-to').value   = to;
-  document.getElementById('s-course-type').selectedIndex = 0;
   selectedCompanies = [];
   renderCompanyChips();
   doSearch();
