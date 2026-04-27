@@ -501,6 +501,8 @@
           <table class="detail-table">
             <thead>
               <tr>
+                <th style="width:110px;">회사명</th>
+                <th style="width:80px;">부서명</th>
                 <th style="width:72px;">이름</th>
                 <th style="width:160px;">아이디</th>
                 <th style="width:96px;">과정유형</th>
@@ -510,8 +512,6 @@
                 <th style="width:56px;">총점</th>
                 <th style="width:88px;">수료여부</th>
                 <th style="width:96px;">수료일</th>
-                <th style="width:110px;">회사명</th>
-                <th style="width:80px;">부서명</th>
               </tr>
             </thead>
             <tbody id="detail-info-table"></tbody>
@@ -853,6 +853,8 @@ function showDetail(id) {
 
   document.getElementById('detail-info-table').innerHTML = `
     <tr>
+      <td>${r.company}</td>
+      <td>${r.dept}</td>
       <td>${r.name}</td>
       <td style="text-align:left;padding-left:8px;">${r.userId}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
@@ -862,8 +864,6 @@ function showDetail(id) {
       <td>${r.totalScore > 0 ? r.totalScore : '-'}</td>
       <td><span class="badge ${r.completeStatus.badge}">${r.completeStatus.label}</span></td>
       <td>${r.completeDate ? r.completeDate.replace(/-/g,'.') : '-'}</td>
-      <td>${r.company}</td>
-      <td>${r.dept}</td>
     </tr>`;
 
   const contents = generateContents(r);
