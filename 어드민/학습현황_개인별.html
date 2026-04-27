@@ -81,13 +81,6 @@
   .search-icon-wrap .input { padding-left:28px; width:180px; }
   .search-actions { display:flex; justify-content:flex-end; gap:8px; padding-top:2px; }
 
-  /* PERIOD TABS */
-  .period-tabs { display:flex; gap:4px; flex-shrink:0; }
-  .period-tab { height:28px; padding:0 11px; border:1px solid #cbd5e1; border-radius:5px; background:#fff; font-size:12px; color:#475569; cursor:pointer; transition:all .15s; font-family:inherit; }
-  .period-tab:hover { background:#f8fafc; }
-  .period-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); font-weight:600; }
-  .period-input-set { display:none; align-items:center; gap:6px; }
-  .period-input-set.active { display:flex; }
 
   /* TYPEAHEAD / MULTISELECT (회사 다중 선택) */
   .typeahead-list { position:absolute; top:calc(100% + 2px); left:0; min-width:260px; background:#fff; border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.1); list-style:none; max-height:200px; overflow-y:auto; z-index:500; }
@@ -319,51 +312,20 @@
         <div class="search-row">
           <div class="search-label">학습기간</div>
           <div class="search-body">
-            <div class="period-tabs">
-              <button class="period-tab active" onclick="switchPeriod('month')">연도/월</button>
-              <button class="period-tab" onclick="switchPeriod('range')">기간검색</button>
-              <button class="period-tab" onclick="switchPeriod('start')">학습시작일</button>
-              <button class="period-tab" onclick="switchPeriod('end')">학습종료일</button>
-            </div>
-            <div class="period-input-set active" id="period-month">
-              <select class="select" id="s-year" style="width:80px;">
-                <option>2024</option>
-                <option>2025</option>
-                <option selected>2026</option>
-              </select>
-              <select class="select" id="s-month" style="width:72px;">
-                <option value="">전체</option>
-                <option value="01">1월</option>
-                <option value="02">2월</option>
-                <option value="03">3월</option>
-                <option value="04">4월</option>
-                <option value="05">5월</option>
-                <option value="06">6월</option>
-                <option value="07">7월</option>
-                <option value="08">8월</option>
-                <option value="09">9월</option>
-                <option value="10">10월</option>
-                <option value="11">11월</option>
-                <option value="12">12월</option>
-              </select>
-            </div>
-            <div class="period-input-set" id="period-range">
-              <input class="input input-date" type="date" id="s-range-from" value="2026-04-01">
-              <span class="date-sep">~</span>
-              <input class="input input-date" type="date" id="s-range-to" value="2026-04-30">
-            </div>
-            <div class="period-input-set" id="period-start">
-              <input class="input input-date" type="date" id="s-start-date" value="2026-04-27">
-            </div>
-            <div class="period-input-set" id="period-end">
-              <input class="input input-date" type="date" id="s-end-date" value="2026-04-27">
-            </div>
+            <select class="select" id="s-period-type" style="width:110px;">
+              <option value="start">학습시작일</option>
+              <option value="end">학습종료일</option>
+              <option value="range">기간검색</option>
+            </select>
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01">
+            <span class="date-sep">~</span>
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30">
           </div>
         </div>
 
-        <!-- 학습자 -->
+        <!-- 학습자 검색 -->
         <div class="search-row">
-          <div class="search-label">학습자</div>
+          <div class="search-label">학습자 검색</div>
           <div class="search-body">
             <select class="select" id="s-learner-field" style="width:88px;">
               <option value="name">이름</option>
@@ -389,9 +351,9 @@
           </div>
         </div>
 
-        <!-- 과정 -->
+        <!-- 과정검색 -->
         <div class="search-row">
-          <div class="search-label">과정</div>
+          <div class="search-label">과정검색</div>
           <div class="search-body">
             <select class="select" id="s-course-field" style="width:88px;">
               <option value="name">과정명</option>
@@ -401,11 +363,6 @@
               <span class="ico">&#128269;</span>
               <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
             </div>
-            <select class="select" id="s-course-div" style="width:110px;">
-              <option value="">과정구분 전체</option>
-              <option>정시</option>
-              <option>수시</option>
-            </select>
             <select class="select" id="s-course-type" style="width:130px;">
               <option value="">과정유형 전체</option>
               <option value="online">온라인</option>
@@ -693,18 +650,8 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
 let filteredData = [...ALL_DATA];
 let currentPage  = 1;
 let pageSize     = 50;
-let periodMode   = 'month';
 let currentDetailId = null;
 let selectedCompanies = [];
-
-/* ── 기간 탭 전환 ── */
-function switchPeriod(mode) {
-  periodMode = mode;
-  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.querySelectorAll('.period-input-set').forEach(s => s.classList.remove('active'));
-  document.getElementById(`period-${mode}`).classList.add('active');
-}
 
 /* ── 회사 multiselect ── */
 function focusCompanyInput(e) {
@@ -751,34 +698,29 @@ document.addEventListener('mousedown', function(e) {
 
 /* ── 검색 ── */
 function doSearch() {
-  const year          = document.getElementById('s-year').value;
-  const month         = document.getElementById('s-month').value;
-  const rangeFrom     = document.getElementById('s-range-from').value;
-  const rangeTo       = document.getElementById('s-range-to').value;
-  const startDate     = document.getElementById('s-start-date').value;
-  const endDate       = document.getElementById('s-end-date').value;
+  const periodType    = document.getElementById('s-period-type').value;
+  const periodFrom    = document.getElementById('s-period-from').value;
+  const periodTo      = document.getElementById('s-period-to').value;
   const learnerField  = document.getElementById('s-learner-field').value;
   const learnerKw     = document.getElementById('s-learner-kw').value.trim();
   const learnerStatus = document.getElementById('s-learner-status').value;
   const completeStatus= document.getElementById('s-complete-status').value;
   const courseField   = document.getElementById('s-course-field').value;
   const courseKw      = document.getElementById('s-course-kw').value.trim().toLowerCase();
-  const courseDiv     = document.getElementById('s-course-div').value;
   const courseType    = document.getElementById('s-course-type').value;
   const courseCat     = document.getElementById('s-course-cat').value;
 
   filteredData = ALL_DATA.filter(r => {
     /* 학습기간 */
-    if (periodMode === 'month') {
-      if (month) { if (!r.studyFrom.startsWith(`${year}-${month}`)) return false; }
-      else        { if (!r.studyFrom.startsWith(year))               return false; }
-    } else if (periodMode === 'range') {
-      if (rangeFrom && r.studyFrom < rangeFrom) return false;
-      if (rangeTo   && r.studyFrom > rangeTo)   return false;
-    } else if (periodMode === 'start') {
-      if (startDate && r.studyFrom !== startDate) return false;
-    } else if (periodMode === 'end') {
-      if (endDate && r.studyTo !== endDate) return false;
+    if (periodType === 'start') {
+      if (periodFrom && r.studyFrom < periodFrom) return false;
+      if (periodTo   && r.studyFrom > periodTo)   return false;
+    } else if (periodType === 'end') {
+      if (periodFrom && r.studyTo < periodFrom) return false;
+      if (periodTo   && r.studyTo > periodTo)   return false;
+    } else {
+      if (periodFrom && r.studyFrom < periodFrom) return false;
+      if (periodTo   && r.studyTo   > periodTo)   return false;
     }
     /* 학습자 */
     if (learnerKw) {
@@ -794,7 +736,6 @@ function doSearch() {
       if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
       if (courseField === 'code' && !r.courseCode.toLowerCase().includes(courseKw)) return false;
     }
-    if (courseDiv  && r.courseDiv                !== courseDiv)  return false;
     if (courseType && r.courseType.code          !== courseType) return false;
     if (courseCat  && r.courseCategory           !== courseCat)  return false;
     /* 회사 */
@@ -810,34 +751,19 @@ function doSearch() {
 
 /* ── 초기화 ── */
 function doReset() {
-  switchPeriodByName('month');
-  document.getElementById('s-year').value  = '2026';
-  document.getElementById('s-month').value = '';
-  document.getElementById('s-range-from').value  = '2026-04-01';
-  document.getElementById('s-range-to').value    = '2026-04-30';
-  document.getElementById('s-start-date').value  = '2026-04-27';
-  document.getElementById('s-end-date').value    = '2026-04-27';
+  document.getElementById('s-period-type').selectedIndex = 0;
+  document.getElementById('s-period-from').value = '2026-04-01';
+  document.getElementById('s-period-to').value   = '2026-04-30';
   document.getElementById('s-learner-field').selectedIndex   = 0;
   document.getElementById('s-learner-kw').value              = '';
   document.getElementById('s-learner-status').selectedIndex  = 0;
   document.getElementById('s-complete-status').selectedIndex = 0;
   document.getElementById('s-course-field').selectedIndex    = 0;
   document.getElementById('s-course-kw').value               = '';
-  document.getElementById('s-course-div').selectedIndex      = 0;
   document.getElementById('s-course-type').selectedIndex     = 0;
   document.getElementById('s-course-cat').selectedIndex      = 0;
   selectedCompanies = []; renderCompanyChips();
   doSearch();
-}
-
-function switchPeriodByName(mode) {
-  periodMode = mode;
-  document.querySelectorAll('.period-tab').forEach((t, i) => {
-    const modes = ['month','range','start','end'];
-    t.classList.toggle('active', modes[i] === mode);
-  });
-  document.querySelectorAll('.period-input-set').forEach(s => s.classList.remove('active'));
-  document.getElementById(`period-${mode}`).classList.add('active');
 }
 
 /* ── 요약 (8카드) ── */
