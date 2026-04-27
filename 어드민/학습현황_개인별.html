@@ -308,10 +308,16 @@
       <!-- 검색 -->
       <div class="card search-wrap">
 
-        <!-- 학습기간 -->
+        <!-- 과정구분 + 과정 학습기간 -->
         <div class="search-row">
-          <div class="search-label">학습기간</div>
+          <div class="search-label">과정구분</div>
           <div class="search-body">
+            <select class="select" id="s-course-div" style="width:88px;">
+              <option value="">전체</option>
+              <option>정시</option>
+              <option>수시</option>
+            </select>
+            <span class="search-label" style="width:auto;padding:0 4px 0 20px;white-space:nowrap;">과정 학습기간</span>
             <select class="select" id="s-period-type" style="width:110px;">
               <option value="start">학습시작일</option>
               <option value="end">학습종료일</option>
@@ -705,6 +711,7 @@ function doSearch() {
   const learnerKw     = document.getElementById('s-learner-kw').value.trim();
   const learnerStatus = document.getElementById('s-learner-status').value;
   const completeStatus= document.getElementById('s-complete-status').value;
+  const courseDiv     = document.getElementById('s-course-div').value;
   const courseField   = document.getElementById('s-course-field').value;
   const courseKw      = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType    = document.getElementById('s-course-type').value;
@@ -736,6 +743,7 @@ function doSearch() {
       if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
       if (courseField === 'code' && !r.courseCode.toLowerCase().includes(courseKw)) return false;
     }
+    if (courseDiv  && r.courseDiv                !== courseDiv)  return false;
     if (courseType && r.courseType.code          !== courseType) return false;
     if (courseCat  && r.courseCategory           !== courseCat)  return false;
     /* 회사 */
@@ -751,6 +759,7 @@ function doSearch() {
 
 /* ── 초기화 ── */
 function doReset() {
+  document.getElementById('s-course-div').selectedIndex  = 0;
   document.getElementById('s-period-type').selectedIndex = 0;
   document.getElementById('s-period-from').value = '2026-04-01';
   document.getElementById('s-period-to').value   = '2026-04-30';
