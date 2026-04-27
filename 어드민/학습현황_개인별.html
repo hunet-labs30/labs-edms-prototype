@@ -881,8 +881,6 @@ function showDetail(id) {
       <td>${c.lastDate}</td>
     </tr>`).join('');
 
-  const idx = filteredData.findIndex(d => d.id === id);
-  document.getElementById('btn-prev').disabled = (idx <= 0);
 
   document.getElementById('list-view').style.display   = 'none';
   document.getElementById('detail-view').style.display = 'flex';
@@ -932,13 +930,15 @@ function actualMonth(studyFrom) {
 }
 
 function goPrev() {
-  const idx = filteredData.findIndex(d => d.id === currentDetailId);
-  if (idx > 0) showDetail(filteredData[idx - 1].id);
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('list-view').style.display   = 'flex';
+  document.querySelector('.main').scrollTop = 0;
 }
 
 function goBack() {
   document.getElementById('detail-view').style.display = 'none';
   document.getElementById('list-view').style.display   = 'flex';
+  doReset();
 }
 
 function downloadExcel() {
