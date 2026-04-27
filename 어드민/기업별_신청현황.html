@@ -204,7 +204,6 @@
   .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
   .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
   .pg-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-  .typeahead-wrap { position: relative; display: inline-flex; align-items: center; }
   .typeahead-list {
     position: absolute; top: calc(100% + 2px); left: 0; min-width: 260px;
     background: #fff; border: 1px solid var(--border);
@@ -215,12 +214,37 @@
   .typeahead-list li:first-child { border-radius: 8px 8px 0 0; }
   .typeahead-list li:last-child { border-radius: 0 0 8px 8px; }
   .typeahead-list li:hover { background: var(--primary-light); color: var(--primary); }
-  .typeahead-clear {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer; font-size: 16px;
-    color: #94a3b8; line-height: 1; padding: 0;
+
+  /* ── MULTISELECT (회사 다중 선택) ── */
+  .multiselect-wrap {
+    position: relative;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    width: 340px; min-height: 34px;
+    border: 1px solid #cbd5e1; border-radius: 6px;
+    padding: 3px 6px; background: #fff;
+    cursor: text;
   }
-  .typeahead-clear:hover { color: #475569; }
+  .multiselect-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+  }
+  .multiselect-input {
+    flex: 1; min-width: 100px; border: none; outline: none;
+    font-size: 13px; padding: 3px 4px; background: transparent;
+    font-family: inherit; color: var(--text);
+  }
+  .company-chip {
+    display: inline-flex; align-items: center;
+    background: var(--primary-light); color: var(--primary);
+    font-size: 12px; font-weight: 500;
+    padding: 2px 2px 2px 8px; border-radius: 4px;
+  }
+  .company-chip .chip-x {
+    background: none; border: none; cursor: pointer;
+    color: var(--primary); font-size: 14px; line-height: 1;
+    padding: 0 6px; font-family: inherit;
+  }
+  .company-chip .chip-x:hover { color: #1d4ed8; }
 </style>
 </head>
 <body>
@@ -387,10 +411,6 @@
       <div class="search-row">
         <div class="search-label">과정</div>
         <div class="search-body">
-          <div class="search-icon-wrap">
-            <span class="ico">&#128269;</span>
-            <input class="input" id="s-course-kw" type="text" placeholder="과정명 입력">
-          </div>
           <select class="select" id="s-course-type" style="width:120px;">
             <option value="">과정유형 전체</option>
             <option value="online">온라인</option>
@@ -401,13 +421,13 @@
         </div>
       </div>
       <div class="search-row">
-        <div class="search-label">회사</div>
+        <div class="search-label">회사검색</div>
         <div class="search-body">
-          <div class="typeahead-wrap">
-            <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
-              autocomplete="off" style="width:260px;padding-right:26px;"
-              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
-            <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
+          <div class="multiselect-wrap" id="company-multiselect" onclick="focusCompanyInput(event)">
+            <input type="text" class="multiselect-input" id="s-company-input"
+              placeholder="회사 검색 (복수 선택 가능)"
+              autocomplete="off"
+              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onkeydown="onCompanyKeydown(event)">
             <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
           </div>
         </div>
@@ -525,50 +545,74 @@ let filteredData = [...ALL_DATA];
 let currentPage = 1;
 let pageSize = 50;
 
-let selectedCompany = '';
-let _companyBlurTimer = null;
+// ── 회사 다중 선택 ──
+let selectedCompanies = [];
 
+function focusCompanyInput(e) {
+  if (!e.target.closest('.chip-x')) {
+    document.getElementById('s-company-input').focus();
+  }
+}
 function onCompanyInput() {
-  selectedCompany = '';
-  document.getElementById('company-clear').style.display = 'none';
   _renderCompanyList(document.getElementById('s-company-input').value.trim());
 }
-function onCompanyFocus() { _renderCompanyList(document.getElementById('s-company-input').value.trim()); }
-function onCompanyBlur() {
-  _companyBlurTimer = setTimeout(() => {
+function onCompanyFocus() {
+  _renderCompanyList(document.getElementById('s-company-input').value.trim());
+}
+function onCompanyKeydown(e) {
+  const input = document.getElementById('s-company-input');
+  if (e.key === 'Backspace' && !input.value && selectedCompanies.length) {
+    selectedCompanies.pop();
+    renderCompanyChips();
+    _renderCompanyList('');
+  } else if (e.key === 'Escape') {
     document.getElementById('company-list').style.display = 'none';
-    if (!selectedCompany) document.getElementById('s-company-input').value = '';
-  }, 150);
+  }
 }
 function _renderCompanyList(query) {
   const list = document.getElementById('company-list');
-  const filtered = query ? COMPANIES.filter(c => c.toLowerCase().includes(query.toLowerCase())) : COMPANIES;
+  const pool = COMPANIES.filter(c => !selectedCompanies.includes(c));
+  const filtered = query ? pool.filter(c => c.toLowerCase().includes(query.toLowerCase())) : pool;
   if (!filtered.length) { list.style.display = 'none'; return; }
   list.innerHTML = filtered.map(c =>
-    `<li onmousedown="selectCompany(this,'${c.replace(/'/g,"\\'")}')">
+    `<li onmousedown="selectCompany('${c.replace(/'/g,"\\'")}')">
       ${query ? c.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>') : c}
     </li>`
   ).join('');
   list.style.display = 'block';
 }
-function selectCompany(el, name) {
-  if (_companyBlurTimer) clearTimeout(_companyBlurTimer);
-  selectedCompany = name;
-  document.getElementById('s-company-input').value = name;
-  document.getElementById('company-list').style.display = 'none';
-  document.getElementById('company-clear').style.display = 'block';
+function selectCompany(name) {
+  if (!selectedCompanies.includes(name)) selectedCompanies.push(name);
+  const input = document.getElementById('s-company-input');
+  input.value = '';
+  renderCompanyChips();
+  _renderCompanyList('');
+  input.focus();
 }
-function clearCompany() {
-  selectedCompany = '';
-  document.getElementById('s-company-input').value = '';
-  document.getElementById('company-clear').style.display = 'none';
-  document.getElementById('company-list').style.display = 'none';
+function removeCompany(name) {
+  selectedCompanies = selectedCompanies.filter(c => c !== name);
+  renderCompanyChips();
+}
+function renderCompanyChips() {
+  const wrap = document.getElementById('company-multiselect');
+  wrap.querySelectorAll('.company-chip').forEach(el => el.remove());
+  const input = document.getElementById('s-company-input');
+  const html = selectedCompanies.map(c =>
+    `<span class="company-chip">${c}<button class="chip-x" onclick="removeCompany('${c.replace(/'/g,"\\'")}')">×</button></span>`
+  ).join('');
+  input.insertAdjacentHTML('beforebegin', html);
 }
 
+document.addEventListener('mousedown', function(e) {
+  const wrap = document.getElementById('company-multiselect');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('company-list').style.display = 'none';
+  }
+});
+
 function doSearch() {
-  const company = selectedCompany;
   filteredData = ALL_DATA.filter(r => {
-    if (company && r.company !== company) return false;
+    if (selectedCompanies.length && !selectedCompanies.includes(r.company)) return false;
     return true;
   });
   filteredData.sort((a, b) => b.apply - a.apply);
@@ -590,9 +634,9 @@ function doReset() {
   const { from, to } = getThisMonthRange();
   document.getElementById('s-date-from').value = from;
   document.getElementById('s-date-to').value   = to;
-  document.getElementById('s-course-kw').value = '';
   document.getElementById('s-course-type').selectedIndex = 0;
-  clearCompany();
+  selectedCompanies = [];
+  renderCompanyChips();
   doSearch();
 }
 
