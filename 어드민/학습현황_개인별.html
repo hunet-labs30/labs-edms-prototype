@@ -760,10 +760,10 @@ function doSearch() {
       if (learnerField === 'id'   && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
     }
     if (completeStatus && r.completeStatus.code       !== completeStatus) return false;
-    /* 과정 */
+    /* 과정: 과정명=Like, 과정코드=완전일치 */
     if (courseKw) {
       if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
-      if (courseField === 'code' && !r.courseCode.toLowerCase().includes(courseKw)) return false;
+      if (courseField === 'code' && r.courseCode.toLowerCase() !== courseKw)        return false;
     }
     if (courseDiv  && r.courseDiv                !== courseDiv)  return false;
     if (courseType && r.courseType.code          !== courseType) return false;
