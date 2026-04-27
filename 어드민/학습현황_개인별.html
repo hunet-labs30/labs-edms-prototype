@@ -897,19 +897,32 @@ function showDetail(id) {
   document.querySelector('.main').scrollTop = 0;
 }
 
+// 콘텐츠 유형 전체 목록: 동영상, 이미지, 아티클, 첨부파일, 시험, 과제, 설문, 퀴즈, PDF, 외부링크, 오프라인
+const CONTENT_TYPES = ['동영상','이미지','아티클','첨부파일','시험','과제','설문','퀴즈','PDF','외부링크','오프라인'];
+
 function generateContents(r) {
   const SETS = [
     ['오리엔테이션','핵심 개념 이해','실습 Part 1','실습 Part 2','정리 및 평가','최종 테스트'],
     ['도입','이론 학습','사례 분석','응용 실습','종합 정리','퀴즈'],
+    ['개요 영상','참고 이미지','관련 아티클','첨부 자료','중간 시험','실습 과제'],
+    ['소개','PDF 자료','외부 링크','오프라인 활동','설문','최종 평가'],
   ];
-  const names = SETS[r.id % 2];
+  const names = SETS[r.id % 4];
   const count = 3 + (r.id % 4);
   const isComplete = r.completeStatus.code === 'complete';
   const isBefore   = r.completeStatus.code === 'before';
 
+  // 세트 인덱스에 따라 사용할 콘텐츠 유형 순서 지정
+  const TYPE_SETS = [
+    ['동영상','아티클','과제','퀴즈','동영상','시험'],
+    ['동영상','이미지','설문','퀴즈','과제','시험'],
+    ['이미지','아티클','첨부파일','시험','과제','설문'],
+    ['PDF','외부링크','오프라인','설문','시험','퀴즈'],
+  ];
+  const typeList = TYPE_SETS[r.id % 4];
+
   return names.slice(0, count).map((name, i) => {
-    const isLastTwo = i >= count - 2;
-    const type = isLastTwo ? (i === count - 1 ? '퀴즈' : '과제') : (i % 2 === 0 ? '동영상' : '문서');
+    const type = typeList[i] || CONTENT_TYPES[i % CONTENT_TYPES.length];
     const required = i < Math.ceil(count / 2) ? 'Y' : 'N';
     const done = isComplete || (!isBefore && i < Math.floor(count * 0.5));
     const progress = done ? 100 : (isBefore ? 0 : Math.min(90, 20 + i * 15));
@@ -921,9 +934,8 @@ function generateContents(r) {
     const ws = String(watchSec % 60).padStart(2,'0');
     const watchTime = `${wh}:${wm}:${ws}`;
 
-    const examScore    = (type === '퀴즈' && done) ? 70 + (r.id % 30) : null;
-    const assignScore  = (type === '과제' && done) ? 75 + (r.id % 20) : null;
-    const contentScore = examScore !== null ? examScore : (assignScore !== null ? assignScore : null);
+    const scoredTypes  = ['퀴즈','시험','과제'];
+    const contentScore = (scoredTypes.includes(type) && done) ? 70 + ((r.id + i) % 30) : null;
 
     let lastDate = '-';
     if (done || progress > 0) {
