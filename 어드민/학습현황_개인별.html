@@ -336,18 +336,12 @@
             <select class="select" id="s-learner-field" style="width:88px;">
               <option value="name">이름</option>
               <option value="id">아이디</option>
-              <option value="phone">휴대폰</option>
               <option value="empNo">사번</option>
             </select>
             <div class="search-icon-wrap">
               <span class="ico">&#128269;</span>
               <input class="input" id="s-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
             </div>
-            <select class="select" id="s-learner-status" style="width:110px;">
-              <option value="">재직상태 전체</option>
-              <option value="active">재직</option>
-              <option value="monitoring">모니터링</option>
-            </select>
             <select class="select" id="s-complete-status" style="width:130px;">
               <option value="">수료여부 전체</option>
               <option value="before">수료처리전</option>
@@ -377,7 +371,7 @@
             <select class="select" id="s-course-cat" style="width:130px;">
               <option value="">과정분류 전체</option>
               <option>외국어</option>
-              <option>자격공인</option>
+              <option>자격/공인</option>
               <option>자기개발</option>
               <option>전문직무</option>
               <option>직무공통</option>
@@ -554,7 +548,7 @@ const COURSE_TYPES = [
   { code:'online', label:'온라인',      badge:'badge-type-on' },
   { code:'micro',  label:'마이크로러닝', badge:'badge-type-micro' },
 ];
-const COURSE_CATS = ['외국어','자격공인','자기개발','전문직무','직무공통'];
+const COURSE_CATS = ['외국어','자격/공인','자기개발','전문직무','직무공통'];
 const COURSE_NAMES = [
   'AI 에이전트 시대가 온다','데이터 리터러시 기본','스토리텔링 프레젠테이션',
   '리더의 코칭 대화법','업무 자동화 with Python','MS 365 실무 활용',
@@ -709,7 +703,6 @@ function doSearch() {
   const periodTo      = document.getElementById('s-period-to').value;
   const learnerField  = document.getElementById('s-learner-field').value;
   const learnerKw     = document.getElementById('s-learner-kw').value.trim();
-  const learnerStatus = document.getElementById('s-learner-status').value;
   const completeStatus= document.getElementById('s-complete-status').value;
   const courseDiv     = document.getElementById('s-course-div').value;
   const courseField   = document.getElementById('s-course-field').value;
@@ -736,7 +729,6 @@ function doSearch() {
       if (learnerField === 'phone' && r.phone !== learnerKw)                             return false;
       if (learnerField === 'empNo' && !r.empNo.includes(learnerKw))                     return false;
     }
-    if (learnerStatus  && r.learnerStatus            !== learnerStatus)  return false;
     if (completeStatus && r.completeStatus.code       !== completeStatus) return false;
     /* 과정 */
     if (courseKw) {
