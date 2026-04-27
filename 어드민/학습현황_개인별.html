@@ -664,6 +664,16 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
   };
 });
 
+/* ── 고정 샘플 (예정·종료·수료·미수료 확인용) ── */
+ALL_DATA.push(
+  { id:201, company:'LABS 연수원', dept:'기획팀',   name:'김예정', learnerStatus:'active', empNo:'299001', userId:'sample01@hunet.co.kr', phone:'010-1111-0001', courseDiv:'정시', courseType:COURSE_TYPES[0], courseName:'AI 에이전트 시대가 온다',     courseCode:'ON-2604-S01', courseCategory:'전문직무', studyFrom:'2026-04-29', studyTo:'2026-07-29', learningStatus:LS[0], completeStatus:CS[0], totalScore:0,  completeDate:'' },
+  { id:202, company:'휴넷',        dept:'교육팀',   name:'이수료', learnerStatus:'active', empNo:'299002', userId:'sample02@hunet.co.kr', phone:'010-1111-0002', courseDiv:'수시', courseType:COURSE_TYPES[1], courseName:'데이터 리터러시 기본',         courseCode:'ML-2604-S02', courseCategory:'자기개발', studyFrom:'2026-04-01', studyTo:'2026-04-20', learningStatus:LS[2], completeStatus:CS[1], totalScore:88, completeDate:'2026-04-18' },
+  { id:203, company:'ABC마트',     dept:'인사팀',   name:'박미수', learnerStatus:'active', empNo:'299003', userId:'sample03@hunet.co.kr', phone:'010-1111-0003', courseDiv:'정시', courseType:COURSE_TYPES[0], courseName:'스토리텔링 프레젠테이션',       courseCode:'ON-2604-S03', courseCategory:'외국어',  studyFrom:'2026-04-05', studyTo:'2026-04-22', learningStatus:LS[2], completeStatus:CS[2], totalScore:44, completeDate:'' },
+  { id:204, company:'포스코',      dept:'영업팀',   name:'최종료', learnerStatus:'active', empNo:'299004', userId:'sample04@hunet.co.kr', phone:'010-1111-0004', courseDiv:'수시', courseType:COURSE_TYPES[0], courseName:'리더의 코칭 대화법',           courseCode:'ON-2604-S04', courseCategory:'직무공통', studyFrom:'2026-04-03', studyTo:'2026-04-25', learningStatus:LS[2], completeStatus:CS[0], totalScore:0,  completeDate:'' },
+  { id:205, company:'삼성전자',    dept:'개발팀',   name:'한수료', learnerStatus:'active', empNo:'299005', userId:'sample05@hunet.co.kr', phone:'010-1111-0005', courseDiv:'정시', courseType:COURSE_TYPES[1], courseName:'업무 자동화 with Python',       courseCode:'ML-2604-S05', courseCategory:'전문직무', studyFrom:'2026-04-07', studyTo:'2026-04-24', learningStatus:LS[2], completeStatus:CS[1], totalScore:91, completeDate:'2026-04-23' },
+  { id:206, company:'건강보험공단', dept:'총무팀',   name:'윤미수', learnerStatus:'active', empNo:'299006', userId:'sample06@hunet.co.kr', phone:'010-1111-0006', courseDiv:'수시', courseType:COURSE_TYPES[0], courseName:'MS 365 실무 활용',             courseCode:'ON-2604-S06', courseCategory:'자기개발', studyFrom:'2026-04-10', studyTo:'2026-04-26', learningStatus:LS[2], completeStatus:CS[2], totalScore:38, completeDate:'' }
+);
+
 let filteredData = [...ALL_DATA];
 let currentPage  = 1;
 let pageSize     = 50;
