@@ -899,8 +899,34 @@ function showDetail(id) {
 
 // 콘텐츠 유형 전체 목록: 동영상, 이미지, 아티클, 첨부파일, 시험, 과제, 설문, 퀴즈, PDF, 외부링크, 오프라인
 const CONTENT_TYPES = ['동영상','이미지','아티클','첨부파일','시험','과제','설문','퀴즈','PDF','외부링크','오프라인'];
+// 콘텐츠 유형별 "학습한 정보" 전체 단위 (동영상은 시간 형식, 나머지는 완료수/전체수)
+const STUDY_TOTAL = {
+  '이미지': 2, '아티클': 2, '첨부파일': 2,
+  '시험': 10, '과제': 1, '설문': 1, '퀴즈': 5,
+  'PDF': 5, '외부링크': 3, '오프라인': 10,
+};
+// 채점 필요 유형: 진행 시 점수 표시, 미진행 시 '-', 나머지 유형은 공백
+const SCORED_TYPES = ['시험','과제','설문','퀴즈'];
 
 function generateContents(r) {
+  // id=201(첫 노출 레코드)에 11종 유형 전체를 한 번에 표시
+  if (r.id === 201) {
+    const allTypes = [
+      { type:'동영상',  name:'AI 에이전트 개요 영상',    studyInfo:'00:00:00', contentScore:'',  required:'Y' },
+      { type:'이미지',  name:'핵심 개념 인포그래픽',      studyInfo:'0/2',      contentScore:'',  required:'Y' },
+      { type:'아티클',  name:'관련 아티클 읽기',          studyInfo:'0/2',      contentScore:'',  required:'Y' },
+      { type:'첨부파일',name:'참고 자료 다운로드',        studyInfo:'0/2',      contentScore:'',  required:'Y' },
+      { type:'시험',    name:'중간 평가 시험',            studyInfo:'0/10',     contentScore:'-', required:'Y' },
+      { type:'과제',    name:'실습 과제 제출',            studyInfo:'0/1',      contentScore:'-', required:'Y' },
+      { type:'설문',    name:'학습 만족도 설문',          studyInfo:'0/1',      contentScore:'-', required:'N' },
+      { type:'퀴즈',    name:'단원 확인 퀴즈',            studyInfo:'0/5',      contentScore:'-', required:'N' },
+      { type:'PDF',     name:'PDF 교재',                  studyInfo:'0/5',      contentScore:'',  required:'N' },
+      { type:'외부링크',name:'외부 참고 링크',            studyInfo:'0/3',      contentScore:'',  required:'N' },
+      { type:'오프라인',name:'오프라인 강의',             studyInfo:'0/10',     contentScore:'',  required:'N' },
+    ];
+    return allTypes.map(c => ({ ...c, done: false, progress: 0, lastDate: '-' }));
+  }
+
   const SETS = [
     ['오리엔테이션','핵심 개념 이해','실습 Part 1','실습 Part 2','정리 및 평가','최종 테스트'],
     ['도입','이론 학습','사례 분석','응용 실습','종합 정리','퀴즈'],
@@ -920,15 +946,6 @@ function generateContents(r) {
     ['PDF','외부링크','오프라인','설문','시험','퀴즈'],
   ];
   const typeList = TYPE_SETS[r.id % 4];
-
-  // 콘텐츠 유형별 "학습한 정보" 전체 단위 (동영상은 시간 형식, 나머지는 X/전체)
-  const STUDY_TOTAL = {
-    '이미지': 2, '아티클': 2, '첨부파일': 2,
-    '시험': 10, '과제': 1, '설문': 1, '퀴즈': 5,
-    'PDF': 5, '외부링크': 3, '오프라인': 10,
-  };
-  // 채점 필요 유형: 진행 시 점수 표시, 미진행 시 '-', 나머지 유형은 공백
-  const SCORED_TYPES = ['시험','과제','설문','퀴즈'];
 
   return names.slice(0, count).map((name, i) => {
     const type = typeList[i] || CONTENT_TYPES[i % CONTENT_TYPES.length];
