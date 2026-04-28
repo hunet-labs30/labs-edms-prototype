@@ -9365,52 +9365,52 @@ function maskLoginId(id) {
 const DEPT_DATA = [
   {
     id:'d1', code:'0000008993', name:'휴넷',
-    headList:[{role:'대표', id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
+    headList:[{id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
     children:[
       {
         id:'d2', code:'0000008994', name:'경영지원본부',
-        headList:[{role:'대표', id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d5', code:'0000008997', name:'인사팀',
-            headList:[{role:'대표', id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
+            headList:[{id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
             children:[
               {
                 id:'d13', code:'0000009010', name:'채용파트',
-                headList:[{role:'대표', id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
+                headList:[{id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
                 children:[
                   { id:'d20', code:'0000009020', name:'신입채용셀', headList:[], parentId:'d13', children:[] },
-                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{role:'대표', id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
+                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
                 ]
               },
-              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{role:'대표', id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
+              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
             ]
           },
           { id:'d6', code:'0000008998', name:'재무팀', headList:[], parentId:'d2', children:[
-            { id:'d22', code:'0000009022', name:'예산파트', headList:[{role:'대표', id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
+            { id:'d22', code:'0000009022', name:'예산파트', headList:[{id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
           ]},
-          { id:'d7', code:'0000008999', name:'총무팀', headList:[{role:'대표', id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
+          { id:'d7', code:'0000008999', name:'총무팀', headList:[{id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
         ]
       },
       {
         id:'d3', code:'0000009000', name:'IT개발본부',
-        headList:[{role:'대표', id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d8', code:'0000009001', name:'플랫폼팀',
-            headList:[{role:'대표', id:'emp_008', name:'윤지아', title:'팀장'}], parentId:'d3',
+            headList:[{id:'emp_008', name:'윤지아', title:'팀장'}], parentId:'d3',
             children:[
-              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{role:'대표', id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
-                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{role:'대표', id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
+              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
+                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
               ]},
-              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{role:'대표', id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
+              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
             ]
           },
           {
             id:'d9', code:'0000009002', name:'서비스개발팀',
-            headList:[{role:'대표', id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
+            headList:[{id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
             children:[
-              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{role:'대표', id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
+              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
             ]
           },
           { id:'d10', code:'0000009003', name:'QA팀', headList:[], parentId:'d3', children:[] },
@@ -9418,19 +9418,19 @@ const DEPT_DATA = [
       },
       {
         id:'d4', code:'0000009004', name:'교육사업본부',
-        headList:[{role:'대표', id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d11', code:'0000009005', name:'LABS기획팀',
-            headList:[{role:'대표', id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
+            headList:[{id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
             children:[
-              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{role:'대표', id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
+              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
                 { id:'d24', code:'0000009024', name:'어드민기획셀', headList:[], parentId:'d18', children:[] },
               ]},
-              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{role:'대표', id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
+              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
             ]
           },
-          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{role:'대표', id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
+          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
         ]
       }
     ]
@@ -9800,23 +9800,16 @@ function deptRenderHeadCard(node) {
     return;
   }
   const cells = list.map(h => {
-    const isLead    = h.role === '대표';
-    const roleColor = isLead ? '#1a73e8' : '#e67e22';
-    const roleBg    = isLead ? '#e8f0fe' : '#fef3e6';
-    const roleIcon  = isLead ? '👑' : '🔀';  // 대표=왕관, 겸직=교차화살표
-    const roleLabel = isLead ? '대표부서장' : '겸직부서장';
     return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafbfc;border:1px solid var(--border);border-radius:6px;">
       <!-- 프로필 이미지 -->
-      <div style="width:36px;height:36px;border-radius:50%;background:${roleColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;position:relative;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#1a73e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">
         ${h.name.charAt(0)}
-        <span style="position:absolute;bottom:-2px;right:-2px;font-size:12px;line-height:1;">${roleIcon}</span>
       </div>
       <!-- 정보 -->
       <div style="flex:1;min-width:0;">
-        <!-- 1행: 이름 + 역할 뱃지 -->
+        <!-- 1행: 이름 -->
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
           <span style="font-weight:700;color:#222;font-size:12px;">${maskName(h.name)}</span>
-          <span style="font-size:10px;font-weight:700;color:${roleColor};background:${roleBg};border-radius:10px;padding:1px 7px;white-space:nowrap;">${roleLabel}</span>
         </div>
         <!-- 2행: 직책 -->
         <div style="font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.title||'직책 미설정'}</div>
@@ -10083,7 +10076,9 @@ let deptHeadCurrentPage  = 1;
 let deptHeadPageSize     = 50;
 let deptHeadFilteredList = [];
 function deptSelectHead(id, name, loginId) {
-  deptHeadSelected = { id, name, loginId };
+  const m = ALL_MEMBERS_POOL.find(p => p.id === id);
+  const title = (m && m.position && m.position !== '-') ? m.position : '';
+  deptHeadSelected = { id, name, loginId, title };
   deptHeadRenderTable();
 }
 function deptConfirmHead() {
@@ -10095,16 +10090,7 @@ function deptConfirmHead() {
   if (node.headList.some(h => h.id === deptHeadSelected.id)) {
     alert('이미 부서장으로 설정된 임직원입니다.'); return;
   }
-  // 대표 공석 여부 확인 후 역할 결정
-  const hasLead = node.headList.some(h => h.role === '대표');
-  let role = '대표';
-  if (node.headList.length > 0 && hasLead) {
-    // 대표가 있는 경우에만 겸직 여부 확인
-    if (!confirm('이미 등록된 부서장이 있습니다.\n겸직 부서장으로 등록하시겠습니까?')) return;
-    role = '겸직';
-  }
-  // 대표 공석(headList에 인원은 있지만 대표가 없는 경우) → 자동으로 대표 설정
-  node.headList.push({ role, id: deptHeadSelected.id, name: deptHeadSelected.name, title: role === '대표' ? '대표부서장' : '겸직부서장' });
+  node.headList.push({ id: deptHeadSelected.id, name: deptHeadSelected.name, title: deptHeadSelected.title || '' });
   deptCloseHeadModal();
   deptRenderHeadCard(node);
   deptRenderTree();
