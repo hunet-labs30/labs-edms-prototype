@@ -1635,7 +1635,6 @@
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="부서" checked> 부서</label>
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="직급" checked> 직급</label>
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="일반전화번호" checked> 일반전화번호</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="근무상태" checked> 근무상태</label>
         </div>
       </div>
 
@@ -1710,15 +1709,16 @@
             <tr><td>이름 미입력</td><td>이름을 입력하지 않은 경우</td></tr>
             <tr><td>이름 입력오류</td><td>이름은 최대 25자까지 입력가능</td></tr>
             <tr><td>사번 글자수</td><td>사번은 최대 25자까지 입력가능</td></tr>
-            <tr><td>휴대전화번호 입력오류</td><td>휴대전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다. / 하이픈 제외 숫자 기준 9~11자리)</td></tr>
-            <tr><td>일반전화번호 입력오류</td><td>일반전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다. / 하이픈 제외 숫자 기준 7~11자리)</td></tr>
-            <tr><td>회사코드 미입력</td><td>계열사가 2개 이상 존재하는 경우 필수 입력사항</td></tr>
+            <tr><td>회사코드 미입력</td><td>회사코드를 입력하지 않은 경우</td></tr>
             <tr><td>존재하지 않는 회사코드</td><td>입력한 계열사 코드가 존재하지 않는 경우</td></tr>
             <tr><td>잘못 입력한 회사코드</td><td>입력한 계열사 코드가 이 기업에는 없는 계열사코드인 경우</td></tr>
+            <tr><td>휴대전화번호 미입력</td><td>휴대전화번호를 입력하지 않은 경우</td></tr>
+            <tr><td>휴대전화번호 입력오류</td><td>휴대전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다. / 하이픈 제외 숫자 기준 9~11자리)</td></tr>
+            <tr><td>이미 사용중인 휴대전화번호</td><td>다른 임직원이 이미 사용중인 휴대전화번호인 경우</td></tr>
+            <tr><td>일반전화번호 입력오류</td><td>일반전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다. / 하이픈 제외 숫자 기준 7~11자리)</td></tr>
             <tr><td>존재하지 않는 부서코드</td><td>이 기업이 '부서' 계층별 데이터로 관리되며, 입력한 부서코드가 존재하지 않는 경우</td></tr>
             <tr><td>존재하지 않는 직급코드</td><td>이 기업이 '직급' 계층별 데이터로 관리되며, 입력한 직급코드가 존재하지 않는 경우</td></tr>
-            <tr><td>근무상태 입력오류</td><td>입력값이 1 or 2가 아닌 경우 (1:재직, 2:모니터링)</td></tr>
-            <tr><td>이미 가입된 임직원</td><td>이름이 입력되고, 이름+휴대전화번호 or 이름+이메일주소를 확인하여 동일인물이 존재하는 경우</td></tr>
+            <tr><td>이미 가입된 임직원</td><td>이름이 입력되고, 이름+휴대전화번호 or 이름+아이디(이메일)를 확인하여 동일인물이 존재하는 경우</td></tr>
           </tbody>
         </table>
       </div>
