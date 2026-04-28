@@ -3877,7 +3877,6 @@
                       <th style="width:90px;">이름</th>
                       <th style="width:130px;">아이디</th>
                       <th style="width:90px;">사번</th>
-                      <th style="width:110px;">역할</th>
                       <th style="width:70px;">직급</th>
                       <th style="width:80px;">직책</th>
                       <th style="width:70px;">관리</th>
@@ -9427,52 +9426,52 @@ function maskLoginId(id) {
 const DEPT_DATA = [
   {
     id:'d1', code:'0000008993', name:'휴넷',
-    headList:[{role:'대표', id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
+    headList:[{id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
     children:[
       {
         id:'d2', code:'0000008994', name:'경영지원본부',
-        headList:[{role:'대표', id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d5', code:'0000008997', name:'인사팀',
-            headList:[{role:'대표', id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
+            headList:[{id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
             children:[
               {
                 id:'d13', code:'0000009010', name:'채용파트',
-                headList:[{role:'대표', id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
+                headList:[{id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
                 children:[
                   { id:'d20', code:'0000009020', name:'신입채용셀', headList:[], parentId:'d13', children:[] },
-                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{role:'대표', id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
+                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
                 ]
               },
-              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{role:'대표', id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
+              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
             ]
           },
           { id:'d6', code:'0000008998', name:'재무팀', headList:[], parentId:'d2', children:[
-            { id:'d22', code:'0000009022', name:'예산파트', headList:[{role:'대표', id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
+            { id:'d22', code:'0000009022', name:'예산파트', headList:[{id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
           ]},
-          { id:'d7', code:'0000008999', name:'총무팀', headList:[{role:'대표', id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
+          { id:'d7', code:'0000008999', name:'총무팀', headList:[{id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
         ]
       },
       {
         id:'d3', code:'0000009000', name:'IT개발본부',
-        headList:[{role:'대표', id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d8', code:'0000009001', name:'플랫폼팀',
-            headList:[{role:'대표', id:'emp_008', name:'윤지아', title:'팀장'},{role:'겸직', id:'emp_009', name:'박지성', title:'겸직팀장'},{role:'겸직', id:'emp_010', name:'최아름', title:'겸직팀장'}], parentId:'d3',
+            headList:[{id:'emp_008', name:'윤지아', title:'팀장'},{id:'emp_009', name:'박지성', title:'팀장'},{id:'emp_010', name:'최아름', title:'팀장'}], parentId:'d3',
             children:[
-              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{role:'대표', id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
-                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{role:'대표', id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
+              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
+                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
               ]},
-              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{role:'대표', id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
+              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
             ]
           },
           {
             id:'d9', code:'0000009002', name:'서비스개발팀',
-            headList:[{role:'대표', id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
+            headList:[{id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
             children:[
-              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{role:'대표', id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
+              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
             ]
           },
           { id:'d10', code:'0000009003', name:'QA팀', headList:[], parentId:'d3', children:[] },
@@ -9480,19 +9479,19 @@ const DEPT_DATA = [
       },
       {
         id:'d4', code:'0000009004', name:'교육사업본부',
-        headList:[{role:'대표', id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d11', code:'0000009005', name:'LABS기획팀',
-            headList:[{role:'대표', id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
+            headList:[{id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
             children:[
-              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{role:'대표', id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
+              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
                 { id:'d24', code:'0000009024', name:'어드민기획셀', headList:[], parentId:'d18', children:[] },
               ]},
-              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{role:'대표', id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
+              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
             ]
           },
-          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{role:'대표', id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
+          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
         ]
       }
     ]
@@ -9862,23 +9861,17 @@ function deptRenderHeadCard(node) {
     return;
   }
   const cells = list.map(h => {
-    const isLead    = h.role === '대표';
-    const roleColor = isLead ? '#1a73e8' : '#e67e22';
-    const roleBg    = isLead ? '#e8f0fe' : '#fef3e6';
-    const roleIcon  = isLead ? '👑' : '🔀';  // 대표=왕관, 겸직=교차화살표
-    const roleLabel = isLead ? '대표부서장' : '겸직부서장';
+    const roleColor = '#1a73e8';
     return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafbfc;border:1px solid var(--border);border-radius:6px;">
       <!-- 프로필 이미지 -->
-      <div style="width:36px;height:36px;border-radius:50%;background:${roleColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;position:relative;">
+      <div style="width:36px;height:36px;border-radius:50%;background:${roleColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">
         ${h.name.charAt(0)}
-        <span style="position:absolute;bottom:-2px;right:-2px;font-size:12px;line-height:1;">${roleIcon}</span>
       </div>
       <!-- 정보 -->
       <div style="flex:1;min-width:0;">
-        <!-- 1행: 이름 + 역할 뱃지 -->
+        <!-- 1행: 이름 -->
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
           <span style="font-weight:700;color:#222;font-size:12px;">${maskName(h.name)}</span>
-          <span style="font-size:10px;font-weight:700;color:${roleColor};background:${roleBg};border-radius:10px;padding:1px 7px;white-space:nowrap;">${roleLabel}</span>
         </div>
         <!-- 2행: 직책 -->
         <div style="font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.title||'직책 미설정'}</div>
@@ -10155,13 +10148,10 @@ function deptConfirmHead() {
   if (node.headList.some(h => h.id === deptHeadSelected.id)) {
     alert('이미 부서장으로 설정된 임직원입니다.'); return;
   }
-  // 첫 등록 → 대표, 추가 등록 → 자동 겸직 (팝업 없음, 1명씩 등록)
-  const role = node.headList.length === 0 ? '대표' : '겸직';
   node.headList.push({
-    role,
     id: deptHeadSelected.id,
     name: deptHeadSelected.name,
-    title: role === '대표' ? '대표부서장' : '겸직부서장'
+    title: '부서장'
   });
   deptCloseHeadModal();
   deptRenderHeadCard(node);
@@ -10563,27 +10553,12 @@ function dhRenderHeadTable(node) {
   }
   empty.style.display = 'none';
 
-  // 대표가 있는지 여부 확인 (관리 버튼 조건 분기용)
-  const hasLead = list.some(h => h.role === '대표');
-
   // 프로필 이니셜 색상 팔레트
   const COLORS = ['#1a73e8','#0f9d58','#f4511e','#7b1fa2','#00838f','#c62828','#2e7d32','#1565c0'];
 
   tbody.innerHTML = list.map((h, idx) => {
-    const isLead = h.role === '대표';
     const initials = h.name ? h.name[0] : '?';
     const bgColor = COLORS[idx % COLORS.length];
-    const roleBadge = isLead
-      ? `<span style="display:inline-flex;align-items:center;gap:2px;background:#fef9c3;color:#854d0e;border:1px solid #fde68a;border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;">👑 대표부서장</span>`
-      : `<span style="display:inline-flex;align-items:center;gap:2px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:3px;padding:1px 6px;font-size:11px;font-weight:700;">🔀 겸직부서장</span>`;
-
-    // 관리 영역: 겸직이고 현재 대표가 없으면 "대표 부서장 설정" 버튼 추가
-    const promoteBtn = (!isLead && !hasLead)
-      ? `<button onclick="dhOpenPromote('${node.id}',${idx})"
-            style="background:#fff;border:1px solid #fde68a;color:#854d0e;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap;margin-right:4px;"
-            onmouseover="this.style.background='#fef9c3'"
-            onmouseout="this.style.background='#fff'">대표 부서장 설정</button>`
-      : '';
 
     return `
       <tr>
@@ -10597,47 +10572,16 @@ function dhRenderHeadTable(node) {
         <td style="font-weight:600;">${dhMaskName(h.name)}</td>
         <td style="text-align:left;padding-left:10px;">${dhMaskId(h.id)}</td>
         <td>${h.empno || '—'}</td>
-        <td>${roleBadge}</td>
         <td>${h.grade || '—'}</td>
         <td>${h.position || h.title || '—'}</td>
         <td style="white-space:nowrap;">
-          ${promoteBtn}<button onclick="dhOpenRelease('${node.id}',${idx})"
+          <button onclick="dhOpenRelease('${node.id}',${idx})"
             style="background:#fff;border:1px solid #e5e7eb;color:#aaa;border-radius:3px;padding:2px 10px;font-size:11px;cursor:pointer;font-family:inherit;"
             onmouseover="this.style.borderColor='#e53935';this.style.color='#e53935'"
             onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#aaa'">해제</button>
         </td>
       </tr>`;
   }).join('');
-}
-
-// ── 대표 부서장 승격 확인 팝업 ──
-function dhOpenPromote(nodeId, headIdx) {
-  const node = findDeptNode(nodeId, DEPT_DATA);
-  if (!node) return;
-  const h = (node.headList || [])[headIdx];
-  if (!h) return;
-  document.getElementById('dh-promote-msg').innerHTML =
-    `<strong>${dhMaskName(h.name)}</strong>님을 <strong>${node.name}</strong>의 대표 부서장으로 설정하시겠습니까?`;
-  document.getElementById('dh-promote-modal').style.display = 'flex';
-  document.getElementById('dh-promote-modal')._target = { nodeId, headIdx };
-}
-function dhClosePromote() {
-  document.getElementById('dh-promote-modal').style.display = 'none';
-}
-function dhConfirmPromote() {
-  const modal = document.getElementById('dh-promote-modal');
-  const { nodeId, headIdx } = modal._target || {};
-  if (nodeId == null) return;
-  const node = findDeptNode(nodeId, DEPT_DATA);
-  if (node && node.headList && node.headList[headIdx]) {
-    node.headList[headIdx].role = '대표';
-    node.headList[headIdx].title = '대표부서장';
-  }
-  dhClosePromote();
-  dhUpdateUnsetBadge();
-  dhRenderTree(DEPT_DATA, document.getElementById('dh-tree-kw').value);
-  if (dhSelectedNodeId === nodeId) dhShowDetail(node);
-  dhShowToast('대표 부서장으로 설정되었습니다.');
 }
 
 // ── 부서장 설정 팝업 (부서 탭의 deptOpenHeadModal 재활용) ──
@@ -10654,9 +10598,8 @@ function dhOpenRelease(nodeId, headIdx) {
   if (!node) return;
   const h = (node.headList || [])[headIdx];
   if (!h) return;
-  const roleTxt = h.role === '대표' ? '대표부서장' : '겸직부서장';
   document.getElementById('dh-release-msg').innerHTML =
-    `<strong>${dhMaskName(h.name)}</strong>님의 <strong>${node.name}</strong> ${roleTxt} 역할을 해제하시겠습니까?`;
+    `<strong>${dhMaskName(h.name)}</strong>님을 <strong>${node.name}</strong> 부서장에서 해제하시겠습니까?`;
   document.getElementById('dh-release-modal').style.display = 'flex';
   document.getElementById('dh-release-modal')._target = { nodeId, headIdx };
 }
@@ -10736,25 +10679,6 @@ function deptSearchMbr() {
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════ -->
-<!-- MODAL: 대표 부서장 설정 확인                   -->
-<!-- ══════════════════════════════════════════ -->
-<div class="modal-overlay" id="dh-promote-modal" onclick="if(event.target===this)dhClosePromote()" style="display:none;">
-  <div class="modal-container" style="width:400px;max-height:230px;">
-    <div class="modal-header">
-      <h3 style="font-size:15px;font-weight:700;color:#1a1a2e;">대표 부서장 설정</h3>
-      <button class="modal-close" onclick="dhClosePromote()">×</button>
-    </div>
-    <div class="modal-body" style="padding:20px 24px 16px;">
-      <p style="font-size:13px;color:#333;line-height:1.7;" id="dh-promote-msg"></p>
-    </div>
-    <div class="modal-footer" style="gap:8px;">
-      <button class="btn-list-gray" onclick="dhClosePromote()">아니오</button>
-      <button class="btn-primary btn" onclick="dhConfirmPromote()">예</button>
-    </div>
-  </div>
-</div>
 
 <!-- ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-target" onclick="if(event.target===this)closeModal('modal-target')">
