@@ -323,9 +323,9 @@
               <option value="end">학습종료일</option>
               <option value="range">기간검색</option>
             </select>
-            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" disabled>
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" min="1900-01-01" onchange="syncPeriodMin()" onkeydown="return false" disabled>
             <span class="date-sep">~</span>
-            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" disabled>
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" min="2026-04-01" onkeydown="return false" disabled>
           </div>
         </div>
 
@@ -786,6 +786,19 @@ function togglePeriodInputs() {
   ['s-period-type','s-period-from','s-period-to'].forEach(id => {
     document.getElementById(id).disabled = !enabled;
   });
+  if (!enabled) {
+    document.getElementById('s-period-type').selectedIndex = 0;
+    document.getElementById('s-period-from').value = '2026-04-01';
+    document.getElementById('s-period-to').value   = '2026-04-30';
+    document.getElementById('s-period-to').min     = '2026-04-01';
+  }
+}
+
+function syncPeriodMin() {
+  const from = document.getElementById('s-period-from').value;
+  const toEl = document.getElementById('s-period-to');
+  toEl.min = from || '';
+  if (from && toEl.value && toEl.value < from) toEl.value = from;
 }
 
 /* ── 초기화 ── */

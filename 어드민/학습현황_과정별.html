@@ -327,9 +327,9 @@
               <option value="end">학습종료일</option>
               <option value="range">기간검색</option>
             </select>
-            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" min="1900-01-01" onchange="syncPeriodMin()" disabled>
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" min="1900-01-01" onchange="syncPeriodMin()" onkeydown="return false" disabled>
             <span class="date-sep">~</span>
-            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" min="2026-04-01" disabled>
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" min="2026-04-01" onkeydown="return false" disabled>
           </div>
         </div>
 
