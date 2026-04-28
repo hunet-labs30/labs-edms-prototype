@@ -1624,14 +1624,18 @@
           <label style="display:flex;align-items:center;gap:5px;color:#999;cursor:not-allowed;">
             <input type="checkbox" checked disabled> 아이디 <span style="font-size:10px;color:#bbb;">(고정)</span>
           </label>
+          <label style="display:flex;align-items:center;gap:5px;color:#999;cursor:not-allowed;">
+            <input type="checkbox" checked disabled> 회사 <span style="font-size:10px;color:#bbb;">(고정)</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;color:#999;cursor:not-allowed;">
+            <input type="checkbox" checked disabled> 휴대전화번호 <span style="font-size:10px;color:#bbb;">(고정)</span>
+          </label>
           <!-- 선택 항목 -->
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="사번" checked> 사번</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="회사" checked> 회사</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="부서" checked> 부서</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="직급" checked> 직급</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="휴대전화번호" checked> 휴대전화번호</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="일반전화번호" checked> 일반전화번호</label>
-          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="근무상태" checked> 근무상태</label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="사번"> 사번</label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="부서"> 부서</label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="직급"> 직급</label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="일반전화번호"> 일반전화번호</label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" class="batch-field" value="근무상태"> 근무상태</label>
         </div>
       </div>
 
@@ -5824,9 +5828,10 @@ function batchHandleFile(file) {
 }
 function batchDownloadSample(e) {
   e.preventDefault();
+  const fixed = ['이름', '아이디', '회사', '휴대전화번호'];
   const checked = [...document.querySelectorAll('.batch-field:checked')].map(c => c.value);
-  if (checked.length === 0) { alert('등록하려는 항목을 먼저 선택해주세요.'); return; }
-  alert('선택한 항목으로 샘플파일을 다운로드합니다.\n포함 항목: 이름, 아이디, ' + checked.join(', '));
+  const all = fixed.concat(checked);
+  alert('선택한 항목으로 샘플파일을 다운로드합니다.\n포함 항목: ' + all.join(', '));
 }
 function setBatchRegistBtn(enabled) {
   const btn = document.getElementById('batch-regist-btn');
