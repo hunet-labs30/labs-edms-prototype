@@ -524,8 +524,32 @@
         </div>
       </div>
 
-      <!-- 학습자 목록 (11컬럼) -->
-      <div class="card">
+      <!-- 콘텐츠별 학습 상세 (목차 선택 시 노출) -->
+      <div class="card" id="d-content-info-card" style="display:none;">
+        <div class="result-header">
+          <div class="detail-section-title">콘텐츠별 학습 상세</div>
+          <button class="btn btn-outline btn-sm" onclick="exitContentMode()">과정 학습상세</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:72px;">필수여부</th>
+                <th style="width:96px;">콘텐츠 유형</th>
+                <th>콘텐츠명</th>
+                <th style="width:200px;">콘텐츠 학습기간</th>
+                <th style="width:96px;">콘텐츠 정보</th>
+                <th style="width:96px;">완료기준</th>
+              </tr>
+            </thead>
+            <tbody id="d-content-info-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 학습자 목록 (일반 모드: 11컬럼) -->
+      <div class="card" id="d-learner-card">
         <div class="result-header">
           <div class="result-count">검색결과 <strong id="d-total-count">0</strong>건</div>
           <button class="btn btn-outline btn-sm" onclick="downloadDetailExcel()">엑셀 다운로드</button>
@@ -562,6 +586,47 @@
             건
           </div>
           <div class="pagination" id="d-pagination"></div>
+        </div>
+      </div>
+
+      <!-- 학습자 콘텐츠 진행 목록 (콘텐츠 모드: 11컬럼) -->
+      <div class="card" id="d-content-card" style="display:none;">
+        <div class="result-header">
+          <div class="result-count">검색결과 <strong id="dc-total-count">0</strong>건</div>
+          <button class="btn btn-outline btn-sm" onclick="downloadDetailExcel()">엑셀 다운로드</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:72px;">이름</th>
+                <th style="width:160px;">아이디</th>
+                <th style="width:200px;">학습자 콘텐츠 학습기간</th>
+                <th style="width:108px;">학습한 정보</th>
+                <th style="width:72px;">진행률(%)</th>
+                <th style="width:80px;">콘텐츠 점수</th>
+                <th style="width:72px;">완료여부</th>
+                <th style="width:108px;">최근 학습일</th>
+                <th style="width:128px;">회사명</th>
+                <th style="width:120px;">부서명</th>
+              </tr>
+            </thead>
+            <tbody id="dc-list-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="page-size-wrap">
+            페이지당
+            <select class="select" id="dc-page-size" onchange="dcPageSize=parseInt(this.value);dcCurrentPage=1;renderContentTable()">
+              <option value="30">30</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            건
+          </div>
+          <div class="pagination" id="dc-pagination"></div>
         </div>
       </div>
 
@@ -666,6 +731,26 @@ const COURSE_NAMES_ONLINE = [
 ];
 
 const TOC_ITEMS = ['1차시. 개요','2차시. 핵심 개념','3차시. 응용 사례','4차시. 실습','5차시. 평가','6차시. 정리'];
+
+/* ── 콘텐츠 정보 (목차 단위) ── */
+function generateCourseContents(course) {
+  return TOC_ITEMS.map((title, i) => {
+    const totalSec = (10 + i * 2) * 60 + (i * 13) % 60;
+    return {
+      no: i + 1,
+      required: i < 4 ? 'Y' : 'N',
+      contentType: '동영상',
+      contentName: title,
+      contentFrom: course.studyFrom || '2026-04-01',
+      contentTo:   course.studyTo   || '2026-12-31',
+      contentInfoSec: totalSec,
+      completeCriteria: '90%이상',
+    };
+  });
+}
+function fmtSec(sec) {
+  return `${pad(Math.floor(sec/3600))}:${pad(Math.floor(sec%3600/60))}:${pad(sec%60)}`;
+}
 
 function rand(n) { return Math.floor(Math.random() * n); }
 function pad(n) { return String(n).padStart(2,'0'); }
@@ -1078,6 +1163,10 @@ function goPage(p) {
 let dFiltered = [];
 let dCurrentPage = 1;
 let dPageSize = 50;
+let dcFiltered = [];
+let dcCurrentPage = 1;
+let dcPageSize = 50;
+let _detailContents = [];
 
 function showDetail(id) {
   currentDetailId = id;
@@ -1104,14 +1193,21 @@ function showDetail(id) {
       <td><button class="btn-cert" onclick="printCert(${r.id})" ${certEnabled ? '' : 'disabled'}>출력</button></td>
     </tr>`;
 
-  // 목차 옵션
+  // 콘텐츠 정보 캐싱 + 목차 옵션
+  _detailContents = generateCourseContents(r);
   const toc = document.getElementById('d-toc');
-  toc.innerHTML = `<option value="">전체 목차</option>` + TOC_ITEMS.map((t, i) => `<option value="${i}">${t}</option>`).join('');
+  toc.innerHTML = `<option value="">전체 목차</option>` + _detailContents.map((c, i) => `<option value="${i}">${c.contentName}</option>`).join('');
+  toc.selectedIndex = 0;
+  // 콘텐츠 모드 카드 초기 숨김
+  document.getElementById('d-content-info-card').style.display = 'none';
+  document.getElementById('d-content-card').style.display = 'none';
+  document.getElementById('d-learner-card').style.display = '';
 
   // 회사 멀티셀렉트 후보 (해당 과정의 학습자가 속한 회사만)
   const learners = generateLearners(r);
   _detailCompanyPool = [...new Set(learners.map(l => l.company))];
-  selectedDetailCompanies = [];
+  // 목록에서 선택한 회사를 상세에 인계 (해당 과정 회사 풀에 있는 것만)
+  selectedDetailCompanies = selectedCompanies.filter(c => _detailCompanyPool.includes(c));
   renderDetailCompanyChips();
 
   // 학습자 검색 초기화 + 렌더
@@ -1129,10 +1225,12 @@ function doDetailSearch() {
   if (!r) return;
   const learners = generateLearners(r);
 
-  const field = document.getElementById('d-learner-field').value;
-  const kw    = document.getElementById('d-learner-kw').value.trim();
+  const tocVal = document.getElementById('d-toc').value;
+  const field  = document.getElementById('d-learner-field').value;
+  const kw     = document.getElementById('d-learner-kw').value.trim();
 
-  dFiltered = learners.filter(l => {
+  // 학습자 1차 필터 (학습자/회사)
+  const baseFiltered = learners.filter(l => {
     if (kw) {
       if (field === 'name'  && l.name  !== kw) return false;
       if (field === 'id'    && l.userId.toLowerCase() !== kw.toLowerCase()) return false;
@@ -1141,8 +1239,28 @@ function doDetailSearch() {
     if (selectedDetailCompanies.length && !selectedDetailCompanies.includes(l.company)) return false;
     return true;
   });
-  dCurrentPage = 1;
-  renderDetailTable();
+
+  if (tocVal === '') {
+    // 일반 모드: 학습자 목록
+    document.getElementById('d-content-info-card').style.display = 'none';
+    document.getElementById('d-content-card').style.display = 'none';
+    document.getElementById('d-learner-card').style.display = '';
+    dFiltered = baseFiltered;
+    dCurrentPage = 1;
+    renderDetailTable();
+  } else {
+    // 콘텐츠 모드: 선택 콘텐츠 정보 + 학습자별 진행
+    const idx = parseInt(tocVal, 10);
+    const content = _detailContents[idx];
+    renderContentInfo(content);
+
+    dcFiltered = baseFiltered.map(l => buildLearnerContentRow(l, content));
+    dcCurrentPage = 1;
+    document.getElementById('d-content-info-card').style.display = '';
+    document.getElementById('d-content-card').style.display = '';
+    document.getElementById('d-learner-card').style.display = 'none';
+    renderContentTable();
+  }
 }
 
 function doDetailReset() {
@@ -1151,6 +1269,104 @@ function doDetailReset() {
   document.getElementById('d-learner-kw').value = '';
   selectedDetailCompanies = []; renderDetailCompanyChips();
   doDetailSearch();
+}
+
+function exitContentMode() {
+  document.getElementById('d-toc').selectedIndex = 0;
+  doDetailSearch();
+}
+
+function renderContentInfo(c) {
+  document.getElementById('d-content-info-tbody').innerHTML = `
+    <tr>
+      <td>${c.no}</td>
+      <td>${c.required}</td>
+      <td>${c.contentType}</td>
+      <td style="text-align:left;padding-left:12px;">${c.contentName}</td>
+      <td>${fmtDate(c.contentFrom)} ~ ${fmtDate(c.contentTo)}</td>
+      <td>${fmtSec(c.contentInfoSec)}</td>
+      <td>${c.completeCriteria}</td>
+    </tr>`;
+}
+
+/* 학습자 1명의 특정 콘텐츠 진행 정보 */
+function buildLearnerContentRow(l, content) {
+  // 진행률: 학습자의 수료여부/학습상태 기반
+  let progress = 0;
+  if (l.completeStatus.code === 'complete') progress = 100;
+  else if (l.completeStatus.code === 'incomplete') progress = 30 + ((l.empNo.charCodeAt(l.empNo.length-1) % 5) * 10);
+  else if (l.learningStatus.code === 'studying') progress = ((l.empNo.charCodeAt(0) % 8) * 10);
+  else progress = 0;
+  if (progress > 100) progress = 100;
+
+  const watchSec = Math.floor(content.contentInfoSec * progress / 100);
+  const studyInfo = fmtSec(watchSec);
+  const done = progress >= 90 ? 'Y' : 'N';
+
+  let lastDate = '-';
+  if (progress > 0 && l.lFrom) {
+    const off = (l.empNo.charCodeAt(0) % 20) + 1;
+    lastDate = fmtDate(addDays(l.lFrom, off));
+  }
+
+  return {
+    learner: l,
+    studyInfo, progress,
+    contentScore: '',
+    done,
+    lastDate,
+  };
+}
+
+function renderContentTable() {
+  const tbody = document.getElementById('dc-list-tbody');
+  document.getElementById('dc-total-count').textContent = dcFiltered.length.toLocaleString();
+  const start = (dcCurrentPage - 1) * dcPageSize;
+  const slice = dcFiltered.slice(start, start + dcPageSize);
+
+  if (!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:32px;color:#94a3b8;">현재 조회된 데이터가 없습니다.</td></tr>`;
+    document.getElementById('dc-pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map((row, idx) => {
+    const l = row.learner;
+    return `
+    <tr>
+      <td>${dcFiltered.length - start - idx}</td>
+      <td>${maskName(l.name)}</td>
+      <td style="text-align:left;padding-left:12px;">${maskId(l.userId)}</td>
+      <td>${fmtDate(l.lFrom)} ~ ${fmtDate(l.lTo)}</td>
+      <td>${row.studyInfo}</td>
+      <td>${row.progress}%</td>
+      <td>${row.contentScore}</td>
+      <td>${row.done}</td>
+      <td>${row.lastDate}</td>
+      <td>${l.company}</td>
+      <td>${l.dept}</td>
+    </tr>`;
+  }).join('');
+  renderContentPagination();
+}
+
+function renderContentPagination() {
+  const total = Math.ceil(dcFiltered.length / dcPageSize);
+  const pg = document.getElementById('dc-pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goContentPage(${dcCurrentPage-1})" ${dcCurrentPage===1?'disabled':''}>&#8249;</button>`;
+  const s = Math.max(1, dcCurrentPage - 2), e = Math.min(total, s + 4);
+  for (let i = s; i <= e; i++)
+    html += `<button class="pg-btn${i===dcCurrentPage?' active':''}" onclick="goContentPage(${i})">${i}</button>`;
+  html += `<button class="pg-btn" onclick="goContentPage(${dcCurrentPage+1})" ${dcCurrentPage===total?'disabled':''}>&#8250;</button>`;
+  pg.innerHTML = html;
+}
+
+function goContentPage(p) {
+  const total = Math.ceil(dcFiltered.length / dcPageSize);
+  if (p < 1 || p > total) return;
+  dcCurrentPage = p;
+  renderContentTable();
 }
 
 function renderDetailTable() {
