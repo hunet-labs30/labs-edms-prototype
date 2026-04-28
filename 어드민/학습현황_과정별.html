@@ -327,9 +327,9 @@
               <option value="end">학습종료일</option>
               <option value="range">기간검색</option>
             </select>
-            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" disabled>
+            <input class="input input-date" type="date" id="s-period-from" value="2026-04-01" min="1900-01-01" onchange="syncPeriodMin()" disabled>
             <span class="date-sep">~</span>
-            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" disabled>
+            <input class="input input-date" type="date" id="s-period-to" value="2026-04-30" min="2026-04-01" disabled>
           </div>
         </div>
 
@@ -1021,6 +1021,21 @@ function togglePeriodInputs() {
   ['s-period-type','s-period-from','s-period-to'].forEach(id => {
     document.getElementById(id).disabled = !enabled;
   });
+  // 정시 → 전체/수시 전환 시 학습기간 입력값 초기화
+  if (!enabled) {
+    document.getElementById('s-period-type').selectedIndex = 0;
+    document.getElementById('s-period-from').value = '2026-04-01';
+    document.getElementById('s-period-to').value   = '2026-04-30';
+    document.getElementById('s-period-to').min     = '2026-04-01';
+  }
+}
+
+// 시작일 변경 시 종료일이 시작일 이전을 선택할 수 없도록 min 동기화
+function syncPeriodMin() {
+  const from = document.getElementById('s-period-from').value;
+  const toEl = document.getElementById('s-period-to');
+  toEl.min = from || '';
+  if (from && toEl.value && toEl.value < from) toEl.value = from;
 }
 
 function doSearch() {
@@ -1243,24 +1258,18 @@ function doDetailSearch() {
   if (tocVal === '') {
     // 일반 모드: 학습자 목록
     document.getElementById('d-content-info-card').style.display = 'none';
-    document.getElementById('d-content-card').style.display = 'none';
-    document.getElementById('d-learner-card').style.display = '';
-    dFiltered = baseFiltered;
-    dCurrentPage = 1;
-    renderDetailTable();
   } else {
-    // 콘텐츠 모드: 선택 콘텐츠 정보 + 학습자별 진행
+    // 콘텐츠 모드: 콘텐츠 정보 카드 추가 노출 (학습자 목록 컬럼은 일반 모드와 동일 유지)
     const idx = parseInt(tocVal, 10);
     const content = _detailContents[idx];
     renderContentInfo(content);
-
-    dcFiltered = baseFiltered.map(l => buildLearnerContentRow(l, content));
-    dcCurrentPage = 1;
     document.getElementById('d-content-info-card').style.display = '';
-    document.getElementById('d-content-card').style.display = '';
-    document.getElementById('d-learner-card').style.display = 'none';
-    renderContentTable();
   }
+  document.getElementById('d-content-card').style.display = 'none';
+  document.getElementById('d-learner-card').style.display = '';
+  dFiltered = baseFiltered;
+  dCurrentPage = 1;
+  renderDetailTable();
 }
 
 function doDetailReset() {
