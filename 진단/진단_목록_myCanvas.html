@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>my Canvas – 진단 목록 | 연수원 3.0</title>
+<style>
+  :root {
+    --primary: #1a73e8;
+    --primary-hover: #1557b0;
+    --secondary: #f97316;
+    --bg: #f5f6fa;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #1c2733;
+    --text-sub: #5f6b7a;
+    --text-muted: #9aa5b4;
+    --tag-blue: #e8f0fe;
+    --tag-blue-text: #1a73e8;
+    --tag-orange: #fff3e0;
+    --tag-orange-text: #e65100;
+    --tag-green: #e6f4ea;
+    --tag-green-text: #1e7e34;
+    --tag-gray: #f1f3f5;
+    --tag-gray-text: #6c757d;
+    --sidebar-bg: #1e2b37;
+    --sidebar-text: #b9c8d9;
+    --sidebar-active: #1a73e8;
+    --header-h: 56px;
+    --sidebar-w: 220px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ===== Header ===== */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: #fff; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 24px;
+    z-index: 100; gap: 12px;
+  }
+  .header-logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--primary); text-decoration: none; }
+  .header-logo svg { width: 28px; height: 28px; }
+  .header-divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+  .header-corp { font-size: 13px; color: var(--text-sub); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .header-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+  .header-bell { position: relative; cursor: pointer; color: var(--text-sub); }
+  .badge { position: absolute; top: -4px; right: -4px; background: #e53935; color: #fff; font-size: 10px; border-radius: 8px; padding: 0 4px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    position: fixed; top: var(--header-h); left: 0; bottom: 0;
+    width: var(--sidebar-w); background: var(--sidebar-bg);
+    overflow-y: auto; z-index: 90; padding-top: 12px;
+  }
+  .sidebar-section { padding: 8px 0; }
+  .sidebar-label { font-size: 10px; color: #4e6070; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 20px 4px; font-weight: 600; }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; font-size: 13px; color: var(--sidebar-text);
+    cursor: pointer; text-decoration: none; transition: background 0.15s;
+  }
+  .sidebar-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .sidebar-item.active { background: rgba(26,115,232,0.18); color: #fff; border-left: 3px solid var(--sidebar-active); padding-left: 17px; }
+  .sidebar-item svg { opacity: 0.7; flex-shrink: 0; }
+  .sidebar-item.active svg { opacity: 1; }
+
+  /* ===== Main ===== */
+  .main { margin-top: var(--header-h); margin-left: var(--sidebar-w); padding: 28px 32px; min-height: calc(100vh - var(--header-h)); }
+
+  /* ===== Page Header ===== */
+  .page-header { margin-bottom: 20px; }
+  .breadcrumb { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .breadcrumb span { color: var(--text-sub); }
+  .page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+  .page-desc { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+
+  /* ===== Tabs ===== */
+  .tab-bar {
+    display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px;
+  }
+  .tab {
+    padding: 10px 20px; font-size: 13px; color: var(--text-sub);
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: color 0.15s; font-weight: 500;
+  }
+  .tab:hover { color: var(--primary); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+  .tab-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--primary); color: #fff; font-size: 10px; border-radius: 10px; padding: 1px 6px; margin-left: 6px; }
+
+  /* ===== Filter Bar ===== */
+  .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-select {
+    padding: 7px 28px 7px 10px; font-size: 13px; border: 1px solid var(--border);
+    border-radius: 6px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%235f6b7a'%3E%3Cpath d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 10px center;
+    -webkit-appearance: none; color: var(--text); cursor: pointer;
+  }
+  .filter-search {
+    flex: 1; min-width: 220px; padding: 7px 12px; font-size: 13px;
+    border: 1px solid var(--border); border-radius: 6px; background: #fff;
+  }
+  .filter-search:focus, .filter-select:focus { outline: none; border-color: var(--primary); }
+
+  /* ===== Info Banner ===== */
+  .info-banner {
+    background: #e8f0fe; border: 1px solid #c5d8f8; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 10px;
+    font-size: 12.5px; color: #1a5296; line-height: 1.6;
+  }
+  .info-banner svg { flex-shrink: 0; margin-top: 1px; color: var(--primary); }
+
+  /* ===== Table ===== */
+  .table-wrap { background: #fff; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: #f8f9fb; padding: 12px 14px; text-align: left; font-size: 12px;
+    font-weight: 700; color: var(--text-sub); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th.center { text-align: center; }
+  tbody tr { border-bottom: 1px solid #f0f1f3; transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fafbff; }
+  tbody td { padding: 14px 14px; font-size: 13px; color: var(--text); vertical-align: middle; }
+  tbody td.center { text-align: center; }
+
+  .diag-name { font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .diag-corp { font-size: 12px; color: var(--text-muted); }
+
+  /* ===== Progress bar ===== */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar { flex: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; min-width: 60px; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--primary); transition: width 0.3s; }
+  .progress-fill.done { background: #34a853; }
+  .progress-text { font-size: 12px; color: var(--text-sub); white-space: nowrap; min-width: 52px; }
+
+  /* ===== Status chips ===== */
+  .chip { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+  .chip-blue { background: var(--tag-blue); color: var(--tag-blue-text); }
+  .chip-orange { background: var(--tag-orange); color: var(--tag-orange-text); }
+  .chip-green { background: var(--tag-green); color: var(--tag-green-text); }
+  .chip-gray { background: var(--tag-gray); color: var(--tag-gray-text); }
+
+  /* ===== Buttons ===== */
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; white-space: nowrap; transition: background 0.15s, opacity 0.15s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-secondary { background: var(--secondary); color: #fff; }
+  .btn-secondary:hover { opacity: 0.88; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--tag-blue); }
+  .btn-disabled { background: #e9ecef; color: #adb5bd; cursor: not-allowed; }
+
+  /* ===== Subject col ===== */
+  .subject-self { display: inline-flex; align-items: center; gap: 4px; }
+  .self-badge { background: #e8f0fe; color: var(--primary); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+  .other-name { font-weight: 600; font-size: 13px; }
+
+  /* ===== Status label ===== */
+  .deadline-y { color: #e53935; font-weight: 700; font-size: 12px; }
+  .deadline-n { color: var(--text-sub); font-size: 12px; }
+
+  /* ===== Empty state ===== */
+  .empty { text-align: center; padding: 60px 0; color: var(--text-muted); }
+  .empty svg { margin: 0 auto 12px; display: block; }
+  .empty-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .empty-desc { font-size: 13px; }
+
+  /* ===== Pagination ===== */
+  .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 20px; }
+  .page-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 6px; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--text); transition: background 0.1s; }
+  .page-btn:hover { background: var(--tag-blue); color: var(--primary); }
+  .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .page-btn.disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ===== Spec Note (기획 노트) ===== */
+  .spec-section { margin-top: 32px; }
+  .spec-title { font-size: 14px; font-weight: 700; color: #b45309; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .spec-box { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 16px 20px; }
+  .spec-box h4 { font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 8px; margin-top: 14px; }
+  .spec-box h4:first-child { margin-top: 0; }
+  .spec-box ul { padding-left: 18px; }
+  .spec-box li { font-size: 12.5px; color: #78350f; line-height: 1.8; }
+  .spec-box li b { font-weight: 700; }
+  .spec-note { font-size: 12px; color: #a16207; background: #fef3c7; border-radius: 4px; padding: 2px 6px; margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <a class="header-logo" href="#">
+    <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#1a73e8"/><text x="5" y="20" font-size="14" font-weight="800" fill="white" font-family="Arial">H</text></svg>
+    휴넷 연수원
+  </a>
+  <div class="header-divider"></div>
+  <span class="header-corp">㈜ 테스트기업</span>
+  <div class="header-right">
+    <div class="header-bell">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="badge">2</span>
+    </div>
+    <div class="header-user">
+      <div class="avatar">홍</div>
+      <span>홍길동</span>
+      <svg width="12" height="8" viewBox="0 0 12 8" fill="#5f6b7a"><path d="M0 0l6 8 6-8z"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">학습</div>
+    <a class="sidebar-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      대시보드
+    </a>
+    <a class="sidebar-item active" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      my Canvas
+    </a>
+    <a class="sidebar-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+      학습현황
+    </a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">기타</div>
+    <a class="sidebar-item" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M5.34 5.34l-1.41-1.41"/></svg>
+      공지사항
+    </a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span>my Canvas</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span>진단</span>
+    </div>
+    <div class="page-title">my Canvas</div>
+    <div class="page-desc">배정된 학습 콘텐츠, 진단, 과제를 한 곳에서 확인하세요.</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <div class="tab">학습과정</div>
+    <div class="tab active">진단 <span class="tab-badge">8</span></div>
+    <div class="tab">과제</div>
+    <div class="tab">설문</div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="info-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <b>진단 목록 안내</b><br>
+      본인이 응답자 또는 진단대상자로 배정된 진단이 모두 표시됩니다.
+      · <b>진단대상자</b> 컬럼에서 '본인'은 자기진단(Self) 항목이며, 이름이 표시된 경우는 해당 인원에 대한 타인 응답 항목입니다.
+      · 결과 리포트는 응답자 <b>2명 이상 완료</b> + <b>본인 완료</b> 시 열람 가능합니다.
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <select class="filter-select">
+      <option>전체 상태</option>
+      <option>진행중</option>
+      <option>완료</option>
+      <option>미시작</option>
+      <option>마감</option>
+    </select>
+    <select class="filter-select">
+      <option>전체 진단유형</option>
+      <option>리더십역량(LC)</option>
+      <option>리더십스타일(LS)</option>
+      <option>비즈니스상황(BSA)</option>
+      <option>리더십위험요소(LR)</option>
+    </select>
+    <input type="text" class="filter-search" placeholder="진단명 검색">
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:44px" class="center">NO</th>
+          <th>진단명</th>
+          <th style="width:108px" class="center">진단기간</th>
+          <th style="width:64px" class="center">문항</th>
+          <th style="width:96px" class="center">진단대상자</th>
+          <th style="width:68px" class="center">마감상태</th>
+          <th style="width:160px">진행율</th>
+          <th style="width:96px" class="center">액션</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Row 1: 대기 상태 (미시작, 본인 응답) -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">8</td>
+          <td>
+            <div class="diag-name">휴넷 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십스타일(LS) · 리더십역량(LC)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">25.03.01<br>~25.03.31</td>
+          <td class="center">50</td>
+          <td class="center">
+            <div class="subject-self">
+              <span class="self-badge">본인</span>
+            </div>
+          </td>
+          <td class="center"><span class="deadline-n">N</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+              <span class="progress-text">0% (0/50)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-primary" onclick="location.href='진단_응답_화면.html'">진단하기</button>
+          </td>
+        </tr>
+
+        <!-- Row 2: 진행중 (본인 응답, 50% 완료) -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">7</td>
+          <td>
+            <div class="diag-name">휴넷 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십스타일(LS) · 비즈니스상황(BSA)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">25.03.01<br>~25.03.31</td>
+          <td class="center">30</td>
+          <td class="center">
+            <div class="subject-self">
+              <span class="self-badge">본인</span>
+            </div>
+          </td>
+          <td class="center"><span class="deadline-n">N</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+              <span class="progress-text">50% (15/30)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-secondary" onclick="location.href='진단_응답_화면.html'">이어하기</button>
+          </td>
+        </tr>
+
+        <!-- Row 3: 타인 응답 (변재명), 마감Y, 완료 -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">6</td>
+          <td>
+            <div class="diag-name">휴넷 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십역량(LC) · 리더십위험요소(LR)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">25.02.01<br>~25.02.28</td>
+          <td class="center">40</td>
+          <td class="center">
+            <span class="other-name">변재명</span>
+          </td>
+          <td class="center"><span class="deadline-y">Y</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill done" style="width:100%"></div></div>
+              <span class="progress-text">100% (40/40)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-disabled" disabled>완료</button>
+          </td>
+        </tr>
+
+        <!-- Row 4: 타인 응답 (홍길동), 마감Y, 50% (완료 처리) -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">5</td>
+          <td>
+            <div class="diag-name">휴넷 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십스타일(LS)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">25.02.01<br>~25.02.28</td>
+          <td class="center">18</td>
+          <td class="center">
+            <span class="other-name">홍길동</span>
+          </td>
+          <td class="center"><span class="deadline-y">Y</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:56%; background:#fbbf24"></div></div>
+              <span class="progress-text">56% (10/18)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-disabled" disabled>완료</button>
+          </td>
+        </tr>
+
+        <!-- Row 5: 타인 응답 (김민철), 진행중 -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">4</td>
+          <td>
+            <div class="diag-name">휴넷 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십역량(LC)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">25.03.01<br>~25.03.31</td>
+          <td class="center">24</td>
+          <td class="center">
+            <span class="other-name">김민철</span>
+          </td>
+          <td class="center"><span class="deadline-n">N</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+              <span class="progress-text">50% (12/24)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-secondary" onclick="location.href='진단_응답_화면.html'">이어하기</button>
+          </td>
+        </tr>
+
+        <!-- Row 6: 본인 자기진단 완료, 결과보기 가능 -->
+        <tr style="background:#fafffe">
+          <td class="center" style="color:var(--text-muted)">3</td>
+          <td>
+            <div class="diag-name">2024 하반기 리더십 진단 – 터닝포인트 CUBE®</div>
+            <div class="diag-corp">리더십역량(LC) · 리더십스타일(LS) · 비즈니스상황(BSA)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">24.10.01<br>~24.10.31</td>
+          <td class="center">60</td>
+          <td class="center">
+            <div class="subject-self">
+              <span class="self-badge">본인</span>
+            </div>
+          </td>
+          <td class="center"><span class="deadline-y">Y</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill done" style="width:100%"></div></div>
+              <span class="progress-text">100% (60/60)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-outline" onclick="location.href='진단_결과_보기.html'">결과보기</button>
+          </td>
+        </tr>
+
+        <!-- Row 7: 본인 완료, 결과 조건 미충족 (응답자 2명 미만) -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">2</td>
+          <td>
+            <div class="diag-name">2024 상반기 리더십 진단</div>
+            <div class="diag-corp">리더십스타일(LS)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">24.04.01<br>~24.04.30</td>
+          <td class="center">18</td>
+          <td class="center">
+            <div class="subject-self">
+              <span class="self-badge">본인</span>
+            </div>
+          </td>
+          <td class="center"><span class="deadline-y">Y</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill done" style="width:100%"></div></div>
+              <span class="progress-text">100% (18/18)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-disabled" disabled title="결과 리포트 생성 조건 미충족">결과대기</button>
+          </td>
+        </tr>
+
+        <!-- Row 8: 타인 응답 미시작 -->
+        <tr>
+          <td class="center" style="color:var(--text-muted)">1</td>
+          <td>
+            <div class="diag-name">2024 상반기 리더십 진단</div>
+            <div class="diag-corp">리더십스타일(LS)</div>
+          </td>
+          <td class="center" style="font-size:12px; color:var(--text-sub)">24.04.01<br>~24.04.30</td>
+          <td class="center">18</td>
+          <td class="center">
+            <span class="other-name">이지연</span>
+          </td>
+          <td class="center"><span class="deadline-y">Y</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+              <span class="progress-text">0% (0/18)</span>
+            </div>
+          </td>
+          <td class="center">
+            <button class="btn btn-disabled" disabled>완료</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button class="page-btn disabled">‹</button>
+    <button class="page-btn active">1</button>
+    <button class="page-btn">2</button>
+    <button class="page-btn">›</button>
+  </div>
+
+  <!-- ===== 기획 스펙 노트 ===== -->
+  <div class="spec-section">
+    <div class="spec-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      기획 스펙 노트
+    </div>
+    <div class="spec-box">
+      <h4>① 진단 목록 노출 조건</h4>
+      <ul>
+        <li>응답자로 배정된 진단 <b>+</b> 진단대상자로 배정된 진단을 <b>통합 목록</b>으로 표시</li>
+        <li><b>진단대상자</b> 컬럼: 본인 자기진단 → <span class="spec-note">본인</span> 배지 표시 / 타인 평가 → 해당 인원 이름 표시</li>
+        <li>진단 목록은 EDMS(리더십진단 서비스)에서 기업별로 배정된 진단 정보를 연수원 API를 통해 연동</li>
+        <li>정렬 기본값: 최신 진단순(진단종료일 DESC), 진행중 우선</li>
+      </ul>
+      <h4>② 액션 버튼 상태 로직</h4>
+      <ul>
+        <li><b>진단하기</b>(파란색): 진행율 0%, 마감상태 N — 응답 시작 전</li>
+        <li><b>이어하기</b>(주황색): 진행율 1~99%, 마감상태 N — 응답 중단 후 재진입</li>
+        <li><b>완료</b>(비활성): 마감상태 Y 또는 진행율 100% — 수정 불가, 버튼 비활성</li>
+        <li><b>결과보기</b>(선 버튼): 진단대상자가 '본인'이고, 본인 응답 완료 + 타인 응답자 2인 이상 완료 조건 충족 시</li>
+        <li><b>결과대기</b>(비활성): 본인은 완료했으나 타인 응답자 수 조건 미충족 → 조건 미충족 안내 툴팁 표시</li>
+      </ul>
+      <h4>③ 결과보기 열람 조건 (리포트 생성 조건)</h4>
+      <ul>
+        <li>조건 1: 본인(진단대상자) 응답 완료</li>
+        <li>조건 2: 타인 응답자 2명 이상 완료</li>
+        <li>조건 3: 진단 마감 상태 Y (EDMS에서 마감 처리 후)</li>
+        <li>→ 위 조건 미충족 시 "결과대기" 비활성 버튼 표시 + 툴팁으로 조건 안내</li>
+      </ul>
+      <h4>④ 연동 데이터 출처</h4>
+      <ul>
+        <li>진단 기본 정보(진단명, 기간, 문항수): 리더십진단 서비스(터닝포인트 CUBE®) → 연수원 API 연동</li>
+        <li>진행율: 연수원 내 응답 저장 데이터 기반 실시간 계산</li>
+        <li>마감상태: 리더십진단 서비스의 진단 마감 상태값 동기화</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

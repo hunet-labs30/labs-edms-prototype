@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #cdd3da;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg);
+    color: #fff;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .btn-header:hover { background: #4a6278; }
+  .top-header .lang-select {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group { }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7;
+    background: rgba(126,184,247,0.07);
+    border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow {
+    font-size: 9px; color: #556;
+    transition: transform 0.2s; display: inline-block; line-height: 1;
+  }
+  .nav-group.open > .nav-group-header .nav-arrow {
+    transform: rotate(90deg); color: #7eb8f7;
+  }
+  .nav-sub {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding: 0;
+  }
+  .nav-group.open > .nav-sub {
+    max-height: 300px;
+    padding: 2px 0 6px;
+  }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-flat {
+    display: block; padding: 10px 14px;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-flat.active { background: var(--primary); color: #fff; border-left-color: #fff; }
+  .sidebar-company {
+    padding: 10px 14px 6px;
+    font-size: 11px; color: #6a7f8e; font-weight: 600;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+
+  /* PAGE HEADER */
+  .page-header-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 2px;
+  }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* SEARCH */
+  .search-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; }
+  .label { width: 72px; font-size: 12px; font-weight: 600; color: #555; flex-shrink: 0; }
+  .input, .select {
+    height: 34px; border: 1px solid #d0d5dd; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.10); }
+  .input { min-width: 140px; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .search-actions { display: flex; gap: 6px; margin-left: auto; }
+  .search-input-wrap { position: relative; display: inline-flex; align-items: center; }
+  .search-input-wrap .ico-search {
+    position: absolute; left: 10px; color: #aaa; font-size: 14px; pointer-events: none; line-height: 1;
+  }
+  .search-input-wrap .input { padding-left: 30px; width: 240px; }
+  .btn { height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px; font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-dark { background: #1a1a2e; color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm { height: 26px; padding: 0 10px; border-radius: 3px; font-size: 11px; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn-sm:hover { opacity: 0.85; }
+  .btn-sm-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-sm-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm-red { background: #fff; color: #e53935; border: 1px solid #e53935; }
+
+  /* TABLE */
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .result-count { font-size: 12px; color: #666; }
+  .result-count strong { color: var(--primary); }
+  .result-right { display: flex; align-items: center; gap: 8px; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: var(--table-header); border: 1px solid var(--border); padding: 8px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .main-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+
+  /* PAGINATION */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .page-size-wrap .select { height: 26px; font-size: 12px; }
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; color: #555; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.45);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 8px; width: 520px;
+    max-height: 90vh; display: flex; flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+  .modal-close {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    color: #888; line-height: 1; padding: 0 2px;
+  }
+  .modal-close:hover { color: #333; }
+  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 14px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0;
+  }
+  .mbtn {
+    height: 32px; padding: 0 16px; border-radius: 3px; font-size: 13px;
+    font-weight: 400; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; white-space: nowrap;
+    transition: opacity .15s; border: none;
+  }
+  .mbtn:hover { opacity: .85; }
+  .mbtn:disabled { opacity: .45; cursor: default; pointer-events: none; }
+  .mbtn-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .mbtn-blue { background: var(--primary); color: #fff; }
+  .mbtn-dark { background: #1a1a2e; color: #fff; }
+  .mbtn-red { background: #e53935; color: #fff; }
+
+  /* FORM TABLE (모달 내 입력 폼) */
+  .form-table { width: 100%; border-collapse: collapse; }
+  .form-table th {
+    width: 130px; background: #f8f9fb;
+    border: 1px solid #e0e3e8; padding: 10px 14px;
+    text-align: left; font-size: 12px; font-weight: 600; color: #444;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  .form-table td {
+    border: 1px solid #e0e3e8; padding: 8px 12px;
+    font-size: 12px; color: #333;
+    vertical-align: top;
+  }
+  .required-mark { color: #e53935; margin-left: 2px; }
+  .form-input {
+    width: 100%; height: 32px; border: 1px solid #ccc; border-radius: 4px;
+    padding: 0 10px; font-size: 12px; font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--primary); }
+  .form-input.readonly { background: #f5f6fa; color: #888; cursor: default; }
+  .form-input-row { display: flex; gap: 6px; align-items: center; }
+  .form-hint { font-size: 11px; color: #888; margin-top: 4px; line-height: 1.5; }
+  .form-hint.blue { color: #1a73e8; }
+  .form-hint.red { color: #e53935; }
+  .radio-group { display: flex; align-items: center; gap: 16px; padding-top: 4px; }
+  .radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
+  .radio-label input[type="radio"] { cursor: pointer; accent-color: var(--primary); }
+  .btn-check {
+    height: 32px; padding: 0 12px; border-radius: 4px; font-size: 12px;
+    font-family: inherit; cursor: pointer; border: 1px solid #1a1a2e;
+    background: #1a1a2e; color: #fff; white-space: nowrap; flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .btn-check:hover { opacity: 0.85; }
+
+  /* 비밀번호 초기화 확인 모달 (작은 사이즈) */
+  .modal-sm { width: 420px; }
+  .confirm-msg { font-size: 13px; color: #333; line-height: 1.8; }
+  .confirm-msg strong { color: #1a1a2e; }
+  .confirm-sub { font-size: 12px; color: #888; margin-top: 8px; }
+
+  /* INFO BOX */
+  .info-box {
+    background: #fffde7; border: 1px solid #fdd835;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #6d4c00; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  /* 등록 모달 검색 결과 */
+  .reg-search-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 0; }
+  .reg-search-table th { background: #f0f2f5; border: 1px solid #e0e3e8; padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .reg-search-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .reg-search-table tbody tr:hover td { background: #f5f8ff; }
+  .already-reg { font-size: 11px; color: #e53935; }
+  .selected-info-box {
+    background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #1b5e20; line-height: 1.7;
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">임직원</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학습</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">결과</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">교육비용</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">사외교육</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">러닝메이커</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">커넥트</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">게시글</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">부가서비스</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item" href="#">역량진단 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <!-- 연수원 설정 (활성) -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">연수원 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item active" href="#">교육담당자 계정 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header-row">
+      <div class="page-header-title">교육담당자 계정 관리</div>
+      <div class="breadcrumb">연수원 설정 &gt; 교육담당자 계정 관리</div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <div class="search-row">
+        <select class="select" id="s-company" style="width:140px;">
+          <option value="">회사 선택</option>
+          <option>LABS 연수원</option>
+          <option>휴넷</option>
+          <option>ABC마트</option>
+          <option>건강보험공단</option>
+          <option>국민연금공단</option>
+        </select>
+        <select class="select" id="s-field" style="width:100px;">
+          <option value="name">이름</option>
+          <option value="email">아이디</option>
+        </select>
+        <div class="search-input-wrap">
+          <span class="ico-search">&#x1F50D;</span>
+          <input class="input" id="s-keyword" type="text" placeholder="검색어를 입력해주세요.">
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-primary" onclick="doSearch()">검색</button>
+          <button class="btn btn-reset" onclick="doReset()">초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card">
+      <div class="result-header">
+        <div class="result-count">총 <strong id="total-count">0</strong>명</div>
+        <div class="result-right">
+          <button class="btn btn-dark" onclick="openRegModal()">+ 권한 등록</button>
+        </div>
+      </div>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th style="width:44px;">No.</th>
+            <th style="width:80px;">이름</th>
+            <th>아이디(이메일)</th>
+            <th style="width:100px;">부서</th>
+            <th style="width:110px;">등록일</th>
+            <th style="width:160px;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="acc-tbody"></tbody>
+      </table>
+      <div class="table-footer">
+        <div class="page-size-wrap">
+          페이지당
+          <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+          건
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 등록 모달                          -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-reg">
+  <div class="modal" style="width:620px;">
+    <div class="modal-header">
+      <h3>교육담당자 권한 등록</h3>
+      <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        교육담당자로 등록할 담당자의 이름으로 검색하세요.<br>
+        연수원 계정으로 등록된 담당자만 등록이 가능합니다.
+      </div>
+      <!-- 이름 검색 -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input class="form-input" id="reg-name-kw" type="text" placeholder="이름을 입력해주세요."
+          style="flex:1;"
+          onkeydown="if(event.key==='Enter') searchByName()">
+        <button class="btn-check" onclick="searchByName()">검색</button>
+      </div>
+      <!-- 검색 결과 목록 -->
+      <div id="reg-search-result" style="display:none;">
+        <table class="reg-search-table">
+          <thead>
+            <tr>
+              <th style="width:70px;">이름</th>
+              <th>아이디(이메일)</th>
+              <th style="width:110px;">기업</th>
+              <th style="width:80px;">부서</th>
+              <th style="width:100px;"></th>
+            </tr>
+          </thead>
+          <tbody id="reg-search-tbody"></tbody>
+        </table>
+      </div>
+      <!-- 선택된 계정 정보 -->
+      <div class="selected-info-box" id="reg-selected-info" style="display:none;">
+        선택된 계정: <strong id="reg-selected-name"></strong>
+        (<span id="reg-selected-email"></span>) &nbsp;/&nbsp;
+        <span id="reg-selected-company"></span> &nbsp;/&nbsp;
+        <span id="reg-selected-dept"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-reg')">취소</button>
+      <button class="mbtn mbtn-dark" id="btn-reg-submit" onclick="submitReg()" disabled>등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 안내 메일 재발송 확인 모달          -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-resend">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>계정 안내 메일 재발송</h3>
+      <button class="modal-close" onclick="closeModal('modal-resend')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        <strong id="resend-name"></strong>님께<br>
+        교육담당자 계정 안내 메일을 재발송하시겠습니까?
+      </div>
+      <div class="confirm-sub" id="resend-email"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-resend')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="submitResend()">재발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 계정 삭제 확인 모달                     -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>삭제</h3>
+      <button class="modal-close" onclick="closeModal('modal-delete')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-msg">
+        <strong id="delete-name"></strong><br>교육담당자 권한을 삭제하시겠습니까?
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-delete')">취소</button>
+      <button class="mbtn mbtn-red" onclick="submitDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 사이드바 토글 ──
+function toggleNavGroup(header) {
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+
+// ── 모달 ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ── 샘플 데이터 ──
+const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', 'LABS 연수원', '휴넷', 'ABC마트', 'LABS 연수원', '휴넷'];
+const NAMES = ['김이름', '이이름', '박이름', '최이름', '정이름', '한이름', '오이름', '강이름', '윤이름', '장이름', '임이름', '신이름', '조이름', '류이름', '권이름'];
+const DEPTS = ['인사팀', '교육팀', '기획팀', '영업팀', '개발팀', '운영팀', '총무팀'];
+
+// 연수원 가입 계정 DB (교육담당자 미등록 회원)
+const EDMS_USERS = [
+  { email: 'kim.manager@company.co.kr', name: '김관리', company: '건강보험공단', dept: '교육팀' },
+  { email: 'lee.admin@corp.com',         name: '이담당', company: '휴넷',         dept: '인사팀' },
+  { email: 'park.edu@org.kr',            name: '박교육', company: 'ABC마트',      dept: '기획팀' },
+  { email: 'choi.hr@company.co.kr',      name: '최인사', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', dept: '총무팀' },
+  { email: 'kang.lead@company.co.kr',    name: '강리더', company: '건강보험공단', dept: '인사팀' },
+  { email: 'yoon.edu@corp.com',          name: '윤교육', company: '휴넷',         dept: '교육팀' },
+  { email: 'lim.hr@org.kr',              name: '임인사', company: 'ABC마트',      dept: '인사팀' },
+  // 동명이인 예시
+  { email: 'kim.edu1@company.co.kr',     name: '김교육', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'kim.edu2@corp.com',          name: '김교육', company: '휴넷',         dept: '기획팀' },
+];
+
+const maskName = n => {
+  if (n.length <= 1) return n;
+  if (n.length === 2) return n[0] + '*';
+  return n[0] + '*'.repeat(n.length - 2) + n[n.length - 1];
+};
+const maskEmail = e => {
+  const [u, d] = e.split('@');
+  return u[0] + '*'.repeat(Math.max(u.length - 1, 3)) + '@' + d;
+};
+
+let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
+  id: 22 - i,
+  name: NAMES[i % NAMES.length],
+  email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
+  company: COMPANIES[i % COMPANIES.length],
+  dept: DEPTS[i % DEPTS.length],
+  regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
+}));
+
+let filteredData = [...ALL_DATA];
+let currentPage = 1;
+let pageSize = 50;
+let editTargetId = null;
+let deleteTargetId = null;
+let selectedUser = null;
+let _regSearchResults = [];
+
+// ── 정렬: 등록일 DESC (동일 일자는 id DESC로 보조 정렬) ──
+function sortByRegDateDesc(arr) {
+  return arr.sort((a, b) => {
+    if (a.regDate !== b.regDate) return b.regDate.localeCompare(a.regDate);
+    return b.id - a.id;
+  });
+}
+
+// ── 검색 ──
+function doSearch() {
+  const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
+  const field = document.getElementById('s-field').value;
+  const company = document.getElementById('s-company').value;
+  filteredData = ALL_DATA.filter(r => {
+    if (company && r.company !== company) return false;
+    if (kw) {
+      if (field === 'name'  && !r.name.includes(kw)) return false;
+      if (field === 'email' && !r.email.toLowerCase().includes(kw)) return false;
+    }
+    return true;
+  });
+  sortByRegDateDesc(filteredData);
+  currentPage = 1;
+  renderTable();
+}
+
+function doReset() {
+  document.getElementById('s-keyword').value = '';
+  document.getElementById('s-field').selectedIndex = 0;
+  document.getElementById('s-company').selectedIndex = 0;
+  filteredData = [...ALL_DATA];
+  sortByRegDateDesc(filteredData);
+  currentPage = 1;
+  renderTable();
+}
+
+// ── 테이블 렌더링 ──
+function renderTable() {
+  const tbody = document.getElementById('acc-tbody');
+  document.getElementById('total-count').textContent = filteredData.length.toLocaleString();
+  const start = (currentPage - 1) * pageSize;
+  const slice = filteredData.slice(start, start + pageSize);
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">현재 조회된 데이터가 없습니다.</td></tr>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+  tbody.innerHTML = slice.map((r, idx) => `
+    <tr>
+      <td>${filteredData.length - start - idx}</td>
+      <td>${maskName(r.name)}</td>
+      <td style="text-align:left;padding-left:10px">${maskEmail(r.email)}</td>
+      <td>${r.dept || '-'}</td>
+      <td>${r.regDate.replace(/-/g, '.')}</td>
+      <td>
+        <button class="btn-sm btn-sm-outline" onclick="openResendModal(${r.id})">재발송</button>
+        <button class="btn-sm btn-sm-red" onclick="openDeleteModal(${r.id})">삭제</button>
+      </td>
+    </tr>
+  `).join('');
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filteredData.length / pageSize);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>&#8249;</button>`;
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(total, start + 4);
+  for (let i = start; i <= end; i++) {
+    html += `<button class="pg-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>&#8250;</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData.length / pageSize);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+}
+
+// ── 계정 등록 모달 ──
+function openRegModal() {
+  selectedUser = null;
+  _regSearchResults = [];
+  document.getElementById('reg-name-kw').value = '';
+  document.getElementById('reg-search-result').style.display = 'none';
+  document.getElementById('reg-search-tbody').innerHTML = '';
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
+  openModal('modal-reg');
+  setTimeout(() => document.getElementById('reg-name-kw').focus(), 100);
+}
+
+function searchByName() {
+  const kw = document.getElementById('reg-name-kw').value.trim();
+  if (!kw) { alert('이름을 입력해주세요.'); return; }
+
+  const results = EDMS_USERS.filter(u => u.name.includes(kw));
+  _regSearchResults = results;
+
+  const resultDiv = document.getElementById('reg-search-result');
+  const tbody = document.getElementById('reg-search-tbody');
+
+  if (!results.length) {
+    resultDiv.style.display = 'block';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = results.map((u, idx) => {
+    const alreadyReg = ALL_DATA.some(r => r.email === u.email);
+    return `<tr>
+      <td>${maskName(u.name)}</td>
+      <td style="text-align:left;padding-left:10px;">${maskEmail(u.email)}</td>
+      <td>${u.company}</td>
+      <td>${u.dept}</td>
+      <td>${alreadyReg
+        ? '<span class="already-reg">이미 등록된 계정입니다.</span>'
+        : `<button class="btn-sm btn-sm-outline" onclick="selectUser(${idx})">선택</button>`
+      }</td>
+    </tr>`;
+  }).join('');
+
+  resultDiv.style.display = 'block';
+
+  // 이전 선택 초기화
+  selectedUser = null;
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
+}
+
+function selectUser(idx) {
+  const user = _regSearchResults[idx];
+  if (!user) return;
+  selectedUser = user;
+  document.getElementById('reg-selected-name').textContent = maskName(user.name);
+  document.getElementById('reg-selected-email').textContent = maskEmail(user.email);
+  document.getElementById('reg-selected-company').textContent = user.company;
+  document.getElementById('reg-selected-dept').textContent = user.dept;
+  document.getElementById('reg-selected-info').style.display = 'block';
+  document.getElementById('btn-reg-submit').disabled = false;
+}
+
+function submitReg() {
+  if (!selectedUser) { alert('등록할 계정을 선택해주세요.'); return; }
+  const newId = ALL_DATA.length + 1;
+  const today = new Date();
+  const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  ALL_DATA.unshift({
+    id: newId,
+    name: selectedUser.name,
+    email: selectedUser.email,
+    company: selectedUser.company,
+    dept: selectedUser.dept,
+    regDate,
+  });
+  closeModal('modal-reg');
+  doSearch();
+  alert(selectedUser.name + ' 담당자 권한이 등록되었습니다.');
+}
+
+// ── 계정 안내 메일 재발송 모달 ──
+function openResendModal(id) {
+  const r = ALL_DATA.find(d => d.id === id);
+  if (!r) return;
+  editTargetId = id;
+  document.getElementById('resend-name').textContent = maskName(r.name);
+  document.getElementById('resend-email').textContent = maskEmail(r.email);
+  openModal('modal-resend');
+}
+
+function submitResend() {
+  const r = ALL_DATA.find(d => d.id === editTargetId);
+  closeModal('modal-resend');
+  if (r) alert(r.name + '님께 교육담당자 계정 안내 메일이 발송되었습니다.');
+}
+
+// ── 계정 삭제 모달 ──
+function openDeleteModal(id) {
+  const r = ALL_DATA.find(d => d.id === id);
+  if (!r) return;
+  deleteTargetId = id;
+  document.getElementById('delete-name').textContent = maskName(r.name) + ' (' + maskEmail(r.email) + ')';
+  openModal('modal-delete');
+}
+
+function submitDelete() {
+  ALL_DATA = ALL_DATA.filter(d => d.id !== deleteTargetId);
+  filteredData = filteredData.filter(d => d.id !== deleteTargetId);
+  closeModal('modal-delete');
+  if ((currentPage - 1) * pageSize >= filteredData.length && currentPage > 1) currentPage--;
+  renderTable();
+  alert('교육담당자 권한이 삭제되었습니다.');
+}
+
+// ── 초기 렌더 ──
+doReset();
+</script>
+</body>
+</html>

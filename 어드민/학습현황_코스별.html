@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS ADMIN - 코스별 학습 현황</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: #334155;
+    --header-bg: #0f172a;
+    --admin-red: #dc2626;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .top-header {
+    background: var(--header-bg); color: #fff; height: 48px;
+    display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    flex-shrink: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; letter-spacing: -.3px; }
+  .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; }
+  .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .btn-header:hover { background: rgba(255,255,255,.14); color: #fff; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: 200px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; transition: background .15s, color .15s; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .nav-group.open > .nav-sub { max-height: 1200px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; transition: background .12s, color .12s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-group-sub > .nav-group-header { padding-left: 22px; font-size: 11px; font-weight: 600; color: #475569; border-left-color: transparent; background: transparent; }
+  .nav-group-sub.open > .nav-group-header { color: #94a3b8; background: transparent; border-left-color: transparent; }
+  .nav-group-sub > .nav-sub .nav-item { padding-left: 34px; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .main::-webkit-scrollbar { width: 5px; }
+  .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+
+  /* ── SEARCH ── */
+  .search-wrap { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .search-row { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+  .search-label { width: 60px; font-size: 12px; font-weight: 600; color: var(--text-muted); flex-shrink: 0; text-align: right; padding-right: 4px; }
+  .search-body { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .input { height: 32px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; color: var(--text); outline: none; transition: border-color .15s; font-family: inherit; }
+  .input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.1); }
+  .input-date { width: 132px; }
+  .date-sep { color: #94a3b8; font-size: 13px; }
+  .select { height: 32px; padding: 0 24px 0 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; color: var(--text); outline: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E") no-repeat right 8px center; -webkit-appearance: none; cursor: pointer; font-family: inherit; transition: border-color .15s; }
+  .select:focus { border-color: var(--primary); }
+  .search-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 2px; }
+
+  /* ── TYPEAHEAD ── */
+  .typeahead-wrap { position: relative; }
+  .typeahead-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: none; background: none; font-size: 14px; color: #94a3b8; cursor: pointer; line-height: 1; padding: 2px 3px; }
+  .typeahead-clear:hover { color: #475569; }
+  .typeahead-list { position: absolute; top: calc(100% + 2px); left: 0; min-width: 100%; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.1); list-style: none; max-height: 200px; overflow-y: auto; z-index: 100; }
+  .typeahead-list li { padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text); transition: background .1s; }
+  .typeahead-list li:hover { background: var(--primary-light); }
+  .typeahead-list li strong { color: var(--primary); }
+
+  /* ── BUTTONS ── */
+  .btn { height: 32px; padding: 0 14px; border-radius: 5px; font-size: 13px; cursor: pointer; font-weight: 500; border: none; transition: opacity .15s; font-family: inherit; }
+  .btn:hover { opacity: .87; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-reset { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+  .btn-outline { background: #fff; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-sm { height: 28px; font-size: 12px; padding: 0 12px; }
+
+  /* ── STAT GRID ── */
+  .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; }
+  .stat-card { padding: 14px 16px; border-right: 1px solid var(--border); text-align: center; }
+  .stat-card:last-child { border-right: none; }
+  .stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; white-space: nowrap; }
+  .stat-val { font-size: 20px; font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+  .stat-val.blue   { color: #2563eb; }
+  .stat-val.green  { color: #16a34a; }
+  .stat-val.orange { color: #d97706; }
+  .stat-val.red    { color: #dc2626; }
+
+  /* ── TABLE ── */
+  .result-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .result-count { font-size: 13px; color: var(--text-muted); }
+  .result-count strong { color: var(--text); font-weight: 700; }
+  .main-table { width: 100%; border-collapse: collapse; }
+  .main-table th { background: #f8fafc; font-size: 12px; font-weight: 600; color: #475569; padding: 9px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; text-align: center; position: sticky; top: 0; z-index: 10; }
+  .main-table td { padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 12px; color: var(--text); text-align: center; white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .main-table tbody tr:last-child td { border-bottom: none; }
+  .td-name { text-align: left !important; font-weight: 600; }
+  .rate-val { font-weight: 700; }
+
+  /* ── 카테고리 뱃지 ── */
+  .cat-badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .cat-mandatory   { background: #fee2e2; color: #b91c1c; }
+  .cat-leadership  { background: #dbeafe; color: #1d4ed8; }
+  .cat-job         { background: #dcfce7; color: #15803d; }
+  .cat-digital     { background: #f3e8ff; color: #7c3aed; }
+  .cat-common      { background: #fef3c7; color: #b45309; }
+
+  /* ── TABLE FOOTER ── */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid var(--border); }
+  .page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
+  .pagination { display: flex; gap: 4px; }
+  .pg-btn { min-width: 28px; height: 28px; padding: 0 6px; border: 1px solid #e2e8f0; border-radius: 5px; background: #fff; font-size: 12px; color: #475569; cursor: pointer; transition: background .12s, color .12s; font-family: inherit; }
+  .pg-btn:hover:not(:disabled) { background: #f1f5f9; }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; }
+  .pg-btn:disabled { opacity: .35; cursor: default; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo">LABS <span>New</span> EDMS</div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">본사 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">관리자</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 계정 관리</a>
+        <a class="nav-item" href="#">부서 관리</a>
+        <a class="nav-item" href="#">권한 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">거래처 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">거래처 목록</a>
+        <a class="nav-item" href="#">거래처 계정 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">상품 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업별 상품 관리</a>
+        <a class="nav-item" href="#">상품별 기업 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">카테고리/Skill 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">카테고리 관리</a>
+        <a class="nav-item" href="#">스킬 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">계약 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업 계약 관리</a>
+        <a class="nav-item" href="#">CP 계약 관리</a>
+        <a class="nav-item" href="#">파트너 계약 관리</a>
+        <a class="nav-item" href="#">배송 관리</a>
+        <a class="nav-item" href="#">강사 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">매출 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정별 매출 관리</a>
+        <a class="nav-item" href="#">개인별 매출 관리</a>
+        <a class="nav-item" href="#">기업별 매출 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">학습 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">신청관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="개인별_신청현황.html">개인별</a>
+            <a class="nav-item" href="과정별_신청현황.html">과정별</a>
+            <a class="nav-item" href="기업별_신청현황.html">기업별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub open">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">학습관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="학습현황_개인별.html">개인별</a>
+            <a class="nav-item" href="학습현황_과정별.html">과정별</a>
+            <a class="nav-item" href="학습현황_기업별.html">기업별</a>
+            <a class="nav-item" href="학습현황_콘텐츠별.html">콘텐츠별</a>
+            <a class="nav-item active" href="#">코스별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">결과관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">수료결과 조회</a>
+            <a class="nav-item" href="#">교육비용 조회</a>
+            <a class="nav-item" href="#">결과보고서</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">알림 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">알림 현황</a>
+            <a class="nav-item" href="#">알림 설정</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">상담 관리</a>
+        <a class="nav-item" href="#">메시지 관리</a>
+        <a class="nav-item" href="#">FAQ 관리</a>
+        <a class="nav-item" href="#">공지관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)"><span class="nav-group-label">통합 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">어드민 권한 계정 관리</a>
+        <a class="nav-item" href="#">통합 앱 버전 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+        <a class="nav-item" href="#">메일 발송 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title">코스별 학습 현황</div>
+      <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 코스별</div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card search-wrap">
+      <div class="search-row">
+        <div class="search-label">학습기간</div>
+        <div class="search-body">
+          <input class="input input-date" type="date" id="s-date-from" value="2026-04-01">
+          <span class="date-sep">~</span>
+          <input class="input input-date" type="date" id="s-date-to" value="2026-04-30">
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-label">회사</div>
+        <div class="search-body">
+          <div class="typeahead-wrap">
+            <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
+              autocomplete="off" style="width:220px;padding-right:26px;"
+              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
+            <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
+            <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-label">코스</div>
+        <div class="search-body">
+          <input type="text" class="input" id="s-course-name" placeholder="코스명 입력" style="width:220px;">
+          <select class="select" id="s-category" style="width:130px;">
+            <option value="">카테고리 전체</option>
+            <option value="필수교육">필수교육</option>
+            <option value="리더십">리더십</option>
+            <option value="직무역량">직무역량</option>
+            <option value="디지털">디지털</option>
+            <option value="공통역량">공통역량</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-reset" onclick="resetSearch()">초기화</button>
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+      </div>
+    </div>
+
+    <!-- 요약 통계 -->
+    <div class="card">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">전체 코스 수</div>
+          <div class="stat-val" id="s-total-course">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">총 학습자 수</div>
+          <div class="stat-val blue" id="s-total-students">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">수료 합계</div>
+          <div class="stat-val green" id="s-complete">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">미수료 합계</div>
+          <div class="stat-val red" id="s-incomplete">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">학습중 합계</div>
+          <div class="stat-val blue" id="s-studying">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">평균 수료율</div>
+          <div class="stat-val orange" id="s-avg-rate">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 목록 테이블 -->
+    <div class="card" style="overflow: hidden;">
+      <div class="result-header">
+        <div class="result-count">검색결과 <strong id="result-total">0</strong>건</div>
+        <button class="btn btn-outline btn-sm" onclick="alert('엑셀 다운로드')">엑셀 다운로드</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="main-table">
+          <thead>
+            <tr>
+              <th style="width:44px;">No.</th>
+              <th style="min-width:220px;text-align:left;">코스명</th>
+              <th style="width:88px;">카테고리</th>
+              <th style="width:80px;">포함 과정 수</th>
+              <th style="width:72px;">총 학습자</th>
+              <th style="width:60px;">수료</th>
+              <th style="width:60px;">미수료</th>
+              <th style="width:60px;">학습중</th>
+              <th style="width:96px;">평균 학습기간</th>
+              <th style="width:64px;">수료율</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <div class="page-size-wrap">
+          페이지당
+          <select class="select" id="page-size-sel" style="width:70px;" onchange="onPageSizeChange()">
+            <option value="30">30</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+          건
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ── 난수 (seed 기반) ── */
+let _seed = 20260423;
+function rng() { _seed = (_seed * 1664525 + 1013904223) & 0xffffffff; return ((_seed >>> 0) / 0xffffffff); }
+function rand(n) { return Math.floor(rng() * n); }
+
+/* ── 기준 데이터 ── */
+const ALL_COMPANIES = [
+  '휴넷','에스비케이','케이티','아모레퍼시픽','삼성전자',
+  '현대자동차','LG전자','SK하이닉스','롯데그룹','포스코',
+  'CJ제일제당','한화솔루션','두산에너빌리티','GS칼텍스','KT&G',
+  '코웨이','오리온','넥슨','카카오','네이버',
+];
+
+const COURSE_POOL = [
+  { name: '신입사원 온보딩 코스',           category: '공통역량', courseCount: 6 },
+  { name: '법정 의무 교육 패키지 (연간)',    category: '필수교육', courseCount: 4 },
+  { name: '중간관리자 리더십 코스',          category: '리더십',   courseCount: 8 },
+  { name: '임원 전략 리더십 코스',           category: '리더십',   courseCount: 5 },
+  { name: '팀장 역량 강화 코스',             category: '리더십',   courseCount: 7 },
+  { name: 'AI·디지털 전환 역량 코스',        category: '디지털',   courseCount: 6 },
+  { name: '데이터 분석 심화 코스',           category: '디지털',   courseCount: 5 },
+  { name: 'RPA 업무 자동화 코스',            category: '디지털',   courseCount: 4 },
+  { name: '영업 전문가 직무 코스',           category: '직무역량', courseCount: 7 },
+  { name: 'HR 담당자 핵심 역량 코스',        category: '직무역량', courseCount: 6 },
+  { name: '재무·회계 실무 코스',             category: '직무역량', courseCount: 5 },
+  { name: '마케팅 전문가 코스',              category: '직무역량', courseCount: 8 },
+  { name: '고객 서비스 역량 코스',           category: '공통역량', courseCount: 5 },
+  { name: '비즈니스 커뮤니케이션 코스',      category: '공통역량', courseCount: 4 },
+  { name: 'ESG 경영 인식 코스',              category: '공통역량', courseCount: 3 },
+  { name: '안전·보건 법정 교육 패키지',      category: '필수교육', courseCount: 3 },
+  { name: '개인정보 보호 인식 코스',         category: '필수교육', courseCount: 2 },
+  { name: '조직 문화 혁신 코스',             category: '공통역량', courseCount: 5 },
+  { name: '글로벌 비즈니스 역량 코스',       category: '직무역량', courseCount: 6 },
+  { name: '프로젝트 관리(PM) 코스',          category: '직무역량', courseCount: 7 },
+];
+
+const CAT_KEY = { '필수교육':'cat-mandatory','리더십':'cat-leadership','직무역량':'cat-job','디지털':'cat-digital','공통역량':'cat-common' };
+
+/* ── Mock 데이터 생성 ── */
+const RAW = COURSE_POOL.map((c) => {
+  const total      = 50 + rand(400);
+  const complete   = Math.floor(total * (0.3 + rng() * 0.55));
+  const studying   = Math.floor((total - complete) * (0.2 + rng() * 0.4));
+  const incomplete = total - complete - studying;
+  const rate       = Math.round(complete / total * 100);
+  const avgDays    = 7 + rand(53);
+  return { ...c, total, complete, incomplete, studying, rate, avgDays };
+}).sort((a, b) => b.total - a.total);
+
+/* ── 상태 ── */
+let filtered = [...RAW];
+let currentPage = 1;
+let pageSize = 50;
+let companyBlurTimer = null;
+
+/* ── Typeahead (회사) ── */
+function onCompanyInput() {
+  const q = document.getElementById('s-company-input').value.trim();
+  document.getElementById('company-clear').style.display = q ? 'block' : 'none';
+  renderCompanyList(q);
+}
+function onCompanyFocus() {
+  const q = document.getElementById('s-company-input').value.trim();
+  renderCompanyList(q);
+}
+function onCompanyBlur() {
+  companyBlurTimer = setTimeout(() => {
+    document.getElementById('company-list').style.display = 'none';
+  }, 150);
+}
+function renderCompanyList(q) {
+  const ul = document.getElementById('company-list');
+  const matches = q
+    ? ALL_COMPANIES.filter(c => c.includes(q))
+    : ALL_COMPANIES;
+  if (!matches.length) { ul.style.display = 'none'; return; }
+  ul.innerHTML = matches.map(c => {
+    const hl = q ? c.replace(q, `<strong>${q}</strong>`) : c;
+    return `<li onmousedown="selectCompany('${c}')">${hl}</li>`;
+  }).join('');
+  ul.style.display = 'block';
+}
+function selectCompany(name) {
+  clearTimeout(companyBlurTimer);
+  document.getElementById('s-company-input').value = name;
+  document.getElementById('company-clear').style.display = 'block';
+  document.getElementById('company-list').style.display = 'none';
+}
+function clearCompany() {
+  document.getElementById('s-company-input').value = '';
+  document.getElementById('company-clear').style.display = 'none';
+  document.getElementById('company-list').style.display = 'none';
+}
+
+/* ── 검색 ── */
+function doSearch() {
+  const courseName = document.getElementById('s-course-name').value.trim();
+  const category   = document.getElementById('s-category').value;
+
+  filtered = RAW.filter(r => {
+    if (courseName && !r.name.includes(courseName)) return false;
+    if (category   && r.category !== category)      return false;
+    return true;
+  });
+
+  currentPage = 1;
+  render();
+}
+
+function resetSearch() {
+  document.getElementById('s-date-from').value     = '2026-04-01';
+  document.getElementById('s-date-to').value       = '2026-04-30';
+  clearCompany();
+  document.getElementById('s-course-name').value   = '';
+  document.getElementById('s-category').value      = '';
+  filtered = [...RAW];
+  currentPage = 1;
+  render();
+}
+
+/* ── 렌더링 ── */
+function fmt(n) { return n.toLocaleString(); }
+function fmtDays(d) {
+  if (d < 7)  return `${d}일`;
+  if (d < 30) return `${Math.floor(d/7)}주`;
+  return `${Math.floor(d/30)}개월`;
+}
+
+function catBadge(cat) {
+  return `<span class="cat-badge ${CAT_KEY[cat]||''}">${cat}</span>`;
+}
+
+function render() {
+  const totalStudents  = filtered.reduce((a, r) => a + r.total,      0);
+  const totalComplete  = filtered.reduce((a, r) => a + r.complete,   0);
+  const totalIncomplete = filtered.reduce((a, r) => a + r.incomplete, 0);
+  const totalStudying  = filtered.reduce((a, r) => a + r.studying,   0);
+  const avgRate = filtered.length
+    ? Math.round(filtered.reduce((a, r) => a + r.rate, 0) / filtered.length)
+    : 0;
+
+  document.getElementById('s-total-course').textContent   = fmt(filtered.length);
+  document.getElementById('s-total-students').textContent = fmt(totalStudents);
+  document.getElementById('s-complete').textContent       = fmt(totalComplete);
+  document.getElementById('s-incomplete').textContent     = fmt(totalIncomplete);
+  document.getElementById('s-studying').textContent       = fmt(totalStudying);
+  document.getElementById('s-avg-rate').textContent       = `${avgRate}%`;
+  document.getElementById('result-total').textContent     = fmt(filtered.length);
+
+  const start = (currentPage - 1) * pageSize;
+  const page  = filtered.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('table-body');
+  if (!page.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:32px;color:#94a3b8;">검색 결과가 없습니다.</td></tr>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = page.map((r, i) => {
+    const rateColor = r.rate >= 80 ? '#16a34a' : r.rate >= 50 ? '#d97706' : '#dc2626';
+    return `<tr>
+      <td>${start + i + 1}</td>
+      <td class="td-name">${r.name}</td>
+      <td>${catBadge(r.category)}</td>
+      <td>${r.courseCount}</td>
+      <td>${fmt(r.total)}</td>
+      <td style="color:#16a34a;font-weight:600;">${fmt(r.complete)}</td>
+      <td style="color:#dc2626;">${fmt(r.incomplete)}</td>
+      <td style="color:#2563eb;">${fmt(r.studying)}</td>
+      <td>${fmtDays(r.avgDays)}</td>
+      <td class="rate-val" style="color:${rateColor};">${r.rate}%</td>
+    </tr>`;
+  }).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filtered.length / pageSize);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+
+  const WINDOW = 2;
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  for (let p = 1; p <= total; p++) {
+    if (p===1 || p===total || Math.abs(p-currentPage)<=WINDOW) {
+      html += `<button class="pg-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    } else if (Math.abs(p-currentPage)===WINDOW+1) {
+      html += `<span style="padding:0 4px;color:#94a3b8;line-height:28px;">…</span>`;
+    }
+  }
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filtered.length / pageSize);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  render();
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function onPageSizeChange() {
+  pageSize = parseInt(document.getElementById('page-size-sel').value, 10);
+  currentPage = 1;
+  render();
+}
+
+/* ── 사이드바 ── */
+function toggleNavGroup(header) {
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+
+/* ── 초기화 ── */
+render();
+</script>
+</body>
+</html>

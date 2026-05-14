@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>필수교육현황 - LABS 3.0</title>
+<style>
+:root {
+  --primary:       #246CF9;
+  --primary-light: #EEF3FF;
+  --bg:            #F5F6FA;
+  --white:         #ffffff;
+  --text-900:      #111827;
+  --text-700:      #374151;
+  --text-500:      #6B7280;
+  --text-400:      #9CA3AF;
+  --border:        #E5E7EB;
+  --border-light:  #F3F4F6;
+  --blue:   #246CF9; --blue-bg:   #EEF3FF;
+  --orange: #F97316; --orange-bg: #FFF4ED;
+  --green:  #16A34A; --green-bg:  #DCFCE7;
+  --red:    #DC2626; --red-bg:    #FEE2E2;
+  --purple: #7C3AED; --purple-bg: #EDE9FE;
+  --gray:   #6B7280; --gray-bg:   #F3F4F6;
+  /* 달성률 색상 규칙 (EDMS 기준) */
+  --rate-high:   #16A34A; /* 80~100% : 초록 */
+  --rate-mid:    #F97316; /* 50~79%  : 주황 */
+  --rate-low:    #DC2626; /* 0~49%   : 빨강 */
+  --rate-high-bg: #DCFCE7;
+  --rate-mid-bg:  #FFF4ED;
+  --rate-low-bg:  #FEE2E2;
+  --gnb-h:     56px;
+  --sidebar-w: 200px;
+  --panel-w:   520px;   /* ← 넓은 패널 */
+  --font: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-size:14px;line-height:1.5;}
+
+/* ── GNB ── */
+.gnb{position:fixed;top:0;left:0;right:0;height:var(--gnb-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:300;}
+.gnb-logo{font-size:17px;font-weight:800;color:var(--text-900);letter-spacing:-.5px;display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.gnb-logo-box{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.gnb-logo-box svg{width:15px;height:15px;}
+.gnb-search-wrap{flex:1;max-width:580px;margin:0 auto;}
+.gnb-search{width:100%;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:0 16px 0 38px;font-size:13px;color:var(--text-700);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.gnb-search::placeholder{color:#B0B7C3;}
+.gnb-search:focus{border-color:var(--primary);background-color:var(--white);outline:none;}
+.gnb-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+.gnb-icon{width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);transition:background .15s;position:relative;}
+.gnb-icon:hover{background:var(--bg);}
+.gnb-icon svg{width:20px;height:20px;}
+.gnb-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
+
+/* ── LAYOUT ── */
+.app{display:flex;padding-top:var(--gnb-h);min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:var(--gnb-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--gnb-h));background:var(--white);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;padding:12px 0 20px;z-index:200;}
+.sb-menu{list-style:none;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13.5px;font-weight:500;color:var(--text-500);cursor:pointer;text-decoration:none;border-left:3px solid transparent;transition:all .12s;white-space:nowrap;}
+.sb-item:hover{background:var(--bg);color:var(--text-700);}
+.sb-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;border-left-color:var(--primary);}
+.sb-item svg{width:15px;height:15px;flex-shrink:0;}
+.sb-item.sm{font-size:13px;padding:7px 18px;}
+.sb-divider{height:1px;background:var(--border);margin:8px 0;}
+.sb-footer{padding:12px 10px 0;border-top:1px solid var(--border);margin-top:8px;}
+.sb-footer-item{display:flex;align-items:center;gap:7px;padding:7px 8px;font-size:12px;color:var(--text-400);cursor:pointer;border-radius:var(--r-md);transition:all .12s;}
+.sb-footer-item:hover{background:var(--bg);color:var(--text-500);}
+.sb-footer-item svg{width:13px;height:13px;}
+
+/* ── MAIN WRAP ── */
+.main-wrap{margin-left:var(--sidebar-w);flex:1;min-width:0;transition:padding-right .25s ease;}
+.main-wrap.panel-open{padding-right:var(--panel-w);}
+.main{padding:24px 28px 60px;}
+
+/* ── 헤더 ── */
+.back-link{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text-500);text-decoration:none;margin-bottom:10px;transition:color .12s;}
+.back-link:hover{color:var(--text-700);}
+.back-link svg{width:14px;height:14px;}
+.page-title{font-size:20px;font-weight:700;color:var(--text-900);letter-spacing:-.4px;margin-bottom:18px;}
+
+/* ── TABS ── */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab-btn{padding:10px 20px 11px;font-size:14px;font-weight:500;color:var(--text-500);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all .15s;}
+.tab-btn:hover{color:var(--text-700);}
+.tab-btn.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary);}
+.tab-cnt{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:4px;min-width:18px;}
+.tab-btn.active .tab-cnt{background:var(--primary);color:white;}
+.tab-btn:not(.active) .tab-cnt{background:var(--gray-bg);color:var(--text-500);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── 그룹 카드 ── */
+.group-list{display:flex;flex-direction:column;gap:8px;}
+.group-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 20px;cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.group-card:hover{border-color:var(--primary);box-shadow:0 2px 10px rgba(36,108,249,.08);}
+.group-card.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 2px 10px rgba(36,108,249,.12);}
+/* 완료 뱃지 */
+.gc-complete-badge{display:inline-flex;align-items:center;gap:4px;background:var(--green);color:white;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.gc-complete-badge svg{width:12px;height:12px;}
+.gc-left{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.gc-name{font-size:14px;font-weight:700;color:var(--text-900);letter-spacing:-.2px;}
+.group-card.selected .gc-name{color:var(--primary);}
+.gc-date{font-size:12px;color:var(--text-400);}
+.gc-right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.gc-stat{display:flex;flex-direction:column;align-items:center;gap:1px;}
+.gc-stat-lbl{font-size:11px;color:var(--text-400);}
+.gc-stat-val{font-size:15px;font-weight:800;color:var(--text-900);}
+.gc-stat-val.primary{color:var(--primary);}
+.gc-sep{width:1px;height:28px;background:var(--border);}
+/* 달성률 미니 바 (카드) */
+.gc-prog-wrap{display:flex;align-items:center;gap:8px;}
+.gc-prog-bar{width:72px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.gc-prog-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.gc-pct{font-size:12px;font-weight:700;min-width:30px;text-align:right;}
+.gc-arrow{width:18px;height:18px;color:var(--text-400);flex-shrink:0;transition:color .15s,transform .2s;}
+.group-card:hover .gc-arrow,.group-card.selected .gc-arrow{color:var(--primary);}
+.group-card.selected .gc-arrow{transform:rotate(90deg);}
+
+/* 빈 상태 */
+.empty{padding:64px 0;text-align:center;color:var(--text-400);}
+.empty svg{width:40px;height:40px;margin-bottom:10px;opacity:.3;}
+.empty p{font-size:13.5px;}
+
+/* footer */
+.page-footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-400);}
+.page-footer a{color:var(--text-400);text-decoration:none;margin-left:8px;}
+
+/* ════════════════════════════════════════
+   RIGHT PANEL (넓게)
+   ════════════════════════════════════════ */
+.panel{
+  position:fixed;top:var(--gnb-h);right:0;
+  width:var(--panel-w);
+  height:calc(100vh - var(--gnb-h));
+  background:var(--white);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  z-index:150;
+  transform:translateX(100%);
+  transition:transform .25s ease;
+  overflow:hidden;
+}
+.panel.open{transform:translateX(0);}
+
+/* 패널 헤더 */
+.panel-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.panel-title{font-size:15px;font-weight:700;color:var(--text-900);}
+.panel-close{width:28px;height:28px;border:none;background:none;cursor:pointer;color:var(--text-400);display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm);transition:all .12s;}
+.panel-close:hover{background:var(--bg);color:var(--text-700);}
+.panel-close svg{width:16px;height:16px;}
+
+/* 패널 바디 */
+.panel-body{flex:1;overflow-y:auto;padding:24px;}
+
+/* 섹션 타이틀 */
+.psec{font-size:12px;font-weight:700;color:var(--text-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:24px;}
+.psec:first-child{margin-top:0;}
+.psec-row{display:flex;align-items:center;justify-content:space-between;}
+.psec-sub{font-size:11px;color:var(--text-400);font-weight:400;text-transform:none;letter-spacing:0;}
+
+/* 교육 정보 박스 */
+.p-period{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;}
+.p-period-name{font-size:14px;font-weight:700;color:var(--text-900);margin-bottom:3px;}
+.p-period-date{font-size:12px;color:var(--text-400);}
+
+/* 달성현황 카드 */
+.p-ach{border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;background:var(--white);}
+/* 전체 수료 완료 배너 */
+.p-complete-banner{
+  background: linear-gradient(135deg, var(--green-bg) 0%, #dcfce7 100%);
+  border:1.5px solid var(--green);
+  border-radius:var(--r-lg);
+  padding:16px 20px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:4px;
+}
+.p-complete-icon{
+  width:40px;height:40px;
+  background:var(--green);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.p-complete-icon svg{width:22px;height:22px;}
+.p-complete-text{}
+.p-complete-title{font-size:14px;font-weight:700;color:var(--green);letter-spacing:-.2px;margin-bottom:2px;}
+.p-complete-desc{font-size:12.5px;color:var(--text-500);}
+.p-ach-stats{display:flex;align-items:stretch;gap:0;}
+.p-ach-stat{flex:1;display:flex;flex-direction:column;gap:4px;padding:0 16px;}
+.p-ach-stat:first-child{padding-left:0;}
+.p-ach-stat:last-child{padding-right:0;}
+.p-ach-lbl{font-size:12px;color:var(--text-400);}
+.p-ach-val{font-size:24px;font-weight:800;color:var(--text-900);letter-spacing:-.5px;}
+.p-ach-val.primary{color:var(--primary);}
+.p-ach-sep{width:1px;background:var(--border);align-self:stretch;}
+/* 달성률 바 (패널) */
+.p-ach-bar-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border-light);}
+.p-ach-bar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.p-ach-bar-lbl{font-size:12px;color:var(--text-500);}
+.p-ach-bar-pct{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.p-ach-bar{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.p-ach-bar-fill{height:100%;border-radius:4px;transition:width .7s ease;}
+
+/* 과정 목록 */
+.p-filter{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.chk{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--text-700);cursor:pointer;user-select:none;}
+.chk input{width:13px;height:13px;accent-color:var(--primary);cursor:pointer;}
+
+.p-course-list{display:flex;flex-direction:column;gap:8px;}
+
+/* 과정 아이템 */
+.p-course-item{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:border-color .12s,box-shadow .12s;
+}
+.p-course-item:hover{border-color:var(--primary);box-shadow:0 1px 6px rgba(36,108,249,.08);}
+
+.p-ci-body{flex:1;min-width:0;}
+.p-ci-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.p-ci-name{font-size:13.5px;font-weight:600;color:var(--text-900);line-height:1.4;}
+/* 기간 · 유형 인라인 */
+.p-ci-period-type{display:flex;align-items:center;gap:6px;}
+.p-ci-period{font-size:11.5px;color:var(--text-400);}
+.p-ci-dot{font-size:11px;color:var(--border);line-height:1;}
+.p-ci-type{font-size:11.5px;color:var(--text-400);}
+
+/* 상태 배지 */
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:12px;font-weight:600;}
+.sbadge.done{background:var(--green-bg);color:var(--green);}
+.sbadge.progress{background:var(--blue-bg);color:var(--blue);}
+.sbadge.fail{background:var(--red-bg);color:var(--red);}
+.sbadge.waiting{background:var(--gray-bg);color:var(--gray);}
+.sbadge .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* 과정 아이템 하단 — 버튼 영역 */
+.p-ci-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light);}
+.p-ci-period{font-size:11.5px;color:var(--text-400);}
+
+/* 학습하기 버튼 — 피그마 디자인 기준 */
+.btn-action{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:8px 16px;
+  border-radius:6px;
+  font-size:13px;font-weight:600;
+  cursor:pointer;border:none;
+  background:var(--primary);
+  color:white;
+  transition:background .15s;
+  white-space:nowrap;
+  text-decoration:none;
+  letter-spacing:-.1px;
+}
+.btn-action:hover{background:#1a56d6;}
+.btn-chevron{font-size:13px;font-weight:700;line-height:1;}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header class="gnb">
+  <a href="#" class="gnb-logo">
+    <div class="gnb-logo-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+    </div>
+    LABS
+  </a>
+  <div class="gnb-search-wrap">
+    <input class="gnb-search" type="text" placeholder="과정명, 키워드로 검색해 보세요">
+  </div>
+  <div class="gnb-right">
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="gnb-badge"></span>
+    </button>
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Contents</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Connect</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>my Canvas</a></li>
+    </ul>
+    <div class="sb-divider"></div>
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item sm">학습상세</a></li>
+      <li><a href="#" class="sb-item sm">교재 배송현황</a></li>
+      <li><a href="#" class="sb-item sm">관심과정</a></li>
+      <li><a href="#" class="sb-item sm">스크랩</a></li>
+      <li><a href="#" class="sb-item sm">학점</a></li>
+      <li><a href="#" class="sb-item sm">IDP</a></li>
+      <li><a href="#" class="sb-item sm">진단</a></li>
+      <li><a href="#" class="sb-item sm">레벨/마일리지</a></li>
+      <li><a href="#" class="sb-item sm active">필수교육</a></li>
+      <li><a href="#" class="sb-item sm">사외교육</a></li>
+      <li><a href="#" class="sb-item sm">결재하기</a></li>
+      <li><a href="#" class="sb-item sm">팀원현황</a></li>
+    </ul>
+    <div class="sb-footer">
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>학습 문의 및 원격 상담</div>
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>모바일 App 설치</div>
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>전체 과정 리스트</div>
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>설정</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrap" id="mainWrap">
+    <main class="main">
+      <a href="#" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+        돌아가기
+      </a>
+      <h1 class="page-title">필수교육현황</h1>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-p')">
+          진행중인 교육<span class="tab-cnt" id="cnt-p">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-d')">
+          종료된 교육<span class="tab-cnt" id="cnt-d">0</span>
+        </button>
+      </div>
+
+      <div id="tab-p" class="tab-content active">
+        <div class="group-list" id="gl-p"></div>
+      </div>
+      <div id="tab-d" class="tab-content">
+        <div class="group-list" id="gl-d"></div>
+      </div>
+
+      <div class="page-footer">© hunet All rights reserved.<a href="#">개인정보 처리방침</a></div>
+    </main>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel" id="panel">
+    <div class="panel-hd">
+      <span class="panel-title">상세 정보</span>
+      <button class="panel-close" onclick="closePanel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+  </div>
+</div>
+
+<script>
+/* ─── 상수 ─── */
+
+const TYPE = {
+  online:   { label:'온라인',      icon:'blue'   },
+  offline:  { label:'오프라인',    icon:'orange' },
+  hybrid:   { label:'하이브리드',  icon:'green'  },
+  micro:    { label:'마이크로러닝', icon:'purple' },
+};
+
+/* ─── 달성률 색상 규칙 ───────────────────────────
+   80~100% : 초록  (#16A34A)
+   50~79%  : 주황  (#F97316)
+   0~49%   : 빨강  (#DC2626)
+────────────────────────────────────────────── */
+function rateColor(pct){
+  if(pct >= 80) return { color:'var(--rate-high)', bg:'var(--rate-high-bg)' };
+  if(pct >= 50) return { color:'var(--rate-mid)',  bg:'var(--rate-mid-bg)'  };
+  return             { color:'var(--rate-low)',  bg:'var(--rate-low-bg)'  };
+}
+
+/* ─── 버튼 렌더 ─── 상태별 이동 분기
+   예정(waiting) → 수강신청 상세 페이지
+   학습중/수료/미수료 → 학습 페이지
+────────────────────────────────────────────── */
+function actionBtn(status, courseName){
+  const isStudy = (status === 'progress' || status === 'done' || status === 'fail');
+  const dest = isStudy ? '학습 페이지' : '수강신청 상세 페이지';
+  const msg = encodeURIComponent(`[${courseName}]\n${dest}로 이동합니다.\n※ 별도 구현 예정`);
+  const click = `onclick="alert(decodeURIComponent('${msg}'));return false;"`;
+  return `<a href="#" class="btn-action" ${click}>학습하기 <span class="btn-chevron">›</span></a>`;
+}
+
+/* ─── 상태 배지 ─── */
+const SBADGE = {
+  done:     `<span class="sbadge done"><span class="dot"></span>수료</span>`,
+  progress: `<span class="sbadge progress"><span class="dot"></span>학습중</span>`,
+  fail:     `<span class="sbadge fail"><span class="dot"></span>미수료</span>`,
+  waiting:  `<span class="sbadge waiting"><span class="dot"></span>예정</span>`,
+};
+
+/* ─── 데이터 ─── */
+const progressGroups = [
+  { id:1, name:'동아ST 2025 상반기 셀링모델', date:'교육기간 : 2026-04-16 ~ 2026-04-30',
+    courses:[
+      { no:6, type:'offline',  name:'동아ST 부서장 리더십',               period:'2026-04-16 ~ 2026-04-30', status:'waiting'  },
+      { no:5, type:'hybrid',   name:'동아ST 2025 상반기 셀링모델',        period:'2026-04-16 ~ 2026-04-30', status:'progress' },
+      { no:4, type:'online',   name:'고객 응대 서비스 품질 향상',          period:'2026-04-16 ~ 2026-04-30', status:'done'     },
+      { no:3, type:'online',   name:'영업전략 실전 워크숍',                period:'2026-04-16 ~ 2026-04-30', status:'fail'     },
+      { no:2, type:'micro',    name:'MZ세대 소통법 - 마이크로러닝',        period:'2026-04-16 ~ 2026-04-30', status:'progress' },
+      { no:1, type:'offline',  name:'외부 세미나 - 제약 산업 트렌드 2026', period:'2026-04-16 ~ 2026-04-30', status:'waiting'  },
+    ]},
+  { id:2, name:'2026 상반기 전사 역량강화', date:'교육기간 : 2026-03-01 ~ 2026-06-30',
+    courses:[
+      { no:5, type:'online',   name:'2026 직무역량 강화 기초과정',         period:'2026-03-01 ~ 2026-06-30', status:'done'     },
+      { no:4, type:'micro',    name:'CS 마인드 강화 교육 시리즈',          period:'2026-03-01 ~ 2026-05-31', status:'progress' },
+      { no:3, type:'hybrid',   name:'팀장급 리더십 집중 과정',              period:'2026-03-01 ~ 2026-04-30', status:'fail'     },
+      { no:2, type:'online',   name:'데이터 기반 의사결정 트레이닝',        period:'2026-03-01 ~ 2026-06-30', status:'done'     },
+      { no:1, type:'offline',  name:'조직문화 혁신 워크숍',                period:'2026-03-01 ~ 2026-06-30', status:'waiting'  },
+    ]},
+  { id:3, name:'2026 컴플라이언스 필수교육', date:'교육기간 : 2026-01-01 ~ 2026-12-31',
+    courses:[
+      { no:5, type:'online', name:'개인정보보호 법정의무교육',              period:'2026-01-01 ~ 2026-12-31', status:'done'    },
+      { no:4, type:'online', name:'산업안전보건법 필수 이수',               period:'2026-01-01 ~ 2026-12-31', status:'done'    },
+      { no:3, type:'online', name:'성희롱 예방교육',                       period:'2026-01-01 ~ 2026-12-31', status:'waiting' },
+      { no:2, type:'online', name:'장애인 인식개선 교육',                   period:'2026-01-01 ~ 2026-12-31', status:'waiting' },
+      { no:1, type:'online', name:'직장 내 괴롭힘 방지교육',                period:'2026-01-01 ~ 2026-12-31', status:'waiting' },
+    ]},
+  { id:7, name:'2026 상반기 리더십 아카데미', date:'교육기간 : 2026-02-01 ~ 2026-04-30',
+    courses:[
+      { no:5, type:'offline',  name:'리더십 역량 기초 과정',                period:'2026-02-01 ~ 2026-04-30', status:'done' },
+      { no:4, type:'online',   name:'전략적 사고와 의사결정',                period:'2026-02-01 ~ 2026-04-30', status:'done' },
+      { no:3, type:'hybrid',   name:'팀 커뮤니케이션 워크숍',               period:'2026-02-01 ~ 2026-03-31', status:'done' },
+      { no:2, type:'micro',    name:'피드백 스킬 - 마이크로러닝',            period:'2026-02-01 ~ 2026-04-30', status:'done' },
+      { no:1, type:'online',   name:'코칭 리더십 실전 과정',                period:'2026-02-01 ~ 2026-04-30', status:'done' },
+    ]},
+];
+
+const doneGroups = [
+  { id:6, name:'2025 하반기 법정의무교육', date:'교육기간 : 2025-07-01 ~ 2025-12-31',
+    courses:[
+      { no:5, type:'online', name:'개인정보보호 법정의무교육 2025',          period:'2025-07-01 ~ 2025-12-31', status:'done' },
+      { no:4, type:'online', name:'산업안전보건 교육 2025',                 period:'2025-07-01 ~ 2025-12-31', status:'done' },
+      { no:3, type:'online', name:'성희롱 예방교육 2025',                   period:'2025-07-01 ~ 2025-12-31', status:'done' },
+      { no:2, type:'online', name:'장애인 인식개선 교육 2025',               period:'2025-07-01 ~ 2025-12-31', status:'done' },
+      { no:1, type:'online', name:'직장 내 괴롭힘 방지교육 2025',            period:'2025-07-01 ~ 2025-12-31', status:'done' },
+    ]},
+  { id:4, name:'동아ST 2024 하반기 셀링모델', date:'교육기간 : 2024-07-01 ~ 2024-12-31',
+    courses:[
+      { no:5, type:'offline',  name:'동아ST 2024 하반기 리더십 아카데미',     period:'2024-07-01 ~ 2024-12-31', status:'done' },
+      { no:4, type:'online',   name:'2024 직무역량 강화 - 영업 커뮤니케이션', period:'2024-07-01 ~ 2024-12-31', status:'done' },
+      { no:3, type:'micro',    name:'컴플라이언스 필수 이수 과정 2024',        period:'2024-07-01 ~ 2024-12-31', status:'done' },
+      { no:2, type:'hybrid',   name:'조직관리 및 성과 코칭',                  period:'2024-07-01 ~ 2024-12-31', status:'done' },
+      { no:1, type:'offline',  name:'고객 중심 사고 전환 프로그램',            period:'2024-07-01 ~ 2024-12-31', status:'done' },
+    ]},
+  { id:5, name:'2024 상반기 전사 교육', date:'교육기간 : 2024-01-01 ~ 2024-06-30',
+    courses:[
+      { no:5, type:'online',   name:'리더십 기초과정 2024',                  period:'2024-01-01 ~ 2024-06-30', status:'done' },
+      { no:4, type:'offline',  name:'신입사원 온보딩 교육',                   period:'2024-01-01 ~ 2024-03-31', status:'done' },
+      { no:3, type:'micro',    name:'업무 생산성 향상 - 마이크로러닝',         period:'2024-01-01 ~ 2024-06-30', status:'done' },
+      { no:2, type:'online',   name:'글로벌 비즈니스 매너',                   period:'2024-01-01 ~ 2024-06-30', status:'fail' },
+      { no:1, type:'hybrid',   name:'외부 연수 - 혁신성장 아카데미',           period:'2024-01-01 ~ 2024-06-30', status:'done' },
+    ]},
+];
+
+/* ─── 상태 ─── */
+let selectedId = null, currentTab = 'p';
+let filterTypes = ['online','offline','hybrid','micro'];
+
+/* ─── 통계 ─── */
+function calcStats(courses){
+  const total = courses.length;
+  const done  = courses.filter(c=>c.status==='done').length;
+  const pct   = total>0 ? Math.round(done/total*100) : 0;
+  return {total,done,pct};
+}
+
+/* ─── 카드 렌더 ─── */
+function renderCards(groups, elId){
+  const el = document.getElementById(elId);
+  if(!groups.length){
+    el.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><p>필수교육이 없습니다.</p></div>`;
+    return;
+  }
+  el.innerHTML = groups.map(g=>{
+    const s   = calcStats(g.courses);
+    const rc  = rateColor(s.pct);
+    const sel = selectedId===g.id;
+    return `
+    <div class="group-card${sel?' selected':''}" onclick="selectGroup(${g.id})">
+      <div class="gc-left">
+        <div class="gc-name">${g.name}</div>
+        <div class="gc-date">${g.date}</div>
+      </div>
+      <div class="gc-right">
+        <div class="gc-stat"><span class="gc-stat-lbl">과정</span><span class="gc-stat-val">${s.total}</span></div>
+        <div class="gc-sep"></div>
+        <div class="gc-stat"><span class="gc-stat-lbl">수료</span><span class="gc-stat-val primary">${s.done}</span></div>
+        <div class="gc-sep"></div>
+        <div class="gc-prog-wrap">
+          <div class="gc-prog-bar"><div class="gc-prog-fill" style="width:${s.pct}%;background:${rc.color};"></div></div>
+          <span class="gc-pct" style="color:${rc.color};">${s.pct}%</span>
+        </div>
+        <svg class="gc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── 과정 아이템 빌드 ─── */
+function buildCourseItem(c){
+  const t = TYPE[c.type]||TYPE.online;
+  return `
+  <div class="p-course-item">
+    <div class="p-ci-body">
+      <div class="p-ci-top">
+        ${SBADGE[c.status]||SBADGE.waiting}
+        <span class="p-ci-name">${c.name}</span>
+      </div>
+      <div class="p-ci-footer">
+        <span class="p-ci-period-type">
+          <span class="p-ci-period">${c.period}</span>
+          <span class="p-ci-dot">·</span>
+          <span class="p-ci-type">${t.label}</span>
+        </span>
+        ${actionBtn(c.status, c.name)}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ─── 패널 콘텐츠 빌드 ─── */
+function buildPanel(g){
+  const s      = calcStats(g.courses);
+  const rc     = rateColor(s.pct);
+  const filtered = g.courses.filter(c=>filterTypes.includes(c.type));
+  const courseHTML = filtered.length
+    ? filtered.map(c => buildCourseItem(c)).join('')
+    : `<div class="empty" style="padding:24px 0"><p>선택한 유형의 과정이 없습니다.</p></div>`;
+
+  return `
+    <!-- 교육 정보 -->
+    <div class="psec">교육 정보</div>
+    <div class="p-period">
+      <div class="p-period-name">${g.name}</div>
+      <div class="p-period-date">${g.date}</div>
+    </div>
+
+    <!-- 달성현황 -->
+    <div class="psec">달성현황</div>
+    <div class="p-ach">
+      <div class="p-ach-stats">
+        <div class="p-ach-stat">
+          <span class="p-ach-lbl">총 과정 수</span>
+          <span class="p-ach-val">${s.total}</span>
+        </div>
+        <div class="p-ach-sep"></div>
+        <div class="p-ach-stat">
+          <span class="p-ach-lbl">수료</span>
+          <span class="p-ach-val" style="color:var(--green)">${s.done}</span>
+        </div>
+        <div class="p-ach-sep"></div>
+        <div class="p-ach-stat">
+          <span class="p-ach-lbl">미수료</span>
+          <span class="p-ach-val" style="color:var(--red)">${s.total - s.done}</span>
+        </div>
+      </div>
+      <div class="p-ach-bar-section">
+        <div class="p-ach-bar-header">
+          <span class="p-ach-bar-lbl">달성률</span>
+          <span class="p-ach-bar-pct" style="color:${rc.color}">${s.pct}%</span>
+        </div>
+        <div class="p-ach-bar" style="background:${rc.bg}">
+          <div class="p-ach-bar-fill" style="width:${s.pct}%;background:${rc.color};"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 과정 목록 -->
+    <div class="psec psec-row">
+      <span>과정 목록</span>
+    </div>
+    <div class="p-filter" id="p-filter">
+      <label class="chk"><input type="checkbox" data-type="online"   checked onchange="panelFilter(${g.id})"> 온라인</label>
+      <label class="chk"><input type="checkbox" data-type="offline"  checked onchange="panelFilter(${g.id})"> 오프라인</label>
+      <label class="chk"><input type="checkbox" data-type="hybrid"    checked onchange="panelFilter(${g.id})"> 하이브리드</label>
+      <label class="chk"><input type="checkbox" data-type="micro"    checked onchange="panelFilter(${g.id})"> 마이크로러닝</label>
+    </div>
+    <div class="p-course-list" id="p-course-list">${courseHTML}</div>
+  `;
+}
+
+/* ─── 그룹 선택 ─── */
+function selectGroup(id){
+  const groups = currentTab==='p' ? progressGroups : doneGroups;
+  const g = groups.find(g=>g.id===id);
+  if(!g) return;
+  if(selectedId===id){ selectedId=null; closePanel(); renderCards(groups,'gl-'+currentTab); return; }
+  selectedId = id;
+  renderCards(groups,'gl-'+currentTab);
+  document.getElementById('panel-body').innerHTML = buildPanel(g);
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('mainWrap').classList.add('panel-open');
+}
+
+/* ─── 패널 필터 ─── */
+function panelFilter(gid){
+  const checks = document.querySelectorAll('#p-filter input');
+  filterTypes = [...checks].filter(c=>c.checked).map(c=>c.dataset.type);
+  const groups = currentTab==='p' ? progressGroups : doneGroups;
+  const g = groups.find(g=>g.id===gid);
+  if(!g) return;
+  const filtered = g.courses.filter(c=>filterTypes.includes(c.type));
+  document.getElementById('p-course-list').innerHTML = filtered.length
+    ? filtered.map(c => buildCourseItem(c)).join('')
+    : `<div class="empty" style="padding:24px 0"><p>선택한 유형의 과정이 없습니다.</p></div>`;
+}
+
+/* ─── 패널 닫기 ─── */
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('mainWrap').classList.remove('panel-open');
+  selectedId = null;
+  filterTypes = ['online','offline','hybrid','micro'];
+  const groups = currentTab==='p' ? progressGroups : doneGroups;
+  renderCards(groups,'gl-'+currentTab);
+}
+
+/* ─── 탭 전환 ─── */
+function switchTab(btn,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  currentTab = id.replace('tab-','');
+  selectedId = null;
+  filterTypes = ['online','offline','hybrid','micro'];
+  closePanel();
+}
+
+/* ─── 초기 렌더 ─── */
+function init(){
+  renderCards(progressGroups,'gl-p');
+  renderCards(doneGroups,'gl-d');
+  document.getElementById('cnt-p').textContent = progressGroups.length;
+  document.getElementById('cnt-d').textContent = doneGroups.length;
+}
+init();
+</script>
+</body>
+</html>

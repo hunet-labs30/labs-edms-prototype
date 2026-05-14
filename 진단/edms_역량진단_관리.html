@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS — 역량진단 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px; background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }
+
+  /* DIAGNOSIS TITLE LINK */
+  .diag-link { color: inherit; text-decoration: none; }
+  .diag-link:hover { color: var(--primary); text-decoration: underline; cursor: pointer; }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg); color: #fff; height: 46px;
+    display: flex; align-items: center; padding: 0 20px; gap: 16px;
+    flex-shrink: 0; z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .lang-select {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s; border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; display: inline-block; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+  .nav-group.open > .nav-sub { max-height: 300px; padding: 2px 0 6px; }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-flat {
+    display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700;
+    text-decoration: none; cursor: pointer; border-left: 3px solid transparent; transition: background 0.15s;
+  }
+  .nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* PAGE HEADER */
+  .page-header-row { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 2px; }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #222; }
+
+  /* STAT ROW */
+  .stat-row { display: flex; gap: 12px; }
+  .stat-card {
+    flex: 1; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .stat-label { font-size: 11px; color: #888; font-weight: 600; }
+  .stat-value { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+  .stat-sub { font-size: 11px; color: #aaa; }
+  .stat-card.accent-blue .stat-value { color: var(--primary); }
+  .stat-card.accent-green .stat-value { color: #1a7a4a; }
+  .stat-card.accent-orange .stat-value { color: #d06b00; }
+
+  /* SEARCH */
+  .search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px 0; }
+  .label-auto { font-size: 12px; font-weight: 600; color: #555; white-space: nowrap; flex-shrink: 0; }
+  .input, .select {
+    height: 28px; border: 1px solid #ccc; border-radius: 3px;
+    padding: 0 8px; font-size: 12px; color: var(--text); background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); }
+  .input { min-width: 140px; }
+  .select { cursor: pointer; }
+  .search-actions { display: flex; gap: 6px; margin-left: auto; }
+  .btn {
+    height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px;
+    font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; font-family: inherit;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+  .btn-sm { height: 26px; padding: 0 10px; font-size: 11px; }
+
+  /* RESULT HEADER */
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .result-count { font-size: 12px; color: #666; }
+  .result-count strong { color: var(--primary); }
+
+  /* MAIN TABLE */
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th {
+    background: var(--table-header); border: 1px solid var(--border);
+    padding: 8px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap;
+  }
+  .main-table td {
+    border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap;
+  }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+
+  /* TABLE FOOTER */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .pg-btn {
+    min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff;
+    border-radius: 3px; font-size: 12px; cursor: pointer; color: #555;
+    display: flex; align-items: center; justify-content: center; font-family: inherit;
+  }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+
+  /* BADGES (텍스트 타입 상태) */
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 3px; padding: 2px 8px; font-size: 11px; font-weight: 700; white-space: nowrap;
+  }
+  .badge-blue   { background: #e8f0fe; color: #1a5cc8; }
+  .badge-green  { background: #e6f7ee; color: #1a7a4a; }
+  .badge-orange { background: #fff4e0; color: #b35c00; }
+  .badge-gray   { background: #f0f2f5; color: #888; }
+
+  /* STATUS BUTTONS (버튼 타입 상태 — 클릭 시 TP 어드민 이동) */
+  .status-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 3px; padding: 2px 9px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; cursor: pointer; font-family: inherit; transition: opacity 0.15s;
+    border-width: 1px; border-style: solid;
+  }
+  .status-btn:hover { opacity: 0.78; }
+  /* 대기: 진단 시작 전 */
+  .status-btn-yellow { background: #fffbe6; color: #8a6400; border-color: #ffd43b; }
+  /* 마감: 진단기간 종료, 리포트 발송 전 */
+  .status-btn-orange { background: #fff4e0; color: #b35c00; border-color: #f4b65a; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar-bg { flex: 1; height: 6px; background: #e0e3e8; border-radius: 4px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 4px; }
+  .progress-bar-fill.done { background: #1a7a4a; }
+  .progress-text { font-size: 11px; color: #555; white-space: nowrap; min-width: 40px; text-align: right; }
+
+  /* TP ADMIN NOTICE BANNER */
+  .tp-notice {
+    display: flex; align-items: center; gap: 12px;
+    background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 6px;
+    padding: 12px 16px; font-size: 12px; color: #1a5cc8;
+  }
+  .tp-notice-icon { font-size: 18px; flex-shrink: 0; }
+  .tp-notice-text { flex: 1; line-height: 1.6; }
+  .tp-notice-text strong { font-weight: 700; }
+  .tp-link-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #1a73e8; color: #fff; border: none; border-radius: 4px;
+    padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+    text-decoration: none; white-space: nowrap; font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .tp-link-btn:hover { opacity: 0.88; }
+
+  /* DOWNLOAD CARDS */
+  .download-section { display: flex; flex-direction: column; gap: 10px; }
+  .download-card {
+    border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px;
+    background: #fff; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .download-card-info { display: flex; flex-direction: column; gap: 3px; }
+  .download-card-title { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+  .download-card-desc { font-size: 11px; color: #888; line-height: 1.6; }
+  .download-card-meta { font-size: 11px; color: #aaa; margin-top: 2px; }
+  .download-card.disabled { opacity: 0.5; }
+
+  /* TOAST */
+  #toast {
+    display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px;
+    font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    white-space: nowrap;
+  }
+
+  /* DETAIL MODAL (다운로드) */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 6px; width: 520px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.22); display: flex; flex-direction: column;
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+  .modal-close { background: none; border: none; font-size: 20px; color: #999; cursor: pointer; }
+  .modal-close:hover { color: #333; }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+  .form-notice {
+    background: #f8f9fb; border: 1px solid #e0e3e8; border-radius: 4px;
+    padding: 10px 14px; font-size: 12px; color: #666; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo"><span>LABS</span> New EDMS</div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">학습</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">결과</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">교육비용</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">사외교육</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">러닝메이커</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">커넥트</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">게시글</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+
+    <!-- 부가서비스 — ACTIVE -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item active" href="#">역량진단 관리</a>
+        <a class="nav-item" href="#">IDP 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item" href="#">계정 권한</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header-row">
+      <div class="page-header-title">역량진단 관리</div>
+      <div class="breadcrumb">부가서비스 &gt; 역량진단 관리</div>
+    </div>
+
+    <!-- TP 어드민 안내 배너 -->
+    <div class="tp-notice">
+      <span class="tp-notice-icon">ℹ️</span>
+      <div class="tp-notice-text">
+        <strong>진단 생성, 대상자 배정, 대상자별 응답 현황, 독려 발송 및 리포트 확인</strong>은 리더십 진단 관리자 페이지에서 관리합니다.
+      </div>
+      <a class="tp-link-btn" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">
+        + 진단 생성
+      </a>
+    </div>
+
+    <!-- 요약 통계 -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">전체 진단</div>
+        <div class="stat-value">14</div>
+        <div class="stat-sub">2025년 누적</div>
+      </div>
+      <div class="stat-card accent-orange">
+        <div class="stat-label">대기</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub">진단 시작 전</div>
+      </div>
+      <div class="stat-card accent-blue">
+        <div class="stat-label">진행중</div>
+        <div class="stat-value">2</div>
+        <div class="stat-sub">응답 수집 중</div>
+      </div>
+      <div class="stat-card accent-orange">
+        <div class="stat-label">마감</div>
+        <div class="stat-value">2</div>
+        <div class="stat-sub">진단 기간 종료</div>
+      </div>
+      <div class="stat-card accent-green">
+        <div class="stat-label">완료</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub">데이터 다운로드 가능</div>
+      </div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <div class="search-row">
+        <span class="label-auto">상태</span>
+        <select class="select" style="width:100px;">
+          <option>전체</option>
+          <option>대기</option>
+          <option>진행중</option>
+          <option>마감</option>
+          <option>완료</option>
+        </select>
+        <span class="label-auto" style="margin-left:16px;">진단명</span>
+        <input class="input" type="text" placeholder="진단명 검색" style="width:200px;">
+        <span class="label-auto" style="margin-left:16px;">기간</span>
+        <input class="input" type="text" placeholder="2025-01-01" style="width:110px;"
+               onfocus="this.type='date'" onblur="if(!this.value)this.type='text'">
+        <span style="color:#aaa;font-size:12px;">~</span>
+        <input class="input" type="text" placeholder="2025-12-31" style="width:110px;"
+               onfocus="this.type='date'" onblur="if(!this.value)this.type='text'">
+        <div class="search-actions">
+          <button class="btn btn-reset">초기화</button>
+          <button class="btn btn-primary">검색</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 진단 목록 -->
+    <div class="card" style="padding: 16px 20px;">
+      <div class="result-header">
+        <span class="result-count">총 <strong>14</strong>건</span>
+        <select class="select" style="height:26px; font-size:11px;">
+          <option>10개씩</option>
+          <option>20개씩</option>
+          <option>50개씩</option>
+        </select>
+      </div>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">No</th>
+            <th style="text-align:left; padding-left:10px;">진단명</th>
+            <th style="width:70px;">대상자</th>
+            <th style="width:160px;">응답 기간</th>
+            <th style="width:170px;">응답 현황</th>
+            <th style="width:72px;">상태</th>
+            <th style="width:130px;">관리 <span style="font-size:10px; font-weight:400; color:#888;">(TP 어드민 상세 이동)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- ① 진행중 (텍스트) : 진단 시작 후 -->
+          <tr>
+            <td>12</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 상반기 리더십 역량진단</a></td>
+            <td>245</td>
+            <td>2025.05.01 ~ 05.31</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:62%;"></div></div>
+                <span class="progress-text">152/245 <span style="color:#1a73e8;">(62%)</span></span>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">진행중</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">팀장급 코칭리더십 진단 (2차)</a></td>
+            <td>38</td>
+            <td>2025.05.05 ~ 05.25</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:47%;"></div></div>
+                <span class="progress-text">18/38 <span style="color:#1a73e8;">(47%)</span></span>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">진행중</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+
+          <!-- ② 마감하기 (버튼) : 조건 미충족 — 미완료 대상자 있음 -->
+          <tr id="row-magam-10">
+            <td>10</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">신임 팀장 온보딩 역량진단</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[미완료 대상자 있음]</span>
+            </td>
+            <td>22</td>
+            <td>2025.04.10 ~ 04.30</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:82%; background:#f4b65a;"></div></div>
+                <span class="progress-text">18/22 <span style="color:#b35c00;">(82%)</span></span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '신임 팀장 온보딩 역량진단', 22, 18, '2025.04.10', '2025.04.30')">마감하기</button>
+            </td>
+            <td class="action-cell">
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+
+          <!-- ② 마감하기 (버튼) : 조건 충족 — 전원 응답 완료 -->
+          <tr id="row-magam-9b">
+            <td>10</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 상반기 핵심인재 역량진단</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[전원 완료]</span>
+            </td>
+            <td>45</td>
+            <td>2025.03.01 ~ 03.31</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%; background:#f4b65a;"></div></div>
+                <span class="progress-text">45/45 <span style="color:#b35c00;">(100%)</span></span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '2025년 상반기 핵심인재 역량진단', 45, 45, '2025.03.01', '2025.03.31')">마감하기</button>
+            </td>
+            <td class="action-cell">
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+
+          <!-- ③ 대기 시나리오 1: 대상자 미설정 → 팝업1 -->
+          <tr id="row-11">
+            <td>11</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 하반기 팀장 역량진단</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[대상자 미설정]</span>
+            </td>
+            <td style="color:#bbb;">-</td>
+            <td>2026.09.01 ~ 09.30</td>
+            <td style="color:#bbb; font-size:11px;">대상자 미배정</td>
+            <td class="status-cell">
+              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 팀장 역량진단', 0, '2026-09-01', '2026-09-30')">대기</button>
+            </td>
+            <td class="action-cell">
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+          <!-- ③ 대기 시나리오 2: 기간 불일치 → 팝업2 -->
+          <tr id="row-10">
+            <td>10</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 하반기 전사 역량진단</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[기간 미도래]</span>
+            </td>
+            <td>200</td>
+            <td>2026.08.01 ~ 08.31</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%;"></div></div>
+                <span class="progress-text">0/200</span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 전사 역량진단', 200, '2026-08-01', '2026-08-31')">대기</button>
+            </td>
+            <td class="action-cell">
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+          <!-- ③ 대기 시나리오 3: 정상 → 팝업3 (진단 시작 확인) -->
+          <tr id="row-9">
+            <td>9</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 상반기 전사 역량진단</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[시작 가능]</span>
+            </td>
+            <td>580</td>
+            <td>2026.05.14 ~ 06.13</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%;"></div></div>
+                <span class="progress-text">0/580</span>
+              </div>
+            </td>
+            <td class="status-cell">
+              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 상반기 전사 역량진단', 580, '2026-05-14', '2026-06-13')">대기</button>
+            </td>
+            <td class="action-cell">
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+
+          <!-- ④ 마감 (텍스트, 비활성) : 마감 실행 후 TP 어드민 확정 대기 중 -->
+          <tr>
+            <td>8</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 1분기 영업팀 역량진단</a></td>
+            <td>67</td>
+            <td>2025.03.03 ~ 03.28</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%; background:#f4b65a;"></div></div>
+                <span class="progress-text">67/67 <span style="color:#b35c00;">(100%)</span></span>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-orange">마감</span>
+            </td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
+            </td>
+          </tr>
+
+          <!-- ⑤ 완료 (텍스트) : 진단 완료 -->
+          <tr>
+            <td>7</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 하반기 리더십 역량진단</a></td>
+            <td>312</td>
+            <td>2024.11.01 ~ 11.30</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:97%;"></div></div>
+                <span class="progress-text" style="color:#1a7a4a;">303/312 (97%)</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">완료</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 중간리더 핵심역량 진단</a></td>
+            <td>89</td>
+            <td>2024.09.02 ~ 09.27</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:100%;"></div></div>
+                <span class="progress-text" style="color:#1a7a4a;">89/89 (100%)</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">완료</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 상반기 전사 역량진단</a></td>
+            <td>540</td>
+            <td>2024.05.01 ~ 05.31</td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:94%;"></div></div>
+                <span class="progress-text" style="color:#1a7a4a;">507/540 (94%)</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">완료</span></td>
+            <td>
+              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <div></div>
+        <div class="pagination">
+          <button class="pg-btn">«</button>
+          <button class="pg-btn">‹</button>
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">›</button>
+          <button class="pg-btn">»</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== 대기 클릭 팝업 1: 대상자 미설정 ===== -->
+<div class="modal-overlay" id="daegiModal1">
+  <div class="modal-box" style="width:340px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="closeDaegiModal(1)">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">알림</div>
+      <p style="font-size:13px; color:#444; line-height:1.7;">진단 대상자가 설정되지 않았습니다.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="closeDaegiModal(1)">닫기</button>
+      <button class="btn btn-primary" onclick="closeDaegiModal(1); showToast('리더십 진단 관리자 페이지 — 대상자 설정 페이지로 이동합니다 (연동 예정)')">대상자 선택하기 ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 대기 클릭 팝업 2: 진단 기간 불가 ===== -->
+<div class="modal-overlay" id="daegiModal2">
+  <div class="modal-box" style="width:340px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="closeDaegiModal(2)">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">알림</div>
+      <p style="font-size:13px; color:#444; line-height:1.7;">진단 기간을 확인해주세요.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="closeDaegiModal(2)">닫기</button>
+      <button class="btn btn-primary" onclick="closeDaegiModal(2); showToast('리더십 진단 관리자 페이지 — 진단 구성 페이지로 이동합니다 (연동 예정)')">진단 구성 수정 ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 대기 클릭 팝업 3: 진단 시작 확인 ===== -->
+<div class="modal-overlay" id="daegiModal3">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="closeDaegiModal(3)">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px; line-height:2;">
+      <p id="d3Name" style="font-size:13px; color:#333;"></p>
+      <p id="d3Period" style="font-size:13px; color:#1a73e8; font-weight:600;"></p>
+      <p id="d3Count" style="font-size:13px; color:#333;"></p>
+      <p style="font-size:13px; color:#333;">진단 대상자에게 링크를 발송하겠습니까?</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="closeDaegiModal(3)">취소</button>
+      <button class="btn btn-primary" onclick="confirmDaegiStart()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 마감하기 팝업 ===== -->
+<div class="modal-overlay" id="magamModal">
+  <div class="modal-box" style="width:420px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="closeMagamModal()">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 32px 24px; line-height:1.9;">
+      <p id="mg-name" style="font-size:15px; font-weight:700; color:#1a1a2e; margin-bottom:10px;"></p>
+      <p id="mg-msg" style="font-size:13px; color:#333; white-space:pre-line;"></p>
+      <p id="mg-period" style="display:inline-block; font-size:12px; color:#666; background:#f0f2f5; border-radius:4px; padding:3px 10px; margin-top:10px;"></p>
+      <p id="mg-count" style="font-size:13px; color:#333; margin-top:6px;"></p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="closeMagamModal()">취소</button>
+      <button class="btn btn-primary" onclick="confirmMagam()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 데이터 다운로드 모달 -->
+<div class="modal-overlay" id="downloadModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>데이터 다운로드</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:13px; font-weight:700; color:#1a1a2e; margin-bottom:4px;" id="modalDiagName"></div>
+      <div class="form-notice">
+        ⚠️ 역량진단 로우데이터는 터닝포인트(TP) 서버에서 수집·제공됩니다.<br>
+        다운로드 시 TP 서버에서 최신 데이터를 가져와 엑셀 파일로 저장됩니다.
+      </div>
+      <div class="download-section">
+        <div class="download-card">
+          <div class="download-card-info">
+            <div class="download-card-title">📄 응답 로우데이터 (Excel)</div>
+            <div class="download-card-desc">문항별 개인 응답 원시 데이터 · 이름/부서/직급/문항/응답값/응답일시</div>
+            <div class="download-card-meta" id="modalMeta1"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="downloadFile('raw')">⬇ 다운로드</button>
+        </div>
+        <div class="download-card">
+          <div class="download-card-info">
+            <div class="download-card-title">📊 역량별 점수 요약 (Excel)</div>
+            <div class="download-card-desc">역량 항목별 개인 점수 요약 · 이름/부서/직급/역량명/점수/백분위</div>
+            <div class="download-card-meta" id="modalMeta2"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="downloadFile('score')">⬇ 다운로드</button>
+        </div>
+        <div class="download-card">
+          <div class="download-card-info">
+            <div class="download-card-title">📋 응답 현황표 (Excel)</div>
+            <div class="download-card-desc">대상자 전원의 응답 완료 여부 · 이름/부서/직급/상태/완료일시</div>
+            <div class="download-card-meta">실시간 추출</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="downloadFile('status')">⬇ 다운로드</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-reset" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  function toggleNav(header) {
+    const group = header.parentElement;
+    const isOpen = group.classList.contains('open');
+    document.querySelectorAll('.nav-group.open').forEach(g => g.classList.remove('open'));
+    if (!isOpen) group.classList.add('open');
+  }
+
+  let _currentDiag = '';
+
+  function openDownloadModal(diagName, count) {
+    _currentDiag = diagName;
+    document.getElementById('modalDiagName').textContent = diagName;
+    const meta = '마지막 동기화: 2025.05.14 09:00 · ' + count + '건';
+    document.getElementById('modalMeta1').textContent = meta;
+    document.getElementById('modalMeta2').textContent = meta;
+    document.getElementById('downloadModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('downloadModal').classList.remove('open');
+  }
+
+  function downloadFile(type) {
+    const labels = { raw: '응답 로우데이터', score: '역량별 점수 요약', status: '응답 현황표' };
+    showToast('⬇ ' + labels[type] + ' 다운로드 중...');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(() => { t.style.display = 'none'; }, 2500);
+  }
+
+  document.getElementById('downloadModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ── 대기 버튼 클릭 플로우 ──
+  let _daegiTargetRow = null;
+
+  function openDaegiFlow(btn, diagName, count, startDate, endDate) {
+    _daegiTargetRow = btn.closest('tr');
+
+    // 팝업 1: 대상자 미설정
+    if (!count || count === 0) {
+      document.getElementById('daegiModal1').classList.add('open');
+      return;
+    }
+
+    // 팝업 2: 진단 기간이 현시점에 맞지 않음 (시작 전 또는 이미 종료)
+    const today = new Date(); today.setHours(0,0,0,0);
+    const parseLocal = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+    const start = parseLocal(startDate);
+    const end   = parseLocal(endDate);
+    if (today < start || today > end) {
+      document.getElementById('daegiModal2').classList.add('open');
+      return;
+    }
+
+    // 팝업 3: 모든 조건 OK → 진단 시작 확인
+    const fmt = d => d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\. /g,'-').replace('.','');
+    document.getElementById('d3Name').textContent   = diagName + ' - 터닝포인트 CUBE®';
+    document.getElementById('d3Period').textContent  = fmt(start) + ' ~ ' + fmt(end);
+    document.getElementById('d3Count').textContent  = '진단 대상자 : ' + count + '명';
+    document.getElementById('daegiModal3').classList.add('open');
+  }
+
+  function closeDaegiModal(n) {
+    document.getElementById('daegiModal' + n).classList.remove('open');
+  }
+
+  function confirmDaegiStart() {
+    closeDaegiModal(3);
+    if (_daegiTargetRow) {
+      _daegiTargetRow.querySelector('.status-cell').innerHTML =
+        '<span class="badge badge-blue">진행중</span>';
+      _daegiTargetRow.querySelector('.action-cell').innerHTML =
+        '<a class="btn btn-sm btn-outline" href="#" onclick="showToast(\'리더십 진단 관리자 페이지 — 해당 진단 상세 페이지로 이동합니다 (연동 예정)\'); return false;">관리</a>';
+      _daegiTargetRow = null;
+    }
+    showToast('진단이 시작되었습니다. 대상자에게 링크가 발송됩니다.');
+  }
+
+  [1,2,3].forEach(n => {
+    document.getElementById('daegiModal' + n).addEventListener('click', function(e) {
+      if (e.target === this) closeDaegiModal(n);
+    });
+  });
+
+  // ── 마감하기 버튼 클릭 플로우 ──
+  let _magamTargetRow = null;
+
+  function openMagamModal(btn, diagName, totalCount, completedCount, startDate, endDate) {
+    _magamTargetRow = btn.closest('tr');
+    document.getElementById('mg-name').textContent = diagName;
+    document.getElementById('mg-period').textContent = startDate + ' ~ ' + endDate;
+    document.getElementById('mg-count').textContent = '진단 대상자 ' + totalCount + '명';
+
+    const allDone = (completedCount >= totalCount);
+    document.getElementById('mg-msg').textContent = allDone
+      ? '마감 시 연장이 불가합니다.\n마감하겠습니까?'
+      : '리포트 생성 조건에 부합하지 않는 대상자가 있습니다.\n진단을 마감하시겠습니까? 마감 시 연장이 불가합니다.';
+
+    document.getElementById('magamModal').classList.add('open');
+  }
+
+  function closeMagamModal() {
+    document.getElementById('magamModal').classList.remove('open');
+  }
+
+  function confirmMagam() {
+    closeMagamModal();
+    if (_magamTargetRow) {
+      _magamTargetRow.querySelector('.status-cell').innerHTML =
+        '<span class="badge badge-orange">마감</span>';
+      _magamTargetRow = null;
+    }
+    showToast('마감 처리되었습니다. 관리자 확정 후 완료로 전환됩니다.');
+  }
+
+  document.getElementById('magamModal').addEventListener('click', function(e) {
+    if (e.target === this) closeMagamModal();
+  });
+</script>
+</body>
+</html>

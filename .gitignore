@@ -1,0 +1,7 @@
+*.rp
+*.xlsx
+*.xls
+desktop.ini
+.claude/
+_tmp.js
+Thumbs.db

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단 - LABS 3.0</title>
+<style>
+:root {
+  --primary:       #246CF9;
+  --primary-light: #EEF3FF;
+  --bg:            #F5F6FA;
+  --white:         #ffffff;
+  --text-900:      #111827;
+  --text-700:      #374151;
+  --text-500:      #6B7280;
+  --text-400:      #9CA3AF;
+  --border:        #E5E7EB;
+  --border-light:  #F3F4F6;
+  --blue:   #246CF9; --blue-bg:   #EEF3FF;
+  --orange: #F97316; --orange-bg: #FFF4ED;
+  --green:  #16A34A; --green-bg:  #DCFCE7;
+  --red:    #DC2626; --red-bg:    #FEE2E2;
+  --purple: #7C3AED; --purple-bg: #EDE9FE;
+  --gray:   #6B7280; --gray-bg:   #F3F4F6;
+  --gnb-h:     56px;
+  --sidebar-w: 200px;
+  --font: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-size:14px;line-height:1.5;}
+
+/* ── GNB ── */
+.gnb{position:fixed;top:0;left:0;right:0;height:var(--gnb-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:300;}
+.gnb-logo{font-size:17px;font-weight:800;color:var(--text-900);letter-spacing:-.5px;display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.gnb-logo-box{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.gnb-logo-box svg{width:15px;height:15px;}
+.gnb-search-wrap{flex:1;max-width:580px;margin:0 auto;}
+.gnb-search{width:100%;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:0 16px 0 38px;font-size:13px;color:var(--text-700);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.gnb-search::placeholder{color:#B0B7C3;}
+.gnb-search:focus{border-color:var(--primary);background-color:var(--white);}
+.gnb-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+.gnb-icon{width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);transition:background .15s;position:relative;}
+.gnb-icon:hover{background:var(--bg);}
+.gnb-icon svg{width:20px;height:20px;}
+.gnb-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
+
+/* ── LAYOUT ── */
+.app{display:flex;padding-top:var(--gnb-h);min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:var(--gnb-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--gnb-h));background:var(--white);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;padding:12px 0 20px;z-index:200;}
+.sb-menu{list-style:none;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13.5px;font-weight:500;color:var(--text-500);cursor:pointer;text-decoration:none;border-left:3px solid transparent;transition:all .12s;white-space:nowrap;}
+.sb-item:hover{background:var(--bg);color:var(--text-700);}
+.sb-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;border-left-color:var(--primary);}
+.sb-item svg{width:15px;height:15px;flex-shrink:0;}
+.sb-item.sm{font-size:13px;padding:7px 18px;}
+.sb-divider{height:1px;background:var(--border);margin:8px 0;}
+.sb-footer{padding:12px 10px 0;border-top:1px solid var(--border);margin-top:8px;}
+.sb-footer-item{display:flex;align-items:center;gap:7px;padding:7px 8px;font-size:12px;color:var(--text-400);cursor:pointer;border-radius:var(--r-md);transition:all .12s;}
+.sb-footer-item:hover{background:var(--bg);color:var(--text-500);}
+.sb-footer-item svg{width:13px;height:13px;}
+
+/* ── MAIN WRAP ── */
+.main-wrap{margin-left:var(--sidebar-w);flex:1;min-width:0;}
+.main{padding:24px 28px 60px;}
+
+/* ── 헤더 ── */
+.page-title{font-size:20px;font-weight:700;color:var(--text-900);letter-spacing:-.4px;margin-bottom:18px;}
+
+/* ── TABS ── */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab-btn{padding:10px 20px 11px;font-size:14px;font-weight:500;color:var(--text-500);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all .15s;}
+.tab-btn:hover{color:var(--text-700);}
+.tab-btn.active{color:var(--primary);font-weight:700;border-bottom-color:var(--primary);}
+.tab-cnt{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:4px;min-width:18px;}
+.tab-btn.active .tab-cnt{background:var(--primary);color:white;}
+.tab-btn:not(.active) .tab-cnt{background:var(--gray-bg);color:var(--text-500);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── 빈 상태 ── */
+.empty{padding:64px 0;text-align:center;color:var(--text-400);}
+.empty svg{width:40px;height:40px;margin-bottom:10px;opacity:.3;}
+.empty p{font-size:13.5px;}
+
+/* ── footer ── */
+.page-footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text-400);}
+.page-footer a{color:var(--text-400);text-decoration:none;margin-left:8px;}
+
+/* ════════════════════════════════════════
+   진단 카드
+   ════════════════════════════════════════ */
+.diag-list{display:flex;flex-direction:column;gap:10px;}
+
+.diag-card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.diag-card:hover{
+  border-color:#c7d7fc;
+  box-shadow:0 2px 10px rgba(36,108,249,.07);
+}
+
+/* 왼쪽: 진단 정보 */
+.diag-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+
+.diag-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+/* 진단 유형 칩 */
+.diag-type-chip{
+  display:inline-flex;align-items:center;
+  padding:2px 7px;
+  border-radius:4px;
+  font-size:11px;font-weight:700;
+  background:var(--purple-bg);color:var(--purple);
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* 진단명 */
+.diag-name{font-size:14.5px;font-weight:700;color:var(--text-900);letter-spacing:-.2px;}
+
+/* 진단대상자 배지 */
+.diag-target{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  flex-shrink:0;
+}
+.diag-target.self{background:var(--blue-bg);color:var(--blue);}
+.diag-target.other{background:var(--gray-bg);color:var(--text-700);}
+.diag-target svg{width:12px;height:12px;}
+
+/* 메타 (기간, 문항수) */
+.diag-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.diag-period{font-size:12px;color:var(--text-400);}
+.diag-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.diag-questions{font-size:12px;color:var(--text-400);}
+
+/* 진단 상태 배지 */
+.status-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;
+  font-size:11.5px;font-weight:600;
+  flex-shrink:0;
+}
+/* 대기: 시작 전 */
+.status-badge.waiting{background:var(--gray-bg);color:var(--text-500);}
+/* 진행 중: 종료일 이전 */
+.status-badge.ongoing{background:var(--green-bg);color:var(--green);}
+.status-badge.ongoing::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);}
+/* 마감: 종료일 경과, 관리자 마감 전 (응답 수정 가능) */
+.status-badge.closed{background:var(--orange-bg);color:var(--orange);}
+/* 완료: 관리자 마감처리 후 (결과보기 탭) */
+.status-badge.done{background:var(--gray-bg);color:var(--text-400);}
+
+/* 오른쪽: 진행율 + 버튼 */
+.diag-right{display:flex;align-items:center;gap:20px;flex-shrink:0;}
+
+/* 진행율 */
+.diag-prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:80px;}
+.diag-prog-label{font-size:11px;color:var(--text-400);}
+.diag-prog-bar-wrap{display:flex;align-items:center;gap:7px;}
+.diag-prog-bar{width:64px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.diag-prog-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.diag-prog-pct{font-size:12px;font-weight:700;color:var(--text-700);min-width:28px;text-align:right;}
+.diag-prog-pct.done{color:var(--green);}
+
+/* 액션 버튼 */
+.btn-diag{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:36px;padding:0 18px;
+  border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;white-space:nowrap;
+  text-decoration:none;transition:all .15s;
+  font-family:inherit;
+}
+/* 진단하기 — 파랑 */
+.btn-diag.start{background:var(--primary);color:white;}
+.btn-diag.start:hover{background:#1a56d6;}
+/* 이어하기 — 주황 */
+.btn-diag.resume{background:var(--orange);color:white;}
+.btn-diag.resume:hover{background:#e06010;}
+/* 완료 — 회색 비활성 */
+.btn-diag.done{background:var(--gray-bg);color:var(--text-400);cursor:default;}
+/* 결과보기 — 아웃라인 */
+.btn-diag.result{background:white;color:var(--primary);border:1.5px solid var(--primary);}
+.btn-diag.result:hover{background:var(--primary-light);}
+/* 진단완료 — 회색 비활성 (진행율 100% 또는 타인평가 완료처리) */
+.btn-diag.completed{background:var(--gray-bg);color:var(--text-400);cursor:default;}
+
+/* 구분선 */
+.diag-divider{width:1px;height:36px;background:var(--border);}
+
+/* ════════════════════════════════════════
+   결과보기 카드 추가 요소
+   ════════════════════════════════════════ */
+/* 응답 통계 */
+.result-stats{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.result-stat{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:52px;}
+.result-stat-label{font-size:11px;color:var(--text-400);}
+.result-stat-value{font-size:14px;font-weight:700;color:var(--text-700);}
+.result-stat-value.full{color:var(--green);}
+
+
+/* 진단결과확인 버튼 */
+.btn-result-confirm{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:36px;padding:0 16px;
+  border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;white-space:nowrap;
+  background:var(--primary);color:white;
+  font-family:inherit;transition:background .15s;
+}
+.btn-result-confirm:hover{background:#1a56d6;}
+/* PDF 다운로드 버튼 */
+.btn-pdf{
+  display:inline-flex;align-items:center;gap:5px;justify-content:center;
+  height:36px;padding:0 14px;
+  border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;
+  background:white;color:var(--text-700);border:1.5px solid var(--border);
+}
+.btn-pdf:hover{background:var(--bg);border-color:var(--text-400);}
+.btn-pdf svg{width:14px;height:14px;flex-shrink:0;}
+/* 결과 버튼 묶음 */
+.result-btn-group{display:flex;align-items:center;gap:8px;}
+
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header class="gnb">
+  <a href="#" class="gnb-logo">
+    <div class="gnb-logo-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+    </div>
+    LABS
+  </a>
+  <div class="gnb-search-wrap">
+    <input class="gnb-search" type="text" placeholder="과정명, 키워드로 검색해 보세요">
+  </div>
+  <div class="gnb-right">
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="gnb-badge"></span>
+    </button>
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a></li>
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Contents</a></li>
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Connect</a></li>
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>my Canvas</a></li>
+    </ul>
+    <div class="sb-divider"></div>
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item sm">학습상세</a></li>
+      <li><a href="#" class="sb-item sm">교재 배송현황</a></li>
+      <li><a href="#" class="sb-item sm">관심과정</a></li>
+      <li><a href="#" class="sb-item sm">스크랩</a></li>
+      <li><a href="#" class="sb-item sm">학점</a></li>
+      <li><a href="#" class="sb-item sm">IDP</a></li>
+      <li><a href="#" class="sb-item sm active">진단</a></li>
+      <li><a href="#" class="sb-item sm">레벨/마일리지</a></li>
+      <li><a href="#" class="sb-item sm">필수교육</a></li>
+      <li><a href="#" class="sb-item sm">사외교육</a></li>
+      <li><a href="#" class="sb-item sm">결재하기</a></li>
+      <li><a href="#" class="sb-item sm">팀원현황</a></li>
+    </ul>
+    <div class="sb-footer">
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>학습 문의 및 원격 상담</div>
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>모바일 App 설치</div>
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>전체 과정 리스트</div>
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>설정</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrap">
+    <main class="main">
+      <h1 class="page-title">진단</h1>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-diag')">
+          진단하기<span class="tab-cnt" id="cnt-diag">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-result')">
+          결과보기<span class="tab-cnt" id="cnt-result">0</span>
+        </button>
+      </div>
+
+      <!-- TAB: 진단하기 -->
+      <div id="tab-diag" class="tab-content active">
+        <div class="diag-list" id="list-diag"></div>
+        <div id="sentinel-diag"></div>
+      </div>
+
+      <!-- TAB: 결과보기 -->
+      <div id="tab-result" class="tab-content">
+        <div class="diag-list" id="list-result"></div>
+        <div id="sentinel-result"></div>
+      </div>
+
+      <div class="page-footer">© hunet All rights reserved.<a href="#">개인정보 처리방침</a></div>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ─── 탭 전환 ─── */
+function switchTab(btn, targetId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(targetId).classList.add('active');
+}
+
+/* ─── 데이터 ─── */
+// diagStatus: 진단 상태
+//   'waiting' — 진단 시작 전 (대기)           → 버튼: 진단하기
+//   'ongoing' — 종료일 이전, 진행 중           → 버튼: 이어하기
+//   'closed'  — 종료일 경과, 관리자 마감 전    → 버튼: 이어하기 (수정 가능)
+//   'done'    — 관리자 마감처리 완료           → 결과보기 탭, 버튼: 결과보기
+// target: 'self'=본인 | 'other'=타인(이름 표시)
+// pct: 진행율 0~100 / questions: 총문항 / answered: 응답수
+// period: 진단 기간
+
+/* ─────────────────────────────────────────────────
+   진단하기 탭 데이터
+   diagStatus: 'waiting' | 'ongoing' | 'closed'
+───────────────────────────────────────────────── */
+const DATA_DIAG = [
+  // ── 대기: 진단 시작 전 ──
+  {
+    id: 1,
+    typeName: 'LS', typeLabel: '리더십스타일',
+    name: 'CUBE® 리더십스타일 진단',
+    target: 'self', targetName: '',
+    period: '2026.05.01 ~ 2026.05.31',
+    questions: 36, answered: 0, pct: 0,
+    diagStatus: 'waiting'
+  },
+  {
+    id: 4,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: 'CUBE® 리더십역량 진단',
+    target: 'other', targetName: '김철수',
+    period: '2026.05.01 ~ 2026.05.31',
+    questions: 60, answered: 0, pct: 0,
+    diagStatus: 'waiting'
+  },
+  // ── 진행 중: 종료일 이전, 응답 중 ──
+  {
+    id: 2,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: 'CUBE® 리더십역량 진단',
+    target: 'self', targetName: '',
+    period: '2026.05.01 ~ 2026.05.31',
+    questions: 60, answered: 36, pct: 60,
+    diagStatus: 'ongoing'
+  },
+  {
+    id: 6,
+    typeName: 'LS', typeLabel: '리더십스타일',
+    name: 'CUBE® 리더십스타일 진단',
+    target: 'other', targetName: '박지민',
+    period: '2026.05.01 ~ 2026.05.31',
+    questions: 36, answered: 11, pct: 30,
+    diagStatus: 'ongoing'
+  },
+  // ── 마감: 종료일 경과, 관리자 마감 전 (응답 수정 가능) ──
+  {
+    id: 10,
+    typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: 'CUBE® 비즈니스상황 진단',
+    target: 'self', targetName: '',
+    period: '2026.04.01 ~ 2026.04.30',
+    questions: 24, answered: 10, pct: 42,
+    diagStatus: 'closed'
+  },
+  {
+    id: 11,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: 'CUBE® 리더십역량 진단',
+    target: 'other', targetName: '이영후',
+    period: '2026.04.01 ~ 2026.04.30',
+    questions: 60, answered: 24, pct: 40,
+    diagStatus: 'closed'
+  },
+  // ── 진행율 100%: 모든 문항 응답 완료, 관리자 마감 전 → 버튼: 진단완료(비활성) ──
+  {
+    id: 5,
+    typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: 'CUBE® 비즈니스상황 진단',
+    target: 'self', targetName: '',
+    period: '2026.04.01 ~ 2026.04.30',
+    questions: 24, answered: 24, pct: 100,
+    diagStatus: 'ongoing'
+  },
+  // ── 완료(타인평가): 관리자 마감처리 완료, 결과보기 불가 → 진단하기 탭 잔류, 버튼: 진단완료(비활성) ──
+  {
+    id: 8,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: 'CUBE® 리더십역량 진단',
+    target: 'other', targetName: '김민준',
+    period: '2025.10.01 ~ 2025.10.31',
+    questions: 60, answered: 60, pct: 100,
+    diagStatus: 'done'
+  }
+];
+
+/* ─────────────────────────────────────────────────
+   결과보기 탭 데이터
+   diagStatus: 'done' + target: 'self' 만 포함
+   ※ 타인평가(done+other)는 결과 열람 불가 → DATA_DIAG에서 진단완료(비활성)로 노출
+   ※ respondentCount: 응답대상자 수 / responseRate: 응답율(%)
+───────────────────────────────────────────────── */
+const DATA_RESULT = [
+  {
+    id: 7,
+    typeName: 'LS', typeLabel: '리더십스타일',
+    name: 'CUBE® 리더십스타일 진단',
+    target: 'self',
+    startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
+    respondentCount: 15, responseRate: 80,
+    diagStatus: 'done'
+  },
+  {
+    id: 9,
+    typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: 'CUBE® 비즈니스상황 진단',
+    target: 'self',
+    startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
+    respondentCount: 20, responseRate: 100,
+    diagStatus: 'done'
+  }
+];
+
+/* ─── 진행율 컬러 ─── */
+function progColor(pct) {
+  if (pct === 100) return 'var(--green)';
+  if (pct >= 1)   return 'var(--orange)';
+  return 'var(--border)';
+}
+
+/* ─── 진단 상태 배지 ─── */
+function statusBadge(diagStatus) {
+  const MAP = {
+    waiting: { cls: 'waiting', label: '대기'   },
+    ongoing: { cls: 'ongoing', label: '진행 중' },
+    closed:  { cls: 'closed',  label: '마감'   },
+    done:    { cls: 'done',    label: '완료'   },
+  };
+  const { cls, label } = MAP[diagStatus] || MAP.waiting;
+  return `<span class="status-badge ${cls}">${label}</span>`;
+}
+
+/* ─── 버튼 렌더 ─── */
+function renderBtn(item) {
+  // ① 진행율 100% + 관리자 마감 전 → 진단완료 비활성
+  if (item.pct === 100 && item.diagStatus !== 'done') {
+    return `<button class="btn-diag completed" disabled>진단완료</button>`;
+  }
+  // ② 관리자 마감처리 완료 (done)
+  if (item.diagStatus === 'done') {
+    if (item.target === 'self') {
+      // 본인 진단 → 결과보기 (결과보기 탭에서 호출)
+      return `<button class="btn-diag result" onclick="location.href='진단_결과_보기.html'">결과보기</button>`;
+    } else {
+      // 타인 진단 → 결과보기 불가, 진단완료 비활성 (진단하기 탭 잔류)
+      return `<button class="btn-diag completed" disabled>진단완료</button>`;
+    }
+  }
+  // ③ 일반 상태 매핑
+  const MAP = {
+    waiting: { cls: 'start',  label: '진단하기', href: '진단_응답_화면.html' },
+    ongoing: { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
+    closed:  { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
+  };
+  const cfg = MAP[item.diagStatus] || MAP.waiting;
+  const click = cfg.href ? `onclick="location.href='${cfg.href}'"` : '';
+  return `<button class="btn-diag ${cfg.cls}" ${click}>${cfg.label}</button>`;
+}
+
+/* ─── 카드 HTML ─── */
+function renderCard(item) {
+  const targetBadge = item.target === 'self'
+    ? `<span class="diag-target self">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         본인
+       </span>`
+    : `<span class="diag-target other">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         ${item.targetName}
+       </span>`;
+
+  const pctClass = item.pct === 100 ? 'done' : '';
+  const pctColor = progColor(item.pct);
+
+  return `
+    <div class="diag-card">
+      <div class="diag-info">
+        <div class="diag-top">
+          <span class="diag-name">${item.name}</span>
+          ${targetBadge}
+          ${statusBadge(item.diagStatus)}
+        </div>
+        <div class="diag-meta">
+          <span class="diag-period">📅 ${item.period}</span>
+          <span class="diag-meta-dot"></span>
+          <span class="diag-questions">총 ${item.questions}문항</span>
+          <span class="diag-meta-dot"></span>
+          <span class="diag-questions">${item.answered}/${item.questions} 응답</span>
+        </div>
+      </div>
+      <div class="diag-right">
+        <div class="diag-prog">
+          <span class="diag-prog-label">진행율</span>
+          <div class="diag-prog-bar-wrap">
+            <div class="diag-prog-bar">
+              <div class="diag-prog-fill" style="width:${item.pct}%;background:${pctColor};"></div>
+            </div>
+            <span class="diag-prog-pct ${pctClass}">${item.pct}%</span>
+          </div>
+        </div>
+        <div class="diag-divider"></div>
+        ${renderBtn(item)}
+      </div>
+    </div>
+  `;
+}
+
+/* ─── 결과보기 카드 ─── */
+function renderResultCard(item) {
+  const rateClass = item.responseRate === 100 ? 'full' : '';
+  return `
+    <div class="diag-card">
+      <div class="diag-info">
+        <div class="diag-top">
+          <span class="diag-name">${item.name}</span>
+          ${statusBadge(item.diagStatus)}
+        </div>
+        <div class="diag-meta">
+          <span class="diag-period">📅 ${item.startDate} ~ ${item.endDate}</span>
+        </div>
+      </div>
+      <div class="diag-right">
+        <div class="result-stats">
+          <div class="result-stat">
+            <span class="result-stat-label">응답대상자</span>
+            <span class="result-stat-value">${item.respondentCount}명</span>
+          </div>
+          <div class="result-stat">
+            <span class="result-stat-label">응답율</span>
+            <span class="result-stat-value ${rateClass}">${item.responseRate}%</span>
+          </div>
+        </div>
+        <div class="diag-divider"></div>
+        <div class="result-btn-group">
+          <button class="btn-result-confirm" onclick="window.open('진단_개인보고서.html', '_blank')">진단결과확인</button>
+          <button class="btn-pdf">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <polyline points="9 15 12 18 15 15"/>
+            </svg>
+            PDF
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ─────────────────────────────────────────────────
+   무한 스크롤
+───────────────────────────────────────────────── */
+const BATCH = 5; // 한 번에 보여줄 개수
+const visibleCount = { diag: BATCH, result: BATCH };
+
+function renderDiagList(data, containerId, cntId) {
+  const container = document.getElementById(containerId);
+  document.getElementById(cntId).textContent = data.length;
+
+  if (data.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+        </svg>
+        <p>배정된 진단이 없습니다.</p>
+      </div>`;
+    return;
+  }
+  const slice = data.slice(0, visibleCount.diag);
+  container.innerHTML = slice.map(renderCard).join('');
+}
+
+function renderResultList(data, containerId, cntId) {
+  const container = document.getElementById(containerId);
+  document.getElementById(cntId).textContent = data.length;
+
+  if (data.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+        </svg>
+        <p>열람 가능한 결과가 없습니다.</p>
+      </div>`;
+    return;
+  }
+  const slice = data.slice(0, visibleCount.result);
+  container.innerHTML = slice.map(renderResultCard).join('');
+}
+
+/* ─── 초기화 ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  renderDiagList(DATA_DIAG,    'list-diag',   'cnt-diag');
+  renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
+
+  // 진단하기 sentinel
+  const obsDiag = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && visibleCount.diag < DATA_DIAG.length) {
+      visibleCount.diag += BATCH;
+      renderDiagList(DATA_DIAG, 'list-diag', 'cnt-diag');
+    }
+  }, { rootMargin: '100px' });
+  obsDiag.observe(document.getElementById('sentinel-diag'));
+
+  // 결과보기 sentinel
+  const obsResult = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && visibleCount.result < DATA_RESULT.length) {
+      visibleCount.result += BATCH;
+      renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
+    }
+  }, { rootMargin: '100px' });
+  obsResult.observe(document.getElementById('sentinel-result'));
+});
+</script>
+</body>
+</html>
