@@ -4118,7 +4118,6 @@
         <thead>
           <tr>
             <th style="width:36px;"></th>
-            <th style="width:40px;">No</th>
             <th style="width:80px;">이름</th>
             <th style="width:110px;">회사</th>
             <th style="width:120px;">부서명</th>
@@ -4128,7 +4127,7 @@
           </tr>
         </thead>
         <tbody id="dept-head-search-result">
-          <tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">로딩 중...</td></tr>
+          <tr><td colspan="7" style="padding:30px;text-align:center;color:#bbb;">로딩 중...</td></tr>
         </tbody>
       </table>
     </div>
@@ -4147,7 +4146,7 @@
       <div style="display:flex;align-items:center;gap:8px;">
         <div id="dept-head-pagination" class="pagination"></div>
         <button onclick="deptCloseHeadModal()" style="height:30px;padding:0 16px;border:1px solid #ccc;border-radius:4px;background:#fff;font-size:12px;cursor:pointer;color:#555;">취소</button>
-        <button onclick="deptConfirmHead()" style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#1a73e8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">확인</button>
+        <button id="dept-head-confirm-btn" onclick="deptConfirmHead()" style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#1a73e8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;opacity:0.45;pointer-events:none;">확인</button>
       </div>
     </div>
   </div>
@@ -4225,7 +4224,7 @@
         <div id="dept-add-mbr-pagination" class="pagination"></div>
         <span style="font-size:11px;color:#aaa;white-space:nowrap;">선택 시 즉시 이동</span>
         <button onclick="deptCloseAddMbrModal()" style="height:30px;padding:0 16px;border:1px solid #ccc;border-radius:4px;background:#fff;font-size:12px;cursor:pointer;color:#555;">취소</button>
-        <button onclick="deptConfirmAddMbr()" style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#1a73e8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">확인</button>
+        <button id="dept-add-mbr-confirm-btn" onclick="deptConfirmAddMbr()" style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#1a73e8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;opacity:0.45;pointer-events:none;">확인</button>
       </div>
     </div>
   </div>
@@ -4350,7 +4349,7 @@
           <button onclick="deptBulkClearFile()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:14px;padding:0;">×</button>
         </div>
         <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;">
-          <button onclick="deptBulkPreview()" class="btn btn-reset" style="height:32px;padding:0 20px;font-size:12px;">미리보기</button>
+          <button id="dept-bulk-preview-btn" onclick="deptBulkPreview()" class="btn btn-reset" style="height:32px;padding:0 20px;font-size:12px;opacity:0.45;pointer-events:none;">미리보기</button>
           <button id="dept-bulk-regist-btn" onclick="deptBulkRegist()"
             style="height:32px;padding:0 24px;border:none;border-radius:4px;background:#c0392b;color:#fff;font-size:12px;font-weight:600;cursor:pointer;opacity:0.45;pointer-events:none;">
             등록
@@ -4442,9 +4441,9 @@
           <button onclick="deptBulkEditClearFile()" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:14px;padding:0;">×</button>
         </div>
         <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;">
-          <button onclick="deptBulkEditPreview()" class="btn btn-reset" style="height:32px;padding:0 20px;font-size:12px;">미리보기</button>
+          <button id="dept-bulk-edit-preview-btn" onclick="deptBulkEditPreview()" class="btn btn-reset" style="height:32px;padding:0 20px;font-size:12px;opacity:0.45;pointer-events:none;">미리보기</button>
           <button id="dept-bulk-edit-regist-btn" onclick="deptBulkEditRegist()"
-            style="height:32px;padding:0 24px;border:none;border-radius:4px;background:#c0392b;color:#fff;font-size:12px;font-weight:600;cursor:pointer;opacity:0.45;">
+            style="height:32px;padding:0 24px;border:none;border-radius:4px;background:#c0392b;color:#fff;font-size:12px;font-weight:600;cursor:pointer;opacity:0.45;pointer-events:none;">
             등록
           </button>
         </div>
@@ -9159,6 +9158,8 @@ function deptBulkEditSetFile(file) {
   const nm = document.getElementById('dept-bulk-edit-file-name');
   nm.style.display = 'flex';
   document.getElementById('dept-bulk-edit-file-label').textContent = file.name + ' (' + (file.size/1024).toFixed(1) + 'KB)';
+  const prevBtn = document.getElementById('dept-bulk-edit-preview-btn');
+  if (prevBtn) { prevBtn.style.opacity = '1'; prevBtn.style.pointerEvents = 'auto'; }
 }
 function deptBulkEditClearFile() {
   deptBulkEditFile = null;
@@ -9169,14 +9170,17 @@ function deptBulkEditClearFile() {
   document.getElementById('dept-bulk-edit-file-name').style.display = 'none';
   document.getElementById('dept-bulk-edit-dropzone').style.display = 'block';
   document.getElementById('dept-bulk-edit-preview-result').style.display = 'none';
+  const prevBtn = document.getElementById('dept-bulk-edit-preview-btn');
+  if (prevBtn) { prevBtn.style.opacity = '0.45'; prevBtn.style.pointerEvents = 'none'; }
 }
 function deptBulkEditSetRegistBtn(enabled) {
   const btn = document.getElementById('dept-bulk-edit-regist-btn');
   if (!btn) return;
   btn.style.opacity = enabled ? '1' : '0.45';
+  btn.style.pointerEvents = enabled ? 'auto' : 'none';
 }
 function deptBulkEditPreview() {
-  if (!deptBulkEditFile) { alert('엑셀파일을 등록해주세요.'); return; }
+  if (!deptBulkEditFile) return;
   deptBulkEditPreviewed = true;
   deptBulkEditHasError = true;
   const result = document.getElementById('dept-bulk-edit-preview-result');
@@ -9240,6 +9244,8 @@ function deptBulkSetFile(file) {
   document.getElementById('dept-bulk-file-label').textContent = file.name + ' (' + (file.size > 1024 ? Math.round(file.size/1024) + 'KB' : file.size + 'B') + ')';
   const fnEl = document.getElementById('dept-bulk-file-name');
   fnEl.style.display = 'flex';
+  const prevBtn = document.getElementById('dept-bulk-preview-btn');
+  if (prevBtn) { prevBtn.style.opacity = '1'; prevBtn.style.pointerEvents = 'auto'; }
 }
 function deptBulkClearFile() {
   deptBulkFileAttached = false;
@@ -9249,6 +9255,8 @@ function deptBulkClearFile() {
   document.getElementById('dept-bulk-file-name').style.display = 'none';
   document.getElementById('dept-bulk-preview-result').style.display = 'none';
   deptBulkSetRegistBtn(false);
+  const prevBtn = document.getElementById('dept-bulk-preview-btn');
+  if (prevBtn) { prevBtn.style.opacity = '0.45'; prevBtn.style.pointerEvents = 'none'; }
 }
 function deptBulkSetRegistBtn(enabled) {
   const btn = document.getElementById('dept-bulk-regist-btn');
@@ -9256,7 +9264,7 @@ function deptBulkSetRegistBtn(enabled) {
   btn.style.pointerEvents = enabled ? 'auto' : 'none';
 }
 function deptBulkPreview() {
-  if (!deptBulkFileAttached) { alert('엑셀파일을 등록해주세요.'); return; }
+  if (!deptBulkFileAttached) return;
   // 프로토타입: 50% 확률로 오류 케이스 / 정상 케이스 시뮬레이션
   const hasError = Math.random() > 0.5;
   deptBulkPreviewDone = true;
@@ -9365,52 +9373,52 @@ function maskLoginId(id) {
 const DEPT_DATA = [
   {
     id:'d1', code:'0000008993', name:'휴넷',
-    headList:[{id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
+    headList:[{id:'emp_001', name:'김민준', title:'대표이사', role:'대표'}], parentId:null,
     children:[
       {
         id:'d2', code:'0000008994', name:'경영지원본부',
-        headList:[{id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_002', name:'이서연', title:'본부장', role:'대표'}], parentId:'d1',
         children:[
           {
             id:'d5', code:'0000008997', name:'인사팀',
-            headList:[{id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
+            headList:[{id:'emp_005', name:'박지훈', title:'팀장', role:'대표'}], parentId:'d2',
             children:[
               {
                 id:'d13', code:'0000009010', name:'채용파트',
-                headList:[{id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
+                headList:[{id:'emp_013', name:'유소희', title:'파트장', role:'대표'}], parentId:'d5',
                 children:[
                   { id:'d20', code:'0000009020', name:'신입채용셀', headList:[], parentId:'d13', children:[] },
-                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
+                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{id:'emp_020', name:'강준수', title:'셀장', role:'대표'}], parentId:'d13', children:[] },
                 ]
               },
-              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
+              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{id:'emp_014', name:'오민정', title:'파트장', role:'대표'}], parentId:'d5', children:[] },
             ]
           },
           { id:'d6', code:'0000008998', name:'재무팀', headList:[], parentId:'d2', children:[
-            { id:'d22', code:'0000009022', name:'예산파트', headList:[{id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
+            { id:'d22', code:'0000009022', name:'예산파트', headList:[{id:'emp_021', name:'문재호', title:'파트장', role:'대표'}], parentId:'d6', children:[] },
           ]},
-          { id:'d7', code:'0000008999', name:'총무팀', headList:[{id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
+          { id:'d7', code:'0000008999', name:'총무팀', headList:[{id:'emp_007', name:'최수아', title:'팀장', role:'대표'}], parentId:'d2', children:[] },
         ]
       },
       {
         id:'d3', code:'0000009000', name:'IT개발본부',
-        headList:[{id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_003', name:'정도현', title:'본부장', role:'대표'}], parentId:'d1',
         children:[
           {
             id:'d8', code:'0000009001', name:'플랫폼팀',
-            headList:[{id:'emp_008', name:'윤지아', title:'팀장'}], parentId:'d3',
+            headList:[{id:'emp_008', name:'윤지아', title:'팀장', role:'대표'}], parentId:'d3',
             children:[
-              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
-                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
+              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{id:'emp_015', name:'김욱', title:'파트장', role:'대표'}], parentId:'d8', children:[
+                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{id:'emp_022', name:'이영후', title:'셀장', role:'대표'}], parentId:'d15', children:[] },
               ]},
-              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
+              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{id:'emp_016', name:'정민혁', title:'파트장', role:'대표'}], parentId:'d8', children:[] },
             ]
           },
           {
             id:'d9', code:'0000009002', name:'서비스개발팀',
-            headList:[{id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
+            headList:[{id:'emp_009', name:'장민서', title:'팀장', role:'대표'}], parentId:'d3',
             children:[
-              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
+              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{id:'emp_017', name:'송재혁', title:'파트장', role:'대표'}], parentId:'d9', children:[] },
             ]
           },
           { id:'d10', code:'0000009003', name:'QA팀', headList:[], parentId:'d3', children:[] },
@@ -9418,19 +9426,19 @@ const DEPT_DATA = [
       },
       {
         id:'d4', code:'0000009004', name:'교육사업본부',
-        headList:[{id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
+        headList:[{id:'emp_004', name:'오하은', title:'본부장', role:'대표'}], parentId:'d1',
         children:[
           {
             id:'d11', code:'0000009005', name:'LABS기획팀',
-            headList:[{id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
+            headList:[{id:'emp_011', name:'김태연', title:'팀장', role:'대표'}], parentId:'d4',
             children:[
-              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
+              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{id:'emp_018', name:'이강은', title:'파트장', role:'대표'}], parentId:'d11', children:[
                 { id:'d24', code:'0000009024', name:'어드민기획셀', headList:[], parentId:'d18', children:[] },
               ]},
-              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
+              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{id:'emp_019', name:'한현미', title:'파트장', role:'대표'}], parentId:'d11', children:[] },
             ]
           },
-          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
+          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{id:'emp_012', name:'이준호', title:'팀장', role:'대표'}], parentId:'d4', children:[] },
         ]
       }
     ]
@@ -9664,7 +9672,7 @@ function deptRenderTree(filter, dragging, overTarget, isIllegal) {
       <span data-drag="${node.id}" style="color:${dragColor};font-size:11px;padding:0 3px;cursor:grab;flex-shrink:0;" title="드래그하여 이동">${dragIcon}</span>
       ${toggleHtml}
       <span data-label="${node.id}" style="flex:1;font-weight:${depth===0?'700':'400'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;" title="${node.name}">${nameHtml}</span>
-      ${node.headList&&node.headList.length ? `<span style="font-size:10px;color:#888;background:#f0f2f5;border-radius:3px;padding:1px 5px;white-space:nowrap;flex-shrink:0;margin-left:2px;">${maskName(node.headList[0].name)}</span>` : ''}
+      ${(()=>{ const lead=(node.headList||[]).find(h=>h.role==='대표')||(node.headList||[])[0]; return lead?`<span style="font-size:10px;color:#888;background:#f0f2f5;border-radius:3px;padding:1px 5px;white-space:nowrap;flex-shrink:0;margin-left:2px;">${maskName(lead.name)}</span>`:''; })()}
     `;
 
     // ── 클릭: 여닫기 / 선택 / 드래그 구분 ──
@@ -9791,7 +9799,7 @@ function deptRenderInfoCard(node) {
 function deptRenderHeadCard(node) {
   document.getElementById('dept-head-card').style.display = 'block';
   const body = document.getElementById('dept-head-body');
-  const list = node.headList || [];
+  const list = (node.headList || []).slice().sort((a, b) => (a.role === '대표' ? -1 : 1));
   if (list.length === 0) {
     body.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:#bbb;font-size:12px;">
       <span>설정된 부서장이 없습니다.</span>
@@ -9800,15 +9808,20 @@ function deptRenderHeadCard(node) {
     return;
   }
   const cells = list.map(h => {
+    const isLead = h.role === '대표';
+    const roleBadge = isLead
+      ? `<span style="font-size:10px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:3px;padding:1px 5px;white-space:nowrap;">대표</span>`
+      : ``;
     return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafbfc;border:1px solid var(--border);border-radius:6px;">
       <!-- 프로필 이미지 -->
-      <div style="width:36px;height:36px;border-radius:50%;background:#1a73e8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:${isLead ? '#1a73e8' : '#64748b'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">
         ${h.name.charAt(0)}
       </div>
       <!-- 정보 -->
       <div style="flex:1;min-width:0;">
-        <!-- 1행: 이름 -->
+        <!-- 1행: 역할 뱃지 + 이름 -->
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+          ${roleBadge}
           <span style="font-weight:700;color:#222;font-size:12px;">${maskName(h.name)}</span>
         </div>
         <!-- 2행: 직책 -->
@@ -10013,7 +10026,12 @@ function deptOpenHeadModal() {
   deptHeadRenderTable();
   document.getElementById('dept-head-modal').style.display = 'flex';
 }
-function deptCloseHeadModal() { document.getElementById('dept-head-modal').style.display='none'; }
+function deptCloseHeadModal() {
+  document.getElementById('dept-head-modal').style.display='none';
+  deptHeadSelected = null;
+  const btn = document.getElementById('dept-head-confirm-btn');
+  if (btn) { btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none'; }
+}
 function deptHeadSearchAll() {
   document.getElementById('dept-head-kw').value = '';
   document.getElementById('dept-head-company').value = '';
@@ -10050,14 +10068,13 @@ function deptHeadRenderTable() {
   document.getElementById('dept-head-total-cnt').textContent = total;
   const tbody = document.getElementById('dept-head-search-result');
   tbody.innerHTML = page.length===0
-    ? `<tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">검색 결과가 없습니다.</td></tr>`
+    ? `<tr><td colspan="7" style="padding:30px;text-align:center;color:#bbb;">검색 결과가 없습니다.</td></tr>`
     : page.map((m, i) => {
         const globalNo = total - (start + i);
         let deptName = m.dept || '-';
         const isSel = deptHeadSelected && deptHeadSelected.id === m.id;
         return `<tr style="cursor:pointer;background:${isSel?'#e8f0fe':''}" onclick="deptSelectHead('${m.id}','${m.name}','${m.loginId}')">
           <td onclick="event.stopPropagation()"><input type="radio" name="head-radio" data-id="${m.id}" ${isSel?'checked':''} onchange="deptSelectHead('${m.id}','${m.name}','${m.loginId}')"></td>
-          <td>${globalNo}</td>
           <td>${maskName(m.name)}</td>
           <td style="text-align:left;padding-left:10px;color:#444;">${m.co||'-'}</td>
           <td style="text-align:left;padding-left:10px;color:#444;">${deptName}</td>
@@ -10080,9 +10097,11 @@ function deptSelectHead(id, name, loginId) {
   const title = (m && m.position && m.position !== '-') ? m.position : '';
   deptHeadSelected = { id, name, loginId, title };
   deptHeadRenderTable();
+  const btn = document.getElementById('dept-head-confirm-btn');
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
 }
 function deptConfirmHead() {
-  if (!deptHeadSelected) { alert('부서장으로 설정할 임직원을 선택해주세요.'); return; }
+  if (!deptHeadSelected) return;
   const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!node) return;
   if (!node.headList) node.headList = [];
@@ -10090,16 +10109,41 @@ function deptConfirmHead() {
   if (node.headList.some(h => h.id === deptHeadSelected.id)) {
     alert('이미 부서장으로 설정된 임직원입니다.'); return;
   }
-  node.headList.push({ id: deptHeadSelected.id, name: deptHeadSelected.name, title: deptHeadSelected.title || '' });
+  // 첫 번째 등록 → 대표, 이후 → 겸직
+  const hasLead = node.headList.some(h => h.role === '대표');
+  const role = hasLead ? '겸직' : '대표';
+  node.headList.push({ id: deptHeadSelected.id, name: deptHeadSelected.name, title: deptHeadSelected.title || '', role });
   deptCloseHeadModal();
   deptRenderHeadCard(node);
   deptRenderTree();
   deptHeadSelected = null;
 }
 function deptClearHead(deptId, empId) {
-  if (!confirm('해당 부서장을 해제하시겠습니까?\n부서장을 해제하면 해당 부서에서도 삭제됩니다.')) return;
+  if (!confirm('해당 부서장을 해제하시겠습니까?')) return;
   const node = findDeptNode(deptId, DEPT_DATA);
-  if (node) { node.headList = (node.headList||[]).filter(h => h.id !== empId); }
+  if (!node) return;
+  const target = (node.headList || []).find(h => h.id === empId);
+  const wasLead = target && target.role === '대표';
+  node.headList = (node.headList || []).filter(h => h.id !== empId);
+  // 대표 해제 시 겸직 중 첫 번째를 자동 승격
+  if (wasLead && node.headList.length > 0) {
+    const firstGeonjik = node.headList.find(h => h.role === '겸직');
+    if (firstGeonjik) firstGeonjik.role = '대표';
+  }
+  deptRenderHeadCard(node);
+  deptRenderTree();
+}
+function deptPromoteHead(deptId, empId) {
+  if (!confirm('해당 겸직 부서장을 대표 부서장으로 설정하시겠습니까?')) return;
+  const node = findDeptNode(deptId, DEPT_DATA);
+  if (!node || !node.headList) return;
+  // 기존 대표를 겸직으로 변경
+  node.headList.forEach(h => { if (h.role === '대표') h.role = '겸직'; });
+  // 선택한 겸직을 대표로 승격
+  const target = node.headList.find(h => h.id === empId);
+  if (target) target.role = '대표';
+  // 대표를 맨 앞으로 정렬
+  node.headList.sort((a, b) => (a.role === '대표' ? -1 : 1));
   deptRenderHeadCard(node);
   deptRenderTree();
 }
@@ -10126,7 +10170,11 @@ function deptAddMember() {
   deptAddMbrRenderTable();
   document.getElementById('dept-add-mbr-modal').style.display = 'flex';
 }
-function deptCloseAddMbrModal() { document.getElementById('dept-add-mbr-modal').style.display='none'; }
+function deptCloseAddMbrModal() {
+  document.getElementById('dept-add-mbr-modal').style.display='none';
+  const btn = document.getElementById('dept-add-mbr-confirm-btn');
+  if (btn) { btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none'; }
+}
 function deptAddMbrSearch() {
   const currentIds = (DEPT_MEMBERS[deptSelectedId]||[]).map(m=>m.id);
   const kw = document.getElementById('dept-add-mbr-kw').value.trim();
@@ -10181,7 +10229,7 @@ function deptAddMbrRenderTable() {
 function deptAddMbrRender() { /* legacy compat */ }
 function deptConfirmAddMbr() {
   const checked = [...document.querySelectorAll('.dept-add-mbr-chk:checked')];
-  if (checked.length===0) { alert('추가할 임직원을 선택해주세요.'); return; }
+  if (checked.length===0) return;
   const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!DEPT_MEMBERS[deptSelectedId]) DEPT_MEMBERS[deptSelectedId] = [];
   // 추가된 임직원을 DEPT_MEMBERS에 반영
@@ -10210,9 +10258,20 @@ function deptConfirmAddMbr() {
 function deptMoveMember() {
   const checked = [...document.querySelectorAll('.dept-mbr-chk:checked')];
   if (checked.length===0) { alert('이동할 임직원을 선택해주세요.'); return; }
-  deptOpenMoveModal(checked.map(c=>c.dataset.id));
+  const ids = checked.map(c=>c.dataset.id);
+  const curNode = findDeptNode(deptSelectedId, DEPT_DATA);
+  if (curNode && ids.some(id => (curNode.headList||[]).some(h => h.id === id))) {
+    alert('부서장인 임직원의 소속을 이동 시 부서장도 함께 해제 됩니다.');
+  }
+  deptOpenMoveModal(ids);
 }
-function deptMoveSingle(id) { deptOpenMoveModal([id]); }
+function deptMoveSingle(id) {
+  const curNode = findDeptNode(deptSelectedId, DEPT_DATA);
+  if (curNode && (curNode.headList||[]).some(h => h.id === id)) {
+    alert('부서장인 임직원의 소속을 이동 시 부서장도 함께 해제 됩니다.');
+  }
+  deptOpenMoveModal([id]);
+}
 // ── 임직원 추가 팝업 체크박스 행 클릭 헬퍼 ──────
 function deptAddMbrRowClick(e, id) {
   // td 자체 클릭 시 체크박스 토글 (체크박스 셀은 stopPropagation)
@@ -10222,6 +10281,9 @@ function deptAddMbrRowClick(e, id) {
 function deptAddMbrUpdateRow(chk) {
   const tr = chk.closest('tr');
   if (tr) tr.style.background = chk.checked ? '#e8f0fe' : '';
+  const anyChecked = [...document.querySelectorAll('.dept-add-mbr-chk:checked')].length > 0;
+  const btn = document.getElementById('dept-add-mbr-confirm-btn');
+  if (btn) { btn.style.opacity = anyChecked ? '1' : '0.45'; btn.style.pointerEvents = anyChecked ? 'auto' : 'none'; }
 }
 // ── 부서이동 팝업 ─────────────────────────────
 let deptMoveMbrIds = [];
@@ -10286,6 +10348,11 @@ function deptConfirmMove() {
   const targetNode = targetId==='__unassigned__' ? {name:'소속 미지정'} : findDeptNode(targetId, DEPT_DATA);
   const srcId = deptSelectedId;
 
+  // 이동 대상이 현재 부서장인 경우 부서장 해제
+  const srcNode = findDeptNode(srcId, DEPT_DATA);
+  if (srcNode && srcNode.headList) {
+    srcNode.headList = srcNode.headList.filter(h => !deptMoveMbrIds.includes(h.id));
+  }
   // 현재 부서에서 대상 임직원 제거
   if (DEPT_MEMBERS[srcId]) {
     DEPT_MEMBERS[srcId] = DEPT_MEMBERS[srcId].filter(m => !deptMoveMbrIds.includes(m.id));
