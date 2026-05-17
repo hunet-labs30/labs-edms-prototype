@@ -4538,8 +4538,10 @@
               <input class="ls-num-input" type="number" value="20" min="8" max="30" id="ls-pw-max" style="margin-left:8px">
               <span class="ls-unit">자 이하</span>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;width:100%">
-              <span class="ls-unit">문자 (필수) + 숫자 (선택) + 특수문자 (선택)</span>
+            <div style="display:flex;align-items:center;gap:14px;padding:10px 16px;width:100%">
+              <label class="ls-radio-label" style="opacity:0.5;cursor:default"><input type="checkbox" checked disabled> 문자 (필수)</label>
+              <label class="ls-radio-label"><input type="checkbox" checked id="ls-comb-num"> 숫자</label>
+              <label class="ls-radio-label"><input type="checkbox" id="ls-comb-special"> 특수문자</label>
             </div>
           </div>
         </div>
