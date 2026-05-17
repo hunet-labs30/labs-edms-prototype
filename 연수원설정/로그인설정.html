@@ -4538,11 +4538,8 @@
               <input class="ls-num-input" type="number" value="20" min="8" max="30" id="ls-pw-max" style="margin-left:8px">
               <span class="ls-unit">자 이하</span>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;padding:10px 16px;width:100%">
-              <span class="ls-unit" style="color:#555;margin-right:2px">조합 필수</span>
-              <label class="ls-radio-label"><input type="checkbox" checked id="ls-comb-num"> 숫자</label>
-              <label class="ls-radio-label"><input type="checkbox" checked id="ls-comb-alpha"> 알파벳</label>
-              <label class="ls-radio-label"><input type="checkbox" checked id="ls-comb-special"> 특수문자</label>
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;width:100%">
+              <span class="ls-unit">문자 (필수) + 숫자 (선택) + 특수문자 (선택)</span>
             </div>
           </div>
         </div>
@@ -4562,25 +4559,10 @@
           </div>
         </div>
         <div class="ls-row">
-          <div class="ls-col-label">이전 비밀번호 재사용 여부</div>
+          <div class="ls-col-label">최초 접속 시 비밀번호 변경 사용</div>
           <div class="ls-col-content">
-            <span class="ls-unit">현재 비밀번호의 이전</span>
-            <input class="ls-num-input" type="number" value="0" min="0" max="10" id="ls-pw-reuse" style="width:56px;margin:0 4px">
-            <span class="ls-unit">번째 비밀번호까지 재사용 불가</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. 로그인 관리 -->
-      <div class="ls-section">
-        <div class="ls-section-head">로그인 관리</div>
-        <div class="ls-row">
-          <div class="ls-col-label">로그인 실패 시 로그인 일시 중지</div>
-          <div class="ls-col-content" style="gap:6px">
-            <input class="ls-num-input" type="number" value="10" min="3" max="100" id="ls-login-fail" style="width:64px">
-            <span class="ls-unit">회 시 로그인 일시 중지 /</span>
-            <input class="ls-num-input" type="number" value="10" min="3" max="100" id="ls-login-lock" style="width:64px">
-            <span class="ls-unit">분 후 로그인 가능</span>
+            <label class="ls-radio-label"><input type="radio" name="ls-first-pw" value="1" checked> 사용</label>
+            <label class="ls-radio-label"><input type="radio" name="ls-first-pw" value="0"> 미사용</label>
           </div>
         </div>
       </div>
@@ -4597,42 +4579,7 @@
         </div>
       </div>
 
-      <!-- 5. 개인정보 동의 및 추가정보 입력 -->
-      <div class="ls-section">
-        <div class="ls-section-head">개인정보 동의 및 추가정보 입력</div>
-        <div class="ls-row">
-          <div class="ls-col-label">최초 접속 시 비밀번호 변경 사용</div>
-          <div class="ls-col-content">
-            <label class="ls-radio-label"><input type="radio" name="ls-first-pw" value="1" checked> 사용</label>
-            <label class="ls-radio-label"><input type="radio" name="ls-first-pw" value="0"> 미사용</label>
-          </div>
-        </div>
-        <div class="ls-row">
-          <div class="ls-col-label">최초 접속 시 개인정보동의 사용</div>
-          <div class="ls-col-content">
-            <label class="ls-radio-label"><input type="radio" name="ls-first-agree" value="1" checked> 사용</label>
-            <label class="ls-radio-label"><input type="radio" name="ls-first-agree" value="0"> 미사용</label>
-          </div>
-        </div>
-        <div class="ls-row">
-          <div class="ls-col-label">약관동의 사용 및 필수 여부</div>
-          <div class="ls-col-content" style="flex-wrap:wrap;gap:8px">
-            <label class="ls-radio-label"><input type="radio" name="ls-terms" value="required" checked> 사용 (필수)</label>
-            <label class="ls-radio-label"><input type="radio" name="ls-terms" value="optional"> 사용 (선택)</label>
-            <label class="ls-radio-label"><input type="radio" name="ls-terms" value="none"> 미사용</label>
-          </div>
-        </div>
-        <div class="ls-row">
-          <div class="ls-col-label">
-            정보동의 타이틀
-            <div class="ls-label-sub">회원가입 또는 최초 접속 시 노출되는 동의 화면 제목</div>
-          </div>
-          <div class="ls-col-content">
-            <input class="ls-text-input" type="text" value="개인정보 수집 및 이용 동의" id="ls-info-title">
-          </div>
-        </div>
-      </div>
-      <div class="ls-save-row"><button class="btn btn-primary" onclick="alert('저장되었습니다.')">저장</button></div>
+<div class="ls-save-row"><button class="btn btn-primary" onclick="alert('저장되었습니다.')">저장</button></div>
 
     </div>
     <!-- END PAGE: 로그인 설정 -->
