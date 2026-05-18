@@ -360,6 +360,16 @@ const DATA_DIAG = [
     questions: 60, answered: 0, pct: 0,
     diagStatus: 'waiting'
   },
+  // ── 진행 중: 종료일 이전, 응답 시작 전 (answered=0) → 진단하기 ──
+  {
+    id: 13,
+    typeName: 'LS', typeLabel: '리더십스타일',
+    name: 'CUBE® 리더십스타일 진단',
+    target: 'self', targetName: '',
+    period: '2026.05.01 ~ 2026.05.31',
+    questions: 36, answered: 0, pct: 0,
+    diagStatus: 'ongoing'
+  },
   // ── 진행 중: 종료일 이전, 응답 중 ──
   {
     id: 2,
@@ -485,13 +495,16 @@ function renderBtn(item) {
       return `<button class="btn-diag completed" disabled>진단완료</button>`;
     }
   }
-  // ③ 일반 상태 매핑
+  // ③ 응답 시작 전 (진행중/마감이지만 answered === 0) → 진단하기
+  if (item.answered === 0) {
+    return `<button class="btn-diag start" onclick="location.href='진단_응답_화면.html'">진단하기</button>`;
+  }
+  // ④ 일반 상태 매핑 (1건 이상 응답) → 이어하기
   const MAP = {
-    waiting: { cls: 'start',  label: '진단하기', href: '진단_응답_화면.html' },
     ongoing: { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
     closed:  { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
   };
-  const cfg = MAP[item.diagStatus] || MAP.waiting;
+  const cfg = MAP[item.diagStatus] || { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' };
   const click = cfg.href ? `onclick="location.href='${cfg.href}'"` : '';
   return `<button class="btn-diag ${cfg.cls}" ${click}>${cfg.label}</button>`;
 }
