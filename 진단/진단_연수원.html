@@ -145,23 +145,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .diag-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--border);flex-shrink:0;}
 .diag-questions{font-size:12px;color:var(--text-400);}
 
-/* 진단 상태 배지 */
-.status-badge{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:2px 8px;border-radius:20px;
-  font-size:11.5px;font-weight:600;
-  flex-shrink:0;
-}
-/* 대기: 시작 전 */
-.status-badge.waiting{background:var(--gray-bg);color:var(--text-500);}
-/* 진행 중: 종료일 이전 */
-.status-badge.ongoing{background:var(--green-bg);color:var(--green);}
-.status-badge.ongoing::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);}
-/* 마감: 종료일 경과, 관리자 마감 전 (응답 수정 가능) */
-.status-badge.closed{background:var(--orange-bg);color:var(--orange);}
-/* 완료: 관리자 마감처리 후 (결과보기 탭) */
-.status-badge.done{background:var(--gray-bg);color:var(--text-400);}
-
 /* 오른쪽: 진행율 + 버튼 */
 .diag-right{display:flex;align-items:center;gap:20px;flex-shrink:0;}
 
@@ -415,6 +398,16 @@ const DATA_DIAG = [
     questions: 60, answered: 24, pct: 40,
     diagStatus: 'closed'
   },
+  // ── 관리자 마감 완료: TP 어드민에서 마감 처리, 확정 대기 중 → 배지 없음, 버튼: 진단완료(비활성) ──
+  {
+    id: 12,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: 'CUBE® 리더십역량 진단',
+    target: 'self', targetName: '',
+    period: '2026.04.01 ~ 2026.04.30',
+    questions: 60, answered: 30, pct: 50,
+    diagStatus: 'adminClosed'
+  },
   // ── 진행율 100%: 모든 문항 응답 완료, 관리자 마감 전 → 버튼: 진단완료(비활성) ──
   {
     id: 5,
@@ -471,21 +464,14 @@ function progColor(pct) {
   return 'var(--border)';
 }
 
-/* ─── 진단 상태 배지 ─── */
-function statusBadge(diagStatus) {
-  const MAP = {
-    waiting: { cls: 'waiting', label: '대기'   },
-    ongoing: { cls: 'ongoing', label: '진행 중' },
-    closed:  { cls: 'closed',  label: '마감'   },
-    done:    { cls: 'done',    label: '완료'   },
-  };
-  const { cls, label } = MAP[diagStatus] || MAP.waiting;
-  return `<span class="status-badge ${cls}">${label}</span>`;
-}
 
 /* ─── 버튼 렌더 ─── */
 function renderBtn(item) {
-  // ① 진행율 100% + 관리자 마감 전 → 진단완료 비활성
+  // ① 관리자 마감 완료 (TP 어드민 확정 대기) → 배지 없음, 버튼 비활성
+  if (item.diagStatus === 'adminClosed') {
+    return `<button class="btn-diag completed" disabled>진단완료</button>`;
+  }
+  // ② 진행율 100% + 관리자 마감 전 → 진단완료 비활성
   if (item.pct === 100 && item.diagStatus !== 'done') {
     return `<button class="btn-diag completed" disabled>진단완료</button>`;
   }
@@ -531,7 +517,6 @@ function renderCard(item) {
         <div class="diag-top">
           <span class="diag-name">${item.name}</span>
           ${targetBadge}
-          ${statusBadge(item.diagStatus)}
         </div>
         <div class="diag-meta">
           <span class="diag-period">📅 ${item.period}</span>
@@ -566,7 +551,6 @@ function renderResultCard(item) {
       <div class="diag-info">
         <div class="diag-top">
           <span class="diag-name">${item.name}</span>
-          ${statusBadge(item.diagStatus)}
         </div>
         <div class="diag-meta">
           <span class="diag-period">📅 ${item.startDate} ~ ${item.endDate}</span>
@@ -646,14 +630,17 @@ function renderResultList(data, containerId, cntId) {
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  renderDiagList(DATA_DIAG,    'list-diag',   'cnt-diag');
-  renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
+  // 대기 상태(관리자가 아직 시작 버튼 미클릭)는 연수원 진단하기 탭에 미노출
+  const DATA_DIAG_VISIBLE = DATA_DIAG.filter(d => d.diagStatus !== 'waiting');
+
+  renderDiagList(DATA_DIAG_VISIBLE, 'list-diag',   'cnt-diag');
+  renderResultList(DATA_RESULT,     'list-result', 'cnt-result');
 
   // 진단하기 sentinel
   const obsDiag = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && visibleCount.diag < DATA_DIAG.length) {
+    if (entries[0].isIntersecting && visibleCount.diag < DATA_DIAG_VISIBLE.length) {
       visibleCount.diag += BATCH;
-      renderDiagList(DATA_DIAG, 'list-diag', 'cnt-diag');
+      renderDiagList(DATA_DIAG_VISIBLE, 'list-diag', 'cnt-diag');
     }
   }, { rootMargin: '100px' });
   obsDiag.observe(document.getElementById('sentinel-diag'));
