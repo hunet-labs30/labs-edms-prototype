@@ -523,10 +523,23 @@
       <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 기업별 공지사항 관리 &gt; 등록</div>
     </div>
     <div class="card form-section" id="reg-form">
-      <div class="form-row">
-        <div class="form-label">기업명</div>
+      <div class="form-row" id="frow-reg-company">
+        <div class="form-label">기업명<span class="req">*</span></div>
         <div class="form-body">
-          <span class="readonly-field" id="reg-company-name">-</span>
+          <div class="company-search-outer" id="reg-company-search-outer" style="max-width:320px;">
+            <div class="company-search-box" onclick="document.getElementById('reg-company-search-input').focus()">
+              <div class="company-selected-tag" id="reg-company-tag" style="display:none;">
+                <span id="reg-company-tag-name"></span>
+                <button class="company-tag-clear" onclick="clearRegCompany(event)">×</button>
+              </div>
+              <input type="text" class="company-search-input" id="reg-company-search-input"
+                     placeholder="기업명으로 검색..." autocomplete="off"
+                     oninput="onRegCompanySearch()" onfocus="onRegCompanySearchFocus()"
+                     onkeydown="onRegCompanySearchKey(event)">
+            </div>
+            <div class="company-dropdown" id="reg-company-dropdown"></div>
+          </div>
+          <span class="field-error" id="err-reg-company">기업을 선택해주세요.</span>
         </div>
       </div>
       <div class="form-row">
@@ -1159,12 +1172,94 @@ function goList() {
   if (selectedCompany) { renderTable(); renderPagination(); }
 }
 
+let regSelectedCompany = '';
+let regDropdownFocusIdx = -1;
+
 function goRegister() {
+  regSelectedCompany = selectedCompany;
   const comp = COMPANIES[selectedCompany];
-  document.getElementById('reg-company-name').textContent = comp ? comp.name : '-';
-  renderRegCatRadios(comp ? comp.cats : []);
+  if (comp) {
+    document.getElementById('reg-company-tag-name').textContent = comp.name;
+    document.getElementById('reg-company-tag').style.display = '';
+    document.getElementById('reg-company-search-input').placeholder = '';
+    renderRegCatRadios(comp.cats);
+  } else {
+    document.getElementById('reg-company-tag').style.display = 'none';
+    document.getElementById('reg-company-search-input').placeholder = '기업명으로 검색...';
+    renderRegCatRadios([]);
+  }
+  document.getElementById('err-reg-company').style.display = 'none';
   show('view-register');
 }
+
+function onRegCompanySearchFocus() { onRegCompanySearch(); }
+
+function onRegCompanySearch() {
+  const q = document.getElementById('reg-company-search-input').value.trim().toLowerCase();
+  const list = Object.entries(COMPANIES).map(([key, c]) => ({ key, name: c.name }));
+  const matches = q ? list.filter(c => c.name.toLowerCase().includes(q)) : list;
+  const dd = document.getElementById('reg-company-dropdown');
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (matches.length === 0) {
+    dd.innerHTML = '<div class="company-dropdown-empty">검색 결과가 없습니다.</div>';
+  } else {
+    dd.innerHTML = matches.map(c => {
+      const label = q
+        ? c.name.replace(new RegExp(esc(q), 'gi'), m => `<span class="company-match">${m}</span>`)
+        : c.name;
+      return `<div class="company-dropdown-item" data-key="${c.key}" onclick="selectRegCompany('${c.key}')">${label}</div>`;
+    }).join('');
+  }
+  dd.classList.add('open');
+  regDropdownFocusIdx = -1;
+}
+
+function onRegCompanySearchKey(e) {
+  const dd = document.getElementById('reg-company-dropdown');
+  const items = dd.querySelectorAll('.company-dropdown-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    regDropdownFocusIdx = Math.min(regDropdownFocusIdx + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('focused', i === regDropdownFocusIdx));
+    if (items[regDropdownFocusIdx]) items[regDropdownFocusIdx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    regDropdownFocusIdx = Math.max(regDropdownFocusIdx - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('focused', i === regDropdownFocusIdx));
+    if (items[regDropdownFocusIdx]) items[regDropdownFocusIdx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    if (regDropdownFocusIdx >= 0 && items[regDropdownFocusIdx]) selectRegCompany(items[regDropdownFocusIdx].dataset.key);
+  } else if (e.key === 'Escape') {
+    document.getElementById('reg-company-dropdown').classList.remove('open');
+  }
+}
+
+function selectRegCompany(key) {
+  const comp = COMPANIES[key];
+  if (!comp) return;
+  regSelectedCompany = key;
+  document.getElementById('reg-company-tag-name').textContent = comp.name;
+  document.getElementById('reg-company-tag').style.display = '';
+  document.getElementById('reg-company-search-input').value = '';
+  document.getElementById('reg-company-search-input').placeholder = '';
+  document.getElementById('reg-company-dropdown').classList.remove('open');
+  document.getElementById('err-reg-company').style.display = 'none';
+  renderRegCatRadios(comp.cats);
+}
+
+function clearRegCompany(e) {
+  if (e) e.stopPropagation();
+  regSelectedCompany = '';
+  document.getElementById('reg-company-tag').style.display = 'none';
+  document.getElementById('reg-company-search-input').placeholder = '기업명으로 검색...';
+  document.getElementById('reg-company-dropdown').classList.remove('open');
+  renderRegCatRadios([]);
+}
+
+document.addEventListener('click', e => {
+  const outer = document.getElementById('reg-company-search-outer');
+  if (outer && !outer.contains(e.target)) document.getElementById('reg-company-dropdown').classList.remove('open');
+});
 
 function renderRegCatRadios(cats) {
   const wrap = document.getElementById('reg-cat-radios');
@@ -1209,6 +1304,13 @@ function toggleEditBanner() {
 function doSave(mode) {
   let valid = true;
   const prefix = mode === 'reg' ? 'reg' : 'edit';
+
+  // 등록 시 기업 선택 validation
+  if (mode === 'reg') {
+    const compErr = document.getElementById('err-reg-company');
+    compErr.style.display = 'none';
+    if (!regSelectedCompany) { compErr.style.display = 'block'; valid = false; }
+  }
 
   // 제목/본문
   const titleEl  = document.getElementById(prefix + '-title');
