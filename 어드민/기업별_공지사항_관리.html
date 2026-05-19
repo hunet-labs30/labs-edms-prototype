@@ -525,13 +525,9 @@
     <div class="card form-section" id="reg-form">
       <div class="form-row" id="frow-reg-company">
         <div class="form-label">기업명<span class="req">*</span></div>
-        <div class="form-body">
-          <div class="company-search-outer" id="reg-company-search-outer" style="max-width:320px;">
-            <div class="company-search-box" onclick="document.getElementById('reg-company-search-input').focus()">
-              <div class="company-selected-tag" id="reg-company-tag" style="display:none;">
-                <span id="reg-company-tag-name"></span>
-                <button class="company-tag-clear" onclick="clearRegCompany(event)">×</button>
-              </div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;">
+          <div class="company-search-outer" id="reg-company-search-outer" style="max-width:480px;width:100%;">
+            <div class="company-search-box" id="reg-company-search-box" onclick="document.getElementById('reg-company-search-input').focus()">
               <input type="text" class="company-search-input" id="reg-company-search-input"
                      placeholder="기업명으로 검색..." autocomplete="off"
                      oninput="onRegCompanySearch()" onfocus="onRegCompanySearchFocus()"
@@ -542,13 +538,12 @@
           <span class="field-error" id="err-reg-company">기업을 선택해주세요.</span>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-label">구분<span class="req">*</span></div>
+      <div class="form-row" id="frow-reg-cat">
+        <div class="form-label"><span id="reg-cat-label-text">구분</span><span class="req" id="reg-cat-req">*</span></div>
         <div class="form-body" style="flex-wrap:nowrap;align-items:center;gap:10px;">
-          <div class="radio-group" id="reg-cat-radios">
-            <!-- 동적 생성 -->
-          </div>
-          <button class="btn-setting" onclick="openCatModal()">⚙ 구분 설정</button>
+          <div class="radio-group" id="reg-cat-radios"></div>
+          <button class="btn-setting" id="reg-cat-setting-btn" onclick="openCatModal()">⚙ 구분 설정</button>
+          <span id="reg-cat-multi-note" style="display:none;font-size:12px;color:#94a3b8;">다중 기업 선택 시 구분을 지정할 수 없습니다.</span>
         </div>
       </div>
       <div class="form-row" id="frow-title">
@@ -1172,36 +1167,75 @@ function goList() {
   if (selectedCompany) { renderTable(); renderPagination(); }
 }
 
-let regSelectedCompany = '';
+let regSelectedCompanies = [];
 let regDropdownFocusIdx = -1;
 
 function goRegister() {
-  regSelectedCompany = selectedCompany;
-  const comp = COMPANIES[selectedCompany];
-  if (comp) {
-    document.getElementById('reg-company-tag-name').textContent = comp.name;
-    document.getElementById('reg-company-tag').style.display = '';
-    document.getElementById('reg-company-search-input').placeholder = '';
-    renderRegCatRadios(comp.cats);
-  } else {
-    document.getElementById('reg-company-tag').style.display = 'none';
-    document.getElementById('reg-company-search-input').placeholder = '기업명으로 검색...';
-    renderRegCatRadios([]);
-  }
+  regSelectedCompanies = selectedCompany ? [selectedCompany] : [];
+  renderRegCompanyTags();
+  updateRegCatSection();
+  document.getElementById('reg-company-search-input').value = '';
   document.getElementById('err-reg-company').style.display = 'none';
   show('view-register');
+}
+
+function renderRegCompanyTags() {
+  const box = document.getElementById('reg-company-search-box');
+  const inp = document.getElementById('reg-company-search-input');
+  box.querySelectorAll('.company-selected-tag').forEach(el => el.remove());
+  regSelectedCompanies.forEach(key => {
+    const comp = COMPANIES[key];
+    if (!comp) return;
+    const tag = document.createElement('div');
+    tag.className = 'company-selected-tag';
+    tag.innerHTML = `<span>${comp.name}</span><button class="company-tag-clear" onclick="removeRegCompany(event,'${key}')">×</button>`;
+    box.insertBefore(tag, inp);
+  });
+  inp.placeholder = regSelectedCompanies.length === 0 ? '기업명으로 검색...' : '';
+}
+
+function removeRegCompany(e, key) {
+  e.stopPropagation();
+  regSelectedCompanies = regSelectedCompanies.filter(k => k !== key);
+  renderRegCompanyTags();
+  updateRegCatSection();
+}
+
+function updateRegCatSection() {
+  const radios  = document.getElementById('reg-cat-radios');
+  const req     = document.getElementById('reg-cat-req');
+  const settingBtn = document.getElementById('reg-cat-setting-btn');
+  const note    = document.getElementById('reg-cat-multi-note');
+  const count   = regSelectedCompanies.length;
+
+  if (count <= 1) {
+    const cats = count === 1 ? (COMPANIES[regSelectedCompanies[0]] || {}).cats || [] : [];
+    radios.style.display = '';
+    settingBtn.style.display = '';
+    req.style.display = '';
+    note.style.display = 'none';
+    renderRegCatRadios(cats);
+  } else {
+    radios.style.display = 'none';
+    settingBtn.style.display = 'none';
+    req.style.display = 'none';
+    note.style.display = '';
+    renderRegCatRadios([]);
+  }
 }
 
 function onRegCompanySearchFocus() { onRegCompanySearch(); }
 
 function onRegCompanySearch() {
   const q = document.getElementById('reg-company-search-input').value.trim().toLowerCase();
-  const list = Object.entries(COMPANIES).map(([key, c]) => ({ key, name: c.name }));
+  const list = Object.entries(COMPANIES)
+    .filter(([key]) => !regSelectedCompanies.includes(key))
+    .map(([key, c]) => ({ key, name: c.name }));
   const matches = q ? list.filter(c => c.name.toLowerCase().includes(q)) : list;
   const dd = document.getElementById('reg-company-dropdown');
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   if (matches.length === 0) {
-    dd.innerHTML = '<div class="company-dropdown-empty">검색 결과가 없습니다.</div>';
+    dd.innerHTML = '<div class="company-dropdown-empty">선택 가능한 기업이 없습니다.</div>';
   } else {
     dd.innerHTML = matches.map(c => {
       const label = q
@@ -1235,25 +1269,13 @@ function onRegCompanySearchKey(e) {
 }
 
 function selectRegCompany(key) {
-  const comp = COMPANIES[key];
-  if (!comp) return;
-  regSelectedCompany = key;
-  document.getElementById('reg-company-tag-name').textContent = comp.name;
-  document.getElementById('reg-company-tag').style.display = '';
+  if (!COMPANIES[key] || regSelectedCompanies.includes(key)) return;
+  regSelectedCompanies.push(key);
   document.getElementById('reg-company-search-input').value = '';
-  document.getElementById('reg-company-search-input').placeholder = '';
   document.getElementById('reg-company-dropdown').classList.remove('open');
   document.getElementById('err-reg-company').style.display = 'none';
-  renderRegCatRadios(comp.cats);
-}
-
-function clearRegCompany(e) {
-  if (e) e.stopPropagation();
-  regSelectedCompany = '';
-  document.getElementById('reg-company-tag').style.display = 'none';
-  document.getElementById('reg-company-search-input').placeholder = '기업명으로 검색...';
-  document.getElementById('reg-company-dropdown').classList.remove('open');
-  renderRegCatRadios([]);
+  renderRegCompanyTags();
+  updateRegCatSection();
 }
 
 document.addEventListener('click', e => {
@@ -1309,7 +1331,7 @@ function doSave(mode) {
   if (mode === 'reg') {
     const compErr = document.getElementById('err-reg-company');
     compErr.style.display = 'none';
-    if (!regSelectedCompany) { compErr.style.display = 'block'; valid = false; }
+    if (regSelectedCompanies.length === 0) { compErr.style.display = 'block'; valid = false; }
   }
 
   // 제목/본문
