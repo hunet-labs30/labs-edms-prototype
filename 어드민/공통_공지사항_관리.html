@@ -391,7 +391,6 @@
             <tr>
               <th style="width:50px;">No.</th>
               <th style="min-width:280px;text-align:left;padding-left:12px;">제목</th>
-              <th>구분</th>
               <th>고정글</th>
               <th>등록일</th>
               <th>조회수</th>
@@ -776,14 +775,13 @@ function renderTable() {
   const pageData = filteredData.slice(start, start + pageSize);
   document.getElementById('total-count').textContent = filteredData.length;
   if (pageData.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">조회된 데이터가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">조회된 데이터가 없습니다.</td></tr>';
     return;
   }
   tbody.innerHTML = pageData.map(r => `
     <tr>
       <td>${r.no}</td>
       <td style="text-align:left;padding-left:12px;"><span class="link-cell" onclick="goDetail()">${r.title}</span></td>
-      <td><span class="badge badge-cat">${r.cat}</span></td>
       <td>${r.pin ? '<span class="badge badge-pin">고정글</span>' : '-'}</td>
       <td>${r.date}</td>
       <td>${r.views.toLocaleString()}</td>
