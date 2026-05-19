@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS 연수원 Admin - 기업별 공지사항 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: #334155;
+    --header-bg: #0f172a;
+    --admin-red: #dc2626;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body { font-family: 'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; font-size: 13px; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .top-header { background: var(--header-bg); color: #fff; height: 48px; display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; letter-spacing: -.3px; }
+  .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; }
+  .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 200px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; transition: background .15s, color .15s; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .nav-group.open > .nav-sub { max-height: 4000px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; transition: background .12s, color .12s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .main::-webkit-scrollbar { width: 5px; }
+  .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+  /* 기업 선택 패널 */
+  .company-panel { padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .company-panel-label { font-size: 12px; font-weight: 600; color: #475569; white-space: nowrap; }
+  .company-select-wrap { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .company-info-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-left: 8px; }
+  .info-chip { display: flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 16px; font-size: 11px; font-weight: 600; }
+  .chip-blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .chip-green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .chip-gray { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+  /* 검색 */
+  .search-wrap { padding: 0; }
+  .search-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 0; }
+  .search-row:last-of-type { border-bottom: none; }
+  .search-label { width: 80px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .search-actions { padding: 12px 20px 14px; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid #f1f5f9; }
+  .input, .select { height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-size: 13px; color: var(--text); background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit; }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .input.error { border-color: #dc2626; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none; flex-shrink: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .btn { height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; font-family: inherit; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-reset { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-reset:hover { background: #f1f5f9; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-outline:hover { background: #f9fafb; }
+  .btn-sm { height: 30px; padding: 0 14px; font-size: 12px; border-radius: 5px; }
+  .btn-xs { height: 26px; padding: 0 10px; font-size: 11px; border-radius: 4px; }
+  .btn-ghost { background: transparent; color: #475569; border: 1px solid #e2e8f0; }
+  .btn-ghost:hover { background: #f8fafc; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-setting { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; height: 30px; padding: 0 12px; font-size: 12px; border-radius: 5px; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s; }
+  .btn-setting:hover { background: #e0f2fe; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
+  .result-count { font-size: 13px; color: var(--text-muted); }
+  .result-count strong { color: var(--primary); font-weight: 700; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; font-weight: 600; color: #475569; text-align: center; white-space: nowrap; }
+  .main-table td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; text-align: center; color: var(--text); white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .link-cell { color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .link-cell:hover { color: #1d4ed8; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-pin { background: #fef3c7; color: #92400e; }
+  .badge-cat { background: #e0f2fe; color: #0369a1; }
+  .badge-cat2 { background: #f0fdf4; color: #166534; }
+  .badge-cat3 { background: #fdf4ff; color: #7e22ce; }
+  .badge-cat4 { background: #fff7ed; color: #9a3412; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+  .page-size-wrap { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b; }
+  .pagination { display: flex; align-items: center; gap: 3px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #e2e8f0; background: #fff; border-radius: 5px; font-size: 12px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all .12s; font-family: inherit; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .empty-row td { padding: 40px 0; color: #94a3b8; font-size: 13px; }
+  .toggle-btn { height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid; transition: all .15s; font-family: inherit; }
+  .toggle-btn-hide { background: #fff5f5; color: #dc2626; border-color: #fecaca; }
+  .toggle-btn-hide:hover { background: #fee2e2; }
+  .toggle-btn-show { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+  .toggle-btn-show:hover { background: #dcfce7; }
+  /* 등록/수정 폼 */
+  .form-section { padding: 0; }
+  .form-row { display: flex; align-items: flex-start; padding: 12px 20px; border-bottom: 1px solid #f8fafc; gap: 0; min-height: 52px; }
+  .form-label { width: 120px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; padding-top: 9px; }
+  .form-label .req { color: #dc2626; margin-left: 2px; }
+  .form-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 6px; }
+  .radio-group { display: flex; gap: 16px; align-items: center; }
+  .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #374151; }
+  .radio-label input[type="radio"] { accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer; }
+  .date-range { display: flex; align-items: center; gap: 6px; }
+  .input-dt { width: 150px; }
+  .date-sep { color: #94a3b8; }
+  .cond-area { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; }
+  .editor-mock { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; width: 100%; }
+  .editor-toolbar { display: flex; gap: 2px; padding: 6px 8px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+  .toolbar-btn { height: 26px; min-width: 26px; padding: 0 6px; background: transparent; border: 1px solid transparent; border-radius: 4px; font-size: 12px; cursor: pointer; color: #475569; font-family: inherit; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .toolbar-btn:hover { background: #e2e8f0; border-color: #cbd5e1; }
+  .toolbar-sep { width: 1px; background: #e2e8f0; margin: 2px 4px; }
+  .editor-body { min-height: 200px; padding: 12px 14px; font-size: 13px; line-height: 1.8; color: #374151; outline: none; }
+  .editor-body[contenteditable="true"]:empty::before { content: attr(data-placeholder); color: #94a3b8; }
+  .attach-zone { border: 1.5px dashed #cbd5e1; border-radius: 6px; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8; cursor: pointer; width: 100%; transition: border-color .15s; }
+  .attach-zone:hover { border-color: var(--primary); color: var(--primary); }
+  .readonly-field { padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; color: #475569; display: inline-flex; align-items: center; height: 34px; }
+  .form-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); position: sticky; bottom: 0; }
+  .form-actions-right { display: flex; gap: 8px; }
+  /* 상세 */
+  .detail-meta { padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; }
+  .detail-cat { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #e0f2fe; color: #0369a1; margin-bottom: 6px; }
+  .detail-title { font-size: 16px; font-weight: 700; color: #0f172a; line-height: 1.5; }
+  .detail-date { font-size: 12px; color: #94a3b8; white-space: nowrap; margin-left: 16px; text-align: right; }
+  .detail-toggle { background: none; border: none; cursor: pointer; font-size: 18px; color: #94a3b8; display: block; margin-top: 4px; }
+  .detail-attr { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .detail-attr th { background: #f8fafc; width: 110px; padding: 9px 14px; font-weight: 600; color: #475569; text-align: left; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; white-space: nowrap; }
+  .detail-attr td { padding: 9px 14px; color: #374151; border-bottom: 1px solid #f1f5f9; }
+  .detail-attr tr:last-child th, .detail-attr tr:last-child td { border-bottom: none; }
+  .detail-body { padding: 16px 18px; font-size: 13px; line-height: 1.9; color: #374151; min-height: 120px; }
+  .detail-nav { border-top: 1px solid #f1f5f9; }
+  .nav-post { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #f8fafc; font-size: 12px; cursor: pointer; transition: background .12s; }
+  .nav-post:last-child { border-bottom: none; }
+  .nav-post:hover { background: #f8fafc; }
+  .nav-post-label { font-weight: 600; color: #475569; width: 60px; flex-shrink: 0; }
+  .nav-post-title { color: var(--primary); flex: 1; }
+  .nav-post-date { color: #94a3b8; }
+  .detail-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); position: sticky; bottom: 0; }
+  /* 모달 */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.18); padding: 28px 28px 22px; width: 360px; }
+  .modal-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+  .modal-msg { font-size: 13px; color: #374151; line-height: 1.7; margin-bottom: 22px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  /* 구분설정 모달 */
+  .modal-lg { width: 520px; padding: 24px; }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .modal-close { background: none; border: none; font-size: 18px; color: #94a3b8; cursor: pointer; padding: 4px; line-height: 1; }
+  .modal-close:hover { color: #475569; }
+  .cat-list { border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px; max-height: 320px; overflow-y: auto; }
+  .cat-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #f1f5f9; background: #fff; transition: background .1s; }
+  .cat-row:last-child { border-bottom: none; }
+  .cat-row.dragging { opacity: .5; background: #f0f9ff; }
+  .drag-handle { color: #94a3b8; cursor: grab; font-size: 14px; user-select: none; flex-shrink: 0; line-height: 1; }
+  .drag-handle:active { cursor: grabbing; }
+  .cat-name-input { flex: 1; height: 30px; border: 1px solid #e2e8f0; border-radius: 5px; padding: 0 8px; font-size: 12px; outline: none; font-family: inherit; }
+  .cat-name-input:focus { border-color: var(--primary); }
+  .cat-name-input[readonly] { background: #f8fafc; color: #64748b; cursor: default; }
+  .cat-radio-group { display: flex; gap: 10px; flex-shrink: 0; }
+  .cat-radio { display: flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer; }
+  .cat-radio input[type="radio"] { accent-color: var(--primary); width: 13px; height: 13px; cursor: pointer; }
+  .cat-del-btn { background: none; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; flex-shrink: 0; }
+  .cat-del-btn:hover { color: #dc2626; }
+  .cat-footer { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .cat-add-btn { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--primary); background: none; border: none; cursor: pointer; padding: 4px 0; font-family: inherit; }
+  .cat-add-btn:hover { text-decoration: underline; }
+  .hide-inactive { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; cursor: pointer; }
+  .hide-inactive input[type="checkbox"] { accent-color: var(--primary); cursor: pointer; }
+  /* 토스트 */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #15803d; }
+  .toast.error { background: #dc2626; }
+  /* 에러 */
+  .field-error { display: none; font-size: 11px; color: #dc2626; margin-top: 4px; width: 100%; }
+  .has-error .input, .has-error .editor-mock { border-color: #dc2626; }
+  .has-error .field-error { display: block; }
+  /* 기업 미선택 안내 */
+  .no-company { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 20px; color: #94a3b8; gap: 10px; }
+  .no-company-icon { font-size: 36px; }
+  .no-company-text { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo">LABS <span>연수원</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">연수원 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 조회</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">거래처 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업 관리</a>
+        <a class="nav-item" href="#">연수원 관리</a>
+        <a class="nav-item" href="#">CP 관리</a>
+        <a class="nav-item" href="#">파트너 관리</a>
+        <a class="nav-item" href="#">배송사 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">상품 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업별 상품 관리</a>
+        <a class="nav-item" href="#">상품별 기업 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">카테고리/Skill 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">카테고리 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">표준 카테고리 관리</a>
+            <a class="nav-item" href="#">기업별 카테고리 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">스킬 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">직군, 직무 스킬 관리</a>
+            <a class="nav-item" href="#">기업별 스킬 관리</a>
+            <a class="nav-item" href="#">상품별 스킬 관리</a>
+            <a class="nav-item" href="#">기업 상품 스킬 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">계약 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">기업 계약 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">기업 계약 관리</a>
+            <a class="nav-item" href="#">기업 과정 계약 관리</a>
+            <a class="nav-item" href="#">기업 과정 카테고리 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">CP 계약 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">과정별 계약관리</a>
+            <a class="nav-item" href="#">턴키 계약관리</a>
+            <a class="nav-item" href="#">CP 정산 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">파트너 계약 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">과정별 계약 관리</a>
+            <a class="nav-item" href="#">턴키 계약 관리</a>
+            <a class="nav-item" href="#">파트너 정산 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">배송 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">통합 배송 관리</a>
+            <a class="nav-item" href="#">배송사 계약 관리</a>
+            <a class="nav-item" href="#">배송사 정산 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">강사 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">강사 계약 관리</a>
+            <a class="nav-item" href="#">강사 정산 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">매출 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정별 매출 관리</a>
+        <a class="nav-item" href="#">개인별 매출 관리</a>
+        <a class="nav-item" href="#">기업별 매출 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">학습 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">신청관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">개인별</a>
+            <a class="nav-item" href="#">과정별</a>
+            <a class="nav-item" href="#">기업별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">학습관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">개인별</a>
+            <a class="nav-item" href="#">과정별</a>
+            <a class="nav-item" href="#">기업별</a>
+            <a class="nav-item" href="#">콘텐츠별</a>
+            <a class="nav-item" href="#">코스별</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">결과관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">수료결과 조회</a>
+            <a class="nav-item" href="#">교육비용 조회</a>
+            <a class="nav-item" href="#">결과보고서</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">알림 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">알림 현황</a>
+            <a class="nav-item" href="#">알림 설정</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">상담 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">1:1 문의 관리</a>
+            <a class="nav-item" href="#">전화 상담 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">메시지 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">메시지 리스트</a>
+            <a class="nav-item" href="#">메시지 템플릿</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">FAQ 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">공통 FAQ 관리</a>
+            <a class="nav-item" href="#">기업별 FAQ 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub open">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">공지관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="공통_공지사항_관리.html">공통 공지사항 관리</a>
+            <a class="nav-item active" href="#">기업별 공지사항 관리</a>
+            <a class="nav-item" href="#">공통 띠배너 관리</a>
+            <a class="nav-item" href="#">기업별 띠배너 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">통합 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">어드민 권한 계정 관리</a>
+        <a class="nav-item" href="#">통합 앱 버전 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+        <a class="nav-item" href="#">메일 발송 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ━━━ 목록 화면 ━━━ -->
+  <main class="main" id="view-list">
+    <div class="page-header">
+      <div class="page-title">기업별 공지사항 관리</div>
+      <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 기업별 공지사항 관리</div>
+    </div>
+
+    <!-- 기업 선택 카드 -->
+    <div class="card">
+      <div class="company-panel">
+        <div class="company-panel-label">기업 선택</div>
+        <div class="company-select-wrap">
+          <select class="select" id="company-select" onchange="onCompanyChange()" style="width:220px;">
+            <option value="">-- 기업을 선택하세요 --</option>
+            <option value="samsung">삼성전자㈜</option>
+            <option value="hyundai">현대자동차㈜</option>
+            <option value="lg">LG화학㈜</option>
+            <option value="sk">SK하이닉스㈜</option>
+            <option value="posco">POSCO홀딩스㈜</option>
+          </select>
+          <div class="company-info-chips" id="company-info-chips" style="display:none;">
+            <span class="info-chip chip-blue">공지 <strong id="chip-total">0</strong>건</span>
+            <span class="info-chip chip-green">구분 <strong id="chip-cat">0</strong>개</span>
+            <span class="info-chip chip-gray">담당자: <strong id="chip-manager">-</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 검색 (기업 선택 전에는 숨김) -->
+    <div class="card search-wrap" id="search-card" style="display:none;">
+      <div class="search-row">
+        <div class="search-label">구분</div>
+        <div class="search-body">
+          <select class="select" id="s-cat" style="width:140px;">
+            <option value="">전체</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-label">검색 기준</div>
+        <div class="search-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="s-type" value="title" checked> 제목</label>
+            <label class="radio-label"><input type="radio" name="s-type" value="content"> 내용</label>
+          </div>
+          <input class="input" id="s-keyword" type="text" placeholder="검색어를 입력해주세요." style="width:260px;" onkeydown="if(event.key==='Enter') doSearch();">
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-reset" onclick="resetSearch()">초기화</button>
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+      </div>
+    </div>
+
+    <!-- 결과 테이블 (기업 선택 전에는 안내 표시) -->
+    <div class="card" id="result-card">
+      <div id="no-company-msg" class="no-company">
+        <div class="no-company-icon">🏢</div>
+        <div class="no-company-text">기업을 선택하면 공지사항 목록이 표시됩니다.</div>
+      </div>
+      <div id="result-content" style="display:none;">
+        <div class="result-header">
+          <div class="result-count">검색결과 <strong id="total-count">0</strong>건</div>
+          <button class="btn btn-primary btn-sm" onclick="goRegister()">등록</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:50px;">No.</th>
+                <th style="min-width:260px;text-align:left;padding-left:12px;">제목</th>
+                <th>구분</th>
+                <th>고정글</th>
+                <th>등록일</th>
+                <th>조회수</th>
+                <th>공개여부</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="page-size-wrap">
+            <select class="select" id="page-size" onchange="changePageSize()" style="width:68px;height:28px;font-size:12px;">
+              <option value="30">30</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            <span>씩 보기</span>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ━━━ 등록 화면 ━━━ -->
+  <main class="main" id="view-register" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 공지사항 등록</div>
+      <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 기업별 공지사항 관리 &gt; 등록</div>
+    </div>
+    <div class="card form-section" id="reg-form">
+      <div class="form-row">
+        <div class="form-label">기업명</div>
+        <div class="form-body">
+          <span class="readonly-field" id="reg-company-name">-</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">구분<span class="req">*</span></div>
+        <div class="form-body" style="flex-wrap:nowrap;align-items:center;gap:10px;">
+          <div class="radio-group" id="reg-cat-radios">
+            <!-- 동적 생성 -->
+          </div>
+          <button class="btn-setting" onclick="openCatModal()">⚙ 구분 설정</button>
+        </div>
+      </div>
+      <div class="form-row" id="frow-title">
+        <div class="form-label">제목<span class="req">*</span></div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;">
+          <input class="input" id="reg-title" type="text" placeholder="제목을 입력하세요" style="width:100%;max-width:560px;">
+          <span class="field-error">제목을 입력해주세요.</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">게시기간</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-period" value="none" checked onchange="togglePeriod()"> 기간없음</label>
+            <label class="radio-label"><input type="radio" name="reg-period" value="range" onchange="togglePeriod()"> 노출기간</label>
+          </div>
+          <div class="cond-area" id="period-range" style="display:none;">
+            <div class="date-range">
+              <input class="input input-dt" id="reg-period-from" type="datetime-local" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="reg-period-to" type="datetime-local" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-period">게시기간을 입력해주세요.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">노출영역</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-area" value="01" checked> PC/모바일</label>
+            <label class="radio-label"><input type="radio" name="reg-area" value="02"> PC</label>
+            <label class="radio-label"><input type="radio" name="reg-area" value="03"> 모바일</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">고정글</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-pin" value="notUse" checked> 미사용</label>
+            <label class="radio-label"><input type="radio" name="reg-pin" value="use"> 사용</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">띠배너 사용</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-banner" value="notUse" checked onchange="toggleBanner()"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="reg-banner" value="use" onchange="toggleBanner()"> 사용</label>
+          </div>
+          <div class="cond-area" id="banner-area" style="display:none;">
+            <div>
+              <input class="input" id="reg-banner-text" type="text" placeholder="노출 문구를 입력하세요 (최대 80자)" style="width:360px;" maxlength="80">
+              <span class="field-error" id="err-banner-text">노출 문구를 입력해주세요.</span>
+            </div>
+            <div class="date-range">
+              <input class="input input-dt" id="reg-banner-from" type="datetime-local" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="reg-banner-to" type="datetime-local" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-banner-period">띠배너 기간을 입력해주세요.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">공개여부</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-visible" value="exposed" checked> 공개</label>
+            <label class="radio-label"><input type="radio" name="reg-visible" value="notExposed"> 미공개</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row" id="frow-body" style="align-items:flex-start;">
+        <div class="form-label" style="padding-top:9px;">본문<span class="req">*</span></div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;width:100%;padding-top:6px;">
+          <div class="editor-mock" id="reg-editor-wrap" style="width:100%;">
+            <div class="editor-toolbar">
+              <button class="toolbar-btn"><b>B</b></button>
+              <button class="toolbar-btn"><i>I</i></button>
+              <button class="toolbar-btn"><u>U</u></button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn">≡</button>
+              <button class="toolbar-btn">1.</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn">🔗</button>
+              <button class="toolbar-btn">🖼</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn">표</button>
+            </div>
+            <div class="editor-body" contenteditable="true" id="reg-body" data-placeholder="본문 내용을 입력해주세요."></div>
+          </div>
+          <span class="field-error" id="err-body">본문을 입력해주세요.</span>
+        </div>
+      </div>
+      <div class="form-row" style="align-items:flex-start;">
+        <div class="form-label" style="padding-top:9px;">첨부파일</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;width:100%;padding-top:6px;">
+          <div class="attach-zone" onclick="showToast('파일 선택 다이얼로그 (프로토타입)','')">파일을 이곳에 끌어다 놓거나 <strong>파일 선택</strong> 버튼을 클릭하세요.</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div></div>
+      <div class="form-actions-right">
+        <button class="btn btn-ghost" onclick="goList()">목록</button>
+        <button class="btn btn-outline" onclick="goList()">취소</button>
+        <button class="btn btn-primary" onclick="doSave('reg')">저장</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ━━━ 상세 화면 ━━━ -->
+  <main class="main" id="view-detail" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 공지사항 상세</div>
+      <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 기업별 공지사항 관리 &gt; 상세</div>
+    </div>
+    <div class="card">
+      <div class="detail-meta">
+        <div style="flex:1;">
+          <div class="detail-cat" id="det-cat">공지(노출중)</div>
+          <div class="detail-title" id="det-title">삼성전자 2026년 6월 임직원 교육 안내</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="detail-date" id="det-date">2026.05.10 09:00</div>
+          <button class="detail-toggle" id="det-toggle-btn" onclick="toggleDetailAttr()">▲</button>
+        </div>
+      </div>
+      <div id="det-attr-wrap">
+        <table class="detail-attr">
+          <tr><th>기업명</th><td id="det-company">삼성전자㈜</td><th>구분</th><td id="det-cat2">공지</td></tr>
+          <tr><th>조회수</th><td id="det-views">187</td><th>노출영역</th><td id="det-area">PC/모바일</td></tr>
+          <tr><th>게시기간</th><td colspan="3" id="det-period">2026.06.01 00:00 ~ 2026.06.30 23:59</td></tr>
+          <tr><th>고정글</th><td id="det-pin">미사용</td><th>띠배너</th><td id="det-banner">미사용</td></tr>
+          <tr><th>공개여부</th><td colspan="3" id="det-visible">공개</td></tr>
+        </table>
+      </div>
+      <div class="detail-body" id="det-body">
+        안녕하세요. LABS 연수원 관리자입니다.<br><br>
+        2026년 6월 임직원 교육 일정을 아래와 같이 안내드립니다.<br><br>
+        <strong>■ 교육 일정</strong><br>
+        - 온라인 과정: 2026.06.01 ~ 2026.06.30<br>
+        - 집합 교육: 2026.06.15 (월) 09:00 ~ 18:00<br><br>
+        <strong>■ 수강 방법</strong><br>
+        - LABS 연수원 로그인 후 배정된 과정 수강<br>
+        - 수료 기준: 온라인 80% 이상, 집합교육 출석<br><br>
+        문의사항은 1:1 문의를 이용해 주시기 바랍니다.
+      </div>
+      <div class="detail-nav">
+        <div class="nav-post" onclick="showToast('이전 글로 이동합니다.','')">
+          <span class="nav-post-label">▲ 이전 글</span>
+          <span class="nav-post-title">5월 임직원 교육 완료 안내</span>
+          <span class="nav-post-date">2026.05.08</span>
+        </div>
+        <div class="nav-post" onclick="showToast('다음 글로 이동합니다.','')">
+          <span class="nav-post-label">▼ 다음 글</span>
+          <span class="nav-post-title">하반기 역량개발 교육 계획 안내</span>
+          <span class="nav-post-date">2026.05.12</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <div></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="goList()">목록</button>
+        <button class="btn btn-outline" onclick="goEdit()">수정</button>
+        <button class="btn btn-danger" onclick="openDeleteModal()">삭제</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ━━━ 수정 화면 ━━━ -->
+  <main class="main" id="view-edit" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 공지사항 수정</div>
+      <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 기업별 공지사항 관리 &gt; 수정</div>
+    </div>
+    <div class="card form-section">
+      <div class="form-row">
+        <div class="form-label">기업명</div>
+        <div class="form-body">
+          <span class="readonly-field">삼성전자㈜</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">구분<span class="req">*</span></div>
+        <div class="form-body" style="flex-wrap:nowrap;align-items:center;gap:10px;">
+          <div class="radio-group" id="edit-cat-radios">
+            <label class="radio-label"><input type="radio" name="edit-cat" value="공지" checked> 공지</label>
+            <label class="radio-label"><input type="radio" name="edit-cat" value="이벤트"> 이벤트</label>
+            <label class="radio-label"><input type="radio" name="edit-cat" value="교육안내"> 교육안내</label>
+            <label class="radio-label"><input type="radio" name="edit-cat" value="기타"> 기타</label>
+          </div>
+          <button class="btn-setting" onclick="openCatModal()">⚙ 구분 설정</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">제목<span class="req">*</span></div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;">
+          <input class="input" id="edit-title" type="text" value="삼성전자 2026년 6월 임직원 교육 안내" style="width:100%;max-width:560px;">
+          <span class="field-error">제목을 입력해주세요.</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">게시기간</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-period" value="none"> 기간없음</label>
+            <label class="radio-label"><input type="radio" name="edit-period" value="range" checked onchange="toggleEditPeriod()"> 노출기간</label>
+          </div>
+          <div class="cond-area" id="edit-period-range">
+            <div class="date-range">
+              <input class="input input-dt" type="datetime-local" value="2026-06-01T00:00" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" type="datetime-local" value="2026-06-30T23:59" onkeydown="return false;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">노출영역</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-area" value="01" checked> PC/모바일</label>
+            <label class="radio-label"><input type="radio" name="edit-area" value="02"> PC</label>
+            <label class="radio-label"><input type="radio" name="edit-area" value="03"> 모바일</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">고정글</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-pin" value="notUse" checked> 미사용</label>
+            <label class="radio-label"><input type="radio" name="edit-pin" value="use"> 사용</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">띠배너 사용</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-banner" value="notUse" checked onchange="toggleEditBanner()"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="edit-banner" value="use" onchange="toggleEditBanner()"> 사용</label>
+          </div>
+          <div class="cond-area" id="edit-banner-area" style="display:none;">
+            <input class="input" type="text" placeholder="노출 문구 (최대 80자)" style="width:360px;" maxlength="80">
+            <div class="date-range">
+              <input class="input input-dt" type="datetime-local" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" type="datetime-local" onkeydown="return false;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">공개여부</div>
+        <div class="form-body">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-visible" value="exposed" checked> 공개</label>
+            <label class="radio-label"><input type="radio" name="edit-visible" value="notExposed"> 미공개</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row" style="align-items:flex-start;">
+        <div class="form-label" style="padding-top:9px;">본문<span class="req">*</span></div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;width:100%;padding-top:6px;">
+          <div class="editor-mock" style="width:100%;">
+            <div class="editor-toolbar">
+              <button class="toolbar-btn"><b>B</b></button><button class="toolbar-btn"><i>I</i></button><button class="toolbar-btn"><u>U</u></button>
+              <div class="toolbar-sep"></div><button class="toolbar-btn">≡</button><button class="toolbar-btn">1.</button>
+              <div class="toolbar-sep"></div><button class="toolbar-btn">🔗</button><button class="toolbar-btn">🖼</button><button class="toolbar-btn">표</button>
+            </div>
+            <div class="editor-body" contenteditable="true">안녕하세요. LABS 연수원 관리자입니다.
+
+2026년 6월 임직원 교육 일정을 아래와 같이 안내드립니다.
+
+■ 교육 일정
+- 온라인 과정: 2026.06.01 ~ 2026.06.30
+- 집합 교육: 2026.06.15 (월) 09:00 ~ 18:00
+
+■ 수강 방법
+- LABS 연수원 로그인 후 배정된 과정 수강
+- 수료 기준: 온라인 80% 이상, 집합교육 출석
+
+문의사항은 1:1 문의를 이용해 주시기 바랍니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row" style="align-items:flex-start;">
+        <div class="form-label" style="padding-top:9px;">첨부파일</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;width:100%;padding-top:6px;">
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px;width:100%;">
+            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;font-size:12px;">
+              <span style="color:#94a3b8;">📎</span>
+              <span style="flex:1;">6월_교육일정_안내.pdf</span>
+              <span style="color:#94a3b8;font-size:11px;">124KB</span>
+              <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;" onclick="this.closest('div').remove()">×</button>
+            </div>
+          </div>
+          <div class="attach-zone" onclick="showToast('파일 선택 다이얼로그 (프로토타입)','')">파일을 이곳에 끌어다 놓거나 <strong>파일 선택</strong> 버튼을 클릭하세요.</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div></div>
+      <div class="form-actions-right">
+        <button class="btn btn-ghost" onclick="goList()">목록</button>
+        <button class="btn btn-outline" onclick="goDetail()">취소</button>
+        <button class="btn btn-primary" onclick="doSave('edit')">저장</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal-bg" id="modal-delete">
+  <div class="modal">
+    <div class="modal-title">공지사항 삭제</div>
+    <div class="modal-msg">정말로 삭제하시겠습니까?</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-delete')">아니오</button>
+      <button class="btn btn-danger" onclick="doDelete()">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- 비공개 전환 확인 모달 -->
+<div class="modal-bg" id="modal-hide">
+  <div class="modal">
+    <div class="modal-title">공개 상태 변경</div>
+    <div class="modal-msg">정말로 비공개 하시겠습니까?</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-hide')">아니오</button>
+      <button class="btn btn-primary" onclick="doHide()">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- 구분 설정 모달 -->
+<div class="modal-bg" id="modal-cat">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">구분 설정</div>
+      <button class="modal-close" onclick="closeCatModal()">✕</button>
+    </div>
+    <div class="cat-list" id="cat-list">
+      <!-- 동적 생성 -->
+    </div>
+    <div class="cat-footer">
+      <button class="cat-add-btn" onclick="addCatRow()">＋ 구분 추가</button>
+      <label class="hide-inactive">
+        <input type="checkbox" id="hide-inactive-chk" onchange="renderCatList()">
+        미사용 감춤
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCatModal()">닫기</button>
+      <button class="btn btn-primary" onclick="saveCatModal()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const COMPANIES = {
+  samsung: { name:'삼성전자㈜', manager:'김철수', cats:['공지','이벤트','교육안내','기타'] },
+  hyundai: { name:'현대자동차㈜', manager:'이영희', cats:['공지','보안','복지','기타'] },
+  lg:      { name:'LG화학㈜',    manager:'박민준', cats:['공지','안전','교육','기타'] },
+  sk:      { name:'SK하이닉스㈜', manager:'정수진', cats:['공지','이벤트','기타'] },
+  posco:   { name:'POSCO홀딩스㈜', manager:'최동현', cats:['공지','안전','교육안내','기타'] },
+};
+
+const DUMMY_DATA = {
+  samsung: [
+    { no:7, title:'삼성전자 2026년 6월 임직원 교육 안내',    cat:'공지',   pin:false, date:'2026.05.10 09:00', views:187, visible:'공개' },
+    { no:6, title:'하계 휴가 기간 연수원 운영 안내',          cat:'공지',   pin:true,  date:'2026.05.08 14:00', views:342, visible:'공개' },
+    { no:5, title:'직무역량 강화 이벤트 — 수료 시 포인트 지급', cat:'이벤트', pin:false, date:'2026.05.01 10:00', views:521, visible:'공개' },
+    { no:4, title:'4월 교육 이수율 안내',                    cat:'교육안내', pin:false, date:'2026.04.30 17:00', views:96,  visible:'미공개' },
+    { no:3, title:'리더십 역량 진단 안내 (상반기)',            cat:'교육안내', pin:false, date:'2026.04.20 09:00', views:278, visible:'공개' },
+    { no:2, title:'2026 상반기 신규입사자 OJT 안내',          cat:'교육안내', pin:false, date:'2026.04.01 09:00', views:410, visible:'공개' },
+    { no:1, title:'삼성전자 LABS 연수원 오픈 안내',            cat:'기타',   pin:false, date:'2026.03.01 00:00', views:1280, visible:'공개' },
+  ],
+  hyundai: [
+    { no:4, title:'현대차 2분기 안전교육 필수 수강 안내',      cat:'보안',   pin:true,  date:'2026.05.12 09:00', views:234, visible:'공개' },
+    { no:3, title:'신입사원 온보딩 교육 일정 안내',            cat:'공지',   pin:false, date:'2026.05.05 10:00', views:178, visible:'공개' },
+    { no:2, title:'임직원 복지 교육 프로그램 안내',            cat:'복지',   pin:false, date:'2026.04.22 14:00', views:95,  visible:'공개' },
+    { no:1, title:'현대차 LABS 연수원 오픈 안내',              cat:'기타',   pin:false, date:'2026.03.01 00:00', views:867, visible:'공개' },
+  ],
+  lg: [
+    { no:3, title:'LG화학 안전보건 의무교육 안내',             cat:'안전',   pin:true,  date:'2026.05.15 09:00', views:312, visible:'공개' },
+    { no:2, title:'2분기 직무교육 수강신청 안내',              cat:'교육',   pin:false, date:'2026.05.03 10:00', views:145, visible:'공개' },
+    { no:1, title:'LG화학 LABS 연수원 오픈 안내',              cat:'공지',   pin:false, date:'2026.03.01 00:00', views:723, visible:'공개' },
+  ],
+  sk: [
+    { no:2, title:'SK하이닉스 하반기 CDP 안내',                cat:'공지',   pin:false, date:'2026.05.14 11:00', views:201, visible:'공개' },
+    { no:1, title:'SK하이닉스 LABS 연수원 오픈 안내',          cat:'기타',   pin:false, date:'2026.03.01 00:00', views:598, visible:'공개' },
+  ],
+  posco: [
+    { no:2, title:'POSCO 하반기 안전교육 필수 이수 안내',      cat:'안전',   pin:true,  date:'2026.05.11 09:00', views:289, visible:'공개' },
+    { no:1, title:'POSCO홀딩스 LABS 연수원 오픈 안내',         cat:'공지',   pin:false, date:'2026.03.01 00:00', views:914, visible:'공개' },
+  ],
+};
+
+const CAT_BADGE_CLASS = ['badge-cat','badge-cat2','badge-cat3','badge-cat4'];
+
+let selectedCompany = '';
+let filteredData = [];
+let currentPage = 1;
+let pageSize = 50;
+let pendingHideNo = null;
+
+// 구분설정 모달용 임시 데이터
+let catModalRows = [];
+
+function toggleNav(el) {
+  el.closest('.nav-group').classList.toggle('open');
+}
+
+function onCompanyChange() {
+  const val = document.getElementById('company-select').value;
+  selectedCompany = val;
+
+  const chips = document.getElementById('company-info-chips');
+  const searchCard = document.getElementById('search-card');
+  const resultContent = document.getElementById('result-content');
+  const noMsg = document.getElementById('no-company-msg');
+
+  if (!val) {
+    chips.style.display = 'none';
+    searchCard.style.display = 'none';
+    resultContent.style.display = 'none';
+    noMsg.style.display = '';
+    return;
+  }
+
+  const comp = COMPANIES[val];
+  const data = DUMMY_DATA[val] || [];
+
+  document.getElementById('chip-total').textContent = data.length;
+  document.getElementById('chip-cat').textContent = comp.cats.length;
+  document.getElementById('chip-manager').textContent = comp.manager;
+  chips.style.display = '';
+
+  // 구분 드롭다운 갱신
+  const sCat = document.getElementById('s-cat');
+  sCat.innerHTML = '<option value="">전체</option>' +
+    comp.cats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  searchCard.style.display = '';
+  noMsg.style.display = 'none';
+  resultContent.style.display = '';
+
+  filteredData = [...data];
+  currentPage = 1;
+  renderTable();
+  renderPagination();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  const start = (currentPage - 1) * pageSize;
+  const pageData = filteredData.slice(start, start + pageSize);
+  document.getElementById('total-count').textContent = filteredData.length;
+
+  if (pageData.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">조회된 데이터가 없습니다.</td></tr>';
+    return;
+  }
+
+  const comp = COMPANIES[selectedCompany];
+  tbody.innerHTML = pageData.map(r => {
+    const catIdx = comp ? comp.cats.indexOf(r.cat) : 0;
+    const badgeClass = CAT_BADGE_CLASS[Math.max(0, catIdx) % CAT_BADGE_CLASS.length];
+    return `
+    <tr>
+      <td>${r.no}</td>
+      <td style="text-align:left;padding-left:12px;"><span class="link-cell" onclick="goDetail()">${r.title}</span></td>
+      <td><span class="badge ${badgeClass}">${r.cat}</span></td>
+      <td>${r.pin ? '<span class="badge badge-pin">고정글</span>' : '-'}</td>
+      <td>${r.date}</td>
+      <td>${r.views.toLocaleString()}</td>
+      <td>${r.visible}</td>
+      <td>${r.visible === '공개'
+        ? `<button class="toggle-btn toggle-btn-hide" onclick="openHideModal(${r.no})">비공개</button>`
+        : `<button class="toggle-btn toggle-btn-show" onclick="doShowImmediate(${r.no})">공개</button>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPagination() {
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const pg = document.getElementById('pagination');
+  let html = `<button class="pg-btn" onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, start + 4);
+  for (let i = start; i <= end; i++) html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+  html += `<button class="pg-btn" onclick="changePage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pg.innerHTML = html;
+}
+
+function changePage(p) {
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  if (p < 1 || p > totalPages) return;
+  currentPage = p; renderTable(); renderPagination();
+}
+
+function changePageSize() {
+  pageSize = parseInt(document.getElementById('page-size').value);
+  currentPage = 1; renderTable(); renderPagination();
+}
+
+function doSearch() {
+  const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
+  const type = document.querySelector('input[name="s-type"]:checked').value;
+  const catFilter = document.getElementById('s-cat').value;
+  const data = DUMMY_DATA[selectedCompany] || [];
+  filteredData = data.filter(r => {
+    const matchCat = !catFilter || r.cat === catFilter;
+    const matchKw = !kw || r.title.toLowerCase().includes(kw);
+    return matchCat && matchKw;
+  });
+  currentPage = 1; renderTable(); renderPagination();
+}
+
+function resetSearch() {
+  document.getElementById('s-keyword').value = '';
+  document.querySelector('input[name="s-type"][value="title"]').checked = true;
+  document.getElementById('s-cat').value = '';
+  filteredData = [...(DUMMY_DATA[selectedCompany] || [])];
+  currentPage = 1; renderTable(); renderPagination();
+}
+
+function openHideModal(no) { pendingHideNo = no; document.getElementById('modal-hide').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function doHide() {
+  const data = DUMMY_DATA[selectedCompany] || [];
+  const item = data.find(r => r.no === pendingHideNo);
+  if (item) item.visible = '미공개';
+  filteredData = data.filter(r => filteredData.some(f => f.no === r.no));
+  closeModal('modal-hide');
+  renderTable(); renderPagination();
+  showToast('비공개로 변경되었습니다.', 'success');
+}
+
+function doShowImmediate(no) {
+  const data = DUMMY_DATA[selectedCompany] || [];
+  const item = data.find(r => r.no === no);
+  if (item) item.visible = '공개';
+  renderTable(); renderPagination();
+  showToast('공개로 변경되었습니다.', 'success');
+}
+
+function goList() {
+  show('view-list');
+  if (selectedCompany) { renderTable(); renderPagination(); }
+}
+
+function goRegister() {
+  const comp = COMPANIES[selectedCompany];
+  document.getElementById('reg-company-name').textContent = comp ? comp.name : '-';
+  renderRegCatRadios(comp ? comp.cats : []);
+  show('view-register');
+}
+
+function renderRegCatRadios(cats) {
+  const wrap = document.getElementById('reg-cat-radios');
+  wrap.innerHTML = cats.map((c, i) =>
+    `<label class="radio-label"><input type="radio" name="reg-cat" value="${c}" ${i===0?'checked':''}> ${c}</label>`
+  ).join('');
+}
+
+function goDetail() { show('view-detail'); }
+function goEdit() { show('view-edit'); }
+
+function show(id) {
+  ['view-list','view-register','view-detail','view-edit'].forEach(v => {
+    document.getElementById(v).style.display = v === id ? 'flex' : 'none';
+  });
+}
+
+function toggleDetailAttr() {
+  const wrap = document.getElementById('det-attr-wrap');
+  const btn = document.getElementById('det-toggle-btn');
+  if (wrap.style.display === 'none') { wrap.style.display = ''; btn.textContent = '▲'; }
+  else { wrap.style.display = 'none'; btn.textContent = '▼'; }
+}
+
+function togglePeriod() {
+  const v = document.querySelector('input[name="reg-period"]:checked').value;
+  document.getElementById('period-range').style.display = v === 'range' ? 'flex' : 'none';
+}
+function toggleBanner() {
+  const v = document.querySelector('input[name="reg-banner"]:checked').value;
+  document.getElementById('banner-area').style.display = v === 'use' ? 'flex' : 'none';
+}
+function toggleEditPeriod() {
+  const v = document.querySelector('input[name="edit-period"]:checked').value;
+  document.getElementById('edit-period-range').style.display = v === 'range' ? 'flex' : 'none';
+}
+function toggleEditBanner() {
+  const v = document.querySelector('input[name="edit-banner"]:checked').value;
+  document.getElementById('edit-banner-area').style.display = v === 'use' ? 'flex' : 'none';
+}
+
+function doSave(mode) {
+  if (mode === 'reg') {
+    const titleEl = document.getElementById('reg-title');
+    const bodyEl = document.getElementById('reg-body');
+    const titleRow = document.getElementById('frow-title');
+    const bodyRow = document.getElementById('frow-body');
+    titleRow.classList.remove('has-error');
+    bodyRow.classList.remove('has-error');
+    let valid = true;
+    if (!titleEl.value.trim()) { titleRow.classList.add('has-error'); valid = false; }
+    if (!bodyEl.innerText.trim()) { bodyRow.classList.add('has-error'); valid = false; }
+    if (!valid) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
+  }
+  showToast(mode === 'reg' ? '공지사항이 등록되었습니다.' : '공지사항이 수정되었습니다.', 'success');
+  setTimeout(() => goList(), 1000);
+}
+
+function openDeleteModal() { document.getElementById('modal-delete').classList.add('open'); }
+function doDelete() {
+  closeModal('modal-delete');
+  showToast('공지사항이 삭제되었습니다.', 'success');
+  setTimeout(() => goList(), 1000);
+}
+
+// ── 구분 설정 모달 ──
+function openCatModal() {
+  const comp = COMPANIES[selectedCompany];
+  const cats = comp ? comp.cats : ['공지','기타'];
+  catModalRows = cats.map((c, i) => ({ id: i+1, name: c, active: true }));
+  renderCatList();
+  document.getElementById('hide-inactive-chk').checked = false;
+  document.getElementById('modal-cat').classList.add('open');
+}
+
+function closeCatModal() {
+  document.getElementById('modal-cat').classList.remove('open');
+}
+
+function renderCatList() {
+  const hideInactive = document.getElementById('hide-inactive-chk').checked;
+  const list = document.getElementById('cat-list');
+  const rows = hideInactive ? catModalRows.filter(r => r.active) : catModalRows;
+
+  if (rows.length === 0) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:12px;">구분이 없습니다. 구분 추가 버튼을 눌러 추가하세요.</div>';
+    return;
+  }
+
+  list.innerHTML = rows.map((row, idx) => `
+    <div class="cat-row" draggable="true" data-id="${row.id}"
+         ondragstart="onDragStart(event,${row.id})"
+         ondragover="onDragOver(event)"
+         ondrop="onDrop(event,${row.id})">
+      <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+      <input class="cat-name-input" type="text" value="${row.name}"
+             onchange="updateCatName(${row.id},this.value)"
+             placeholder="구분명 입력">
+      <div class="cat-radio-group">
+        <label class="cat-radio">
+          <input type="radio" name="cat-active-${row.id}" value="use" ${row.active?'checked':''}
+                 onchange="updateCatActive(${row.id},true)">
+          사용
+        </label>
+        <label class="cat-radio">
+          <input type="radio" name="cat-active-${row.id}" value="notUse" ${!row.active?'checked':''}
+                 onchange="updateCatActive(${row.id},false)">
+          미사용
+        </label>
+      </div>
+      <button class="cat-del-btn" onclick="deleteCatRow(${row.id})" title="삭제">×</button>
+    </div>
+  `).join('');
+}
+
+function addCatRow() {
+  const newId = catModalRows.length > 0 ? Math.max(...catModalRows.map(r => r.id)) + 1 : 1;
+  catModalRows.push({ id: newId, name: '', active: true });
+  renderCatList();
+  // 마지막 input에 포커스
+  const inputs = document.querySelectorAll('#cat-list .cat-name-input');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function updateCatName(id, val) {
+  const row = catModalRows.find(r => r.id === id);
+  if (row) row.name = val;
+}
+
+function updateCatActive(id, active) {
+  const row = catModalRows.find(r => r.id === id);
+  if (row) { row.active = active; renderCatList(); }
+}
+
+function deleteCatRow(id) {
+  catModalRows = catModalRows.filter(r => r.id !== id);
+  renderCatList();
+}
+
+// 드래그&드롭 순서 변경
+let dragSrcId = null;
+function onDragStart(e, id) { dragSrcId = id; e.dataTransfer.effectAllowed = 'move'; }
+function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function onDrop(e, targetId) {
+  e.preventDefault();
+  if (dragSrcId === targetId) return;
+  const srcIdx = catModalRows.findIndex(r => r.id === dragSrcId);
+  const tgtIdx = catModalRows.findIndex(r => r.id === targetId);
+  if (srcIdx < 0 || tgtIdx < 0) return;
+  const [moved] = catModalRows.splice(srcIdx, 1);
+  catModalRows.splice(tgtIdx, 0, moved);
+  dragSrcId = null;
+  renderCatList();
+}
+
+function saveCatModal() {
+  if (!selectedCompany) { closeCatModal(); return; }
+  const names = catModalRows.filter(r => r.active && r.name.trim()).map(r => r.name.trim());
+  if (names.length === 0) { showToast('사용 중인 구분이 최소 1개 이상이어야 합니다.', 'error'); return; }
+  COMPANIES[selectedCompany].cats = catModalRows.filter(r => r.name.trim()).map(r => r.name.trim());
+
+  // 구분 드롭다운 갱신
+  const sCat = document.getElementById('s-cat');
+  sCat.innerHTML = '<option value="">전체</option>' +
+    COMPANIES[selectedCompany].cats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  // 등록 라디오 갱신
+  renderRegCatRadios(names);
+
+  document.getElementById('chip-cat').textContent = COMPANIES[selectedCompany].cats.length;
+  closeCatModal();
+  showToast('구분 설정이 저장되었습니다.', 'success');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
