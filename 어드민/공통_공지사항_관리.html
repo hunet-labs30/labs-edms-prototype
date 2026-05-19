@@ -162,6 +162,7 @@
   .field-error { display: none; font-size: 11px; color: #dc2626; margin-top: 4px; width: 100%; }
   .has-error .input, .has-error .editor-mock { border-color: #dc2626; }
   .has-error .field-error { display: block; }
+  .input-error { border-color: #dc2626 !important; }
 </style>
 </head>
 <body>
@@ -891,8 +892,10 @@ function toggleEditBanner() {
 function doSave(mode) {
   let valid = true;
   const prefix = mode === 'reg' ? 'reg' : 'edit';
-  const titleEl = document.getElementById(prefix + '-title');
-  const bodyEl  = document.getElementById(prefix + '-body');
+
+  // 제목/본문
+  const titleEl  = document.getElementById(prefix + '-title');
+  const bodyEl   = document.getElementById(prefix + '-body');
   const titleRow = document.getElementById('frow-title');
   const bodyRow  = document.getElementById('frow-body');
   if (titleRow) titleRow.classList.remove('has-error');
@@ -901,14 +904,20 @@ function doSave(mode) {
   if (bodyEl  && !bodyEl.innerText.trim()) { if (bodyRow) bodyRow.classList.add('has-error'); valid = false; }
 
   // 게시기간 validation
-  const periodName  = prefix + '-period';
-  const periodErr   = document.getElementById(mode === 'reg' ? 'err-period' : 'err-edit-period');
+  const periodName = prefix + '-period';
+  const periodErr  = document.getElementById(mode === 'reg' ? 'err-period' : 'err-edit-period');
+  const fromEl     = document.getElementById(prefix + '-period-from');
+  const toEl       = document.getElementById(prefix + '-period-to');
   if (periodErr) periodErr.style.display = 'none';
+  if (fromEl) fromEl.classList.remove('input-error');
+  if (toEl)   toEl.classList.remove('input-error');
   if (document.querySelector('input[name="' + periodName + '"]:checked').value === 'range') {
-    const from = document.getElementById(prefix + '-period-from');
-    const to   = document.getElementById(prefix + '-period-to');
-    if (!from || !from.value || !to || !to.value) {
+    const fromMissing = !fromEl || !fromEl.value;
+    const toMissing   = !toEl   || !toEl.value;
+    if (fromMissing || toMissing) {
       if (periodErr) periodErr.style.display = 'block';
+      if (fromMissing && fromEl) fromEl.classList.add('input-error');
+      if (toMissing   && toEl)   toEl.classList.add('input-error');
       valid = false;
     }
   }
@@ -922,10 +931,21 @@ function doSave(mode) {
   const bannerPeriodErr = document.getElementById('err-' + (mode === 'reg' ? '' : 'edit-') + 'banner-period');
   if (bannerTextErr)   bannerTextErr.style.display   = 'none';
   if (bannerPeriodErr) bannerPeriodErr.style.display = 'none';
+  if (bannerTextEl) bannerTextEl.classList.remove('input-error');
+  if (bannerFromEl) bannerFromEl.classList.remove('input-error');
+  if (bannerToEl)   bannerToEl.classList.remove('input-error');
   if (document.querySelector('input[name="' + bannerName + '"]:checked').value === 'use') {
-    if (bannerTextEl && !bannerTextEl.value.trim()) { if (bannerTextErr) bannerTextErr.style.display = 'block'; valid = false; }
-    if (!bannerFromEl || !bannerFromEl.value || !bannerToEl || !bannerToEl.value) {
+    if (bannerTextEl && !bannerTextEl.value.trim()) {
+      if (bannerTextErr) bannerTextErr.style.display = 'block';
+      bannerTextEl.classList.add('input-error');
+      valid = false;
+    }
+    const bannerFromMissing = !bannerFromEl || !bannerFromEl.value;
+    const bannerToMissing   = !bannerToEl   || !bannerToEl.value;
+    if (bannerFromMissing || bannerToMissing) {
       if (bannerPeriodErr) bannerPeriodErr.style.display = 'block';
+      if (bannerFromMissing && bannerFromEl) bannerFromEl.classList.add('input-error');
+      if (bannerToMissing   && bannerToEl)   bannerToEl.classList.add('input-error');
       valid = false;
     }
   }
