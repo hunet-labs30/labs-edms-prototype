@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -493,7 +493,7 @@
         <div class="form-body">
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="reg-visible" value="exposed" checked> 공개</label>
-            <label class="radio-label"><input type="radio" name="reg-visible" value="notExposed"> 미공개</label>
+            <label class="radio-label"><input type="radio" name="reg-visible" value="notExposed"> 비공개</label>
           </div>
         </div>
       </div>
@@ -667,7 +667,7 @@
         <div class="form-body">
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="edit-visible" value="exposed" checked> 공개</label>
-            <label class="radio-label"><input type="radio" name="edit-visible" value="notExposed"> 미공개</label>
+            <label class="radio-label"><input type="radio" name="edit-visible" value="notExposed"> 비공개</label>
           </div>
         </div>
       </div>
@@ -755,7 +755,7 @@ const DUMMY = [
   { no:7, title:'개인정보처리방침 개정 안내',             cat:'공지(노출중)', pin:true,  date:'2026.05.12 10:30', views:183, visible:'공개' },
   { no:6, title:'5월 연수원 운영 변경사항 공지',          cat:'공지(노출중)', pin:false, date:'2026.05.08 14:00', views:321, visible:'공개' },
   { no:5, title:'서비스 이용약관 개정 안내',              cat:'공지(노출중)', pin:false, date:'2026.05.05 09:00', views:156, visible:'공개' },
-  { no:4, title:'4월 정기점검 완료 안내',                  cat:'공지(노출중)', pin:false, date:'2026.04.28 07:30', views:290, visible:'미공개' },
+  { no:4, title:'4월 정기점검 완료 안내',                  cat:'공지(노출중)', pin:false, date:'2026.04.28 07:30', views:290, visible:'비공개' },
   { no:3, title:'학습 시스템 UI 개선 안내',               cat:'공지(노출중)', pin:false, date:'2026.04.20 10:00', views:412, visible:'공개' },
   { no:2, title:'이용자 보호 정책 안내',                   cat:'공지(노출중)', pin:false, date:'2026.04.15 09:00', views:538, visible:'공개' },
   { no:1, title:'LABS 연수원 서비스 오픈 안내',            cat:'공지(노출중)', pin:false, date:'2026.03.01 00:00', views:1024, visible:'공개' },
@@ -834,7 +834,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 
 function doHide() {
   const item = DUMMY.find(r => r.no === pendingHideNo);
-  if (item) item.visible = '미공개';
+  if (item) item.visible = '비공개';
   filteredData = DUMMY.filter(r => filteredData.includes(r));
   closeModal('modal-hide');
   renderTable(); renderPagination();
