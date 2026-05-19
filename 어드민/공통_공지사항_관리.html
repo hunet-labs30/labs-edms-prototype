@@ -902,7 +902,7 @@ function doSave(mode) {
 
   // 게시기간 validation
   const periodName  = prefix + '-period';
-  const periodErr   = document.getElementById('err-' + prefix + '-period');
+  const periodErr   = document.getElementById(mode === 'reg' ? 'err-period' : 'err-edit-period');
   if (periodErr) periodErr.style.display = 'none';
   if (document.querySelector('input[name="' + periodName + '"]:checked').value === 'range') {
     const from = document.getElementById(prefix + '-period-from');
