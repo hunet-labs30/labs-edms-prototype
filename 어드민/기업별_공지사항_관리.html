@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -590,7 +590,7 @@
         <div class="form-body">
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="reg-visible" value="exposed" checked> 공개</label>
-            <label class="radio-label"><input type="radio" name="reg-visible" value="notExposed"> 미공개</label>
+            <label class="radio-label"><input type="radio" name="reg-visible" value="notExposed"> 비공개</label>
           </div>
         </div>
       </div>
@@ -782,7 +782,7 @@
         <div class="form-body">
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="edit-visible" value="exposed" checked> 공개</label>
-            <label class="radio-label"><input type="radio" name="edit-visible" value="notExposed"> 미공개</label>
+            <label class="radio-label"><input type="radio" name="edit-visible" value="notExposed"> 비공개</label>
           </div>
         </div>
       </div>
@@ -901,7 +901,7 @@ const DUMMY_DATA = {
     { no:7, title:'삼성전자 2026년 6월 임직원 교육 안내',    cat:'공지',   pin:false, date:'2026.05.10 09:00', views:187, visible:'공개' },
     { no:6, title:'하계 휴가 기간 연수원 운영 안내',          cat:'공지',   pin:true,  date:'2026.05.08 14:00', views:342, visible:'공개' },
     { no:5, title:'직무역량 강화 이벤트 — 수료 시 포인트 지급', cat:'이벤트', pin:false, date:'2026.05.01 10:00', views:521, visible:'공개' },
-    { no:4, title:'4월 교육 이수율 안내',                    cat:'교육안내', pin:false, date:'2026.04.30 17:00', views:96,  visible:'미공개' },
+    { no:4, title:'4월 교육 이수율 안내',                    cat:'교육안내', pin:false, date:'2026.04.30 17:00', views:96,  visible:'비공개' },
     { no:3, title:'리더십 역량 진단 안내 (상반기)',            cat:'교육안내', pin:false, date:'2026.04.20 09:00', views:278, visible:'공개' },
     { no:2, title:'2026 상반기 신규입사자 OJT 안내',          cat:'교육안내', pin:false, date:'2026.04.01 09:00', views:410, visible:'공개' },
     { no:1, title:'삼성전자 LABS 연수원 오픈 안내',            cat:'기타',   pin:false, date:'2026.03.01 00:00', views:1280, visible:'공개' },
@@ -1062,7 +1062,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function doHide() {
   const data = DUMMY_DATA[selectedCompany] || [];
   const item = data.find(r => r.no === pendingHideNo);
-  if (item) item.visible = '미공개';
+  if (item) item.visible = '비공개';
   filteredData = data.filter(r => filteredData.some(f => f.no === r.no));
   closeModal('modal-hide');
   renderTable(); renderPagination();
