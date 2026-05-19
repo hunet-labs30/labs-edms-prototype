@@ -618,10 +618,11 @@
           </div>
           <div class="cond-area" id="edit-period-range">
             <div class="date-range">
-              <input class="input input-dt" type="datetime-local" value="2026-06-01T00:00" onkeydown="return false;">
+              <input class="input input-dt" id="edit-period-from" type="datetime-local" value="2026-06-01T00:00" onkeydown="return false;">
               <span class="date-sep">~</span>
-              <input class="input input-dt" type="datetime-local" value="2026-06-01T06:00" onkeydown="return false;">
+              <input class="input input-dt" id="edit-period-to" type="datetime-local" value="2026-06-01T06:00" onkeydown="return false;">
             </div>
+            <span class="field-error" id="err-edit-period">게시기간을 입력해주세요.</span>
           </div>
         </div>
       </div>
@@ -652,12 +653,16 @@
             <label class="radio-label"><input type="radio" name="edit-banner" value="use" checked onchange="toggleEditBanner()"> 사용</label>
           </div>
           <div class="cond-area" id="edit-banner-area">
-            <input class="input" type="text" value="6월 1일 새벽 정기점검이 진행됩니다." style="width:360px;" maxlength="80">
-            <div class="date-range">
-              <input class="input input-dt" type="datetime-local" value="2026-05-25T00:00" onkeydown="return false;">
-              <span class="date-sep">~</span>
-              <input class="input input-dt" type="datetime-local" value="2026-06-01T06:00" onkeydown="return false;">
+            <div>
+              <input class="input" id="edit-banner-text" type="text" value="6월 1일 새벽 정기점검이 진행됩니다." style="width:360px;" maxlength="80">
+              <span class="field-error" id="err-edit-banner-text">노출 문구를 입력해주세요.</span>
             </div>
+            <div class="date-range">
+              <input class="input input-dt" id="edit-banner-from" type="datetime-local" value="2026-05-25T00:00" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="edit-banner-to" type="datetime-local" value="2026-06-01T06:00" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-edit-banner-period">띠배너 기간을 입력해주세요.</span>
           </div>
         </div>
       </div>
@@ -878,20 +883,54 @@ function toggleEditPeriod() {
   const v = document.querySelector('input[name="edit-period"]:checked').value;
   document.getElementById('edit-period-range').style.display = v === 'range' ? 'flex' : 'none';
 }
+function toggleEditBanner() {
+  const v = document.querySelector('input[name="edit-banner"]:checked').value;
+  document.getElementById('edit-banner-area').style.display = v === 'use' ? 'flex' : 'none';
+}
 
 function doSave(mode) {
   let valid = true;
-  if (mode === 'reg') {
-    const titleEl = document.getElementById('reg-title');
-    const bodyEl = document.getElementById('reg-body');
-    const titleRow = document.getElementById('frow-title');
-    const bodyRow = document.getElementById('frow-body');
-    titleRow.classList.remove('has-error');
-    bodyRow.classList.remove('has-error');
-    if (!titleEl.value.trim()) { titleRow.classList.add('has-error'); valid = false; }
-    if (!bodyEl.innerText.trim()) { bodyRow.classList.add('has-error'); valid = false; }
-    if (!valid) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
+  const prefix = mode === 'reg' ? 'reg' : 'edit';
+  const titleEl = document.getElementById(prefix + '-title');
+  const bodyEl  = document.getElementById(prefix + '-body');
+  const titleRow = document.getElementById('frow-title');
+  const bodyRow  = document.getElementById('frow-body');
+  if (titleRow) titleRow.classList.remove('has-error');
+  if (bodyRow)  bodyRow.classList.remove('has-error');
+  if (titleEl && !titleEl.value.trim()) { if (titleRow) titleRow.classList.add('has-error'); valid = false; }
+  if (bodyEl  && !bodyEl.innerText.trim()) { if (bodyRow) bodyRow.classList.add('has-error'); valid = false; }
+
+  // 게시기간 validation
+  const periodName  = prefix + '-period';
+  const periodErr   = document.getElementById('err-' + prefix + '-period');
+  if (periodErr) periodErr.style.display = 'none';
+  if (document.querySelector('input[name="' + periodName + '"]:checked').value === 'range') {
+    const from = document.getElementById(prefix + '-period-from');
+    const to   = document.getElementById(prefix + '-period-to');
+    if (!from || !from.value || !to || !to.value) {
+      if (periodErr) periodErr.style.display = 'block';
+      valid = false;
+    }
   }
+
+  // 띠배너 validation
+  const bannerName      = prefix + '-banner';
+  const bannerTextEl    = document.getElementById(prefix + '-banner-text');
+  const bannerFromEl    = document.getElementById(prefix + '-banner-from');
+  const bannerToEl      = document.getElementById(prefix + '-banner-to');
+  const bannerTextErr   = document.getElementById('err-' + (mode === 'reg' ? '' : 'edit-') + 'banner-text');
+  const bannerPeriodErr = document.getElementById('err-' + (mode === 'reg' ? '' : 'edit-') + 'banner-period');
+  if (bannerTextErr)   bannerTextErr.style.display   = 'none';
+  if (bannerPeriodErr) bannerPeriodErr.style.display = 'none';
+  if (document.querySelector('input[name="' + bannerName + '"]:checked').value === 'use') {
+    if (bannerTextEl && !bannerTextEl.value.trim()) { if (bannerTextErr) bannerTextErr.style.display = 'block'; valid = false; }
+    if (!bannerFromEl || !bannerFromEl.value || !bannerToEl || !bannerToEl.value) {
+      if (bannerPeriodErr) bannerPeriodErr.style.display = 'block';
+      valid = false;
+    }
+  }
+
+  if (!valid) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
   showToast(mode === 'reg' ? '공지사항이 등록되었습니다.' : '공지사항이 수정되었습니다.', 'success');
   setTimeout(() => goList(), 1000);
 }
