@@ -205,6 +205,22 @@
   .no-company { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 56px 20px; color: #94a3b8; gap: 10px; }
   .no-company-icon { font-size: 36px; }
   .no-company-text { font-size: 14px; }
+  /* 기업 검색 선택 */
+  .company-search-outer { position: relative; flex: 1; min-width: 0; max-width: 360px; }
+  .company-search-box { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; min-height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 2px 10px; background: #fff; cursor: text; transition: border-color .15s, box-shadow .15s; }
+  .company-search-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .company-search-input { border: none; outline: none; font-size: 13px; color: var(--text); font-family: inherit; flex: 1; min-width: 80px; height: 30px; background: transparent; }
+  .company-search-input::placeholder { color: #94a3b8; }
+  .company-selected-tag { display: flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 2px 4px 2px 9px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .company-tag-clear { background: none; border: none; cursor: pointer; color: #93c5fd; font-size: 15px; line-height: 1; padding: 0 2px; display: flex; align-items: center; }
+  .company-tag-clear:hover { color: #1d4ed8; }
+  .company-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.12); z-index: 100; display: none; max-height: 240px; overflow-y: auto; }
+  .company-dropdown.open { display: block; }
+  .company-dropdown-item { padding: 9px 14px; font-size: 13px; color: #374151; cursor: pointer; border-bottom: 1px solid #f8fafc; transition: background .1s; }
+  .company-dropdown-item:last-child { border-bottom: none; }
+  .company-dropdown-item:hover, .company-dropdown-item.focused { background: #eff6ff; color: var(--primary); }
+  .company-dropdown-item .company-match { font-weight: 700; color: var(--primary); }
+  .company-dropdown-empty { padding: 14px; text-align: center; font-size: 12px; color: #94a3b8; }
 </style>
 </head>
 <body>
@@ -413,25 +429,25 @@
       <div class="company-panel">
         <div class="company-panel-label">기업 선택</div>
         <div class="company-select-wrap">
-          <select class="select" id="company-select" onchange="onCompanyChange()" style="width:220px;">
-            <option value="">-- 기업을 선택하세요 --</option>
-            <option value="samsung">삼성전자㈜</option>
-            <option value="hyundai">현대자동차㈜</option>
-            <option value="lg">LG화학㈜</option>
-            <option value="sk">SK하이닉스㈜</option>
-            <option value="posco">POSCO홀딩스㈜</option>
-          </select>
-          <div class="company-info-chips" id="company-info-chips" style="display:none;">
-            <span class="info-chip chip-blue">공지 <strong id="chip-total">0</strong>건</span>
-            <span class="info-chip chip-green">구분 <strong id="chip-cat">0</strong>개</span>
-            <span class="info-chip chip-gray">담당자: <strong id="chip-manager">-</strong></span>
+          <div class="company-search-outer" id="company-search-outer">
+            <div class="company-search-box" id="company-search-box" onclick="document.getElementById('company-search-input').focus()">
+              <div class="company-selected-tag" id="company-tag" style="display:none;">
+                <span id="company-tag-name"></span>
+                <button class="company-tag-clear" onclick="clearCompany(event)">×</button>
+              </div>
+              <input type="text" class="company-search-input" id="company-search-input"
+                     placeholder="기업명으로 검색..." autocomplete="off"
+                     oninput="onCompanySearch()" onfocus="onCompanySearchFocus()"
+                     onkeydown="onCompanySearchKey(event)">
+            </div>
+            <div class="company-dropdown" id="company-dropdown"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 검색 (기업 선택 전에는 숨김) -->
-    <div class="card search-wrap" id="search-card" style="display:none;">
+    <!-- 검색 -->
+    <div class="card search-wrap" id="search-card">
       <div class="search-row">
         <div class="search-label">구분</div>
         <div class="search-body">
@@ -948,45 +964,99 @@ function toggleNav(el) {
   el.closest('.nav-group').classList.toggle('open');
 }
 
-function onCompanyChange() {
-  const val = document.getElementById('company-select').value;
-  selectedCompany = val;
+// ── 기업 검색 선택 ──
+let dropdownFocusIdx = -1;
 
-  const chips = document.getElementById('company-info-chips');
-  const searchCard = document.getElementById('search-card');
-  const resultContent = document.getElementById('result-content');
-  const noMsg = document.getElementById('no-company-msg');
+function onCompanySearchFocus() {
+  onCompanySearch();
+}
 
-  if (!val) {
-    chips.style.display = 'none';
-    searchCard.style.display = 'none';
-    resultContent.style.display = 'none';
-    noMsg.style.display = '';
-    return;
+function onCompanySearch() {
+  const q = document.getElementById('company-search-input').value.trim().toLowerCase();
+  const list = Object.entries(COMPANIES).map(([key, c]) => ({ key, name: c.name }));
+  const matches = q ? list.filter(c => c.name.toLowerCase().includes(q)) : list;
+  const dd = document.getElementById('company-dropdown');
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (matches.length === 0) {
+    dd.innerHTML = '<div class="company-dropdown-empty">검색 결과가 없습니다.</div>';
+  } else {
+    dd.innerHTML = matches.map(c => {
+      const label = q
+        ? c.name.replace(new RegExp(esc(q), 'gi'), m => `<span class="company-match">${m}</span>`)
+        : c.name;
+      return `<div class="company-dropdown-item" data-key="${c.key}" onclick="selectCompany('${c.key}')">${label}</div>`;
+    }).join('');
   }
+  dd.classList.add('open');
+  dropdownFocusIdx = -1;
+}
 
-  const comp = COMPANIES[val];
-  const data = DUMMY_DATA[val] || [];
+function onCompanySearchKey(e) {
+  const dd = document.getElementById('company-dropdown');
+  const items = dd.querySelectorAll('.company-dropdown-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    dropdownFocusIdx = Math.min(dropdownFocusIdx + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('focused', i === dropdownFocusIdx));
+    if (items[dropdownFocusIdx]) items[dropdownFocusIdx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    dropdownFocusIdx = Math.max(dropdownFocusIdx - 1, 0);
+    items.forEach((el, i) => el.classList.toggle('focused', i === dropdownFocusIdx));
+    if (items[dropdownFocusIdx]) items[dropdownFocusIdx].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    if (dropdownFocusIdx >= 0 && items[dropdownFocusIdx]) selectCompany(items[dropdownFocusIdx].dataset.key);
+  } else if (e.key === 'Escape') {
+    closeCompanyDropdown();
+  }
+}
 
-  document.getElementById('chip-total').textContent = data.length;
-  document.getElementById('chip-cat').textContent = comp.cats.length;
-  document.getElementById('chip-manager').textContent = comp.manager;
-  chips.style.display = '';
+function selectCompany(key) {
+  const comp = COMPANIES[key];
+  if (!comp) return;
+  selectedCompany = key;
 
-  // 구분 드롭다운 갱신
+  document.getElementById('company-tag-name').textContent = comp.name;
+  document.getElementById('company-tag').style.display = '';
+  const inp = document.getElementById('company-search-input');
+  inp.value = '';
+  inp.placeholder = '';
+  closeCompanyDropdown();
+
   const sCat = document.getElementById('s-cat');
   sCat.innerHTML = '<option value="">전체</option>' +
     comp.cats.map(c => `<option value="${c}">${c}</option>`).join('');
 
-  searchCard.style.display = '';
-  noMsg.style.display = 'none';
-  resultContent.style.display = '';
-
+  const data = DUMMY_DATA[key] || [];
+  document.getElementById('no-company-msg').style.display = 'none';
+  document.getElementById('result-content').style.display = '';
   filteredData = [...data];
   currentPage = 1;
   renderTable();
   renderPagination();
 }
+
+function clearCompany(e) {
+  if (e) e.stopPropagation();
+  selectedCompany = '';
+  document.getElementById('company-tag').style.display = 'none';
+  const inp = document.getElementById('company-search-input');
+  inp.value = '';
+  inp.placeholder = '기업명으로 검색...';
+  closeCompanyDropdown();
+  document.getElementById('s-cat').innerHTML = '<option value="">전체</option>';
+  document.getElementById('no-company-msg').style.display = '';
+  document.getElementById('result-content').style.display = 'none';
+}
+
+function closeCompanyDropdown() {
+  document.getElementById('company-dropdown').classList.remove('open');
+  dropdownFocusIdx = -1;
+}
+
+document.addEventListener('click', e => {
+  if (!document.getElementById('company-search-outer').contains(e.target)) closeCompanyDropdown();
+});
 
 function renderTable() {
   const tbody = document.getElementById('table-body');
@@ -1042,6 +1112,7 @@ function changePageSize() {
 }
 
 function doSearch() {
+  if (!selectedCompany) { showToast('기업을 먼저 선택해주세요.', ''); return; }
   const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
   const type = document.querySelector('input[name="s-type"]:checked').value;
   const catFilter = document.getElementById('s-cat').value;
@@ -1312,7 +1383,6 @@ function saveCatModal() {
   // 등록 라디오 갱신
   renderRegCatRadios(names);
 
-  document.getElementById('chip-cat').textContent = COMPANIES[selectedCompany].cats.length;
   closeCatModal();
   showToast('구분 설정이 저장되었습니다.', 'success');
 }
