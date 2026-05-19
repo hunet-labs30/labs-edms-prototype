@@ -1069,23 +1069,24 @@ document.addEventListener('click', e => {
 function renderTable() {
   const tbody = document.getElementById('table-body');
   const start = (currentPage - 1) * pageSize;
-  const pageData = filteredData.slice(start, start + pageSize);
+  const sorted = [...filteredData.slice(start, start + pageSize)].sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0));
   document.getElementById('total-count').textContent = filteredData.length;
 
-  if (pageData.length === 0) {
+  if (sorted.length === 0) {
     tbody.innerHTML = '<tr class="empty-row"><td colspan="8">조회된 데이터가 없습니다.</td></tr>';
     return;
   }
 
   const comp = COMPANIES[selectedCompany];
-  tbody.innerHTML = pageData.map(r => {
+  tbody.innerHTML = sorted.map(r => {
     const catIdx = comp ? comp.cats.indexOf(r.cat) : 0;
     const badgeClass = CAT_BADGE_CLASS[Math.max(0, catIdx) % CAT_BADGE_CLASS.length];
+    const catCell = r.cat ? `<span class="badge ${badgeClass}">${r.cat}</span>` : '-';
     return `
     <tr>
       <td>${r.no}</td>
       <td style="text-align:left;padding-left:12px;"><span class="link-cell" onclick="goDetail()">${r.title}</span></td>
-      <td><span class="badge ${badgeClass}">${r.cat}</span></td>
+      <td>${catCell}</td>
       <td>${r.pin ? '<span class="badge badge-pin">고정글</span>' : '-'}</td>
       <td>${r.date}</td>
       <td>${r.views.toLocaleString()}</td>
@@ -1393,7 +1394,23 @@ function doSave(mode) {
 
   if (!valid) { showToast('필수 항목을 입력해주세요.', 'error'); return; }
   showToast(mode === 'reg' ? '공지사항이 등록되었습니다.' : '공지사항이 수정되었습니다.', 'success');
-  setTimeout(() => goList(), 1000);
+  setTimeout(() => {
+    if (mode === 'reg' && regSelectedCompanies.length > 0) {
+      const firstKey = regSelectedCompanies[0];
+      selectedCompany = firstKey;
+      const comp = COMPANIES[firstKey];
+      document.getElementById('company-tag-name').textContent = comp.name;
+      document.getElementById('company-tag').style.display = '';
+      document.getElementById('company-search-input').value = '';
+      document.getElementById('company-search-input').placeholder = '';
+      const sCat = document.getElementById('s-cat');
+      sCat.innerHTML = '<option value="">전체</option>' +
+        comp.cats.map(c => `<option value="${c}">${c}</option>`).join('');
+      filteredData = [...(DUMMY_DATA[firstKey] || [])];
+      currentPage = 1;
+    }
+    goList();
+  }, 1000);
 }
 
 function openDeleteModal() { document.getElementById('modal-delete').classList.add('open'); }
@@ -1499,10 +1516,10 @@ function saveCatModal() {
   if (names.length === 0) { showToast('사용 중인 구분이 최소 1개 이상이어야 합니다.', 'error'); return; }
   COMPANIES[selectedCompany].cats = catModalRows.filter(r => r.name.trim()).map(r => r.name.trim());
 
-  // 구분 드롭다운 갱신
+  // 구분 드롭다운 갱신 (미사용 항목 제외)
   const sCat = document.getElementById('s-cat');
   sCat.innerHTML = '<option value="">전체</option>' +
-    COMPANIES[selectedCompany].cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    names.map(c => `<option value="${c}">${c}</option>`).join('');
 
   // 등록 라디오 갱신
   renderRegCatRadios(names);
