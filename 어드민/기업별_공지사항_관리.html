@@ -590,6 +590,27 @@
         </div>
       </div>
       <div class="form-row">
+        <div class="form-label">띠배너 사용</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-banner" value="notUse" checked onchange="toggleBanner()"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="reg-banner" value="use" onchange="toggleBanner()"> 사용</label>
+          </div>
+          <div class="cond-area" id="banner-area" style="display:none;">
+            <div>
+              <input class="input" id="reg-banner-text" type="text" placeholder="노출 문구를 입력하세요 (최대 80자)" style="width:360px;" maxlength="80">
+              <span class="field-error" id="err-banner-text">노출 문구를 입력해주세요.</span>
+            </div>
+            <div class="date-range">
+              <input class="input input-dt" id="reg-banner-from" type="datetime-local" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="reg-banner-to" type="datetime-local" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-banner-period">띠배너를 사용하는 경우 시작일과 종료일을 입력해주세요.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
         <div class="form-label">공개여부</div>
         <div class="form-body">
           <div class="radio-group">
@@ -659,7 +680,7 @@
           <tr><th>기업명</th><td id="det-company">삼성전자㈜</td><th>구분</th><td id="det-cat2">공지</td></tr>
           <tr><th>조회수</th><td id="det-views">187</td><th>노출영역</th><td id="det-area">PC/모바일</td></tr>
           <tr><th>게시기간</th><td colspan="3" id="det-period">2026.06.01 00:00 ~ 2026.06.30 23:59</td></tr>
-          <tr><th>고정글</th><td id="det-pin" colspan="3">미사용</td></tr>
+          <tr><th>고정글</th><td id="det-pin">미사용</td><th>띠배너</th><td id="det-banner">미사용</td></tr>
           <tr><th>공개여부</th><td colspan="3" id="det-visible">공개</td></tr>
         </table>
       </div>
@@ -762,6 +783,27 @@
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="edit-pin" value="notUse" checked> 미사용</label>
             <label class="radio-label"><input type="radio" name="edit-pin" value="use"> 사용</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">띠배너 사용</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-banner" value="notUse" checked onchange="toggleEditBanner()"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="edit-banner" value="use" onchange="toggleEditBanner()"> 사용</label>
+          </div>
+          <div class="cond-area" id="edit-banner-area" style="display:none;">
+            <div>
+              <input class="input" id="edit-banner-text" type="text" placeholder="노출 문구 (최대 80자)" style="width:360px;" maxlength="80">
+              <span class="field-error" id="err-edit-banner-text">노출 문구를 입력해주세요.</span>
+            </div>
+            <div class="date-range">
+              <input class="input input-dt" id="edit-banner-from" type="datetime-local" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="edit-banner-to" type="datetime-local" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-edit-banner-period">띠배너를 사용하는 경우 시작일과 종료일을 입력해주세요.</span>
           </div>
         </div>
       </div>
@@ -1269,9 +1311,17 @@ function togglePeriod() {
   const v = document.querySelector('input[name="reg-period"]:checked').value;
   document.getElementById('period-range').style.display = v === 'range' ? 'flex' : 'none';
 }
+function toggleBanner() {
+  const v = document.querySelector('input[name="reg-banner"]:checked').value;
+  document.getElementById('banner-area').style.display = v === 'use' ? 'flex' : 'none';
+}
 function toggleEditPeriod() {
   const v = document.querySelector('input[name="edit-period"]:checked').value;
   document.getElementById('edit-period-range').style.display = v === 'range' ? 'flex' : 'none';
+}
+function toggleEditBanner() {
+  const v = document.querySelector('input[name="edit-banner"]:checked').value;
+  document.getElementById('edit-banner-area').style.display = v === 'use' ? 'flex' : 'none';
 }
 
 function doSave(mode) {
@@ -1310,6 +1360,34 @@ function doSave(mode) {
       if (periodErr) periodErr.style.display = 'block';
       if (fromMissing && fromEl) fromEl.classList.add('input-error');
       if (toMissing   && toEl)   toEl.classList.add('input-error');
+      valid = false;
+    }
+  }
+
+  // 띠배너 validation
+  const bannerName      = prefix + '-banner';
+  const bannerTextEl    = document.getElementById(prefix + '-banner-text');
+  const bannerFromEl    = document.getElementById(prefix + '-banner-from');
+  const bannerToEl      = document.getElementById(prefix + '-banner-to');
+  const bannerTextErr   = document.getElementById('err-' + (mode === 'reg' ? '' : 'edit-') + 'banner-text');
+  const bannerPeriodErr = document.getElementById('err-' + (mode === 'reg' ? '' : 'edit-') + 'banner-period');
+  if (bannerTextErr)   bannerTextErr.style.display   = 'none';
+  if (bannerPeriodErr) bannerPeriodErr.style.display = 'none';
+  if (bannerTextEl) bannerTextEl.classList.remove('input-error');
+  if (bannerFromEl) bannerFromEl.classList.remove('input-error');
+  if (bannerToEl)   bannerToEl.classList.remove('input-error');
+  if (document.querySelector('input[name="' + bannerName + '"]:checked').value === 'use') {
+    if (bannerTextEl && !bannerTextEl.value.trim()) {
+      if (bannerTextErr) bannerTextErr.style.display = 'block';
+      bannerTextEl.classList.add('input-error');
+      valid = false;
+    }
+    const bannerFromMissing = !bannerFromEl || !bannerFromEl.value;
+    const bannerToMissing   = !bannerToEl   || !bannerToEl.value;
+    if (bannerFromMissing || bannerToMissing) {
+      if (bannerPeriodErr) bannerPeriodErr.style.display = 'block';
+      if (bannerFromMissing && bannerFromEl) bannerFromEl.classList.add('input-error');
+      if (bannerToMissing   && bannerToEl)   bannerToEl.classList.add('input-error');
       valid = false;
     }
   }
