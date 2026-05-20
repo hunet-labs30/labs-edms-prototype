@@ -140,7 +140,7 @@
   .field-error { display: none; font-size: 11px; color: #dc2626; margin-top: 4px; width: 100%; }
   .input-error { border-color: #dc2626 !important; }
   /* URL 직접입력 inline */
-  .url-inline-wrap { display: none; align-items: center; gap: 6px; }
+  .url-inline-wrap { display: flex; align-items: center; gap: 6px; }
 </style>
 </head>
 <body>
@@ -342,7 +342,7 @@
             <label class="radio-label"><input type="radio" name="reg-url" value="connect" onchange="toggleRegUrl()"> Connect</label>
             <label class="radio-label"><input type="radio" name="reg-url" value="direct" onchange="toggleRegUrl()"> URL 직접입력</label>
             <div class="url-inline-wrap" id="reg-url-direct-wrap">
-              <input class="input" id="reg-url-direct" style="width:280px;" placeholder="URL을 입력해주세요.">
+              <input class="input" id="reg-url-direct" style="width:280px;" placeholder="URL을 입력해주세요." disabled>
               <span class="field-error" id="err-reg-url" style="margin-top:4px;">URL을 입력해주세요.</span>
             </div>
           </div>
@@ -451,7 +451,7 @@
             <label class="radio-label"><input type="radio" name="edit-url" value="connect" onchange="toggleEditUrl()"> Connect</label>
             <label class="radio-label"><input type="radio" name="edit-url" value="direct" onchange="toggleEditUrl()"> URL 직접입력</label>
             <div class="url-inline-wrap" id="edit-url-direct-wrap">
-              <input class="input" id="edit-url-direct" style="width:280px;" placeholder="URL을 입력해주세요.">
+              <input class="input" id="edit-url-direct" style="width:280px;" placeholder="URL을 입력해주세요." disabled>
               <span class="field-error" id="err-edit-url" style="margin-top:4px;">URL을 입력해주세요.</span>
             </div>
           </div>
@@ -618,7 +618,7 @@
     document.getElementById('reg-period-from').disabled = true;
     document.getElementById('reg-period-to').disabled = true;
     document.querySelectorAll('[name="reg-url"]')[0].checked = true;
-    document.getElementById('reg-url-direct-wrap').style.display = 'none';
+    document.getElementById('reg-url-direct').disabled = true;
     document.getElementById('reg-url-direct').value = '';
     document.getElementById('reg-banner-text').value = '';
     document.getElementById('reg-text-count').textContent = '0';
@@ -645,7 +645,7 @@
     }
     document.querySelectorAll('[name="edit-url"]').forEach(el => { el.checked = el.value === r.url; });
     const isDirect = r.url === 'direct';
-    document.getElementById('edit-url-direct-wrap').style.display = isDirect ? 'flex' : 'none';
+    document.getElementById('edit-url-direct').disabled = !isDirect;
     document.getElementById('edit-url-direct').value = r.urlDirect || '';
     document.getElementById('edit-banner-text').value = r.text;
     document.getElementById('edit-text-count').textContent = r.text.length;
@@ -676,12 +676,14 @@
 
   function toggleRegUrl() {
     const v = document.querySelector('[name="reg-url"]:checked').value;
-    document.getElementById('reg-url-direct-wrap').style.display = v === 'direct' ? 'flex' : 'none';
+    document.getElementById('reg-url-direct').disabled = v !== 'direct';
+    if (v !== 'direct') document.getElementById('reg-url-direct').value = '';
   }
 
   function toggleEditUrl() {
     const v = document.querySelector('[name="edit-url"]:checked').value;
-    document.getElementById('edit-url-direct-wrap').style.display = v === 'direct' ? 'flex' : 'none';
+    document.getElementById('edit-url-direct').disabled = v !== 'direct';
+    if (v !== 'direct') document.getElementById('edit-url-direct').value = '';
   }
 
   function updateCharCount(inputId, countId) {
