@@ -140,7 +140,7 @@
   .field-error { display: none; font-size: 11px; color: #dc2626; margin-top: 4px; width: 100%; }
   .input-error { border-color: #dc2626 !important; }
   /* URL 직접입력 inline */
-  .url-inline-wrap { display: none; }
+  .url-inline-wrap { display: none; align-items: center; gap: 6px; }
 </style>
 </head>
 <body>
@@ -645,7 +645,7 @@
     }
     document.querySelectorAll('[name="edit-url"]').forEach(el => { el.checked = el.value === r.url; });
     const isDirect = r.url === 'direct';
-    document.getElementById('edit-url-direct-wrap').style.display = isDirect ? '' : 'none';
+    document.getElementById('edit-url-direct-wrap').style.display = isDirect ? 'flex' : 'none';
     document.getElementById('edit-url-direct').value = r.urlDirect || '';
     document.getElementById('edit-banner-text').value = r.text;
     document.getElementById('edit-text-count').textContent = r.text.length;
@@ -676,12 +676,12 @@
 
   function toggleRegUrl() {
     const v = document.querySelector('[name="reg-url"]:checked').value;
-    document.getElementById('reg-url-direct-wrap').style.display = v === 'direct' ? '' : 'none';
+    document.getElementById('reg-url-direct-wrap').style.display = v === 'direct' ? 'flex' : 'none';
   }
 
   function toggleEditUrl() {
     const v = document.querySelector('[name="edit-url"]:checked').value;
-    document.getElementById('edit-url-direct-wrap').style.display = v === 'direct' ? '' : 'none';
+    document.getElementById('edit-url-direct-wrap').style.display = v === 'direct' ? 'flex' : 'none';
   }
 
   function updateCharCount(inputId, countId) {
