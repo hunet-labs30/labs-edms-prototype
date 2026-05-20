@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS 연수원 Admin - 공통 띠배너 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: #334155;
+    --header-bg: #0f172a;
+    --admin-red: #dc2626;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body { font-family: 'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; font-size: 13px; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .top-header { background: var(--header-bg); color: #fff; height: 48px; display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; letter-spacing: -.3px; }
+  .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; }
+  .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 200px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; transition: background .15s, color .15s; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .nav-group.open > .nav-sub { max-height: 4000px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; transition: background .12s, color .12s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-group-sub > .nav-group-header { padding-left: 22px; font-size: 11px; font-weight: 600; color: #475569; border-left-color: transparent; background: transparent; }
+  .nav-group-sub.open > .nav-group-header { color: #94a3b8; background: transparent; border-left-color: transparent; }
+  .nav-group-sub > .nav-sub .nav-item { padding-left: 34px; }
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .main::-webkit-scrollbar { width: 5px; }
+  .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+  .search-wrap { padding: 0; }
+  .search-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 0; }
+  .search-row:last-of-type { border-bottom: none; }
+  .search-label { width: 80px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .search-actions { padding: 12px 20px 14px; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid #f1f5f9; }
+  .input, .select { height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-size: 13px; color: var(--text); background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit; }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .input.error { border-color: #dc2626; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none; flex-shrink: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .btn { height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; font-family: inherit; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-reset { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-reset:hover { background: #f1f5f9; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-outline:hover { background: #f9fafb; }
+  .btn-sm { height: 30px; padding: 0 14px; font-size: 12px; border-radius: 5px; }
+  .btn-ghost { background: transparent; color: #475569; border: 1px solid #e2e8f0; }
+  .btn-ghost:hover { background: #f8fafc; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
+  .result-count { font-size: 13px; color: var(--text-muted); }
+  .result-count strong { color: var(--primary); font-weight: 700; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; font-weight: 600; color: #475569; text-align: center; white-space: nowrap; }
+  .main-table td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; text-align: center; color: var(--text); }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .link-cell { color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .link-cell:hover { color: #1d4ed8; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-on { background: #dcfce7; color: #15803d; }
+  .badge-off { background: #f1f5f9; color: #64748b; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+  .page-size-wrap { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #64748b; }
+  .pagination { display: flex; align-items: center; gap: 3px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #e2e8f0; background: #fff; border-radius: 5px; font-size: 12px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all .12s; font-family: inherit; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .empty-row td { padding: 40px 0; color: #94a3b8; font-size: 13px; }
+  /* 등록/수정 폼 */
+  .form-section { padding: 0; }
+  .form-row { display: flex; align-items: flex-start; padding: 12px 20px; border-bottom: 1px solid #f8fafc; gap: 0; min-height: 52px; }
+  .form-label { width: 120px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; padding-top: 9px; }
+  .form-label .req { color: #dc2626; margin-left: 2px; }
+  .form-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-top: 6px; }
+  .radio-group { display: flex; gap: 16px; align-items: center; }
+  .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #374151; }
+  .radio-label input[type="radio"] { accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer; }
+  .date-range { display: flex; align-items: center; gap: 6px; }
+  .input-dt { width: 180px; }
+  .date-sep { color: #94a3b8; }
+  .cond-area { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; width: 100%; }
+  .url-direct-wrap { display: none; margin-top: 6px; }
+  .char-count { font-size: 11px; color: #94a3b8; }
+  .form-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); position: sticky; bottom: 0; }
+  .form-actions-right { display: flex; gap: 8px; }
+  /* 상세 */
+  .detail-meta { padding: 14px 18px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; }
+  .detail-title { font-size: 16px; font-weight: 700; color: #0f172a; line-height: 1.5; }
+  .detail-date { font-size: 12px; color: #94a3b8; white-space: nowrap; margin-left: 16px; text-align: right; }
+  .detail-attr { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .detail-attr th { background: #f8fafc; width: 120px; padding: 9px 14px; font-weight: 600; color: #475569; text-align: left; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; white-space: nowrap; }
+  .detail-attr td { padding: 9px 14px; color: #374151; border-bottom: 1px solid #f1f5f9; }
+  .detail-attr tr:last-child th, .detail-attr tr:last-child td { border-bottom: none; }
+  .detail-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); position: sticky; bottom: 0; }
+  /* 모달 */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #fff; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,.18); padding: 28px 28px 22px; width: 360px; }
+  .modal-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+  .modal-msg { font-size: 13px; color: #374151; line-height: 1.7; margin-bottom: 22px; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  /* 토스트 */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #15803d; }
+  /* 에러 */
+  .field-error { display: none; font-size: 11px; color: #dc2626; margin-top: 4px; width: 100%; }
+  .has-error .input { border-color: #dc2626; }
+  .has-error .field-error { display: block; }
+  .input-error { border-color: #dc2626 !important; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo">LABS <span>연수원</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">연수원 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub"><a class="nav-item" href="#">임직원 조회</a></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">거래처 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업 관리</a>
+        <a class="nav-item" href="#">연수원 관리</a>
+        <a class="nav-item" href="#">CP 관리</a>
+        <a class="nav-item" href="#">파트너 관리</a>
+        <a class="nav-item" href="#">배송사 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">상품 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기업별 상품 관리</a>
+        <a class="nav-item" href="#">상품별 기업 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">카테고리/Skill 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">카테고리 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">표준 카테고리 관리</a>
+            <a class="nav-item" href="#">기업별 카테고리 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">스킬 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">직군, 직무 스킬 관리</a>
+            <a class="nav-item" href="#">기업별 스킬 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">학습 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">신청 관리</a>
+        <a class="nav-item" href="#">학습 관리</a>
+        <a class="nav-item" href="#">결과 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">상담 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">1:1 문의 관리</a>
+            <a class="nav-item" href="#">전화 상담 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">메시지 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">메시지 리스트</a>
+            <a class="nav-item" href="#">메시지 템플릿</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">FAQ 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="#">공통 FAQ 관리</a>
+            <a class="nav-item" href="#">기업별 FAQ 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub open">
+          <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">공지관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="공통_공지사항_관리.html">공통 공지사항 관리</a>
+            <a class="nav-item" href="기업별_공지사항_관리.html">기업별 공지사항 관리</a>
+            <a class="nav-item active" href="#">공통 띠배너 관리</a>
+            <a class="nav-item" href="기업별_띠배너_관리.html">기업별 띠배너 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main" id="main-area">
+    <!-- 목록 -->
+    <div id="page-list">
+      <div class="page-header">
+        <div>
+          <div class="page-title">공통 띠배너 관리</div>
+          <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 공통 띠배너 관리</div>
+        </div>
+      </div>
+
+      <div class="card search-wrap">
+        <div class="search-row">
+          <div class="search-label">검색 기준</div>
+          <div class="search-body">
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="s-type" value="title" checked> 제목</label>
+              <label class="radio-label"><input type="radio" name="s-type" value="content"> 노출 문구</label>
+            </div>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">검색어</div>
+          <div class="search-body">
+            <input class="input" id="s-keyword" style="width:260px;" placeholder="검색어를 입력해주세요.">
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">게시기간</div>
+          <div class="search-body">
+            <div class="date-range">
+              <input class="input" id="s-period-from" type="date" style="width:150px;">
+              <span class="date-sep">~</span>
+              <input class="input" id="s-period-to" type="date" style="width:150px;">
+            </div>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">노출여부</div>
+          <div class="search-body">
+            <select class="select" id="s-visible" style="width:120px;">
+              <option value="">전체</option>
+              <option value="on">노출</option>
+              <option value="off">미노출</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-reset" onclick="resetSearch()">초기화</button>
+          <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">검색결과 <strong id="result-count">0</strong>건</div>
+          <button class="btn btn-primary btn-sm" onclick="goReg()">등록</button>
+        </div>
+        <table class="main-table">
+          <colgroup>
+            <col style="width:50px"><col><col style="width:90px"><col style="width:200px"><col style="width:130px"><col style="width:70px"><col style="width:120px">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>제목</th>
+              <th>노출 문구</th>
+              <th>게시기간</th>
+              <th>등록일</th>
+              <th>노출여부</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody id="list-body"></tbody>
+        </table>
+        <div class="table-footer">
+          <div class="page-size-wrap">
+            <select class="select" id="page-size" style="width:70px;" onchange="changePageSize()">
+              <option value="30">30</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+            </select>
+            <span>씩 보기</span>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 등록 -->
+    <div id="page-reg" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">공통 띠배너 등록</div>
+          <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 공통 띠배너 관리 &gt; 등록</div>
+        </div>
+      </div>
+      <div class="card form-section">
+        <div class="form-row">
+          <div class="form-label">제목<span class="req">*</span></div>
+          <div class="form-body" id="reg-title-wrap">
+            <input class="input" id="reg-title" style="width:400px;" placeholder="제목을 입력하세요" maxlength="100">
+            <span class="field-error" id="err-reg-title">제목을 입력해주세요.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">게시기간</div>
+          <div class="form-body" style="flex-direction:column;align-items:flex-start;">
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="reg-period" value="none" checked onchange="toggleRegPeriod()"> 기간없음</label>
+              <label class="radio-label"><input type="radio" name="reg-period" value="range" onchange="toggleRegPeriod()"> 노출기간</label>
+            </div>
+            <div class="cond-area" id="reg-period-area" style="display:none;">
+              <div class="date-range">
+                <input class="input input-dt" id="reg-period-from" type="datetime-local" onkeydown="return false;">
+                <span class="date-sep">~</span>
+                <input class="input input-dt" id="reg-period-to" type="datetime-local" onkeydown="return false;">
+              </div>
+              <span class="field-error" id="err-reg-period">게시기간을 입력해주세요.</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">타겟 URL</div>
+          <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+            <div class="radio-group" style="flex-wrap:wrap;gap:12px;">
+              <label class="radio-label"><input type="radio" name="reg-url" value="home" checked onchange="toggleRegUrl()"> 홈</label>
+              <label class="radio-label"><input type="radio" name="reg-url" value="contents" onchange="toggleRegUrl()"> 콘텐츠</label>
+              <label class="radio-label"><input type="radio" name="reg-url" value="mycanvas" onchange="toggleRegUrl()"> myCanvas</label>
+              <label class="radio-label"><input type="radio" name="reg-url" value="connect" onchange="toggleRegUrl()"> 커넥트</label>
+              <label class="radio-label"><input type="radio" name="reg-url" value="direct" onchange="toggleRegUrl()"> URL 직접입력</label>
+            </div>
+            <div class="url-direct-wrap" id="reg-url-direct-wrap">
+              <input class="input" id="reg-url-direct" style="width:400px;" placeholder="https://">
+              <span class="field-error" id="err-reg-url">URL을 입력해주세요.</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">노출 문구<span class="req">*</span></div>
+          <div class="form-body" id="reg-text-wrap" style="flex-direction:column;align-items:flex-start;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input class="input" id="reg-banner-text" style="width:400px;" placeholder="노출 문구를 입력하세요 (최대 80자)" maxlength="80" oninput="updateCharCount('reg-banner-text','reg-text-count')">
+              <span class="char-count"><span id="reg-text-count">0</span>/80</span>
+            </div>
+            <span class="field-error" id="err-reg-text">노출 문구를 입력해주세요.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">노출여부</div>
+          <div class="form-body">
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="reg-visible" value="on" checked> 노출</label>
+              <label class="radio-label"><input type="radio" name="reg-visible" value="off"> 미노출</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="goList()">목록</button>
+        <div class="form-actions-right">
+          <button class="btn btn-outline" onclick="goList()">취소</button>
+          <button class="btn btn-primary" onclick="doSave('reg')">등록</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 상세 -->
+    <div id="page-detail" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">공통 띠배너 상세</div>
+          <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 공통 띠배너 관리 &gt; 상세</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="detail-meta">
+          <div class="detail-title" id="det-title">-</div>
+          <div class="detail-date" id="det-reg-date">-</div>
+        </div>
+        <table class="detail-attr">
+          <tr><th>노출 문구</th><td id="det-text">-</td></tr>
+          <tr><th>게시기간</th><td id="det-period">-</td></tr>
+          <tr><th>타겟 URL</th><td id="det-url">-</td></tr>
+          <tr><th>노출여부</th><td id="det-visible">-</td></tr>
+        </table>
+      </div>
+      <div class="detail-actions">
+        <button class="btn btn-outline" onclick="goList()">목록</button>
+        <div class="form-actions-right">
+          <button class="btn btn-outline" onclick="goEdit()">수정</button>
+          <button class="btn btn-danger" onclick="openDeleteModal()">삭제</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 수정 -->
+    <div id="page-edit" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">공통 띠배너 수정</div>
+          <div class="breadcrumb">고객행복센터 &gt; 공지관리 &gt; 공통 띠배너 관리 &gt; 수정</div>
+        </div>
+      </div>
+      <div class="card form-section">
+        <div class="form-row">
+          <div class="form-label">제목<span class="req">*</span></div>
+          <div class="form-body" id="edit-title-wrap">
+            <input class="input" id="edit-title" style="width:400px;" placeholder="제목을 입력하세요" maxlength="100">
+            <span class="field-error" id="err-edit-title">제목을 입력해주세요.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">게시기간</div>
+          <div class="form-body" style="flex-direction:column;align-items:flex-start;">
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="edit-period" value="none" onchange="toggleEditPeriod()"> 기간없음</label>
+              <label class="radio-label"><input type="radio" name="edit-period" value="range" checked onchange="toggleEditPeriod()"> 노출기간</label>
+            </div>
+            <div class="cond-area" id="edit-period-area">
+              <div class="date-range">
+                <input class="input input-dt" id="edit-period-from" type="datetime-local" value="2026-06-01T00:00" onkeydown="return false;">
+                <span class="date-sep">~</span>
+                <input class="input input-dt" id="edit-period-to" type="datetime-local" value="2026-06-30T23:59" onkeydown="return false;">
+              </div>
+              <span class="field-error" id="err-edit-period">게시기간을 입력해주세요.</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">타겟 URL</div>
+          <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+            <div class="radio-group" style="flex-wrap:wrap;gap:12px;">
+              <label class="radio-label"><input type="radio" name="edit-url" value="home" onchange="toggleEditUrl()"> 홈</label>
+              <label class="radio-label"><input type="radio" name="edit-url" value="contents" checked onchange="toggleEditUrl()"> 콘텐츠</label>
+              <label class="radio-label"><input type="radio" name="edit-url" value="mycanvas" onchange="toggleEditUrl()"> myCanvas</label>
+              <label class="radio-label"><input type="radio" name="edit-url" value="connect" onchange="toggleEditUrl()"> 커넥트</label>
+              <label class="radio-label"><input type="radio" name="edit-url" value="direct" onchange="toggleEditUrl()"> URL 직접입력</label>
+            </div>
+            <div class="url-direct-wrap" id="edit-url-direct-wrap">
+              <input class="input" id="edit-url-direct" style="width:400px;" placeholder="https://">
+              <span class="field-error" id="err-edit-url">URL을 입력해주세요.</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">노출 문구<span class="req">*</span></div>
+          <div class="form-body" id="edit-text-wrap" style="flex-direction:column;align-items:flex-start;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input class="input" id="edit-banner-text" style="width:400px;" placeholder="노출 문구를 입력하세요 (최대 80자)" maxlength="80" oninput="updateCharCount('edit-banner-text','edit-text-count')">
+              <span class="char-count"><span id="edit-text-count">0</span>/80</span>
+            </div>
+            <span class="field-error" id="err-edit-text">노출 문구를 입력해주세요.</span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">노출여부</div>
+          <div class="form-body">
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="edit-visible" value="on" checked> 노출</label>
+              <label class="radio-label"><input type="radio" name="edit-visible" value="off"> 미노출</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="goList()">목록</button>
+        <div class="form-actions-right">
+          <button class="btn btn-outline" onclick="goDetail()">취소</button>
+          <button class="btn btn-primary" onclick="doSave('edit')">저장</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal-bg" id="modal-delete">
+  <div class="modal">
+    <div class="modal-title">띠배너 삭제</div>
+    <div class="modal-msg">정말로 삭제하시겠습니까?</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-delete')">아니오</button>
+      <button class="btn btn-danger" onclick="doDelete()">예</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const URL_LABELS = { home: '홈', contents: '콘텐츠', mycanvas: 'myCanvas', connect: '커넥트', direct: 'URL 직접입력' };
+
+  const DUMMY = [
+    { id: 1, title: '6월 신규 과정 오픈 안내', text: '6월 신규 과정이 오픈되었습니다. 지금 바로 확인하세요!', period: '2026.06.01 00:00 ~ 2026.06.30 23:59', url: 'contents', urlDirect: '', visible: 'on', regDate: '2026.05.15 10:23' },
+    { id: 2, title: '2026년 상반기 필수교육 안내', text: '상반기 필수교육 신청이 시작되었습니다.', period: '2026.05.01 00:00 ~ 2026.05.31 23:59', url: 'home', urlDirect: '', visible: 'on', regDate: '2026.04.28 09:00' },
+    { id: 3, title: '시스템 점검 안내 (5/20)', text: '5월 20일 새벽 2시~4시 시스템 정기 점검이 예정되어 있습니다.', period: '기간없음', url: 'home', urlDirect: '', visible: 'off', regDate: '2026.05.10 14:30' },
+    { id: 4, title: 'myCanvas 신기능 소개', text: 'myCanvas에 학습 노트 기능이 추가되었습니다!', period: '2026.04.01 00:00 ~ 2026.04.30 23:59', url: 'mycanvas', urlDirect: '', visible: 'off', regDate: '2026.03.25 11:00' },
+    { id: 5, title: '커넥트 커뮤니티 개편 안내', text: '커넥트 커뮤니티가 새롭게 개편되었습니다. 지금 방문해보세요.', period: '2026.03.01 00:00 ~ 2026.03.31 23:59', url: 'connect', urlDirect: '', visible: 'off', regDate: '2026.02.20 16:40' },
+  ];
+
+  let DATA = [...DUMMY];
+  let filteredData = [...DATA];
+  let currentPage = 1;
+  let pageSize = 50;
+  let currentId = null;
+
+  function toggleNav(el) {
+    const grp = el.closest('.nav-group');
+    grp.classList.toggle('open');
+  }
+
+  function showPage(id) {
+    ['page-list','page-reg','page-detail','page-edit'].forEach(p => document.getElementById(p).style.display = 'none');
+    document.getElementById(id).style.display = '';
+    document.getElementById('main-area').scrollTop = 0;
+  }
+
+  function goList() { renderTable(); showPage('page-list'); }
+  function goReg() { resetRegForm(); showPage('page-reg'); }
+  function goDetail() { renderDetail(currentId); showPage('page-detail'); }
+  function goEdit() { prefillEdit(currentId); showPage('page-edit'); }
+
+  function resetSearch() {
+    document.querySelectorAll('[name="s-type"]')[0].checked = true;
+    document.getElementById('s-keyword').value = '';
+    document.getElementById('s-period-from').value = '';
+    document.getElementById('s-period-to').value = '';
+    document.getElementById('s-visible').value = '';
+    doSearch();
+  }
+
+  function doSearch() {
+    const type = document.querySelector('[name="s-type"]:checked').value;
+    const kw = document.getElementById('s-keyword').value.trim();
+    const from = document.getElementById('s-period-from').value;
+    const to = document.getElementById('s-period-to').value;
+    const vis = document.getElementById('s-visible').value;
+    filteredData = DATA.filter(r => {
+      if (kw) {
+        const target = type === 'title' ? r.title : r.text;
+        if (!target.includes(kw)) return false;
+      }
+      if (vis && r.visible !== vis) return false;
+      return true;
+    });
+    currentPage = 1;
+    renderTable();
+    showPage('page-list');
+  }
+
+  function renderTable() {
+    document.getElementById('result-count').textContent = filteredData.length;
+    const tbody = document.getElementById('list-body');
+    const start = (currentPage - 1) * pageSize;
+    const pageData = filteredData.slice(start, start + pageSize);
+    if (!pageData.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">검색 결과가 없습니다.</td></tr>';
+    } else {
+      tbody.innerHTML = pageData.map((r, i) => {
+        const no = filteredData.length - start - i;
+        const badgeClass = r.visible === 'on' ? 'badge-on' : 'badge-off';
+        const badgeLabel = r.visible === 'on' ? '노출' : '미노출';
+        return `<tr>
+          <td>${no}</td>
+          <td class="link-cell" onclick="openDetail(${r.id})">${r.title}</td>
+          <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.text}</td>
+          <td style="font-size:11px;">${r.period}</td>
+          <td>${r.regDate}</td>
+          <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+          <td>
+            <div style="display:flex;gap:4px;justify-content:center;">
+              <button class="btn btn-sm btn-ghost" onclick="openDetailEdit(${r.id})">수정</button>
+              <button class="btn btn-sm btn-danger" onclick="openDirectDelete(${r.id})">삭제</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    renderPagination();
+  }
+
+  function renderPagination() {
+    const total = Math.max(1, Math.ceil(filteredData.length / pageSize));
+    const el = document.getElementById('pagination');
+    let html = `<button class="pg-btn" ${currentPage===1?'disabled':''} onclick="changePage(${currentPage-1})">◀</button>`;
+    for (let i = 1; i <= total; i++) {
+      html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="changePage(${i})">${i}</button>`;
+    }
+    html += `<button class="pg-btn" ${currentPage===total?'disabled':''} onclick="changePage(${currentPage+1})">▶</button>`;
+    el.innerHTML = html;
+  }
+
+  function changePage(p) { currentPage = p; renderTable(); }
+  function changePageSize() { pageSize = parseInt(document.getElementById('page-size').value); currentPage = 1; renderTable(); }
+
+  function openDetail(id) {
+    currentId = id;
+    renderDetail(id);
+    showPage('page-detail');
+  }
+
+  function openDetailEdit(id) {
+    currentId = id;
+    prefillEdit(id);
+    showPage('page-edit');
+  }
+
+  function openDirectDelete(id) {
+    currentId = id;
+    openModal('modal-delete');
+  }
+
+  function renderDetail(id) {
+    const r = DATA.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('det-title').textContent = r.title;
+    document.getElementById('det-reg-date').textContent = '등록일: ' + r.regDate;
+    document.getElementById('det-text').textContent = r.text;
+    document.getElementById('det-period').textContent = r.period;
+    document.getElementById('det-url').textContent = r.url === 'direct' ? r.urlDirect : URL_LABELS[r.url];
+    document.getElementById('det-visible').textContent = r.visible === 'on' ? '노출' : '미노출';
+  }
+
+  function resetRegForm() {
+    document.getElementById('reg-title').value = '';
+    document.querySelectorAll('[name="reg-period"]')[0].checked = true;
+    document.getElementById('reg-period-area').style.display = 'none';
+    document.getElementById('reg-period-from').value = '';
+    document.getElementById('reg-period-to').value = '';
+    document.querySelectorAll('[name="reg-url"]')[0].checked = true;
+    document.getElementById('reg-url-direct-wrap').style.display = 'none';
+    document.getElementById('reg-url-direct').value = '';
+    document.getElementById('reg-banner-text').value = '';
+    document.getElementById('reg-text-count').textContent = '0';
+    document.querySelectorAll('[name="reg-visible"]')[0].checked = true;
+    clearErrors('reg');
+  }
+
+  function prefillEdit(id) {
+    const r = DATA.find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('edit-title').value = r.title;
+    const periodRadio = r.period === '기간없음' ? 'none' : 'range';
+    document.querySelectorAll('[name="edit-period"]').forEach(el => { el.checked = el.value === periodRadio; });
+    document.getElementById('edit-period-area').style.display = periodRadio === 'range' ? '' : 'none';
+    if (periodRadio === 'range') {
+      const parts = r.period.split(' ~ ');
+      document.getElementById('edit-period-from').value = parts[0] ? parts[0].replace(/\./g,'-').replace(' ','T').replace(/(\d{2})-(\d{2})T/,'$1-$2T') : '';
+      document.getElementById('edit-period-to').value = parts[1] ? parts[1].replace(/\./g,'-').replace(' ','T') : '';
+    }
+    document.querySelectorAll('[name="edit-url"]').forEach(el => { el.checked = el.value === r.url; });
+    const isDirect = r.url === 'direct';
+    document.getElementById('edit-url-direct-wrap').style.display = isDirect ? '' : 'none';
+    document.getElementById('edit-url-direct').value = r.urlDirect || '';
+    document.getElementById('edit-banner-text').value = r.text;
+    document.getElementById('edit-text-count').textContent = r.text.length;
+    document.querySelectorAll('[name="edit-visible"]').forEach(el => { el.checked = el.value === r.visible; });
+    clearErrors('edit');
+  }
+
+  function toggleRegPeriod() {
+    const v = document.querySelector('[name="reg-period"]:checked').value;
+    document.getElementById('reg-period-area').style.display = v === 'range' ? '' : 'none';
+  }
+
+  function toggleEditPeriod() {
+    const v = document.querySelector('[name="edit-period"]:checked').value;
+    document.getElementById('edit-period-area').style.display = v === 'range' ? '' : 'none';
+  }
+
+  function toggleRegUrl() {
+    const v = document.querySelector('[name="reg-url"]:checked').value;
+    document.getElementById('reg-url-direct-wrap').style.display = v === 'direct' ? '' : 'none';
+  }
+
+  function toggleEditUrl() {
+    const v = document.querySelector('[name="edit-url"]:checked').value;
+    document.getElementById('edit-url-direct-wrap').style.display = v === 'direct' ? '' : 'none';
+  }
+
+  function updateCharCount(inputId, countId) {
+    document.getElementById(countId).textContent = document.getElementById(inputId).value.length;
+  }
+
+  function clearErrors(prefix) {
+    document.querySelectorAll(`[id^="err-${prefix}-"]`).forEach(el => el.style.display = 'none');
+    document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el => el.classList && el.classList.remove('input-error'));
+  }
+
+  function doSave(mode) {
+    const prefix = mode;
+    let valid = true;
+
+    const titleEl = document.getElementById(`${prefix}-title`);
+    const titleErr = document.getElementById(`err-${prefix}-title`);
+    if (!titleEl.value.trim()) {
+      titleEl.classList.add('input-error');
+      titleErr.style.display = 'block';
+      valid = false;
+    } else {
+      titleEl.classList.remove('input-error');
+      titleErr.style.display = 'none';
+    }
+
+    const periodVal = document.querySelector(`[name="${prefix}-period"]:checked`).value;
+    if (periodVal === 'range') {
+      const fromEl = document.getElementById(`${prefix}-period-from`);
+      const toEl = document.getElementById(`${prefix}-period-to`);
+      const periodErr = document.getElementById(`err-${prefix}-period`);
+      if (!fromEl.value || !toEl.value) {
+        fromEl.classList.add('input-error');
+        toEl.classList.add('input-error');
+        periodErr.style.display = 'block';
+        valid = false;
+      } else if (fromEl.value > toEl.value) {
+        fromEl.classList.add('input-error');
+        toEl.classList.add('input-error');
+        periodErr.textContent = '시작일시는 종료일시보다 이전이어야 합니다.';
+        periodErr.style.display = 'block';
+        valid = false;
+      } else {
+        fromEl.classList.remove('input-error');
+        toEl.classList.remove('input-error');
+        periodErr.style.display = 'none';
+      }
+    }
+
+    const urlVal = document.querySelector(`[name="${prefix}-url"]:checked`).value;
+    if (urlVal === 'direct') {
+      const urlEl = document.getElementById(`${prefix}-url-direct`);
+      const urlErr = document.getElementById(`err-${prefix}-url`);
+      if (!urlEl.value.trim()) {
+        urlEl.classList.add('input-error');
+        urlErr.style.display = 'block';
+        valid = false;
+      } else {
+        urlEl.classList.remove('input-error');
+        urlErr.style.display = 'none';
+      }
+    }
+
+    const textEl = document.getElementById(`${prefix}-banner-text`);
+    const textErr = document.getElementById(`err-${prefix}-text`);
+    if (!textEl.value.trim()) {
+      textEl.classList.add('input-error');
+      textErr.style.display = 'block';
+      valid = false;
+    } else {
+      textEl.classList.remove('input-error');
+      textErr.style.display = 'none';
+    }
+
+    if (!valid) return;
+
+    const periodValue = (() => {
+      if (periodVal === 'none') return '기간없음';
+      const f = document.getElementById(`${prefix}-period-from`).value.replace('T',' ').replace(/-/g,'.');
+      const t = document.getElementById(`${prefix}-period-to`).value.replace('T',' ').replace(/-/g,'.');
+      return `${f} ~ ${t}`;
+    })();
+
+    if (mode === 'reg') {
+      const newId = Math.max(...DATA.map(d=>d.id), 0) + 1;
+      DATA.unshift({
+        id: newId,
+        title: titleEl.value.trim(),
+        text: textEl.value.trim(),
+        period: periodValue,
+        url: urlVal,
+        urlDirect: urlVal === 'direct' ? document.getElementById(`${prefix}-url-direct`).value.trim() : '',
+        visible: document.querySelector(`[name="${prefix}-visible"]:checked`).value,
+        regDate: '2026.05.20 ' + new Date().toTimeString().slice(0,5)
+      });
+      filteredData = [...DATA];
+      showToast('띠배너가 등록되었습니다.', 'success');
+      setTimeout(() => goList(), 1000);
+    } else {
+      const r = DATA.find(x => x.id === currentId);
+      r.title = titleEl.value.trim();
+      r.text = textEl.value.trim();
+      r.period = periodValue;
+      r.url = urlVal;
+      r.urlDirect = urlVal === 'direct' ? document.getElementById(`${prefix}-url-direct`).value.trim() : '';
+      r.visible = document.querySelector(`[name="${prefix}-visible"]:checked`).value;
+      filteredData = [...DATA];
+      showToast('띠배너가 수정되었습니다.', 'success');
+      setTimeout(() => { renderDetail(currentId); showPage('page-detail'); }, 1000);
+    }
+  }
+
+  function openDeleteModal() { openModal('modal-delete'); }
+
+  function doDelete() {
+    DATA = DATA.filter(x => x.id !== currentId);
+    filteredData = filteredData.filter(x => x.id !== currentId);
+    closeModal('modal-delete');
+    showToast('띠배너가 삭제되었습니다.', 'success');
+    setTimeout(() => goList(), 1000);
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  function showToast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast' + (type ? ' ' + type : '');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+
+  // 초기화
+  doSearch();
+</script>
+</body>
+</html>

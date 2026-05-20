@@ -9568,7 +9568,8 @@ function _deptDragMove(cx, cy) {
   if (targetId && targetId !== _dragSrcId) {
     const srcNode = findDeptNode(_dragSrcId, DEPT_DATA);
     const descIds = srcNode ? getDescendantIds(srcNode) : [];
-    const illegal = descIds.includes(targetId);
+    const srcParent = findParentNode(_dragSrcId, DEPT_DATA);
+    const illegal = descIds.includes(targetId) || (srcParent != null && srcParent.id === targetId);
     _dragIllegal  = illegal;
     if (_dragOverId !== targetId) {
       _dragOverId = targetId;
