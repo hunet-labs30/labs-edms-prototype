@@ -266,6 +266,27 @@
   .badge-complete     { background: #d1fae5; color: #15803d; }
   .badge-incomplete   { background: #fee2e2; color: #b91c1c; }
 
+  /* ── 콘텐츠유형 배지 ── */
+  .badge-ct-video   { background: #dbeafe; color: #1d4ed8; }
+  .badge-ct-image   { background: #ede9fe; color: #7c3aed; }
+  .badge-ct-article { background: #d1fae5; color: #065f46; }
+  .badge-ct-file    { background: #f1f5f9; color: #475569; }
+  .badge-ct-exam    { background: #fee2e2; color: #b91c1c; }
+  .badge-ct-task    { background: #fef3c7; color: #b45309; }
+  .badge-ct-survey  { background: #ccfbf1; color: #0f766e; }
+  .badge-ct-quiz    { background: #ffedd5; color: #c2410c; }
+  .badge-ct-pdf     { background: #fce7f3; color: #9d174d; }
+  .badge-ct-link    { background: #e0f2fe; color: #0369a1; }
+  .badge-ct-offline { background: #e2e8f0; color: #334155; }
+
+  /* ── 상세 화면 ── */
+  .detail-nav { display: flex; justify-content: space-between; align-items: center; }
+  .detail-nav-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+  .detail-nav-btns { display: flex; gap: 8px; }
+  .detail-section-title { font-size: 13px; font-weight: 700; color: #0f172a; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .yn-y { color: #16a34a; font-weight: 700; }
+  .yn-n { color: #94a3b8; }
+
   /* ── PROGRESS BAR ── */
   .progress-wrap { display: flex; align-items: center; gap: 6px; min-width: 100px; }
   .progress-bar-bg {
@@ -451,6 +472,9 @@
       <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 개인별</div>
     </div>
 
+    <!-- 목록 섹션 -->
+    <div id="list-section" style="display:flex;flex-direction:column;gap:14px;">
+
     <!-- 검색 -->
     <div class="card search-wrap">
       <!-- 과정구분 -->
@@ -541,8 +565,8 @@
       </div>
       <!-- 버튼 -->
       <div class="search-actions">
-        <button class="btn btn-reset" onclick="doReset()">초기화</button>
         <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        <button class="btn btn-reset" onclick="doReset()">초기화</button>
       </div>
     </div>
 
@@ -627,6 +651,71 @@
         <div class="pagination" id="pagination"></div>
       </div>
     </div>
+
+    </div><!-- /list-section -->
+
+    <!-- 상세 섹션 -->
+    <div id="detail-section" style="display:none;flex-direction:column;gap:14px;">
+
+      <!-- 상단 내비 -->
+      <div class="detail-nav">
+        <div class="detail-nav-title">개인별 학습 현황 &gt; 상세</div>
+        <div class="detail-nav-btns">
+          <button class="btn btn-outline" onclick="goBackList(false)">이전</button>
+          <button class="btn btn-outline" onclick="goBackList(true)">목록</button>
+        </div>
+      </div>
+
+      <!-- 개인별 학습현황 상세 (가로형 단일 행) -->
+      <div class="card">
+        <div class="detail-section-title">개인별 학습현황 상세</div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:110px;">회사명</th>
+                <th style="width:80px;">부서명</th>
+                <th style="width:80px;">이름</th>
+                <th style="width:180px;">아이디</th>
+                <th style="width:110px;">과정유형</th>
+                <th>과정명</th>
+                <th style="width:190px;">학습자 학습기간</th>
+                <th style="width:88px;">학습상태</th>
+                <th style="width:72px;">총점</th>
+                <th style="width:100px;">수료여부</th>
+                <th style="width:100px;">수료일</th>
+              </tr>
+            </thead>
+            <tbody id="detail-header-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 콘텐츠별 학습 상세 -->
+      <div class="card">
+        <div class="detail-section-title">콘텐츠별 학습 상세</div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:90px;">콘텐츠유형</th>
+                <th>콘텐츠명</th>
+                <th style="width:64px;">필수여부</th>
+                <th style="width:200px;">학습자 콘텐츠 학습기간</th>
+                <th style="width:130px;">학습한 정보</th>
+                <th style="width:72px;">진행률(%)</th>
+                <th style="width:80px;">콘텐츠 점수</th>
+                <th style="width:64px;">완료여부</th>
+                <th style="width:100px;">최근 학습일</th>
+              </tr>
+            </thead>
+            <tbody id="detail-content-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /detail-section -->
 
   </main>
 </div>
@@ -794,6 +883,143 @@ document.addEventListener('mousedown', function(e) {
   if (wrap && !wrap.contains(e.target)) document.getElementById('company-list').style.display = 'none';
 });
 
+// ── 상세 화면 ──
+const CONTENT_TYPE_MAP = {
+  video:   { label: '동영상',   cls: 'badge-ct-video',   scored: false },
+  image:   { label: '이미지',   cls: 'badge-ct-image',   scored: false },
+  article: { label: '아티클',   cls: 'badge-ct-article', scored: false },
+  file:    { label: '첨부파일', cls: 'badge-ct-file',    scored: false },
+  exam:    { label: '시험',     cls: 'badge-ct-exam',    scored: true  },
+  task:    { label: '과제',     cls: 'badge-ct-task',    scored: true  },
+  survey:  { label: '설문',     cls: 'badge-ct-survey',  scored: true  },
+  quiz:    { label: '퀴즈',     cls: 'badge-ct-quiz',    scored: true  },
+  pdf:     { label: 'PDF',      cls: 'badge-ct-pdf',     scored: false },
+  link:    { label: '외부링크', cls: 'badge-ct-link',    scored: false },
+  offline: { label: '오프라인', cls: 'badge-ct-offline', scored: false },
+};
+const CONTENT_TEMPLATES = {
+  online: [
+    { type: 'video',   name: '오리엔테이션 영상',   required: true,  totalSec: 300,  totalGroups: null },
+    { type: 'video',   name: '1강. 핵심 개념 이해', required: true,  totalSec: 1200, totalGroups: null },
+    { type: 'video',   name: '2강. 실전 적용 방법', required: true,  totalSec: 900,  totalGroups: null },
+    { type: 'article', name: '보충 학습 자료',       required: false, totalSec: null, totalGroups: 3   },
+    { type: 'quiz',    name: '중간 퀴즈',            required: true,  totalSec: null, totalGroups: 10  },
+    { type: 'exam',    name: '최종 시험',            required: true,  totalSec: null, totalGroups: 20  },
+  ],
+  micro: [
+    { type: 'video', name: '핵심 요약 영상',   required: true, totalSec: 300,  totalGroups: null },
+    { type: 'pdf',   name: '학습 가이드 PDF', required: true, totalSec: null, totalGroups: 5   },
+    { type: 'quiz',  name: '이해도 체크 퀴즈', required: true, totalSec: null, totalGroups: 5  },
+  ],
+};
+
+function fmtSec(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function generateContents(r) {
+  const today = '2026-04-22';
+  const isScheduled = today < r.studyFrom;
+  const templates = CONTENT_TEMPLATES[r.courseType.code] || CONTENT_TEMPLATES.online;
+
+  return templates.map((t, i) => {
+    const ct = CONTENT_TYPE_MAP[t.type];
+    let doneRatio = 0;
+    if (!isScheduled) {
+      doneRatio = r.status.code === 'complete' ? 1
+        : Math.min(0.92, (r.progress / 100) * (0.7 + Math.random() * 0.5));
+    }
+
+    let studiedInfo, progress;
+    if (t.totalSec !== null) {
+      const doneSec = Math.floor(t.totalSec * doneRatio);
+      studiedInfo = fmtSec(doneSec);
+      progress = Math.round(doneRatio * 100);
+    } else {
+      const doneG = Math.round(t.totalGroups * doneRatio);
+      studiedInfo = `${doneG} / ${t.totalGroups}`;
+      progress = Math.round(doneRatio * 100);
+    }
+
+    let scoreDisplay = '';
+    if (ct.scored) {
+      if (doneRatio >= 1) {
+        const base = r.status.code === 'complete' ? 70 : 40;
+        scoreDisplay = (base + rand(r.status.code === 'complete' ? 31 : 30)) + '점';
+      } else {
+        scoreDisplay = '-';
+      }
+    }
+
+    const contentFrom = addDays(r.studyFrom, i * 7);
+    const contentTo   = addDays(contentFrom, 14);
+    const period = `${contentFrom.replace(/-/g,'.')} ~ ${contentTo.replace(/-/g,'.')}`;
+    const recentDate = doneRatio > 0
+      ? addDays(r.studyFrom, rand(14)).replace(/-/g, '.') : '-';
+
+    return {
+      no: i + 1, typeCls: ct.cls, typeLabel: ct.label,
+      name: t.name, required: t.required ? 'Y' : 'N',
+      period, studiedInfo, progress, scoreDisplay,
+      completed: progress >= 100 ? 'Y' : 'N',
+      recentDate,
+    };
+  });
+}
+
+function showDetail(dataIdx) {
+  const r = filteredData[dataIdx];
+  const today = '2026-04-22';
+  const isScheduled = today < r.studyFrom;
+  const isEnded     = today > r.studyTo;
+  const studyStatusLabel = isScheduled ? '예정' : isEnded ? '종료' : '학습중';
+  const studyStatusBadge = isScheduled ? 'badge-scheduled' : isEnded ? 'badge-ended' : 'badge-studying';
+  const completeLabel = !isEnded ? '수료처리전' : r.status.code === 'complete' ? '수료' : '미수료';
+  const completeBadge = !isEnded ? 'badge-pre-complete' : r.status.code === 'complete' ? 'badge-complete' : 'badge-incomplete';
+  const scoreText = !isEnded ? '-' : (r.score !== null ? r.score + '점' : '-');
+
+  document.getElementById('detail-header-tbody').innerHTML = `
+    <tr>
+      <td>${r.company}</td>
+      <td>${r.dept}</td>
+      <td>${r.name}</td>
+      <td style="text-align:left;padding-left:12px;">${r.userId}</td>
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
+      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td><span class="badge ${studyStatusBadge}">${studyStatusLabel}</span></td>
+      <td>${scoreText}</td>
+      <td><span class="badge ${completeBadge}">${completeLabel}</span></td>
+      <td>${r.completeDate ? r.completeDate.replace(/-/g,'.') : '-'}</td>
+    </tr>`;
+
+  const contents = generateContents(r);
+  document.getElementById('detail-content-tbody').innerHTML = contents.map(c => `
+    <tr>
+      <td>${c.no}</td>
+      <td><span class="badge ${c.typeCls}">${c.typeLabel}</span></td>
+      <td style="text-align:left;padding-left:12px;">${c.name}</td>
+      <td class="${c.required === 'Y' ? 'yn-y' : 'yn-n'}">${c.required}</td>
+      <td>${c.period}</td>
+      <td>${c.studiedInfo}</td>
+      <td>${c.progress}%</td>
+      <td>${c.scoreDisplay}</td>
+      <td class="${c.completed === 'Y' ? 'yn-y' : 'yn-n'}">${c.completed}</td>
+      <td>${c.recentDate}</td>
+    </tr>`).join('');
+
+  document.getElementById('list-section').style.display = 'none';
+  const det = document.getElementById('detail-section');
+  det.style.display = 'flex';
+}
+
+function goBackList(reset) {
+  document.getElementById('detail-section').style.display = 'none';
+  document.getElementById('list-section').style.display = 'flex';
+  if (reset) doReset();
+}
+
 function sortByStudyDateDesc(arr) {
   return arr.sort((a, b) => a.studyFrom !== b.studyFrom ? b.studyFrom.localeCompare(a.studyFrom) : b.id - a.id);
 }
@@ -929,7 +1155,7 @@ function renderTable() {
       <td>${filteredData.length - start - idx}</td>
       <td>${r.company}</td>
       <td>${r.dept}</td>
-      <td>${maskName(r.name)}</td>
+      <td><a href="#" onclick="showDetail(${start + idx});return false;" style="color:var(--primary);text-decoration:underline;cursor:pointer;">${maskName(r.name)}</a></td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
       <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
