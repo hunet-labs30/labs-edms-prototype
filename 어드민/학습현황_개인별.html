@@ -195,18 +195,7 @@
 
   /* ── 날짜탭 ── */
   .date-section { display: flex; align-items: center; gap: 6px; }
-  .date-section.disabled .input-date,
-  .date-section.disabled .date-tab-wrap,
-  .date-section.disabled .date-sep { opacity: .4; pointer-events: none; }
-  .date-section-label { font-size: 12px; font-weight: 600; color: #475569; padding: 0 4px 0 8px; }
-  .date-tab-wrap { display: flex; border: 1px solid #cbd5e1; border-radius: 5px; overflow: hidden; }
-  .date-tab {
-    height: 32px; padding: 0 12px; border: none; background: #fff;
-    font-size: 12px; color: #64748b; cursor: pointer; font-family: inherit;
-    border-right: 1px solid #cbd5e1; white-space: nowrap;
-  }
-  .date-tab:last-child { border-right: none; }
-  .date-tab.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .date-section.disabled { opacity: .4; pointer-events: none; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -464,7 +453,7 @@
 
     <!-- 검색 -->
     <div class="card search-wrap">
-      <!-- 과정구분 / 과정 학습기간 -->
+      <!-- 과정구분 -->
       <div class="search-row">
         <div class="search-label">과정구분</div>
         <div class="search-body">
@@ -473,17 +462,20 @@
             <option value="정시">정시</option>
             <option value="수시">수시</option>
           </select>
-          <div class="date-section disabled" id="date-section">
-            <span class="date-section-label">과정 학습기간</span>
-            <div class="date-tab-wrap">
-              <button class="date-tab" id="tab-period" onclick="selectDateTab('period')">기간검색</button>
-              <button class="date-tab active" id="tab-start" onclick="selectDateTab('start')">학습시작일</button>
-              <button class="date-tab" id="tab-end" onclick="selectDateTab('end')">학습종료일</button>
-            </div>
-            <input class="input input-date" type="date" id="s-date-from" onchange="onDateFromChange()" onkeydown="return false;">
-            <span class="date-sep">~</span>
-            <input class="input input-date" type="date" id="s-date-to" onchange="onDateToChange()" onkeydown="return false;">
-          </div>
+        </div>
+      </div>
+      <!-- 과정 학습기간 -->
+      <div class="search-row">
+        <div class="search-label">과정<br>학습기간</div>
+        <div class="search-body date-section disabled" id="date-section">
+          <select class="select" id="s-date-type" style="width:110px;">
+            <option value="start">학습시작일</option>
+            <option value="end">학습종료일</option>
+            <option value="period">기간검색</option>
+          </select>
+          <input class="input input-date" type="date" id="s-date-from" onchange="onDateFromChange()" onkeydown="return false;">
+          <span class="date-sep">~</span>
+          <input class="input input-date" type="date" id="s-date-to" onchange="onDateToChange()" onkeydown="return false;">
         </div>
       </div>
       <!-- 학습자검색 -->
@@ -493,6 +485,7 @@
           <select class="select" id="s-learner-field" style="width:88px;">
             <option value="name">이름</option>
             <option value="id">아이디</option>
+            <option value="empNo">사번</option>
           </select>
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
@@ -733,21 +726,12 @@ let filteredData = [...ALL_DATA];
 let currentPage = 1;
 let pageSize = 50;
 
-// ── 과정구분 / 날짜탭 ──
-let currentDateTab = 'start';
-
+// ── 과정구분 / 날짜 ──
 function onCourseDivChange() {
   const div = document.getElementById('s-course-div').value;
   const section = document.getElementById('date-section');
   if (div === '정시') section.classList.remove('disabled');
   else section.classList.add('disabled');
-}
-
-function selectDateTab(tab) {
-  currentDateTab = tab;
-  ['period', 'start', 'end'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
-  });
 }
 
 function onDateFromChange() {
@@ -831,10 +815,11 @@ function doSearch() {
     if (courseDiv && r.courseDiv !== courseDiv) return false;
     // 과정 학습기간 (정시만 적용)
     if (courseDiv === '정시' && (dFrom || dTo)) {
-      if (currentDateTab === 'start') {
+      const dateType = document.getElementById('s-date-type').value;
+      if (dateType === 'start') {
         if (dFrom && r.studyFrom < dFrom) return false;
         if (dTo   && r.studyFrom > dTo)   return false;
-      } else if (currentDateTab === 'end') {
+      } else if (dateType === 'end') {
         if (dFrom && r.studyTo < dFrom) return false;
         if (dTo   && r.studyTo > dTo)   return false;
       } else { // period
@@ -844,8 +829,9 @@ function doSearch() {
     }
     // 학습자 검색
     if (learnerKw) {
-      if (learnerField === 'name' && r.name !== learnerKw) return false;
-      if (learnerField === 'id'   && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
+      if (learnerField === 'name'  && r.name !== learnerKw) return false;
+      if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
+      if (learnerField === 'empNo' && r.empNo !== learnerKw) return false;
     }
     // 수료여부
     if (completeStatus) {
@@ -871,9 +857,9 @@ function doSearch() {
 }
 
 function doReset() {
-  document.getElementById('s-course-div').selectedIndex    = 0;
+  document.getElementById('s-course-div').selectedIndex = 0;
   document.getElementById('date-section').classList.add('disabled');
-  selectDateTab('start');
+  document.getElementById('s-date-type').selectedIndex = 0;
   document.getElementById('s-date-from').value = '2026-05-01';
   document.getElementById('s-date-to').value   = '2026-05-31';
   document.getElementById('s-date-from').removeAttribute('max');
