@@ -551,13 +551,8 @@
       <span class="company-info" id="company-info"></span>
     </div>
 
-    <!-- 미선택 상태 -->
-    <div class="company-no-select" id="company-no-select">
-      기업을 선택하면 해당 기업의 FAQ를 관리할 수 있습니다.
-    </div>
-
-    <!-- 선택 후 콘텐츠 (처음엔 숨김) -->
-    <div id="company-content" style="display:none;display:flex;flex-direction:column;gap:14px;">
+    <!-- 콘텐츠 (검색·목록 영역은 기업 선택 여부와 무관하게 항상 노출) -->
+    <div id="company-content" style="display:flex;flex-direction:column;gap:14px;">
 
       <!-- 검색 -->
       <div class="card">
@@ -975,8 +970,11 @@ function renderCommonTable(data) {
 /* ──────────────── 기업별 FAQ 목록 렌더링 ──────────────── */
 function renderCompanyTable(data) {
   const tbody = document.getElementById('company-tbody');
+  const totalEl = document.getElementById('co-total');
   if (!data.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">등록된 FAQ가 없습니다.</td></tr>';
+    const msg = selectedCompany ? '등록된 FAQ가 없습니다.' : '기업을 선택하면 해당 기업의 FAQ가 표시됩니다.';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${msg}</td></tr>`;
+    if (totalEl) totalEl.textContent = '0';
     return;
   }
   tbody.innerHTML = data.map((r, i) => `
@@ -1079,10 +1077,6 @@ function selectCompany(value, name) {
   selectedCompany = { value, name };
   document.getElementById('company-combo-input').value = name;
   document.getElementById('company-combo-dropdown').classList.remove('open');
-  const noSelect = document.getElementById('company-no-select');
-  const content  = document.getElementById('company-content');
-  noSelect.style.display = 'none';
-  content.style.display  = 'flex';
   renderCompanyTable(COMPANY_DATA);
   renderPagination('company-pagination', 1, 1);
   document.getElementById('company-info').textContent = '총 ' + COMPANY_DATA.length + '건';
@@ -1092,9 +1086,10 @@ function resetCombobox() {
   selectedCompany = null;
   document.getElementById('company-combo-input').value = '';
   document.getElementById('company-combo-dropdown').classList.remove('open');
-  document.getElementById('company-no-select').style.display = 'block';
-  document.getElementById('company-content').style.display  = 'none';
   document.getElementById('company-info').textContent = '';
+  // 검색·목록 영역은 항상 노출. 기업 미선택 시 빈 목록 표시.
+  renderCompanyTable([]);
+  renderPagination('company-pagination', 1, 1);
 }
 
 /* ──────────────── 공개여부 변경 ──────────────── */
