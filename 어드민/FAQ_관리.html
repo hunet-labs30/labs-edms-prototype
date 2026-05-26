@@ -916,9 +916,9 @@ function showView(name) {
   });
   const target = document.getElementById('view-' + name);
   if (target) target.style.display = 'flex';
-  // 기업별 등록 화면 진입 시 기본 기업 한 개 자동 추가 (목록에서 선택했던 기업)
+  // 기업별 등록 화면 진입 시: 목록에서 선택한 기업이 있으면 칩으로 기본 추가
   if (name === 'company-write') {
-    initCoWriteCompanies('KT 연수원');
+    initCoWriteCompanies(selectedCompany ? selectedCompany.name : null);
   }
 }
 
