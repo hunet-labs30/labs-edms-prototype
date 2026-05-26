@@ -1276,11 +1276,13 @@ window.addEventListener('DOMContentLoaded', () => {
   initToggleLabel('w-co-visible', 'w-co-visible-label');
   initToggleLabel('e-co-visible', 'e-co-visible-label');
 
-  // company-content를 flex column으로
+  // company-content는 기업 선택 여부와 무관하게 항상 노출 (빈 목록도 함께 표시)
   const cc = document.getElementById('company-content');
-  cc.style.display = 'none';
+  cc.style.display = 'flex';
   cc.style.flexDirection = 'column';
   cc.style.gap = '14px';
+  // 초기 빈 목록 렌더링
+  renderCompanyTable([]);
 });
 </script>
 </body>
