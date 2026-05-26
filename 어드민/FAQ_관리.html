@@ -551,8 +551,13 @@
       <span class="company-info" id="company-info"></span>
     </div>
 
-    <!-- 콘텐츠 (검색·목록 영역은 기업 선택 여부와 무관하게 항상 노출) -->
-    <div id="company-content" style="display:flex;flex-direction:column;gap:14px;">
+    <!-- 미선택 상태 -->
+    <div class="company-no-select" id="company-no-select">
+      기업을 선택하면 해당 기업의 FAQ를 관리할 수 있습니다.
+    </div>
+
+    <!-- 선택 후 콘텐츠 (처음엔 숨김) -->
+    <div id="company-content" style="display:none;display:flex;flex-direction:column;gap:14px;">
 
       <!-- 검색 -->
       <div class="card">
@@ -636,19 +641,8 @@
       <div class="section-title">FAQ 등록 <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px;"><span style="color:#dc2626;">*</span> 필수 입력</span></div>
       <table class="info-table">
         <tr>
-          <th style="width:120px;">기업<span class="req">*</span></th>
-          <td>
-            <div class="field-wrap">
-              <div id="w-co-companies" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;"></div>
-              <div class="company-combobox" style="width:300px;">
-                <input class="company-combo-input" id="w-co-company-input" type="text" placeholder="기업명 입력하여 검색" autocomplete="off"
-                  oninput="filterCoCompanies()" onfocus="openCoCombobox()" onblur="closeCoComboboxDelayed()">
-                <div class="company-combo-dropdown" id="w-co-company-dropdown"></div>
-              </div>
-              <span class="field-hint">선택한 모든 기업에 각각 독립된 FAQ로 복제 등록됩니다. 등록 후엔 기업별로 개별 관리됩니다.</span>
-              <span class="field-error" id="err-w-co-companies">1개 이상의 기업을 선택해 주세요.</span>
-            </div>
-          </td>
+          <th style="width:120px;">기업</th>
+          <td class="readonly-val">KT 연수원 <span style="font-size:11px;color:#94a3b8;">(선택된 기업에만 등록됩니다)</span></td>
         </tr>
         <tr>
           <th>구분<span class="req">*</span></th>
@@ -916,10 +910,6 @@ function showView(name) {
   });
   const target = document.getElementById('view-' + name);
   if (target) target.style.display = 'flex';
-  // 기업별 등록 화면 진입 시: 목록에서 선택한 기업이 있으면 칩으로 기본 추가
-  if (name === 'company-write') {
-    initCoWriteCompanies(selectedCompany ? selectedCompany.name : null);
-  }
 }
 
 function switchMode(mode) {
@@ -971,11 +961,8 @@ function renderCommonTable(data) {
 /* ──────────────── 기업별 FAQ 목록 렌더링 ──────────────── */
 function renderCompanyTable(data) {
   const tbody = document.getElementById('company-tbody');
-  const totalEl = document.getElementById('co-total');
   if (!data.length) {
-    const msg = selectedCompany ? '등록된 FAQ가 없습니다.' : '기업을 선택하면 해당 기업의 FAQ가 표시됩니다.';
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${msg}</td></tr>`;
-    if (totalEl) totalEl.textContent = '0';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">등록된 FAQ가 없습니다.</td></tr>';
     return;
   }
   tbody.innerHTML = data.map((r, i) => `
@@ -1078,6 +1065,10 @@ function selectCompany(value, name) {
   selectedCompany = { value, name };
   document.getElementById('company-combo-input').value = name;
   document.getElementById('company-combo-dropdown').classList.remove('open');
+  const noSelect = document.getElementById('company-no-select');
+  const content  = document.getElementById('company-content');
+  noSelect.style.display = 'none';
+  content.style.display  = 'flex';
   renderCompanyTable(COMPANY_DATA);
   renderPagination('company-pagination', 1, 1);
   document.getElementById('company-info').textContent = '총 ' + COMPANY_DATA.length + '건';
@@ -1087,10 +1078,9 @@ function resetCombobox() {
   selectedCompany = null;
   document.getElementById('company-combo-input').value = '';
   document.getElementById('company-combo-dropdown').classList.remove('open');
+  document.getElementById('company-no-select').style.display = 'block';
+  document.getElementById('company-content').style.display  = 'none';
   document.getElementById('company-info').textContent = '';
-  // 검색·목록 영역은 항상 노출. 기업 미선택 시 빈 목록 표시.
-  renderCompanyTable([]);
-  renderPagination('company-pagination', 1, 1);
 }
 
 /* ──────────────── 공개여부 변경 ──────────────── */
@@ -1147,108 +1137,23 @@ function submitCommonWrite() {
   showView('common-list');
 }
 
-/* ──────────────── 기업별 등록: 다중 기업 선택 ──────────────── */
-let CO_SELECTED_COMPANIES = []; // 등록 화면에서 선택된 기업 목록
-function renderCompanyChips() {
-  const box = document.getElementById('w-co-companies');
-  if (!box) return;
-  if (!CO_SELECTED_COMPANIES.length) {
-    box.innerHTML = '<span style="font-size:12px;color:#94a3b8;">선택된 기업이 없습니다.</span>';
-    return;
-  }
-  box.innerHTML = CO_SELECTED_COMPANIES.map((name, i) => `
-    <span class="badge badge-공개" style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;">
-      ${name}
-      <button type="button" onclick="removeCompany(${i})" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;padding:0 2px;">×</button>
-    </span>
-  `).join('');
-}
-function removeCompany(idx) {
-  CO_SELECTED_COMPANIES.splice(idx, 1);
-  renderCompanyChips();
-}
-function initCoWriteCompanies(defaultName) {
-  CO_SELECTED_COMPANIES = defaultName ? [defaultName] : [];
-  renderCompanyChips();
-  // 콤보박스 입력/드롭다운 초기화
-  const inp = document.getElementById('w-co-company-input');
-  if (inp) inp.value = '';
-  const dd = document.getElementById('w-co-company-dropdown');
-  if (dd) dd.classList.remove('open');
-}
-
-/* 등록 화면 — 기업 검색 콤보박스 */
-function renderCoComboOptions(list) {
-  const dd = document.getElementById('w-co-company-dropdown');
-  if (!dd) return;
-  if (!list.length) {
-    dd.innerHTML = '<div class="combo-empty">검색 결과가 없습니다.</div>';
-    return;
-  }
-  dd.innerHTML = list.map(c => `
-    <div class="combo-option" onmousedown="selectCoCompany('${c.name.replace(/'/g, "\\'")}')">${c.name}</div>
-  `).join('');
-}
-function openCoCombobox() {
-  const q = (document.getElementById('w-co-company-input').value || '').toLowerCase();
-  const list = COMPANIES.filter(c => !CO_SELECTED_COMPANIES.includes(c.name) && c.name.toLowerCase().includes(q));
-  renderCoComboOptions(list);
-  document.getElementById('w-co-company-dropdown').classList.add('open');
-}
-function filterCoCompanies() {
-  openCoCombobox();
-}
-function closeCoComboboxDelayed() {
-  setTimeout(() => {
-    const dd = document.getElementById('w-co-company-dropdown');
-    if (dd) dd.classList.remove('open');
-  }, 150);
-}
-function selectCoCompany(name) {
-  if (CO_SELECTED_COMPANIES.includes(name)) return;
-  CO_SELECTED_COMPANIES.push(name);
-  document.getElementById('w-co-company-input').value = '';
-  document.getElementById('w-co-company-dropdown').classList.remove('open');
-  renderCompanyChips();
-}
-
 function submitCoWrite() {
   let ok = true;
   const cat   = document.getElementById('w-co-category').value;
   const title = document.getElementById('w-co-title').value.trim();
   const cont  = document.getElementById('w-co-content').innerText.trim();
-  ['w-co-category','w-co-title','w-co-content','w-co-companies'].forEach(id => {
-    const el = document.getElementById('err-' + id);
-    if (el) el.classList.remove('show');
+  ['w-co-category','w-co-title','w-co-content'].forEach(id => {
+    document.getElementById('err-' + id).classList.remove('show');
   });
-  if (!CO_SELECTED_COMPANIES.length) { document.getElementById('err-w-co-companies').classList.add('show'); ok = false; }
   if (!cat)   { document.getElementById('err-w-co-category').classList.add('show'); ok = false; }
   if (!title) { document.getElementById('err-w-co-title').classList.add('show');    ok = false; }
   if (!cont)  { document.getElementById('err-w-co-content').classList.add('show');  ok = false; }
   if (!ok) return;
-  // 다중 기업 등록: 기업별로 중복 검사 (해당 기업의 기업별 FAQ + 공통 FAQ)
-  // 프로토타입에서는 단일 COMPANY_DATA만 보유하므로 시뮬레이션:
-  // - 공통 FAQ에 동일 제목이 있으면 모든 기업에서 등록 차단
-  // - 그렇지 않으면 모두 등록 성공으로 간주
-  const dupCommon = COMMON_DATA.some(r => r.title.trim() === title);
-  if (dupCommon) {
-    showToast('공통 FAQ에 동일 제목이 있어 등록할 수 없습니다.', 'error');
-    return;
-  }
-  const total = CO_SELECTED_COMPANIES.length;
-  // 시뮬레이션: 첫 번째 기업이 현재 선택된 기업이면 COMPANY_DATA와 중복 검사
-  const dupCompany = COMPANY_DATA.some(r => r.title.trim() === title);
-  const skipped = dupCompany ? 1 : 0;
-  const success = total - skipped;
-  if (success === 0) {
-    showToast('선택한 모든 기업에 동일 제목이 이미 존재합니다.', 'error');
-    return;
-  }
-  if (skipped > 0) {
-    showToast(`${success}개 기업에 등록 완료, ${skipped}개 기업은 중복으로 제외되었습니다.`, 'success');
-  } else {
-    showToast(`${total}개 기업에 FAQ가 등록되었습니다.`, 'success');
-  }
+  // 중복 검사: 해당 기업의 기업별 FAQ + 공통 FAQ 합쳐서 동일 제목
+  const dup = COMPANY_DATA.some(r => r.title.trim() === title)
+           || COMMON_DATA.some(r => r.title.trim() === title);
+  if (dup) { showToast('동일한 제목의 FAQ가 이미 등록되어 있습니다. (공통/기업별 합산 검사)', 'error'); return; }
+  showToast('FAQ가 등록되었습니다.', 'success');
   showView('company-list');
 }
 
@@ -1305,13 +1210,11 @@ window.addEventListener('DOMContentLoaded', () => {
   initToggleLabel('w-co-visible', 'w-co-visible-label');
   initToggleLabel('e-co-visible', 'e-co-visible-label');
 
-  // company-content는 기업 선택 여부와 무관하게 항상 노출 (빈 목록도 함께 표시)
+  // company-content를 flex column으로
   const cc = document.getElementById('company-content');
-  cc.style.display = 'flex';
+  cc.style.display = 'none';
   cc.style.flexDirection = 'column';
   cc.style.gap = '14px';
-  // 초기 빈 목록 렌더링
-  renderCompanyTable([]);
 });
 </script>
 </body>
