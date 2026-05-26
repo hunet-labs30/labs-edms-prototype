@@ -11272,7 +11272,7 @@ function mtRenderMbrTable(tab, itemId) {
   const members = item.members.map(mid => MT_MEMBER_POOL[mid]).filter(Boolean);
   console.log('mtRenderMbrTable', tab, itemId, 'members:', item.members, 'resolved:', members.length);
   const cntEl   = document.getElementById(tab + '-mbr-cnt');
-  if (cntEl) cntEl.textContent = `(${members.length}명)`;
+  if (cntEl) cntEl.textContent = `검색결과 ${members.length}건`;
   const tbody = document.getElementById(tab + '-mbr-tbody');
   if (!tbody) return;
   if (!members.length) {
@@ -11602,7 +11602,7 @@ function mtRenderAddMbrTable() {
   if (cntEl) cntEl.textContent = list.length;
   tbody.innerHTML = list.length ? list.map((m, i) => `
     <tr style="cursor:pointer;" onclick="this.querySelector('input').click()">
-      <td><input type="checkbox" class="mt-add-mbr-chk" data-id="${m.id}" onclick="event.stopPropagation()"></td>
+      <td><input type="checkbox" class="mt-add-mbr-chk" data-id="${m.id}" onclick="event.stopPropagation()" onchange="mtUpdateConfirmBtn()"></td>
       <td>${list.length - i}</td>
       <td>${maskName(m.name)}</td>
       <td style="text-align:left;padding-left:10px;color:#444;">${m.co||'—'}</td>
@@ -11612,6 +11612,7 @@ function mtRenderAddMbrTable() {
       <td>${m.grade || '—'}</td>
     </tr>`).join('')
     : `<tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">검색된 임직원이 없습니다.</td></tr>`;
+  mtUpdateConfirmBtn();
 }
 
 function mtSearchAddMbr() { mtRenderAddMbrTable(); }
@@ -11621,9 +11622,17 @@ function mtResetAddMbrSearch() {
   document.getElementById('mt-add-mbr-unassigned').checked = false;
   mtRenderAddMbrTable();
 }
+function mtUpdateConfirmBtn() {
+  const btn = document.getElementById('mt-confirm-add-mbr-btn');
+  if (!btn) return;
+  const hasChecked = document.querySelectorAll('.mt-add-mbr-chk:checked').length > 0;
+  btn.disabled = !hasChecked;
+  btn.style.background = hasChecked ? '#1a73e8' : '#ccc';
+  btn.style.cursor = hasChecked ? 'pointer' : 'not-allowed';
+}
 function mtConfirmAddMbr() {
   const checked = [...document.querySelectorAll('.mt-add-mbr-chk:checked')];
-  if (!checked.length) { alert('추가할 임직원을 선택해주세요.'); return; }
+  if (!checked.length) return;
   const item = (MT_DATA[mtAddMbrTab] || []).find(i => i.id === mtAddMbrItemId);
   if (!item) return;
   checked.forEach(c => { if (!item.members.includes(c.dataset.id)) item.members.push(c.dataset.id); });
@@ -11732,7 +11741,7 @@ function mtOpenAssignModal(tab, memberId) {
   } else {
     // 헤더 배정 버튼 — 체크박스 기준
     const checked = [...document.querySelectorAll('.' + tab + '-unasgn-chk:checked')];
-    if (!checked.length) { alert('배정할 임직원을 선택해주세요.'); return; }
+    if (!checked.length) { alert('이동할 임직원을 선택해주세요.'); return; }
     mtAssignMemberIds = checked.map(c => c.dataset.id);
   }
 
@@ -11864,7 +11873,7 @@ function deptSearchMbr() {
       <input id="mt-add-mbr-kw" class="input" style="flex:1;min-width:160px;height:28px;font-size:12px;" placeholder="검색어를 입력해주세요."
         onkeydown="if(event.key==='Enter')mtSearchAddMbr()">
       <button onclick="mtSearchAddMbr()" class="btn btn-primary" style="height:28px;padding:0 12px;font-size:12px;">🔍 검색</button>
-      <button onclick="mtResetAddMbrSearch()" class="btn btn-reset" style="height:28px;padding:0 12px;font-size:12px;">전체</button>
+      <button onclick="mtResetAddMbrSearch()" class="btn btn-reset" style="height:28px;padding:0 12px;font-size:12px;">초기화</button>
       <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;white-space:nowrap;margin-left:4px;">
         <input type="checkbox" id="mt-add-mbr-unassigned"> 미지정만
       </label>
@@ -11874,7 +11883,7 @@ function deptSearchMbr() {
       <table class="main-table" style="min-width:640px;">
         <thead>
           <tr>
-            <th style="width:32px;"><input type="checkbox" onchange="document.querySelectorAll('.mt-add-mbr-chk').forEach(c=>c.checked=this.checked)"></th>
+            <th style="width:32px;"><input type="checkbox" onchange="document.querySelectorAll('.mt-add-mbr-chk').forEach(c=>c.checked=this.checked);mtUpdateConfirmBtn()"></th>
             <th style="width:40px;">No</th>
             <th style="width:80px;">이름</th>
             <th style="width:110px;">회사</th>
@@ -11900,7 +11909,7 @@ function deptSearchMbr() {
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <button onclick="mtCloseAddMbr()" style="height:30px;padding:0 16px;border:1px solid #ccc;border-radius:4px;background:#fff;font-size:12px;cursor:pointer;color:#555;">취소</button>
-        <button onclick="mtConfirmAddMbr()" style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#1a73e8;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">확인</button>
+        <button id="mt-confirm-add-mbr-btn" onclick="mtConfirmAddMbr()" disabled style="height:30px;padding:0 18px;border:none;border-radius:4px;background:#ccc;color:#fff;font-size:12px;font-weight:600;cursor:not-allowed;">확인</button>
       </div>
     </div>
   </div>
