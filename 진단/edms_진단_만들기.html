@@ -1449,7 +1449,7 @@ function _diagOnRegister(members) {
   let added = 0;
   members.forEach(m => {
     const mName  = maskName(m.name);
-    const mId    = maskId(m.loginId);
+    const mId    = m.loginId ? maskId(m.loginId) : '-';
     const mPhone = maskPhone('010-0000-0000');
     [0, 1, 2].forEach(tabIdx => {
       const tbody = document.getElementById('tbody-' + tabIdx);
@@ -1598,7 +1598,11 @@ window._maskL = (id) => maskId(id);
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof meMbrInit === 'function') {
     meMbrInit({
-      getRegistered: () => [],
+      getRegistered: () => {
+        const tbody = document.getElementById('tbody-0');
+        if (!tbody) return [];
+        return [...tbody.querySelectorAll('tr')].map(r => ({ empno: r.cells[4]?.textContent?.trim() })).filter(m => m.empno);
+      },
       onRegister: _diagOnRegister,
       getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
     });
