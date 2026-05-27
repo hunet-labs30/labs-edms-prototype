@@ -2009,7 +2009,7 @@
 </style>
 
 <div class="modal-overlay" id="me-member-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:6px;width:900px;height:640px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+  <div style="background:#fff;border-radius:6px;width:960px;height:640px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
 
     <!-- 헤더 -->
     <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
@@ -2029,9 +2029,15 @@
       <button class="mbr-tab" onclick="meMbrTab('batch',this)">일괄등록</button>
     </div>
 
+    <!-- 바디: 탭패널 + 우측 공통 선택인원 -->
+    <div style="display:flex;flex:1;overflow:hidden;">
+    <!-- 탭 패널 래퍼 -->
+    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+
     <!-- ── 개별등록 패널 ── -->
-    <div id="me-mbr-panel-single" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:12px 16px;gap:8px;">
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+    <div id="me-mbr-panel-single" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <!-- 검색 영역 -->
+      <div style="padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
         <select class="select" style="height:28px;font-size:12px;width:100px;" id="me-mbr-s-company"></select>
         <select class="select" style="height:28px;font-size:12px;width:76px;" id="me-mbr-s-type">
           <option value="name">이름</option>
@@ -2046,25 +2052,26 @@
         <button class="btn btn-primary" style="height:28px;" onclick="meMbrSingleSearch()">&#128269; 검색</button>
         <button class="btn btn-reset" style="height:28px;" onclick="meMbrSingleAll()">전체검색</button>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-        <span style="font-size:11px;color:#888;">
-          검색 결과: <strong id="me-mbr-s-total">0</strong>명 &nbsp;·&nbsp; 선택: <strong id="me-mbr-s-sel">0</strong>명
-        </span>
-        <button class="btn btn-primary" style="height:26px;padding:0 12px;background:#e53935;border-color:#e53935;" onclick="meMbrSingleReg()">선택 인원 등록</button>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:4px;overflow:hidden;flex:1;overflow-y:auto;">
-        <table class="main-table" style="font-size:12px;">
-          <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
-            <th style="width:34px;"><input type="checkbox" id="me-mbr-s-chk-all" onchange="document.querySelectorAll('.me-mbr-s-chk').forEach(c=>c.checked=this.checked);meMbrSelCount()"></th>
-            <th>이름</th><th style="width:86px;">아이디</th><th style="width:78px;">사번</th>
-            <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th><th style="width:60px;">근무상태</th>
-          </tr></thead>
-          <tbody id="me-mbr-s-tbody"><tr><td colspan="7" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
-        </table>
-      </div>
-      <div class="table-footer" style="padding:4px 0;flex-shrink:0;">
-        <div class="page-size-wrap"><select class="select" style="height:26px;width:56px;"><option>10</option><option selected>30</option><option>50</option></select><span>항목 (페이지 당)</span></div>
-        <div class="pagination"><button class="pg-btn">&#8676;</button><button class="pg-btn">&#8249;</button><button class="pg-btn active">1</button><button class="pg-btn">&#8250;</button><button class="pg-btn">&#8677;</button></div>
+      <!-- 결과 영역 -->
+      <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 14px;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:11px;color:#888;">검색 결과: <strong id="me-mbr-s-total">0</strong>명 &nbsp;·&nbsp; 선택: <strong id="me-mbr-s-sel">0</strong>명</span>
+          <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrSingleAddChecked()">추가 →</button>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:4px;overflow:hidden;flex:1;overflow-y:auto;">
+          <table class="main-table" style="font-size:12px;">
+            <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
+              <th style="width:34px;"><input type="checkbox" id="me-mbr-s-chk-all" onchange="document.querySelectorAll('.me-mbr-s-chk').forEach(c=>c.checked=this.checked);meMbrSelCount()"></th>
+              <th>이름</th><th style="width:86px;">아이디</th><th style="width:78px;">사번</th>
+              <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th><th style="width:46px;"></th>
+            </tr></thead>
+            <tbody id="me-mbr-s-tbody"><tr><td colspan="7" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-footer" style="padding:4px 0;flex-shrink:0;">
+          <div class="page-size-wrap"><select class="select" style="height:26px;width:56px;"><option>10</option><option selected>30</option><option>50</option></select><span>항목 (페이지 당)</span></div>
+          <div class="pagination"><button class="pg-btn">&#8676;</button><button class="pg-btn">&#8249;</button><button class="pg-btn active">1</button><button class="pg-btn">&#8250;</button><button class="pg-btn">&#8677;</button></div>
+        </div>
       </div>
     </div>
 
@@ -2081,11 +2088,6 @@
           <div id="me-mbr-bc-wrap" style="display:none;align-items:center;min-width:0;overflow:hidden;">
             <div id="me-mbr-dept-breadcrumb"></div>
           </div>
-        </div>
-        <!-- 우측: 선택 수 + 버튼 -->
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-          <span style="font-size:11px;color:#888;">최종 선택: <strong id="me-mbr-collected-cnt" style="color:var(--primary);">0</strong>명</span>
-          <button class="btn btn-primary" style="height:26px;padding:0 12px;background:#e53935;border-color:#e53935;" onclick="meMbrSplitReg()">선택 인원 등록</button>
         </div>
       </div>
 
@@ -2105,15 +2107,14 @@
               <span style="font-size:12px;font-weight:600;color:#333;" id="me-mbr-right-title">-</span>
               <div style="display:flex;align-items:center;gap:6px;">
                 <span style="font-size:11px;color:#888;"><strong id="me-mbr-right-cnt">0</strong>명</span>
-                <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrAddAllToCollected()">전체 추가 →</button>
+                <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrAddCheckedToCollected()">추가 →</button>
               </div>
             </div>
             <div style="flex:1;overflow-y:auto;">
               <table class="main-table" style="font-size:12px;">
                 <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
                   <th style="width:34px;"><input type="checkbox" id="me-mbr-r-chk-all" onchange="document.querySelectorAll('.me-mbr-r-chk').forEach(c=>c.checked=this.checked)"></th>
-                  <th>이름</th><th style="width:78px;">사번</th><th style="width:90px;">부서명</th>
-                  <th style="width:50px;"><button class="btn btn-primary" style="height:20px;padding:0 6px;font-size:10px;" onclick="meMbrAddCheckedToCollected()">추가→</button></th>
+                  <th>이름</th><th style="width:78px;">사번</th><th style="width:90px;">부서명</th><th style="width:46px;"></th>
                 </tr></thead>
                 <tbody id="me-mbr-right-tbody"><tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">항목을 선택해주세요.</td></tr></tbody>
               </table>
@@ -2121,21 +2122,6 @@
           </div>
         </div>
 
-        <!-- 우: 선택 인원 모음 -->
-        <div style="width:220px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;">
-          <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f0f4ff;">
-            <span style="font-size:12px;font-weight:700;color:var(--primary);">선택된 인원</span>
-            <div style="display:flex;align-items:center;gap:4px;">
-              <span style="font-size:11px;color:#888;" id="me-mbr-collected-cnt2">0명</span>
-              <button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:10px;color:#e53935;border-color:#fcc;" onclick="meMbrClearCollected()">전체삭제</button>
-            </div>
-          </div>
-          <div style="flex:1;overflow-y:auto;" id="me-mbr-collected-list">
-            <div id="me-mbr-collected-empty" style="display:flex;align-items:center;justify-content:center;height:80px;color:#aaa;font-size:11px;">
-              추가 버튼으로 인원을 모아주세요
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -2203,13 +2189,36 @@
       <table class="main-table" style="font-size:12px;">
         <thead><tr><th style="width:160px;text-align:left;padding:8px 12px;">오류 유형</th><th style="text-align:left;padding:8px 12px;">오류 설명</th></tr></thead>
         <tbody>
+          <tr><td style="padding:8px 12px;">데이터 없음</td><td style="padding:8px 12px;">엑셀 파일에 등록된 데이터가 없는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">파일 용량 초과</td><td style="padding:8px 12px;">업로드 파일이 10MB를 초과한 경우</td></tr>
           <tr><td style="padding:8px 12px;">아이디 미입력</td><td style="padding:8px 12px;">아이디를 입력하지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">퇴사자 아이디</td><td style="padding:8px 12px;">아이디가 이미 퇴사한 임직원인 경우</td></tr>
           <tr><td style="padding:8px 12px;">아이디 오류</td><td style="padding:8px 12px;">아이디가 존재하지 않는 경우</td></tr>
           <tr><td style="padding:8px 12px;">중복 등록</td><td style="padding:8px 12px;">이미 해당 필수교육에 등록된 아이디인 경우</td></tr>
         </tbody>
       </table>
     </div>
+    </div><!-- /탭 패널 래퍼 -->
+
+    <!-- 우측 공통: 선택된 인원 패널 -->
+    <div id="me-mbr-collected-panel" style="width:220px;flex-shrink:0;border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f0f4ff;">
+        <span style="font-size:12px;font-weight:700;color:var(--primary);">선택된 인원</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:11px;color:#888;" id="me-mbr-collected-cnt2">0명</span>
+          <button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:10px;color:#e53935;border-color:#fcc;" onclick="meMbrClearCollected()">전체삭제</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;" id="me-mbr-collected-list">
+        <div id="me-mbr-collected-empty" style="display:flex;align-items:center;justify-content:center;height:80px;color:#aaa;font-size:11px;">
+          추가 버튼으로 인원을 모아주세요
+        </div>
+      </div>
+      <div style="padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;">
+        <button class="btn btn-primary" style="width:100%;height:30px;background:#e53935;border-color:#e53935;" onclick="meMbrFinalReg()">선택 인원 등록</button>
+      </div>
+    </div>
+
+    </div><!-- /바디 래퍼 -->
   </div>
 </div>
 
@@ -3117,15 +3126,16 @@ function meMbrAddCheckedToCollected() {
   });
   meMbrUpdateCollected();
 }
-function meMbrAddAllToCollected() {
-  const curItem = (MBR_DATA[meMbrCurSplitType]||[]).find((_,i)=>document.getElementById('mbr-left-'+i)?.classList.contains('selected'));
-  // 현재 우측 렌더된 모든 인원 추가
-  document.querySelectorAll('#me-mbr-right-tbody tr').forEach(tr=>{
-    const cells=tr.querySelectorAll('td');
-    if(cells.length<4) return;
-    const name=cells[1]?.textContent.trim(), empno=cells[2]?.textContent.trim(), dept=cells[3]?.textContent.trim();
-    if(name&&empno&&!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
-  });
+function meMbrAddRowToCollected(btn) {
+  const cells = btn.closest('tr').querySelectorAll('td');
+  const name=cells[1].textContent.trim(), empno=cells[2].textContent.trim(), dept=cells[3].textContent.trim();
+  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
+  meMbrUpdateCollected();
+}
+function meMbrAddSingleRowToCollected(btn) {
+  const row = btn.closest('tr');
+  const name=row.dataset.name, empno=row.dataset.empno, dept=row.dataset.dept;
+  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
   meMbrUpdateCollected();
 }
 function meMbrRemoveCollected(i) { ME_COLLECTED.splice(i,1); meMbrUpdateCollected(); }
@@ -3455,16 +3465,16 @@ function meMbrSelectDept(id) {
   document.getElementById('me-mbr-right-title').textContent = node.name;
   document.getElementById('me-mbr-right-cnt').textContent = members.length;
   const tbody = document.getElementById('me-mbr-right-tbody');
-  tbody.innerHTML = members.length ? members.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-r-chk"></td>
-    <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
-    <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-    <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
-  </tr>`).join('')
+  tbody.innerHTML = members.length ? members.map(m=>{
+    const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+    <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-r-chk">'}</td>
+    <td style="padding:5px 8px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+    <td style="padding:5px 8px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+    <td style="padding:5px 8px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
+  </tr>`;
+  }).join('')
   : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
 }
 
@@ -3502,6 +3512,8 @@ let meMbrCurSplitType = null;
 
 // ═══ 팝업 열기 ═══
 function meOpenMemberSingleModal() {
+  ME_COLLECTED.length = 0;
+  meMbrUpdateCollected();
   const sel = document.getElementById('me-mbr-s-company');
   if(sel) sel.innerHTML = meGetCompanies().map((c,i)=>`<option value="${i===0?'':c}">${c}</option>`).join('');
   meMbrTab('single', document.querySelector('.mbr-tab'));
@@ -3521,6 +3533,9 @@ function meMbrTab(type, btn) {
   // 패널 전환
   const panels = ['single','split','batch'];
   panels.forEach(p=>{ const el=document.getElementById('me-mbr-panel-'+p); if(el) el.style.display='none'; });
+  // 공통 우측 선택 패널: 일괄등록 탭에서만 숨김
+  const collectedPanel = document.getElementById('me-mbr-collected-panel');
+  if(collectedPanel) collectedPanel.style.display = type==='batch' ? 'none' : 'flex';
   if(type==='single') {
     document.getElementById('me-mbr-panel-single').style.display='flex';
   } else if(type==='batch') {
@@ -3540,8 +3555,6 @@ function meMbrLoadLeft(type) {
   const guides = {dept:'부서',grade:'직급',position:'직책',job:'직무',jobgroup:'직군',target:'대상구분 유형'};
   document.getElementById('me-mbr-right-empty').style.display='flex';
   document.getElementById('me-mbr-right-content').style.display='none';
-  ME_COLLECTED.length = 0;
-  meMbrUpdateCollected();
 
   if (type === 'target') {
     // 대상구분: 유형 목록 노출 (1단계)
@@ -3617,10 +3630,7 @@ function meMbrSelectTargetDiv(typeIdx, divIdx) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
   </tr>`).join('');
 }
 
@@ -3640,46 +3650,27 @@ function meMbrSelectLeft(idx, type) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
   </tr>`).join('');
 }
 
-function meMbrAddOneToCollected(name, empno, dept) {
-  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
-  meMbrUpdateCollected();
-}
 
-function meMbrSplitReg() {
-  // 체크된 인원 우선 모음에 추가
-  [...document.querySelectorAll('.me-mbr-r-chk:checked')].forEach(chk=>{
-    const row=chk.closest('tr');
-    const name=row?.dataset?.name||row?.querySelectorAll('td')[1]?.textContent.trim();
-    const empno=row?.dataset?.empno||row?.querySelectorAll('td')[2]?.textContent.trim();
-    const dept=row?.dataset?.dept||row?.querySelectorAll('td')[3]?.textContent.trim();
-    if(name&&empno&&!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
-  });
-  if(!ME_COLLECTED.length) { alert('등록할 인원을 추가(→) 해주세요.'); return; }
-  ME_COLLECTED.forEach(m=>{ if(!ME_REG_MEMBERS.find(x=>x.empno===m.empno)) ME_REG_MEMBERS.push({...m}); });
-  ME_COLLECTED.length = 0;
-  meRegRenderMembers();
-  document.getElementById('me-member-modal').style.display='none';
-}
 
 function meMbrSingleAll() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   if(!tbody) return;
-  const rows = ME_SAMPLE_MEMBERS.map((m,i)=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
-    <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-    <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
-  </tr>`).join('');
+  const rows = ME_SAMPLE_MEMBERS.map(m=>{
+    const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+    <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
+    <td style="padding:5px 6px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#666'};font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.company}</td>
+    <td style="padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button>'}</td>
+  </tr>`;
+  }).join('');
   tbody.innerHTML = rows;
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
   meMbrSelCount();
@@ -3690,15 +3681,18 @@ function meMbrSingleSearch() {
   const filtered = ME_SAMPLE_MEMBERS.filter(m=>m.name.includes(kw)||m.empno.includes(kw)||m.dept.includes(kw)||(m.loginId||'').includes(kw));
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length
-    ? filtered.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}">
-        <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
-        <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-        <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-        <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
-      </tr>`).join('')
+    ? filtered.map(m=>{
+        const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+        return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+        <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
+        <td style="padding:5px 6px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#666'};font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.company}</td>
+        <td style="padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+        <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button>'}</td>
+      </tr>`;
+      }).join('')
     : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
@@ -3707,20 +3701,35 @@ function meMbrSelCount() {
   const cnt = document.querySelectorAll('.me-mbr-s-chk:checked').length;
   document.getElementById('me-mbr-s-sel').textContent = cnt;
 }
-function meMbrSingleReg() {
+function meMbrSingleChkChange(chk) {
+  const row = chk.closest('tr');
+  if(!row) return;
+  const name=row.dataset.name, empno=row.dataset.empno, dept=row.dataset.dept;
+  if(!name||!empno) return;
+  if(chk.checked) {
+    if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
+  } else {
+    const idx = ME_COLLECTED.findIndex(m=>m.empno===empno);
+    if(idx>-1) ME_COLLECTED.splice(idx,1);
+  }
+  meMbrUpdateCollected();
+}
+function meMbrSingleAddChecked() {
   const checked = [...document.querySelectorAll('.me-mbr-s-chk:checked')];
-  if(!checked.length) { alert('등록할 인원을 선택해주세요.'); return; }
-  // data 속성에서 원본값 추출 (마스킹 전)
-  checked.forEach(chk => {
-    const row = chk.closest('tr');
-    const name=row.dataset.name, empno=row.dataset.empno;
-    const loginId=row.dataset.loginid, company=row.dataset.company, dept=row.dataset.dept;
-    if(!ME_REG_MEMBERS.find(m=>m.empno===empno)) {
-      ME_REG_MEMBERS.push({name, empno, loginId, company, dept});
-    }
+  if(!checked.length) { alert('추가할 인원을 선택해주세요.'); return; }
+  checked.forEach(chk=>{
+    const row=chk.closest('tr');
+    const name=row.dataset.name, empno=row.dataset.empno, dept=row.dataset.dept;
+    if(name&&empno&&!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
   });
+  meMbrUpdateCollected();
+}
+function meMbrFinalReg() {
+  if(!ME_COLLECTED.length) { alert('등록할 인원을 추가해주세요.'); return; }
+  ME_COLLECTED.forEach(m=>{ if(!ME_REG_MEMBERS.find(x=>x.empno===m.empno)) ME_REG_MEMBERS.push({...m}); });
+  ME_COLLECTED.length = 0;
   meRegRenderMembers();
-  document.getElementById('me-member-modal').style.display = 'none';
+  document.getElementById('me-member-modal').style.display='none';
 }
 
 // ═══ 교육인원 일괄등록 JS ═══
@@ -3778,10 +3787,6 @@ function meMbrBatchPreview() {
     <tr>
       <td style="padding:7px 12px;color:#e53935;font-size:11px;"></td>
       <td style="padding:7px 12px;font-size:11px;color:#555;">아이디 미입력 (3행)</td>
-    </tr>
-    <tr style="background:#fff8f8;">
-      <td style="padding:7px 12px;color:#e53935;font-size:11px;">exit_user</td>
-      <td style="padding:7px 12px;font-size:11px;color:#555;">퇴사자 아이디</td>
     </tr>`;
   _meMbrBatchSetRegBtn(false);
   alert('파일에 오류가 발견되었습니다. 오류내용을 확인하시고 파일을 수정 후 다시 미리보기 해주세요.');
