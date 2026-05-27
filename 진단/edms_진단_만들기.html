@@ -931,6 +931,13 @@ body {
                   <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
                   <td><a class="resp-count-link" onclick="openRespondentModal('김철수','구성원진단',1)">3명</a></td>
                 </tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>3</td>
+                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
+                  <td>20190812</td><td>이영희</td><td>팀장</td>
+                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이영희','구성원진단',1)">설정</button></td>
+                </tr>
               </tbody>
             </table>
             <div class="table-footer">
@@ -976,6 +983,20 @@ body {
                   <td>20230101</td><td>홍길동</td><td>팀장</td>
                   <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
                   <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍길동','상사진단',2)">설정</button></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>2</td>
+                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
+                  <td>20210505</td><td>김철수</td><td>팀장</td>
+                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('김철수','상사진단',2)">설정</button></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>3</td>
+                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
+                  <td>20190812</td><td>이영희</td><td>팀장</td>
+                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이영희','상사진단',2)">설정</button></td>
                 </tr>
               </tbody>
             </table>
@@ -1449,9 +1470,15 @@ function addParticipants() {
 }
 
 function delRow(btn, tabIdx) {
-  btn.closest('tr').remove();
-  const tbody = document.getElementById('tbody-' + tabIdx);
-  tbody.querySelectorAll('tr').forEach((r, i) => r.cells[1].textContent = i + 1);
+  const tr = btn.closest('tr');
+  const empNo = tr.cells[3].textContent;
+  [0, 1, 2].forEach(i => {
+    const tbody = document.getElementById('tbody-' + i);
+    tbody.querySelectorAll('tr').forEach(r => {
+      if (r.cells[3] && r.cells[3].textContent === empNo) r.remove();
+    });
+    tbody.querySelectorAll('tr').forEach((r, idx) => r.cells[1].textContent = idx + 1);
+  });
 }
 
 /* ── RESPONDENT MODAL ── */
