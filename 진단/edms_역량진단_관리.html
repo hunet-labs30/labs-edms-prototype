@@ -1035,16 +1035,16 @@
   });
 
   // 진단대상자 컬럼 클릭 → 대상자 선택 팝업
-  document.querySelectorAll('.main-table tbody tr').forEach(tr => {
+  document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
     const cells = tr.querySelectorAll('td');
     if (cells.length < 5) return;
     const cell = cells[4];
     const link = cell.querySelector('a.diag-link');
     if (link) {
-      link.addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(); });
+      link.addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(rowIdx, cell); });
     } else if (cell.textContent.trim() === '-') {
       cell.innerHTML = '<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>';
-      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(); });
+      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(rowIdx, cell); });
     }
   });
 </script>
@@ -1221,6 +1221,20 @@ const ME_SAMPLE_MEMBERS = [
   {name:'이강은', loginId:'leegeun@hunet.co.kr', empno:'20250001', company:'동아ST',          dept:'기획팀'},
 ];
 const ME_COLLECTED = [];
+const DIAG_ROW_MEMBERS = {}; // { rowIdx: [member, ...] }
+let _currentDiagRowIdx = -1;
+let _currentDiagCell = null;
+// 샘플 기등록 데이터
+DIAG_ROW_MEMBERS[0] = ME_SAMPLE_MEMBERS.slice(0, 4);
+DIAG_ROW_MEMBERS[1] = ME_SAMPLE_MEMBERS.slice(2, 5);
+DIAG_ROW_MEMBERS[2] = ME_SAMPLE_MEMBERS.slice(0, 3);
+DIAG_ROW_MEMBERS[3] = ME_SAMPLE_MEMBERS.slice(1, 4);
+DIAG_ROW_MEMBERS[5] = ME_SAMPLE_MEMBERS.slice(0, 6);
+DIAG_ROW_MEMBERS[6] = ME_SAMPLE_MEMBERS.slice(3, 8);
+DIAG_ROW_MEMBERS[7] = ME_SAMPLE_MEMBERS.slice(0, 5);
+DIAG_ROW_MEMBERS[8] = ME_SAMPLE_MEMBERS.slice(2, 7);
+DIAG_ROW_MEMBERS[9] = ME_SAMPLE_MEMBERS.slice(1, 6);
+DIAG_ROW_MEMBERS[10] = ME_SAMPLE_MEMBERS.slice(0, 7);
 
 // ── 마스킹 헬퍼 ──
 function _maskN(n) {
@@ -1306,10 +1320,36 @@ let meMbrCurSplitType = null;
 let meMbrTargetTypeIdx = null;
 const meMbrDeptCollapsed = new Set();
 
+// ── 저장 + 닫기 공통 헬퍼 ──
+function _diagSaveAndClose() {
+  const rowIdx = _currentDiagRowIdx;
+  const cell = _currentDiagCell;
+  if(rowIdx >= 0) {
+    DIAG_ROW_MEMBERS[rowIdx] = [...ME_COLLECTED];
+    if(cell) {
+      const cnt = ME_COLLECTED.length;
+      cell.innerHTML = `<a class="diag-link" href="#">${cnt}</a>`;
+      cell.querySelector('a').addEventListener('click', e => {
+        e.preventDefault();
+        openDiagMemberModal(rowIdx, cell);
+      });
+    }
+  }
+  const cnt = ME_COLLECTED.length;
+  document.getElementById('me-member-modal').style.display = 'none';
+  showToast('진단 대상자 ' + cnt + '명이 등록되었습니다.');
+}
+
 // ── 팝업 열기 ──
-function openDiagMemberModal() {
+function openDiagMemberModal(rowIdx, cell) {
+  _currentDiagRowIdx = rowIdx ?? -1;
+  _currentDiagCell = cell ?? null;
+  const existing = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  ME_COLLECTED.length = 0;
+  existing.forEach(m => ME_COLLECTED.push({...m}));
   const sel = document.getElementById('me-mbr-s-company');
   if(sel) sel.innerHTML = ['회사 선택','동아ST','동아쏘시오홀딩스'].map((c,i)=>`<option value="${i===0?'':c}">${c}</option>`).join('');
+  meMbrUpdateCollected();
   meMbrTab('single', document.querySelector('.mbr-tab'));
   meMbrSingleAll();
   document.getElementById('me-member-modal').style.display = 'flex';
@@ -1332,18 +1372,22 @@ function meMbrTab(type, btn) {
 }
 
 // ── 개별 검색/등록 ──
-function meMbrSingleAll() {
-  const tbody = document.getElementById('me-mbr-s-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
+function _meMbrSingleRow(m) {
+  const isReg = !!ME_COLLECTED.find(c => c.empno === m.empno);
+  return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}" style="${isReg?'background:#f0faf4;':''}">
+    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()" ${isReg?'checked':''}></td>
     <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId)}</td>
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
     <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
-  </tr>`).join('');
+    <td style="text-align:center;padding:5px 4px;font-size:11px;">${isReg?'<span style="color:#1e7e50;font-weight:700;">✓ 등록됨</span>':'<span style="color:#1e7e50;">재직</span>'}</td>
+  </tr>`;
+}
+function meMbrSingleAll() {
+  const tbody = document.getElementById('me-mbr-s-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => _meMbrSingleRow(m)).join('');
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
   meMbrSelCount();
 }
@@ -1353,15 +1397,7 @@ function meMbrSingleSearch() {
   const filtered = ME_SAMPLE_MEMBERS.filter(m=>m.name.includes(kw)||m.empno.includes(kw)||m.dept.includes(kw)||(m.loginId||'').includes(kw));
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length
-    ? filtered.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}">
-        <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
-        <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-        <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-        <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
-      </tr>`).join('')
+    ? filtered.map(m => _meMbrSingleRow(m)).join('')
     : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
@@ -1371,9 +1407,20 @@ function meMbrSelCount() {
 }
 function meMbrSingleReg() {
   const checked = [...document.querySelectorAll('.me-mbr-s-chk:checked')];
-  if(!checked.length) { alert('등록할 인원을 선택해주세요.'); return; }
-  document.getElementById('me-member-modal').style.display = 'none';
-  showToast('진단 대상자 ' + checked.length + '명이 등록되었습니다.');
+  if(!checked.length && !ME_COLLECTED.length) { alert('등록할 인원을 선택해주세요.'); return; }
+  // 체크된 행 기준으로 ME_COLLECTED 재구성 (추가 + 해제 반영)
+  const checkedEmpnos = new Set(checked.map(c => c.closest('tr')?.dataset?.empno).filter(Boolean));
+  // 검색 결과에 없는 기존 등록 인원은 유지
+  const visibleEmpnos = new Set([...document.querySelectorAll('#me-mbr-s-tbody tr')].map(tr => tr.dataset?.empno).filter(Boolean));
+  const kept = ME_COLLECTED.filter(m => !visibleEmpnos.has(m.empno));
+  checked.forEach(chk => {
+    const tr = chk.closest('tr');
+    const name = tr?.dataset?.name, empno = tr?.dataset?.empno, dept = tr?.dataset?.dept, company = tr?.dataset?.company;
+    if(name && empno && !kept.find(m => m.empno === empno)) kept.push({name, empno, dept, company});
+  });
+  ME_COLLECTED.length = 0;
+  kept.forEach(m => ME_COLLECTED.push(m));
+  _diagSaveAndClose();
 }
 
 // ── 좌우분할 ──
@@ -1382,7 +1429,6 @@ function meMbrLoadLeft(type) {
   const guides = {dept:'부서',grade:'직급',position:'직책',job:'직무',jobgroup:'직군',target:'대상구분 유형'};
   document.getElementById('me-mbr-right-empty').style.display='flex';
   document.getElementById('me-mbr-right-content').style.display='none';
-  ME_COLLECTED.length=0; meMbrUpdateCollected();
   if(type==='target') {
     meMbrTargetTypeIdx=null;
     document.getElementById('me-mbr-split-guide').textContent='좌측에서 대상구분 유형을 선택하세요.';
@@ -1423,10 +1469,7 @@ function meMbrSplitReg() {
     if(name&&empno&&!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
   });
   if(!ME_COLLECTED.length) { alert('등록할 인원을 추가(→) 해주세요.'); return; }
-  const cnt = ME_COLLECTED.length;
-  ME_COLLECTED.length=0;
-  document.getElementById('me-member-modal').style.display='none';
-  showToast('진단 대상자 ' + cnt + '명이 등록되었습니다.');
+  _diagSaveAndClose();
 }
 
 // ── 선택 인원 모음 ──
