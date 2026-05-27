@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단 만들기 — LABS New EDMS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #1a73e8;
+  --bg: #f5f6fa;
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #3d5166;
+  --header-bg: #1e2b37;
+  --white: #ffffff;
+  --border: #dde1e7;
+  --text: #333;
+}
+body {
+  font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+  font-size: 13px; background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ── HEADER ── */
+.top-header {
+  background: var(--header-bg); color: #fff; height: 46px;
+  display: flex; align-items: center; padding: 0 20px; gap: 16px;
+  flex-shrink: 0; z-index: 200;
+}
+.top-header .logo { font-size: 15px; font-weight: 700; color: #fff; }
+.top-header .logo span { color: #7eb8f7; }
+.top-header .subtitle { font-size: 12px; color: #aab; }
+.top-header .spacer { flex: 1; }
+.top-header .user-name { font-size: 13px; color: #ccc; }
+.top-header .btn-header { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+.top-header .lang-select { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar { width: 180px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+.nav-group-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; cursor: pointer; user-select: none; color: #b8c4ce; font-size: 12px; font-weight: 700; border-left: 3px solid transparent; }
+.nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-group.open > .nav-group-header { color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7; }
+.nav-group-label { flex: 1; }
+.nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; }
+.nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+.nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.nav-group.open > .nav-sub { max-height: 300px; padding: 2px 0 6px; }
+.nav-item { display: block; padding: 5px 12px 5px 22px; color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; }
+.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+.nav-flat { display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+.nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+/* ── PAGE HEADER ── */
+.page-header-row { display: flex; align-items: flex-start; justify-content: space-between; }
+.page-title-area { display: flex; flex-direction: column; gap: 4px; }
+.page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+.breadcrumb { font-size: 11px; color: #999; }
+.page-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── BUTTONS ── */
+.btn { height: 32px; padding: 0 18px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; font-weight: 700; }
+.btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+.btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+.btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
+.btn-xs { height: 24px; padding: 0 9px; font-size: 11px; }
+
+/* ── STEP WIZARD ── */
+.step-wizard {
+  display: flex; background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+}
+.step-item {
+  display: flex; align-items: center; gap: 10px; padding: 13px 28px;
+  flex: 1; cursor: pointer; position: relative; border-right: 1px solid var(--border);
+}
+.step-item:last-child { border-right: none; }
+.step-item::after {
+  content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+  border-left: 10px solid var(--border); z-index: 1;
+}
+.step-item:last-child::after { display: none; }
+.step-item::before {
+  content: ''; position: absolute; right: -9px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+  border-left: 10px solid #fff; z-index: 2;
+}
+.step-item:last-child::before { display: none; }
+.step-item.active::before { border-left-color: #fff; }
+.step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; background: #e0e3e8; color: #888; transition: all 0.2s; }
+.step-item.active .step-num { background: var(--primary); color: #fff; }
+.step-item.done .step-num { background: #1a7a4a; color: #fff; }
+.step-info { display: flex; flex-direction: column; gap: 1px; }
+.step-sub { font-size: 10px; color: #aaa; }
+.step-label { font-size: 13px; font-weight: 700; color: #aaa; }
+.step-item.active .step-label { color: var(--primary); }
+.step-item.done .step-label { color: #1a7a4a; }
+.step-item.active .step-sub { color: #7aaaf7; }
+.step-item.done .step-sub { color: #5daa82; }
+
+/* ── FORM SECTION ── */
+.form-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.form-section-header {
+  padding: 11px 20px; background: #f8f9fb; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; color: #1a1a2e; display: flex; align-items: center; gap: 8px;
+}
+.section-icon { font-size: 14px; }
+.form-table { width: 100%; border-collapse: collapse; }
+.form-table tr { border-bottom: 1px solid #f0f2f5; }
+.form-table tr:last-child { border-bottom: none; }
+.form-th {
+  width: 160px; padding: 11px 20px; font-size: 12px; font-weight: 600; color: #555;
+  background: #fafbfc; border-right: 1px solid #f0f2f5; text-align: left; vertical-align: middle;
+  white-space: nowrap;
+}
+.form-th .req { color: #e53e3e; margin-left: 2px; }
+.form-td { padding: 9px 16px; vertical-align: middle; }
+.form-input { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; }
+.form-input:focus { border-color: var(--primary); }
+.form-input.w-lg { width: 420px; }
+.form-input.w-md { width: 280px; }
+.form-input.w-sm { width: 140px; }
+.form-input.w-date { width: 140px; }
+.form-textarea { width: 100%; max-width: 640px; height: 80px; border: 1px solid #ccc; border-radius: 3px; padding: 8px 10px; font-size: 12px; font-family: inherit; outline: none; resize: vertical; }
+.form-textarea:focus { border-color: var(--primary); }
+.form-select { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 8px; font-size: 12px; background: #fff; cursor: pointer; font-family: inherit; outline: none; }
+.form-select:focus { border-color: var(--primary); }
+.inline-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.radio-group { display: flex; gap: 18px; align-items: center; }
+.radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
+.hint { font-size: 11px; color: #888; margin-top: 4px; }
+.search-btn { height: 30px; padding: 0 14px; background: #f0f2f5; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; color: #444; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.search-btn:hover { background: #e4e6ea; }
+
+/* 상품 선택 상태 */
+.product-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px;
+}
+.product-tag-name { font-size: 12px; font-weight: 700; color: #1a5cc8; }
+.product-tag-meta { font-size: 11px; color: #7a9cc8; }
+.product-tag-del { background: none; border: none; color: #aaa; cursor: pointer; font-size: 15px; line-height: 1; }
+.product-tag-del:hover { color: #c00; }
+
+/* 템플릿 행 (알림 Y일 때만 표시) */
+.template-section { display: none; }
+.template-section.visible { display: table-row; }
+
+/* ── STEP 2: 결과분석 트리 ── */
+.analysis-info-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 6px;
+  font-size: 12px; color: #1a5cc8;
+}
+.analysis-info-icon { font-size: 16px; }
+
+.analysis-tree { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+
+/* 진단 유형 */
+.type-block { border-bottom: 1px solid var(--border); }
+.type-block:last-child { border-bottom: none; }
+.type-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; background: #f4f6fb; cursor: pointer; user-select: none;
+}
+.type-header:hover { background: #ecf0fa; }
+.type-toggle { font-size: 9px; color: #1a5cc8; transition: transform 0.2s; }
+.type-block.open > .type-header .type-toggle { transform: rotate(90deg); }
+.type-tag { display: inline-flex; padding: 2px 9px; background: #1a73e8; color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.type-name { font-size: 13px; font-weight: 700; color: #1a2e5c; flex: 1; }
+.respondent-wrap { display: flex; align-items: center; gap: 6px; }
+.respondent-label { font-size: 11px; color: #888; white-space: nowrap; }
+.respondent-radio { display: flex; gap: 12px; }
+.respondent-radio label { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #444; cursor: pointer; white-space: nowrap; }
+
+.type-body { display: none; }
+.type-block.open > .type-body { display: block; }
+
+/* 진단 영역 */
+.area-block { border-top: 1px solid #eef0f4; }
+.area-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px 10px 32px; cursor: pointer; background: #fff;
+}
+.area-header:hover { background: #fafbfd; }
+.area-toggle { font-size: 9px; color: #888; transition: transform 0.2s; }
+.area-block.open > .area-header .area-toggle { transform: rotate(90deg); }
+.area-tag { display: inline-flex; padding: 1px 7px; background: #e8f0fe; color: #1a5cc8; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.area-name { font-size: 12px; font-weight: 700; color: #333; flex: 1; }
+.score-inputs { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.score-group { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.lbl-strong { font-size: 11px; font-weight: 700; color: #1a7a4a; }
+.lbl-weak { font-size: 11px; font-weight: 700; color: #c0392b; }
+.score-input { width: 54px; height: 26px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-size: 12px; font-family: inherit; outline: none; }
+.score-input:focus { border-color: var(--primary); }
+.score-unit { font-size: 11px; color: #777; }
+
+.area-body { display: none; }
+.area-block.open > .area-body { display: block; }
+
+/* 세부 영역 */
+.sub-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px 8px 60px; border-top: 1px solid #f3f4f6;
+}
+.sub-row:hover { background: #fafbfc; }
+.sub-dot { width: 5px; height: 5px; border-radius: 50%; background: #bbb; flex-shrink: 0; }
+.sub-name { font-size: 12px; color: #444; flex: 1; }
+.course-badges { display: flex; gap: 5px; align-items: center; }
+.course-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-strong { background: #e6f7ee; color: #1a7a4a; }
+.badge-weak { background: #fde8e8; color: #c0392b; }
+.course-set-btn { height: 24px; padding: 0 10px; font-size: 11px; background: #fff; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #555; font-family: inherit; white-space: nowrap; }
+.course-set-btn:hover { border-color: var(--primary); color: var(--primary); }
+.course-set-btn.has-data { border-color: #aed6c0; color: #1a7a4a; background: #f0faf4; }
+
+/* ── STEP 3: 대상자 ── */
+.type-tabs { display: flex; gap: 0; border-bottom: 2px solid #e0e3e8; }
+.type-tab { padding: 9px 22px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.type-tab:hover { color: var(--primary); }
+.type-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.type-tab-pane { display: none; padding-top: 16px; }
+.type-tab-pane.active { display: block; }
+
+.participant-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.participant-toolbar .spacer { flex: 1; }
+.participant-count { font-size: 12px; color: #666; }
+.participant-count strong { color: var(--primary); }
+.ptable { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ptable th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+.ptable td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; }
+.ptable tbody tr:hover td { background: #f5f8ff; }
+.del-btn { background: none; border: none; color: #bbb; cursor: pointer; font-size: 16px; line-height: 1; }
+.del-btn:hover { color: #c00; }
+.empty-row td { color: #aaa; padding: 24px 8px; }
+
+/* ── MODALS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; border-radius: 6px; width: 560px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.modal-box.w-md { width: 640px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; }
+.modal-close:hover { color: #333; }
+.modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.modal-footer { padding: 13px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.modal-search-row { display: flex; gap: 6px; }
+.modal-input { flex: 1; height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; font-family: inherit; outline: none; }
+.modal-input:focus { border-color: var(--primary); }
+.modal-notice { font-size: 11px; color: #888; background: #f8f9fb; border: 1px solid #eee; border-radius: 4px; padding: 8px 12px; line-height: 1.7; }
+
+/* 상품 목록 */
+.product-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.product-item { padding: 10px 14px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+.product-item:hover, .product-item.selected { border-color: var(--primary); background: #f0f4ff; }
+.product-item-name { font-size: 13px; font-weight: 700; color: #1a2e5c; }
+.product-item-meta { font-size: 11px; color: #888; margin-top: 2px; }
+
+/* 과정 설정 모달 */
+.course-section-label { font-size: 12px; font-weight: 700; color: #555; padding-bottom: 6px; border-bottom: 1px solid #eee; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.course-dot-strong { width: 8px; height: 8px; border-radius: 50%; background: #1a7a4a; flex-shrink: 0; }
+.course-dot-weak { width: 8px; height: 8px; border-radius: 50%; background: #c0392b; flex-shrink: 0; }
+.course-list { display: flex; flex-direction: column; gap: 5px; min-height: 36px; margin-bottom: 8px; }
+.course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f8f9fb; border-radius: 4px; font-size: 12px; }
+.course-item-name { flex: 1; }
+.course-item-del { background: none; border: none; color: #bbb; cursor: pointer; font-size: 14px; }
+.course-item-del:hover { color: #c00; }
+.empty-course { font-size: 12px; color: #bbb; padding: 8px 0; }
+.add-course-row { display: flex; gap: 6px; }
+
+/* TOAST */
+#toast { display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px; font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25); white-space: nowrap; }
+
+.step-content { display: none; }
+.step-content.active { display: flex; flex-direction: column; gap: 14px; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo"><span>LABS</span> New EDMS</div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">과정/콘텐츠</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정 관리</a>
+        <a class="nav-item" href="#">콘텐츠 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">진단</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item active" href="#">역량진단 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">보고서</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">학습 현황</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Page Header -->
+    <div class="page-header-row">
+      <div class="page-title-area">
+        <div class="breadcrumb">진단 &gt; 역량진단 관리 &gt; 진단 만들기</div>
+        <div class="page-header-title">진단 만들기</div>
+      </div>
+      <div class="page-actions" id="pageActions">
+        <button class="btn btn-gray" onclick="showToast('임시저장되었습니다.')">임시저장</button>
+        <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">이전</button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음</button>
+      </div>
+    </div>
+
+    <!-- Step Wizard -->
+    <div class="step-wizard">
+      <div class="step-item active" id="step-tab-1">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <div class="step-sub">STEP 1</div>
+          <div class="step-label">기본 정보</div>
+        </div>
+      </div>
+      <div class="step-item" id="step-tab-2">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <div class="step-sub">STEP 2</div>
+          <div class="step-label">결과분석 설정</div>
+        </div>
+      </div>
+      <div class="step-item" id="step-tab-3">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <div class="step-sub">STEP 3</div>
+          <div class="step-label">대상자 설정</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         STEP 1: 기본 정보
+    ══════════════════════════════════ -->
+    <div class="step-content active" id="step-content-1">
+      <div class="form-section">
+        <div class="form-section-header"><span class="section-icon">📋</span> 기본 정보</div>
+        <table class="form-table">
+          <tr>
+            <th class="form-th">기업 선택 <span class="req">*</span></th>
+            <td class="form-td">
+              <div class="inline-row">
+                <input class="form-input w-lg" placeholder="기업명을 입력하세요" id="inputCompany" readonly value="365연수원">
+                <button class="search-btn">검색</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">진단명 <span class="req">*</span></th>
+            <td class="form-td">
+              <input class="form-input w-lg" placeholder="진단명을 입력하세요" id="inputDiagName">
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">진단 상품 선택 <span class="req">*</span></th>
+            <td class="form-td">
+              <div class="inline-row" id="productSelectArea">
+                <input class="form-input w-lg" placeholder="상품을 선택하세요" id="inputProduct" readonly>
+                <button class="search-btn" onclick="openProductModal()">검색</button>
+              </div>
+              <div id="productTagArea" style="display:none;">
+                <div class="inline-row">
+                  <div class="product-tag">
+                    <span class="product-tag-name" id="productTagName"></span>
+                    <span class="product-tag-meta" id="productTagMeta"></span>
+                    <button class="product-tag-del" onclick="removeProduct()">×</button>
+                  </div>
+                  <span class="hint" style="color:#1a7a4a;">✓ 진단 유형 및 영역 정보가 결과분석 설정에 반영됩니다.</span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">진단 기간 <span class="req">*</span></th>
+            <td class="form-td">
+              <div class="inline-row">
+                <input class="form-input w-date" type="date" id="dateStart">
+                <span style="font-size:12px;color:#888;">~</span>
+                <input class="form-input w-date" type="date" id="dateEnd">
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">문항 노출 방식</th>
+            <td class="form-td">
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="displayType" value="all" checked> 모든 진단 문항을 한 페이지에 노출</label>
+                <label class="radio-label"><input type="radio" name="displayType" value="one"> 하나의 진단 문항을 한 페이지에 노출</label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">알림 사용여부</th>
+            <td class="form-td">
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="notifUse" value="Y" onchange="toggleTemplate(true)"> Y (자동등록)</label>
+                <label class="radio-label"><input type="radio" name="notifUse" value="N" checked onchange="toggleTemplate(false)"> N</label>
+              </div>
+            </td>
+          </tr>
+          <tr class="template-section" id="templateRow">
+            <th class="form-th">템플릿 선택</th>
+            <td class="form-td">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="inline-row">
+                  <select class="form-select" style="width:120px;"><option>참여 (진단시작일)</option><option>독려</option><option>결과</option></select>
+                  <input class="form-input w-md" placeholder="템플릿을 선택하세요" readonly>
+                  <button class="search-btn">검색</button>
+                  <button class="btn btn-primary btn-sm">추가</button>
+                </div>
+                <div class="hint">참여(진단시작일) · 독려(진단마감 7일 전) · 결과(진단완료 시) 알림을 각각 설정할 수 있습니다.</div>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th class="form-th">진단 소개 및 설명</th>
+            <td class="form-td">
+              <textarea class="form-textarea" placeholder="진단에 대한 소개와 설명을 입력하세요."></textarea>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         STEP 2: 결과분석 설정
+    ══════════════════════════════════ -->
+    <div class="step-content" id="step-content-2">
+      <div class="analysis-info-bar">
+        <span class="analysis-info-icon">💡</span>
+        <div>
+          <strong>진단 영역별 강점/약점 기준 점수</strong>와 <strong>세부 영역별 추천 과정</strong>을 설정합니다.<br>
+          진단 유형별 응답자 구분(본인/구성원/동료/상사)을 먼저 확인하고 필요 시 변경하세요.
+        </div>
+      </div>
+
+      <div class="analysis-tree" id="analysisTree">
+        <!-- 진단 유형 1: 자가진단 -->
+        <div class="type-block open">
+          <div class="type-header" onclick="toggleBlock(this)">
+            <span class="type-toggle">▶</span>
+            <span class="type-tag">유형</span>
+            <span class="type-name">리더십 역량 진단 — 자가진단</span>
+            <div class="respondent-wrap">
+              <span class="respondent-label">응답자:</span>
+              <div class="respondent-radio">
+                <label><input type="radio" name="resp-1" value="self" checked> 본인</label>
+                <label><input type="radio" name="resp-1" value="member"> 구성원</label>
+                <label><input type="radio" name="resp-1" value="peer"> 동료</label>
+                <label><input type="radio" name="resp-1" value="superior"> 상사</label>
+              </div>
+            </div>
+          </div>
+          <div class="type-body">
+            <!-- 영역 1-1 -->
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">리더십 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">비전 및 목표 설정</span>
+                  <div class="course-badges" id="cb-1-1-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','1-1-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">구성원 육성 및 동기부여</span>
+                  <div class="course-badges" id="cb-1-1-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','1-1-2')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">성과 창출 및 관리</span>
+                  <div class="course-badges" id="cb-1-1-3"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','1-1-3')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+            <!-- 영역 1-2 -->
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">조직문화 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">윤리경영 및 책임의식</span>
+                  <div class="course-badges" id="cb-1-2-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','1-2-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">변화관리 및 혁신</span>
+                  <div class="course-badges" id="cb-1-2-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('변화관리 및 혁신','1-2-2')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">소통 및 협력</span>
+                  <div class="course-badges" id="cb-1-2-3"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','1-2-3')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 진단 유형 2: 다면평가 -->
+        <div class="type-block">
+          <div class="type-header" onclick="toggleBlock(this)">
+            <span class="type-toggle">▶</span>
+            <span class="type-tag">유형</span>
+            <span class="type-name">리더십 역량 진단 — 다면평가</span>
+            <div class="respondent-wrap">
+              <span class="respondent-label">응답자:</span>
+              <div class="respondent-radio">
+                <label><input type="radio" name="resp-2" value="self"> 본인</label>
+                <label><input type="radio" name="resp-2" value="member" checked> 구성원</label>
+                <label><input type="radio" name="resp-2" value="peer"> 동료</label>
+                <label><input type="radio" name="resp-2" value="superior"> 상사</label>
+              </div>
+            </div>
+          </div>
+          <div class="type-body">
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">리더십 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">비전 및 목표 설정</span>
+                  <div class="course-badges" id="cb-2-1-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','2-1-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">구성원 육성 및 동기부여</span>
+                  <div class="course-badges" id="cb-2-1-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','2-1-2')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">성과 창출 및 관리</span>
+                  <div class="course-badges" id="cb-2-1-3"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','2-1-3')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">조직문화 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">윤리경영 및 책임의식</span>
+                  <div class="course-badges" id="cb-2-2-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','2-2-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">소통 및 협력</span>
+                  <div class="course-badges" id="cb-2-2-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','2-2-2')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /analysis-tree -->
+    </div><!-- /step-content-2 -->
+
+    <!-- ══════════════════════════════════
+         STEP 3: 대상자 설정
+    ══════════════════════════════════ -->
+    <div class="step-content" id="step-content-3">
+      <div class="form-section">
+        <div class="form-section-header"><span class="section-icon">👥</span> 대상자 설정
+          <span style="font-size:11px;color:#888;font-weight:400;margin-left:8px;">진단 유형별로 대상자(진단 받는 사람)와 응답자(진단 하는 사람)를 설정합니다.</span>
+        </div>
+        <div style="padding:16px 20px;">
+          <div class="type-tabs" id="typeTabs">
+            <div class="type-tab active" onclick="switchTab(0)">자가진단</div>
+            <div class="type-tab" onclick="switchTab(1)">다면평가</div>
+          </div>
+
+          <!-- 탭 1: 자가진단 -->
+          <div class="type-tab-pane active" id="tab-pane-0">
+            <div class="participant-toolbar">
+              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 양식이 다운로드됩니다.')">📥 엑셀 양식 다운로드</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('파일 선택 팝업이 열립니다.')">📤 일괄 등록</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(0)">+ 개별 추가</button>
+              <div class="spacer"></div>
+              <span class="participant-count">총 <strong id="cnt-0">3</strong>명</span>
+            </div>
+            <table class="ptable">
+              <thead>
+                <tr>
+                  <th style="width:40px;">No</th>
+                  <th>이름</th>
+                  <th>사번</th>
+                  <th>부서</th>
+                  <th>직급</th>
+                  <th>이메일</th>
+                  <th style="width:50px;">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-0">
+                <tr><td>1</td><td>홍길동</td><td>20230101</td><td>인재개발팀</td><td>팀장</td><td>hong@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
+                <tr><td>2</td><td>김철수</td><td>20210505</td><td>전략기획팀</td><td>팀장</td><td>kim@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
+                <tr><td>3</td><td>이영희</td><td>20190812</td><td>마케팅팀</td><td>팀장</td><td>lee@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 탭 2: 다면평가 -->
+          <div class="type-tab-pane" id="tab-pane-1">
+            <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:10px 14px;font-size:12px;color:#7a5c00;margin-bottom:12px;">
+              💡 다면평가는 <strong>대상자(진단 받는 사람)</strong>를 먼저 등록한 후, 대상자별로 <strong>응답자(진단 하는 사람)</strong>를 설정합니다.
+            </div>
+            <div class="participant-toolbar">
+              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 양식이 다운로드됩니다.')">📥 엑셀 양식 다운로드</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('파일 선택 팝업이 열립니다.')">📤 일괄 등록</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(1)">+ 대상자 추가</button>
+              <div class="spacer"></div>
+              <span class="participant-count">총 <strong id="cnt-1">2</strong>명</span>
+            </div>
+            <table class="ptable">
+              <thead>
+                <tr>
+                  <th style="width:40px;">No</th>
+                  <th>이름 (대상자)</th>
+                  <th>사번</th>
+                  <th>부서</th>
+                  <th>직급</th>
+                  <th>응답자 수</th>
+                  <th style="width:80px;">응답자 설정</th>
+                  <th style="width:50px;">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-1">
+                <tr>
+                  <td>1</td><td>박지훈</td><td>20180303</td><td>개발팀</td><td>팀장</td>
+                  <td><span style="color:var(--primary);font-weight:700;">5명</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="showToast('응답자 설정 팝업이 열립니다.')">설정</button></td>
+                  <td><button class="del-btn" onclick="delRow(this,1)">×</button></td>
+                </tr>
+                <tr>
+                  <td>2</td><td>최수연</td><td>20200707</td><td>디자인팀</td><td>팀장</td>
+                  <td><span style="color:#aaa;">미설정</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="showToast('응답자 설정 팝업이 열립니다.')">설정</button></td>
+                  <td><button class="del-btn" onclick="delRow(this,1)">×</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div><!-- /step-content-3 -->
+
+  </main>
+</div><!-- /layout -->
+
+<!-- ══ MODAL: 진단 상품 검색 ══ -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>진단 상품 검색</h3>
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-notice">CUBE 어드민에 등록된 진단 상품 목록입니다. 상품을 선택하면 해당 상품의 진단 유형·영역·세부영역 정보가 결과분석 설정에 자동으로 반영됩니다.</div>
+      <div class="modal-search-row">
+        <input class="modal-input" placeholder="상품명 또는 코드 검색" id="productSearchInput">
+        <button class="btn btn-primary btn-sm" onclick="filterProducts()">검색</button>
+      </div>
+      <div class="product-list" id="productList">
+        <div class="product-item" onclick="selectProduct(this,'리더십 역량 진단','유형 2종 · 영역 2종 · 문항 96개')">
+          <div class="product-item-name">리더십 역량 진단</div>
+          <div class="product-item-meta">유형 2종 · 영역 2종 · 문항 96개</div>
+        </div>
+        <div class="product-item" onclick="selectProduct(this,'비즈니스 역량 진단','유형 1종 · 영역 3종 · 문항 60개')">
+          <div class="product-item-name">비즈니스 역량 진단</div>
+          <div class="product-item-meta">유형 1종 · 영역 3종 · 문항 60개</div>
+        </div>
+        <div class="product-item" onclick="selectProduct(this,'핵심인재 종합 역량 진단','유형 3종 · 영역 4종 · 문항 120개')">
+          <div class="product-item-name">핵심인재 종합 역량 진단</div>
+          <div class="product-item-meta">유형 3종 · 영역 4종 · 문항 120개</div>
+        </div>
+        <div class="product-item" onclick="selectProduct(this,'신임 팀장 리더십 진단','유형 2종 · 영역 3종 · 문항 72개')">
+          <div class="product-item-name">신임 팀장 리더십 진단</div>
+          <div class="product-item-meta">유형 2종 · 영역 3종 · 문항 72개</div>
+        </div>
+        <div class="product-item" onclick="selectProduct(this,'조직문화 진단','유형 1종 · 영역 2종 · 문항 48개')">
+          <div class="product-item-name">조직문화 진단</div>
+          <div class="product-item-meta">유형 1종 · 영역 2종 · 문항 48개</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('productModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmProduct()">선택</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: 과정 설정 ══ -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal-box w-md">
+    <div class="modal-header">
+      <h3>과정 설정 — <span id="courseModalTitle"></span></h3>
+      <button class="modal-close" onclick="closeModal('courseModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-notice">
+        세부 영역의 역량 진단 결과에 따라 추천할 과정을 설정합니다.<br>
+        강점 역량 과정: 해당 영역 점수가 강점 기준 이상일 때 추천<br>
+        약점 역량 과정: 해당 영역 점수가 약점 기준 미만일 때 추천
+      </div>
+
+      <!-- 강점 역량 과정 -->
+      <div>
+        <div class="course-section-label"><span class="course-dot-strong"></span> 강점 역량 추천 과정</div>
+        <div class="course-list" id="strongCourseList">
+          <div class="empty-course">추가된 과정이 없습니다.</div>
+        </div>
+        <div class="add-course-row">
+          <input class="modal-input" placeholder="과정명 검색" id="strongCourseInput">
+          <button class="btn btn-outline btn-sm" onclick="addCourse('strong')">+ 추가</button>
+        </div>
+      </div>
+
+      <!-- 약점 역량 과정 -->
+      <div>
+        <div class="course-section-label"><span class="course-dot-weak"></span> 약점 역량 추천 과정</div>
+        <div class="course-list" id="weakCourseList">
+          <div class="empty-course">추가된 과정이 없습니다.</div>
+        </div>
+        <div class="add-course-row">
+          <input class="modal-input" placeholder="과정명 검색" id="weakCourseInput">
+          <button class="btn btn-outline btn-sm" onclick="addCourse('weak')">+ 추가</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('courseModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="saveCourse()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: 개별 대상자 추가 ══ -->
+<div class="modal-overlay" id="participantModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="participantModalTitle">대상자 추가</h3>
+      <button class="modal-close" onclick="closeModal('participantModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-search-row">
+        <input class="modal-input" placeholder="이름, 사번, 부서 입력 후 검색" id="participantSearch">
+        <button class="btn btn-primary btn-sm">검색</button>
+      </div>
+      <div class="product-list">
+        <div class="product-item" onclick="this.classList.toggle('selected')">
+          <div class="product-item-name">홍길동</div>
+          <div class="product-item-meta">20230101 · 인재개발팀 · 팀장</div>
+        </div>
+        <div class="product-item" onclick="this.classList.toggle('selected')">
+          <div class="product-item-name">박민수</div>
+          <div class="product-item-meta">20220214 · 영업팀 · 팀장</div>
+        </div>
+        <div class="product-item" onclick="this.classList.toggle('selected')">
+          <div class="product-item-name">정다은</div>
+          <div class="product-item-meta">20210909 · 기획팀 · 팀장</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('participantModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('대상자가 추가되었습니다.'); closeModal('participantModal')">추가</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ── NAV ── */
+function toggleNav(el) {
+  el.closest('.nav-group').classList.toggle('open');
+}
+
+/* ── STEP ── */
+let currentStep = 1;
+
+function goStep(n) {
+  document.getElementById('step-content-' + currentStep).classList.remove('active');
+  document.getElementById('step-tab-' + currentStep).classList.remove('active');
+  if (currentStep < n) document.getElementById('step-tab-' + currentStep).classList.add('done');
+
+  currentStep = n;
+  document.getElementById('step-content-' + currentStep).classList.add('active');
+  document.getElementById('step-tab-' + currentStep).classList.add('active');
+  document.getElementById('step-tab-' + currentStep).classList.remove('done');
+
+  document.getElementById('btnPrev').style.display = currentStep > 1 ? '' : 'none';
+  document.getElementById('btnNext').textContent = currentStep === 3 ? '저장' : '다음';
+}
+
+function nextStep() {
+  if (currentStep === 3) {
+    showToast('진단이 저장되었습니다. (대기 상태)');
+    setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1200);
+    return;
+  }
+  if (currentStep < 3) goStep(currentStep + 1);
+}
+
+function prevStep() {
+  if (currentStep > 1) goStep(currentStep - 1);
+}
+
+/* ── TOGGLE TREE BLOCK ── */
+function toggleBlock(headerEl) {
+  headerEl.closest('.type-block, .area-block').classList.toggle('open');
+}
+
+/* ── TEMPLATE ROW ── */
+function toggleTemplate(show) {
+  document.getElementById('templateRow').classList.toggle('template-section', true);
+  document.getElementById('templateRow').classList.toggle('visible', show);
+}
+/* init: hide template row */
+document.getElementById('templateRow').style.display = 'none';
+document.querySelectorAll('input[name="notifUse"]').forEach(r => {
+  r.addEventListener('change', function() {
+    document.getElementById('templateRow').style.display = this.value === 'Y' ? '' : 'none';
+  });
+});
+
+/* ── PRODUCT MODAL ── */
+let selectedProductEl = null;
+let selectedProductName = '';
+let selectedProductMeta = '';
+
+function openProductModal() {
+  openModal('productModal');
+  selectedProductEl = null;
+}
+
+function selectProduct(el, name, meta) {
+  document.querySelectorAll('#productList .product-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedProductEl = el;
+  selectedProductName = name;
+  selectedProductMeta = meta;
+}
+
+function confirmProduct() {
+  if (!selectedProductEl) { showToast('상품을 선택해주세요.'); return; }
+  document.getElementById('productSelectArea').style.display = 'none';
+  document.getElementById('productTagArea').style.display = '';
+  document.getElementById('productTagName').textContent = selectedProductName;
+  document.getElementById('productTagMeta').textContent = selectedProductMeta;
+  closeModal('productModal');
+}
+
+function removeProduct() {
+  document.getElementById('productSelectArea').style.display = '';
+  document.getElementById('productTagArea').style.display = 'none';
+  document.getElementById('inputProduct').value = '';
+}
+
+function filterProducts() {
+  const q = document.getElementById('productSearchInput').value.toLowerCase();
+  document.querySelectorAll('#productList .product-item').forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+/* ── COURSE MODAL ── */
+let currentCourseKey = '';
+const courseData = {};
+
+function openCourseModal(title, key) {
+  currentCourseKey = key;
+  document.getElementById('courseModalTitle').textContent = title;
+
+  const data = courseData[key] || { strong: [], weak: [] };
+  renderCourseList('strongCourseList', data.strong);
+  renderCourseList('weakCourseList', data.weak);
+  document.getElementById('strongCourseInput').value = '';
+  document.getElementById('weakCourseInput').value = '';
+  openModal('courseModal');
+}
+
+function renderCourseList(listId, courses) {
+  const el = document.getElementById(listId);
+  if (!courses.length) {
+    el.innerHTML = '<div class="empty-course">추가된 과정이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = courses.map((c, i) =>
+    `<div class="course-item"><span class="course-item-name">${c}</span><button class="course-item-del" onclick="removeCourse('${listId}','${c}')">×</button></div>`
+  ).join('');
+}
+
+function addCourse(type) {
+  const inputId = type === 'strong' ? 'strongCourseInput' : 'weakCourseInput';
+  const listId  = type === 'strong' ? 'strongCourseList'  : 'weakCourseList';
+  const val = document.getElementById(inputId).value.trim();
+  if (!val) { showToast('과정명을 입력하세요.'); return; }
+
+  const data = courseData[currentCourseKey] || { strong: [], weak: [] };
+  if (!courseData[currentCourseKey]) courseData[currentCourseKey] = data;
+  data[type].push(val);
+  renderCourseList(listId, data[type]);
+  document.getElementById(inputId).value = '';
+}
+
+function removeCourse(listId, courseName) {
+  const type = listId === 'strongCourseList' ? 'strong' : 'weak';
+  const data = courseData[currentCourseKey];
+  if (!data) return;
+  data[type] = data[type].filter(c => c !== courseName);
+  renderCourseList(listId, data[type]);
+}
+
+function saveCourse() {
+  const data = courseData[currentCourseKey] || { strong: [], weak: [] };
+  const btn = document.querySelector(`button[onclick="openCourseModal('${document.getElementById('courseModalTitle').textContent}','${currentCourseKey}')"]`);
+  const badgeEl = document.getElementById('cb-' + currentCourseKey);
+  if (badgeEl) {
+    let html = '';
+    if (data.strong.length) html += `<span class="course-badge badge-strong">강점 ${data.strong.length}개</span>`;
+    if (data.weak.length)   html += `<span class="course-badge badge-weak">약점 ${data.weak.length}개</span>`;
+    badgeEl.innerHTML = html;
+    if (btn) btn.classList.toggle('has-data', !!(data.strong.length || data.weak.length));
+  }
+  showToast('과정 설정이 저장되었습니다.');
+  closeModal('courseModal');
+}
+
+/* ── PARTICIPANT ── */
+let currentTabIdx = 0;
+
+function switchTab(idx) {
+  document.querySelectorAll('.type-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.type-tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+  currentTabIdx = idx;
+}
+
+function openAddParticipant(tabIdx) {
+  document.getElementById('participantModalTitle').textContent = tabIdx === 0 ? '대상자 추가' : '대상자 추가 (다면평가)';
+  openModal('participantModal');
+}
+
+function delRow(btn, tabIdx) {
+  btn.closest('tr').remove();
+  const tbody = document.getElementById('tbody-' + tabIdx);
+  const cnt = tbody.querySelectorAll('tr').length;
+  document.getElementById('cnt-' + tabIdx).textContent = cnt;
+  tbody.querySelectorAll('tr').forEach((r, i) => r.cells[0].textContent = i + 1);
+}
+
+/* ── MODAL HELPERS ── */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+/* ── TOAST ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.display = 'none', 2200);
+}
+</script>
+</body>
+</html>

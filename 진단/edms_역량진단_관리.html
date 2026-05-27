@@ -467,11 +467,14 @@
     <div class="card" style="padding: 16px 20px;">
       <div class="result-header">
         <span class="result-count">총 <strong>14</strong>건</span>
-        <select class="select" style="height:26px; font-size:11px;">
-          <option>10개씩</option>
-          <option>20개씩</option>
-          <option>50개씩</option>
-        </select>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-primary" onclick="location.href='edms_진단_만들기.html'" style="height:28px;font-size:12px;padding:0 14px;">+ 진단 만들기</button>
+          <select class="select" style="height:26px; font-size:11px;">
+            <option>10개씩</option>
+            <option>20개씩</option>
+            <option>50개씩</option>
+          </select>
+        </div>
       </div>
       <table class="main-table">
         <thead>
