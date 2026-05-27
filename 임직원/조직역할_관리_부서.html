@@ -4183,10 +4183,6 @@
         onkeydown="if(event.key==='Enter')deptAddMbrSearch()">
       <button onclick="deptAddMbrSearch()" class="btn btn-primary" style="height:28px;padding:0 12px;font-size:12px;">🔍 검색</button>
       <button onclick="document.getElementById('dept-add-mbr-kw').value='';deptAddMbrSearch();" class="btn btn-reset" style="height:28px;padding:0 12px;font-size:12px;">전체</button>
-      <!-- ③ 미지정 임직원 검색 체크박스 -->
-      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;white-space:nowrap;margin-left:4px;">
-        <input type="checkbox" id="dept-add-mbr-unassigned" onchange="deptAddMbrSearch()"> 미지정 임직원만
-      </label>
     </div>
     <!-- 임직원 목록 (③ 현재 소속 인원 미노출) -->
     <div style="flex:1;overflow-y:auto;">
@@ -4199,12 +4195,11 @@
             <th style="width:110px;">회사</th>
             <th>아이디</th>
             <th style="width:100px;">사번</th>
-            <th style="width:110px;">현재 소속</th>
             <th style="width:70px;">직급</th>
           </tr>
         </thead>
         <tbody id="dept-add-mbr-tbody">
-          <tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">검색된 결과가 없습니다.</td></tr>
+          <tr><td colspan="7" style="padding:30px;text-align:center;color:#bbb;">검색된 결과가 없습니다.</td></tr>
         </tbody>
       </table>
     </div>
@@ -10160,13 +10155,13 @@ function deptAddMember() {
   document.getElementById('dept-add-mbr-dept').textContent = node.name;
   document.getElementById('dept-add-mbr-kw').value = '';
   document.getElementById('dept-add-mbr-type').value = 'name';
-  document.getElementById('dept-add-mbr-unassigned').checked = false;
   // 회사 드롭다운 동적 생성
   const coSel = document.getElementById('dept-add-mbr-company');
   const coList = [...new Set(ALL_MEMBERS_POOL.map(m => m.co).filter(Boolean))];
   coSel.innerHTML = '<option value="">회사 선택</option>' + coList.map(c => `<option value="${c}">${c}</option>`).join('');
   deptAddMbrCurrentPage = 1; deptAddMbrPageSize = 50;
-  deptAddMbrFilteredPool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id));
+  // 부서 미지정 임직원만 노출 (이미 부서가 배정된 임직원은 목록에서 제외)
+  deptAddMbrFilteredPool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id) && m.dept==='부서 미지정');
   deptAddMbrRenderTable();
   document.getElementById('dept-add-mbr-modal').style.display = 'flex';
 }
@@ -10180,10 +10175,9 @@ function deptAddMbrSearch() {
   const kw = document.getElementById('dept-add-mbr-kw').value.trim();
   const type = document.getElementById('dept-add-mbr-type').value;
   const co   = document.getElementById('dept-add-mbr-company').value;
-  const onlyUnasgn = document.getElementById('dept-add-mbr-unassigned').checked;
-  let pool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id));
+  // 부서 미지정 임직원만 검색 대상 (이미 부서가 배정된 임직원은 제외)
+  let pool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id) && m.dept==='부서 미지정');
   if (co) pool = pool.filter(m => m.co === co);
-  if (onlyUnasgn) pool = pool.filter(m=>m.dept==='부서 미지정');
   if (kw) pool = pool.filter(m=>{
     if(type==='name')   return m.name.includes(kw);
     if(type==='loginId')return m.loginId.includes(kw);
@@ -10209,7 +10203,7 @@ function deptAddMbrRenderTable() {
   document.getElementById('dept-add-mbr-total-cnt').textContent = total;
   const tbody = document.getElementById('dept-add-mbr-tbody');
   tbody.innerHTML = page.length===0
-    ? `<tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">검색된 결과가 없습니다.</td></tr>`
+    ? `<tr><td colspan="7" style="padding:30px;text-align:center;color:#bbb;">검색된 결과가 없습니다.</td></tr>`
     : page.map((m,i)=>`
       <tr style="cursor:pointer;" onclick="deptAddMbrRowClick(event,'${m.id}')">
         <td onclick="event.stopPropagation()"><input type="checkbox" class="dept-add-mbr-chk" data-id="${m.id}" data-name="${m.name}" onchange="deptAddMbrUpdateRow(this)"></td>
@@ -10218,7 +10212,6 @@ function deptAddMbrRenderTable() {
         <td style="text-align:left;padding-left:10px;color:#444;">${m.co||'-'}</td>
         <td style="color:var(--primary);">${maskLoginId(m.loginId)}</td>
         <td style="font-family:monospace;color:#666;">${m.empNo}</td>
-        <td>${m.dept}</td>
         <td>${m.grade}</td>
       </tr>`).join('');
   renderPagination('dept-add-mbr-pagination', Math.ceil(total/ps)||1, cp, p => {
@@ -10230,6 +10223,7 @@ function deptAddMbrRender() { /* legacy compat */ }
 function deptConfirmAddMbr() {
   const checked = [...document.querySelectorAll('.dept-add-mbr-chk:checked')];
   if (checked.length===0) return;
+
   const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!DEPT_MEMBERS[deptSelectedId]) DEPT_MEMBERS[deptSelectedId] = [];
   // 추가된 임직원을 DEPT_MEMBERS에 반영
@@ -10378,15 +10372,17 @@ function deptConfirmMove() {
 }
 
 // ── 토스트 알림 ──────────────────────────────
-function deptShowToast(msg) {
+function deptShowToast(msg, type) {
+  const bg = type === 'error' ? '#c0392b' : '#323232';
   const t = document.createElement('div');
   t.style.cssText = `position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
-    background:#323232;color:#fff;font-size:12px;padding:10px 20px;border-radius:6px;
+    background:${bg};color:#fff;font-size:12px;padding:10px 20px;border-radius:6px;
     box-shadow:0 4px 12px rgba(0,0,0,0.25);z-index:9999;pointer-events:none;
     animation:toastIn 0.2s ease;white-space:nowrap;`;
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>document.body.removeChild(t),300); }, 2200);
+  const duration = type === 'error' ? 3500 : 2200;
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>document.body.removeChild(t),300); }, duration);
 }
 
 function deptExcelDown()    { alert('소속 임직원 목록 엑셀 파일이 다운로드됩니다.'); }

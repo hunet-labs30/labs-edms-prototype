@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS 연수원 Admin - FAQ 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: #334155;
+    --header-bg: #0f172a;
+    --admin-red: #dc2626;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px; background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }
+  .top-header {
+    background: var(--header-bg); color: #fff; height: 48px;
+    display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    flex-shrink: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; letter-spacing: -.3px; }
+  .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; }
+  .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 200px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; transition: background .15s, color .15s; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .nav-group.open > .nav-sub { max-height: 1200px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; transition: background .12s, color .12s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-group-sub > .nav-group-header { padding-left: 22px; font-size: 11px; font-weight: 600; color: #475569; border-left-color: transparent; background: transparent; }
+  .nav-group-sub.open > .nav-group-header { color: #94a3b8; background: transparent; border-left-color: transparent; }
+  .nav-group-sub > .nav-sub .nav-item { padding-left: 34px; }
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .main::-webkit-scrollbar { width: 5px; }
+  .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+  .search-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 0; }
+  .search-row:last-of-type { border-bottom: none; }
+  .search-label { width: 80px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; line-height: 1.3; }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .search-actions { padding: 12px 20px 14px; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid #f1f5f9; }
+  .input, .select {
+    height: 34px; border: 1px solid #cbd5e1; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
+    background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .select { cursor: pointer; padding-right: 28px; appearance: none; flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .btn { height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; font-family: inherit; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-reset { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-reset:hover { background: #f1f5f9; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-outline:hover { background: #f9fafb; }
+  .btn-sm { height: 30px; padding: 0 14px; font-size: 12px; border-radius: 5px; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost { background: transparent; color: #475569; border: 1px solid #e2e8f0; }
+  .btn-ghost:hover { background: #f8fafc; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
+  .result-count { font-size: 13px; color: var(--text-muted); }
+  .result-count strong { color: var(--primary); font-weight: 700; }
+  .result-actions { display: flex; gap: 6px; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; font-weight: 600; color: #475569; text-align: center; white-space: nowrap; }
+  .main-table td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; text-align: center; color: var(--text); white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .link-cell { color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .link-cell:hover { color: #1d4ed8; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-공개 { background: #dcfce7; color: #15803d; }
+  .badge-비공개 { background: #f1f5f9; color: #64748b; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+  .pagination { display: flex; align-items: center; gap: 3px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #e2e8f0; background: #fff; border-radius: 5px; font-size: 12px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all .12s; font-family: inherit; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .empty-row td { padding: 40px 0; color: #94a3b8; font-size: 13px; }
+  .per-page-select { height: 28px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 12px; padding: 0 20px 0 8px; color: #475569; cursor: pointer; appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 6px center; }
+
+  /* 토글 스위치 */
+  .toggle-wrap { display: flex; align-items: center; justify-content: center; }
+  .toggle { position: relative; width: 36px; height: 20px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 20px; cursor: pointer; transition: background .2s; }
+  .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .toggle input:checked + .toggle-slider { background: #16a34a; }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+
+  /* 상세/등록 화면 */
+  .section-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); overflow: hidden; }
+  .section-title { font-size: 13px; font-weight: 700; color: #0f172a; padding: 12px 18px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; gap: 8px; }
+  .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .info-table th { background: #f8fafc; width: 120px; padding: 10px 16px; font-weight: 600; color: #475569; text-align: left; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; vertical-align: top; }
+  .info-table td { padding: 10px 16px; color: var(--text); border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  .info-table tr:last-child th, .info-table tr:last-child td { border-bottom: none; }
+  .req { color: #dc2626; margin-left: 2px; }
+  .field-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .field-hint { font-size: 11px; color: #94a3b8; }
+  .field-error { font-size: 11px; color: #dc2626; display: none; }
+  .field-error.show { display: block; }
+  .input-full { width: 100%; }
+  .readonly-val { color: #374151; }
+  .editor-mock { margin: 12px 18px; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; }
+  .editor-toolbar { display: flex; gap: 2px; padding: 6px 8px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+  .toolbar-btn { height: 26px; min-width: 26px; padding: 0 6px; background: transparent; border: 1px solid transparent; border-radius: 4px; font-size: 12px; cursor: pointer; color: #475569; font-family: inherit; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .toolbar-btn:hover { background: #e2e8f0; border-color: #cbd5e1; }
+  .toolbar-sep { width: 1px; background: #e2e8f0; margin: 2px 4px; }
+  .editor-body { min-height: 160px; padding: 12px 14px; font-size: 13px; line-height: 1.8; color: #374151; outline: none; }
+  .editor-body[contenteditable="true"]:empty::before { content: attr(data-placeholder); color: #94a3b8; }
+  .editor-readonly { min-height: 100px; padding: 14px 18px; font-size: 13px; line-height: 1.8; color: #374151; }
+
+  /* 하단 버튼바 */
+  .detail-actions { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); position: sticky; bottom: 0; }
+  .detail-actions-left { display: flex; gap: 8px; }
+  .detail-actions-right { display: flex; gap: 8px; }
+
+  /* 회사 선택 패널 (기업별) */
+  .company-panel { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .company-panel-label { font-size: 13px; font-weight: 600; color: #374151; white-space: nowrap; }
+  .company-combobox { position: relative; width: 300px; }
+  .company-combo-input { width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 32px 0 12px; font-size: 13px; font-family: inherit; color: var(--text); outline: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center; }
+  .company-combo-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .company-combo-input::placeholder { color: #94a3b8; }
+  .company-combo-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.1); z-index: 300; max-height: 240px; overflow-y: auto; display: none; }
+  .company-combo-dropdown.open { display: block; }
+  .combo-option { padding: 8px 12px; cursor: pointer; font-size: 13px; color: #374151; }
+  .combo-option:hover { background: #eff6ff; color: var(--primary); }
+  .combo-option.selected { font-weight: 700; color: var(--primary); background: #eff6ff; }
+  .combo-empty { padding: 14px; text-align: center; font-size: 12px; color: #94a3b8; }
+  .company-info { font-size: 12px; color: #94a3b8; }
+  .company-no-select { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 32px; text-align: center; color: #94a3b8; font-size: 13px; }
+
+  /* 모달 */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.2); width: 420px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: #f8fafc; flex-shrink: 0; }
+  .modal-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+  .btn-modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: #64748b; line-height: 1; padding: 2px 4px; }
+  .btn-modal-close:hover { color: #0f172a; }
+  .modal-body { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .modal-body::-webkit-scrollbar { width: 3px; }
+  .modal-body::-webkit-scrollbar-thumb { background: #e2e8f0; }
+  .modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 8px; background: #f8fafc; flex-shrink: 0; }
+
+  /* 구분설정 모달 항목 */
+  .cat-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .cat-drag { cursor: grab; color: #94a3b8; font-size: 15px; user-select: none; }
+  .cat-drag:active { cursor: grabbing; }
+  .cat-name { flex: 1; font-size: 13px; color: #374151; }
+  .cat-toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
+  .cat-hidden { opacity: .45; }
+  .cat-add-row { display: flex; gap: 6px; margin-top: 4px; }
+
+  /* 확인 모달 */
+  .confirm-modal { width: 340px; }
+  .confirm-modal .modal-body { padding: 24px 24px 20px; }
+  .confirm-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: #475569; line-height: 1.6; }
+  .confirm-modal .modal-footer { justify-content: flex-end; }
+
+  /* 토스트 */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #15803d; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo">LABS <span>연수원</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">연수원 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+
+  <!-- ━━━ 사이드바 ━━━ -->
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">학습관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정 관리</a>
+        <a class="nav-item" href="#">수강신청 관리</a>
+        <a class="nav-item" href="#">학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 조회</a>
+        <a class="nav-item" href="#">부서 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open" id="nav-cs">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">1:1 문의 관리</a>
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <!-- FAQ 관리 서브그룹 -->
+        <div class="nav-group nav-group-sub open" id="nav-faq-group">
+          <div class="nav-group-header" onclick="toggleNavSub(this)"><span class="nav-group-label">FAQ 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item active" id="nav-common" onclick="switchMode('common')">공통 FAQ 관리</a>
+            <a class="nav-item" id="nav-company" onclick="switchMode('company')">기업별 FAQ 관리</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기본 정보</a>
+        <a class="nav-item" href="#">메뉴 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════
+       공통 FAQ 관리 — 목록
+  ════════════════════════════════════ -->
+  <main class="main" id="view-common-list">
+    <div class="page-header">
+      <div class="page-title">공통 FAQ 관리</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 공통 FAQ 관리</div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <div class="search-row">
+        <div class="search-label">구분</div>
+        <div class="search-body">
+          <select class="select" id="s-c-category" style="width:160px;">
+            <option value="">전체</option>
+            <option>학습내용</option>
+            <option>학습장애</option>
+            <option>수강신청</option>
+            <option>기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-label">공개여부</div>
+        <div class="search-body">
+          <select class="select" id="s-c-visible" style="width:120px;">
+            <option value="">전체</option>
+            <option>공개</option>
+            <option>비공개</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-row">
+        <div class="search-label">검색어</div>
+        <div class="search-body">
+          <input class="input" id="s-c-keyword" type="text" placeholder="제목(질문)으로 검색" style="width:280px;">
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-reset" onclick="resetCommonSearch()">초기화</button>
+        <button class="btn btn-primary" onclick="doCommonSearch()">검색</button>
+      </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card">
+      <div class="result-header">
+        <div class="result-count">전체 <strong id="c-total">7</strong>건</div>
+        <div class="result-actions">
+          <button class="btn btn-sm btn-primary" onclick="showView('common-write')">+ 등록</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="main-table" id="common-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">No.</th>
+              <th style="width:90px;">구분</th>
+              <th style="min-width:300px;text-align:left;padding-left:12px;">제목(질문)</th>
+              <th style="width:80px;">공개여부</th>
+              <th style="width:100px;">등록일</th>
+              <th style="width:80px;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="common-tbody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <select class="per-page-select">
+          <option>30건</option><option selected>50건</option><option>100건</option><option>200건</option>
+        </select>
+        <div class="pagination" id="common-pagination"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       공통 FAQ 관리 — 등록
+  ════════════════════════════════════ -->
+  <main class="main" id="view-common-write" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">공통 FAQ 관리 — 등록</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 공통 FAQ 관리 &gt; 등록</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 등록 <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px;"><span style="color:#dc2626;">*</span> 필수 입력</span></div>
+      <table class="info-table">
+        <tr>
+          <th>구분<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <select class="select" id="w-c-category" style="width:200px;">
+                <option value="">구분 선택</option>
+                <option>학습내용</option>
+                <option>학습장애</option>
+                <option>수강신청</option>
+                <option>기타</option>
+              </select>
+              <span class="field-hint">시스템 고정값 (관리 UI 없음)</span>
+              <span class="field-error" id="err-w-c-category">구분을 선택해 주세요.</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>제목(질문)<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <input class="input input-full" id="w-c-title" type="text" placeholder="질문 내용을 입력해 주세요." maxlength="200">
+              <span class="field-hint">최대 200자</span>
+              <span class="field-error" id="err-w-c-title">제목을 입력해 주세요.</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>내용(답변)<span class="req">*</span></th>
+          <td>
+            <span class="field-error" id="err-w-c-content" style="margin-bottom:4px;">내용을 입력해 주세요.</span>
+          </td>
+        </tr>
+      </table>
+      <div class="editor-mock">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">≡</button>
+          <button class="toolbar-btn">1.</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">🔗</button>
+          <button class="toolbar-btn">🖼</button>
+        </div>
+        <div class="editor-body" contenteditable="true" id="w-c-content" data-placeholder="답변 내용을 입력해 주세요."></div>
+      </div>
+      <table class="info-table">
+        <tr>
+          <th>공개여부</th>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <label class="toggle"><input type="checkbox" id="w-c-visible"><span class="toggle-slider"></span></label>
+              <span id="w-c-visible-label" style="font-size:13px;color:#64748b;">비공개</span>
+            </div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">기본값: 비공개</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left"></div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('common-list')">취소</button>
+        <button class="btn btn-primary" onclick="submitCommonWrite()">등록</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       공통 FAQ 관리 — 상세
+  ════════════════════════════════════ -->
+  <main class="main" id="view-common-detail" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">공통 FAQ 관리 — 상세</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 공통 FAQ 관리 &gt; 상세</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 상세</div>
+      <table class="info-table">
+        <tr>
+          <th>구분</th><td class="readonly-val">수강신청</td>
+          <th style="width:100px;">공개여부</th><td><span class="badge badge-공개">공개</span></td>
+        </tr>
+        <tr>
+          <th>제목(질문)</th>
+          <td colspan="3" class="readonly-val">수강신청은 어떻게 하나요?</td>
+        </tr>
+        <tr>
+          <th>등록일</th><td colspan="3" class="readonly-val">2026.03.10</td>
+        </tr>
+      </table>
+      <div style="padding:10px 18px 6px;font-size:12px;font-weight:600;color:#475569;border-top:1px solid #f1f5f9;">내용(답변)</div>
+      <div class="editor-readonly">
+        학습자 페이지 상단 메뉴에서 <strong>[수강신청]</strong>을 클릭하세요.<br><br>
+        1. 원하는 과정을 검색하거나 카테고리에서 선택합니다.<br>
+        2. 과정 상세 페이지에서 <strong>[수강신청]</strong> 버튼을 클릭합니다.<br>
+        3. 결제 또는 담당자 승인 후 수강이 시작됩니다.<br><br>
+        자세한 내용은 이용 가이드를 참조해 주세요.
+      </div>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left">
+        <button class="btn btn-danger btn-sm" onclick="openConfirmDelete()">삭제</button>
+      </div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('common-list')">목록</button>
+        <button class="btn btn-primary" onclick="showView('common-edit')">수정</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       공통 FAQ 관리 — 수정
+  ════════════════════════════════════ -->
+  <main class="main" id="view-common-edit" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">공통 FAQ 관리 — 수정</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 공통 FAQ 관리 &gt; 수정</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 수정 <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px;"><span style="color:#dc2626;">*</span> 필수 입력</span></div>
+      <table class="info-table">
+        <tr>
+          <th>구분<span class="req">*</span></th>
+          <td>
+            <select class="select" style="width:200px;">
+              <option>학습내용</option>
+              <option>학습장애</option>
+              <option>수강신청</option>
+              <option>기타</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>제목(질문)<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <input class="input input-full" type="text" value="수강신청은 어떻게 하나요?" maxlength="200">
+              <span class="field-hint">최대 200자</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>내용(답변)<span class="req">*</span></th>
+          <td></td>
+        </tr>
+      </table>
+      <div class="editor-mock">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">≡</button>
+          <button class="toolbar-btn">1.</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">🔗</button>
+          <button class="toolbar-btn">🖼</button>
+        </div>
+        <div class="editor-body" contenteditable="true">학습자 페이지 상단 메뉴에서 [수강신청]을 클릭하세요.
+
+1. 원하는 과정을 검색하거나 카테고리에서 선택합니다.
+2. 과정 상세 페이지에서 [수강신청] 버튼을 클릭합니다.
+3. 결제 또는 담당자 승인 후 수강이 시작됩니다.</div>
+      </div>
+      <table class="info-table">
+        <tr>
+          <th>공개여부</th>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <label class="toggle"><input type="checkbox" checked id="e-c-visible"><span class="toggle-slider"></span></label>
+              <span id="e-c-visible-label" style="font-size:13px;color:#16a34a;">공개</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left"></div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('common-detail')">취소</button>
+        <button class="btn btn-primary" onclick="saveEdit('common')">저장</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       기업별 FAQ 관리 — 목록
+  ════════════════════════════════════ -->
+  <main class="main" id="view-company-list" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 FAQ 관리</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 기업별 FAQ 관리</div>
+    </div>
+
+    <!-- 회사 선택 패널 -->
+    <div class="company-panel">
+      <span class="company-panel-label">기업 선택</span>
+      <div class="company-combobox" id="company-combobox">
+        <input class="company-combo-input" id="company-combo-input" type="text" placeholder="기업명 검색..." autocomplete="off"
+          oninput="filterCompanies()" onfocus="openCombobox()" onblur="closeComboboxDelayed()">
+        <div class="company-combo-dropdown" id="company-combo-dropdown"></div>
+      </div>
+      <span class="company-info" id="company-info"></span>
+    </div>
+
+    <!-- 콘텐츠 (검색·목록 영역은 기업 선택 여부와 무관하게 항상 노출) -->
+    <div id="company-content" style="display:flex;flex-direction:column;gap:14px;">
+
+      <!-- 검색 -->
+      <div class="card">
+        <div class="search-row">
+          <div class="search-label">구분</div>
+          <div class="search-body">
+            <select class="select" id="s-co-category" style="width:160px;">
+              <option value="">전체</option>
+              <option>학습내용</option>
+              <option>학습장애</option>
+              <option>수강신청</option>
+              <option>기타</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">공개여부</div>
+          <div class="search-body">
+            <select class="select" id="s-co-visible" style="width:120px;">
+              <option value="">전체</option>
+              <option>공개</option>
+              <option>비공개</option>
+            </select>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">검색어</div>
+          <div class="search-body">
+            <input class="input" type="text" placeholder="제목(질문)으로 검색" style="width:280px;">
+          </div>
+        </div>
+        <div class="search-actions">
+          <button class="btn btn-reset">초기화</button>
+          <button class="btn btn-primary">검색</button>
+        </div>
+      </div>
+
+      <!-- 목록 -->
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">전체 <strong id="co-total">5</strong>건</div>
+          <div class="result-actions">
+            <button class="btn btn-sm btn-primary" onclick="showView('company-write')">+ 등록</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="main-table" id="company-table">
+            <thead>
+              <tr>
+                <th style="width:60px;">No.</th>
+                <th style="width:90px;">구분</th>
+                <th style="min-width:300px;text-align:left;padding-left:12px;">제목(질문)</th>
+                <th style="width:80px;">공개여부</th>
+                <th style="width:100px;">등록일</th>
+                <th style="width:80px;">관리</th>
+              </tr>
+            </thead>
+            <tbody id="company-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <select class="per-page-select">
+            <option>30건</option><option selected>50건</option><option>100건</option><option>200건</option>
+          </select>
+          <div class="pagination" id="company-pagination"></div>
+        </div>
+      </div>
+
+    </div><!-- /company-content -->
+  </main>
+
+  <!-- ═══════════════════════════════
+       기업별 FAQ 관리 — 등록
+  ════════════════════════════════════ -->
+  <main class="main" id="view-company-write" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 FAQ 관리 — 등록</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 기업별 FAQ 관리 &gt; 등록</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 등록 <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px;"><span style="color:#dc2626;">*</span> 필수 입력</span></div>
+      <table class="info-table">
+        <tr>
+          <th style="width:120px;">기업<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <div id="w-co-companies" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;"></div>
+              <div class="company-combobox" style="width:300px;">
+                <input class="company-combo-input" id="w-co-company-input" type="text" placeholder="기업명 입력하여 검색" autocomplete="off"
+                  oninput="filterCoCompanies()" onfocus="openCoCombobox()" onblur="closeCoComboboxDelayed()">
+                <div class="company-combo-dropdown" id="w-co-company-dropdown"></div>
+              </div>
+              <span class="field-hint">선택한 모든 기업에 각각 독립된 FAQ로 복제 등록됩니다. 등록 후엔 기업별로 개별 관리됩니다.</span>
+              <span class="field-error" id="err-w-co-companies">1개 이상의 기업을 선택해 주세요.</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>구분<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <select class="select" id="w-co-category" style="width:200px;">
+                <option value="">구분 선택</option>
+                <option>학습내용</option>
+                <option>학습장애</option>
+                <option>수강신청</option>
+                <option>기타</option>
+              </select>
+              <span class="field-hint">공통 FAQ 구분과 동일하게 적용됩니다.</span>
+              <span class="field-error" id="err-w-co-category">구분을 선택해 주세요.</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>제목(질문)<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <input class="input input-full" id="w-co-title" type="text" placeholder="질문 내용을 입력해 주세요." maxlength="200">
+              <span class="field-hint">최대 200자</span>
+              <span class="field-error" id="err-w-co-title">제목을 입력해 주세요.</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>내용(답변)<span class="req">*</span></th>
+          <td>
+            <span class="field-error" id="err-w-co-content" style="margin-bottom:4px;">내용을 입력해 주세요.</span>
+          </td>
+        </tr>
+      </table>
+      <div class="editor-mock">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">≡</button>
+          <button class="toolbar-btn">1.</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">🔗</button>
+          <button class="toolbar-btn">🖼</button>
+        </div>
+        <div class="editor-body" contenteditable="true" id="w-co-content" data-placeholder="답변 내용을 입력해 주세요."></div>
+      </div>
+      <table class="info-table">
+        <tr>
+          <th>공개여부</th>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <label class="toggle"><input type="checkbox" id="w-co-visible"><span class="toggle-slider"></span></label>
+              <span id="w-co-visible-label" style="font-size:13px;color:#64748b;">비공개</span>
+            </div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">기본값: 비공개</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left"></div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('company-list')">취소</button>
+        <button class="btn btn-primary" onclick="submitCoWrite()">등록</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       기업별 FAQ 관리 — 상세
+  ════════════════════════════════════ -->
+  <main class="main" id="view-company-detail" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 FAQ 관리 — 상세</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 기업별 FAQ 관리 &gt; 상세</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 상세</div>
+      <table class="info-table">
+        <tr>
+          <th>기업</th><td class="readonly-val">KT 연수원</td>
+          <th style="width:100px;">공개여부</th><td><span class="badge badge-비공개">비공개</span></td>
+        </tr>
+        <tr>
+          <th>구분</th><td class="readonly-val">학습내용</td>
+          <th></th><td></td>
+        </tr>
+        <tr>
+          <th>제목(질문)</th>
+          <td colspan="3" class="readonly-val">교육비 지원 신청은 어떻게 하나요?</td>
+        </tr>
+        <tr>
+          <th>등록일</th><td colspan="3" class="readonly-val">2026.04.15</td>
+        </tr>
+      </table>
+      <div style="padding:10px 18px 6px;font-size:12px;font-weight:600;color:#475569;border-top:1px solid #f1f5f9;">내용(답변)</div>
+      <div class="editor-readonly">
+        교육비 지원 신청은 인사팀 담당자를 통해 진행됩니다.<br><br>
+        1. 담당자에게 교육비 지원 신청서를 요청하세요.<br>
+        2. 수강 완료 후 수료증과 영수증을 첨부하여 제출합니다.<br>
+        3. 검토 후 환급 또는 지원금이 지급됩니다.<br><br>
+        자세한 사항은 인사팀(내선 1234)으로 문의해 주세요.
+      </div>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left">
+        <button class="btn btn-danger btn-sm" onclick="openConfirmDelete()">삭제</button>
+      </div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('company-list')">목록</button>
+        <button class="btn btn-primary" onclick="showView('company-edit')">수정</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════
+       기업별 FAQ 관리 — 수정
+  ════════════════════════════════════ -->
+  <main class="main" id="view-company-edit" style="display:none;">
+    <div class="page-header">
+      <div class="page-title">기업별 FAQ 관리 — 수정</div>
+      <div class="breadcrumb">고객행복센터 &gt; FAQ 관리 &gt; 기업별 FAQ 관리 &gt; 수정</div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">FAQ 수정 <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:6px;"><span style="color:#dc2626;">*</span> 필수 입력</span></div>
+      <table class="info-table">
+        <tr>
+          <th style="width:120px;">기업</th>
+          <td class="readonly-val">KT 연수원</td>
+        </tr>
+        <tr>
+          <th>구분<span class="req">*</span></th>
+          <td>
+            <select class="select" style="width:200px;">
+              <option>학습내용</option>
+              <option>학습장애</option>
+              <option>수강신청</option>
+              <option>기타</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>제목(질문)<span class="req">*</span></th>
+          <td>
+            <div class="field-wrap">
+              <input class="input input-full" type="text" value="교육비 지원 신청은 어떻게 하나요?" maxlength="200">
+              <span class="field-hint">최대 200자</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>내용(답변)<span class="req">*</span></th>
+          <td></td>
+        </tr>
+      </table>
+      <div class="editor-mock">
+        <div class="editor-toolbar">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><u>U</u></button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">≡</button>
+          <button class="toolbar-btn">1.</button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn">🔗</button>
+          <button class="toolbar-btn">🖼</button>
+        </div>
+        <div class="editor-body" contenteditable="true">교육비 지원 신청은 인사팀 담당자를 통해 진행됩니다.
+
+1. 담당자에게 교육비 지원 신청서를 요청하세요.
+2. 수강 완료 후 수료증과 영수증을 첨부하여 제출합니다.
+3. 검토 후 환급 또는 지원금이 지급됩니다.</div>
+      </div>
+      <table class="info-table">
+        <tr>
+          <th>공개여부</th>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <label class="toggle"><input type="checkbox" id="e-co-visible"><span class="toggle-slider"></span></label>
+              <span id="e-co-visible-label" style="font-size:13px;color:#64748b;">비공개</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="detail-actions">
+      <div class="detail-actions-left"></div>
+      <div class="detail-actions-right">
+        <button class="btn btn-ghost" onclick="showView('company-detail')">취소</button>
+        <button class="btn btn-primary" onclick="saveEdit('company')">저장</button>
+      </div>
+    </div>
+  </main>
+
+</div><!-- /layout -->
+
+
+<!-- ━━━ 삭제 확인 모달 ━━━ -->
+<div class="modal-overlay" id="modal-delete">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <span class="modal-title">삭제 확인</span>
+      <button class="btn-modal-close" onclick="closeConfirmDelete()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-title">FAQ를 삭제하시겠습니까?</div>
+      <div class="confirm-msg">삭제된 FAQ는 복구할 수 없습니다.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeConfirmDelete()">취소</button>
+      <button class="btn btn-danger btn-sm" onclick="doDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━ 비공개 전환 확인 모달 ━━━ -->
+<div class="modal-overlay" id="modal-hide">
+  <div class="modal confirm-modal">
+    <div class="modal-body">
+      <div class="confirm-title" style="text-align:center;">정말로 비공개 하시겠습니까?</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeConfirmHide()">아니오</button>
+      <button class="btn btn-primary btn-sm" onclick="doHide()">예</button>
+    </div>
+  </div>
+</div>
+
+<!-- ━━━ 토스트 ━━━ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ──────────────── 데이터 ──────────────── */
+const COMMON_DATA = [
+  { id:1, order:1, category:'수강신청', title:'수강신청은 어떻게 하나요?', visible:true,  date:'2026.03.10', writer:'이강은' },
+  { id:2, order:2, category:'수강신청', title:'수강취소는 언제까지 가능한가요?', visible:true,  date:'2026.03.10', writer:'이강은' },
+  { id:3, order:3, category:'학습장애', title:'동영상이 재생되지 않아요.', visible:true,  date:'2026.03.12', writer:'김아름' },
+  { id:4, order:4, category:'학습장애', title:'학습 진도가 저장되지 않아요.', visible:false, date:'2026.03.12', writer:'김아름' },
+  { id:5, order:5, category:'학습내용', title:'강의 자료를 다운로드할 수 있나요?', visible:true,  date:'2026.03.15', writer:'이강은' },
+  { id:6, order:6, category:'기타',    title:'수료증 발급은 어디서 하나요?', visible:true,  date:'2026.03.20', writer:'이강은' },
+  { id:7, order:7, category:'기타',    title:'학습 기간이 지났어요. 어떻게 하나요?', visible:false, date:'2026.03.20', writer:'이강은' },
+];
+
+const COMPANY_DATA = [
+  { id:1, order:1, category:'학습내용', title:'교육비 지원 신청은 어떻게 하나요?', visible:false, date:'2026.04.15', writer:'이강은' },
+  { id:2, order:2, category:'수강신청', title:'2026년 상반기 필수교육 수강신청 방법', visible:true,  date:'2026.04.16', writer:'이강은' },
+  { id:3, order:3, category:'학습장애', title:'동영상이 재생되지 않을 때 해결 방법', visible:true,  date:'2026.04.17', writer:'이강은' },
+  { id:4, order:4, category:'기타',    title:'수료증 발급 방법', visible:true,  date:'2026.04.18', writer:'이강은' },
+  { id:5, order:5, category:'학습내용', title:'모바일 학습 앱 이용 방법', visible:true,  date:'2026.04.20', writer:'이강은' },
+];
+
+
+/* ──────────────── 화면 전환 ──────────────── */
+const ALL_VIEWS = [
+  'common-list','common-write','common-detail','common-edit',
+  'company-list','company-write','company-detail','company-edit'
+];
+
+function showView(name) {
+  ALL_VIEWS.forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.style.display = 'none';
+  });
+  const target = document.getElementById('view-' + name);
+  if (target) target.style.display = 'flex';
+  // 기업별 등록 화면 진입 시: 목록에서 선택한 기업이 있으면 칩으로 기본 추가
+  if (name === 'company-write') {
+    initCoWriteCompanies(selectedCompany ? selectedCompany.name : null);
+  }
+}
+
+function switchMode(mode) {
+  document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+  if (mode === 'common') {
+    document.getElementById('nav-common').classList.add('active');
+    showView('common-list');
+    renderCommonTable(COMMON_DATA);
+    renderPagination('common-pagination', 1, 1);
+  } else {
+    document.getElementById('nav-company').classList.add('active');
+    showView('company-list');
+    resetCombobox();
+  }
+}
+
+/* ──────────────── 사이드바 토글 ──────────────── */
+function toggleNav(header) {
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+function toggleNavSub(header) {
+  const group = header.parentElement;
+  group.classList.toggle('open');
+}
+
+/* ──────────────── 공통 FAQ 목록 렌더링 ──────────────── */
+function renderCommonTable(data) {
+  const tbody = document.getElementById('common-tbody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">등록된 FAQ가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map((r, i) => `
+    <tr data-id="${r.id}">
+      <td>${i + 1}</td>
+      <td>${r.category}</td>
+      <td style="text-align:left;padding-left:12px;">
+        <span class="link-cell" onclick="showView('common-detail')">${r.title}</span>
+      </td>
+      <td><span class="badge badge-${r.visible ? '공개' : '비공개'}">${r.visible ? '공개' : '비공개'}</span></td>
+      <td>${r.date}</td>
+      <td><button class="btn btn-sm btn-ghost" onclick="toggleVisible('common',${r.id})">${r.visible ? '비공개' : '공개'}</button></td>
+    </tr>
+  `).join('');
+  document.getElementById('c-total').textContent = data.length;
+}
+
+/* ──────────────── 기업별 FAQ 목록 렌더링 ──────────────── */
+function renderCompanyTable(data) {
+  const tbody = document.getElementById('company-tbody');
+  const totalEl = document.getElementById('co-total');
+  if (!data.length) {
+    const msg = selectedCompany ? '등록된 FAQ가 없습니다.' : '기업을 선택하면 해당 기업의 FAQ가 표시됩니다.';
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${msg}</td></tr>`;
+    if (totalEl) totalEl.textContent = '0';
+    return;
+  }
+  tbody.innerHTML = data.map((r, i) => `
+    <tr data-id="${r.id}">
+      <td>${i + 1}</td>
+      <td>${r.category}</td>
+      <td style="text-align:left;padding-left:12px;">
+        <span class="link-cell" onclick="showView('company-detail')">${r.title}</span>
+      </td>
+      <td><span class="badge badge-${r.visible ? '공개' : '비공개'}">${r.visible ? '공개' : '비공개'}</span></td>
+      <td>${r.date}</td>
+      <td><button class="btn btn-sm btn-ghost" onclick="toggleVisible('company',${r.id})">${r.visible ? '비공개' : '공개'}</button></td>
+    </tr>
+  `).join('');
+  document.getElementById('co-total').textContent = data.length;
+}
+
+/* ──────────────── 페이지네이션 ──────────────── */
+function renderPagination(id, current, total) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const maxVisible = 5;
+  let startPage = Math.max(1, current - Math.floor(maxVisible / 2));
+  let endPage   = Math.min(total, startPage + maxVisible - 1);
+  if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
+
+  let html = `<button class="pg-btn" ${current === 1 ? 'disabled' : ''} onclick="changePage('${id}',1,${total})">«</button>`;
+  html    += `<button class="pg-btn" ${current === 1 ? 'disabled' : ''} onclick="changePage('${id}',${current - 1},${total})">‹</button>`;
+  for (let i = startPage; i <= endPage; i++) {
+    html  += `<button class="pg-btn ${i === current ? 'active' : ''}" onclick="changePage('${id}',${i},${total})">${i}</button>`;
+  }
+  html    += `<button class="pg-btn" ${current === total ? 'disabled' : ''} onclick="changePage('${id}',${current + 1},${total})">›</button>`;
+  html    += `<button class="pg-btn" ${current === total ? 'disabled' : ''} onclick="changePage('${id}',${total},${total})">»</button>`;
+  el.innerHTML = html;
+}
+function changePage(id, page, total) {
+  renderPagination(id, page, total);
+}
+
+/* ──────────────── 검색 ──────────────── */
+function resetCommonSearch() {
+  document.getElementById('s-c-category').value = '';
+  document.getElementById('s-c-visible').value = '';
+  document.getElementById('s-c-keyword').value = '';
+  renderCommonTable(COMMON_DATA);
+}
+function doCommonSearch() {
+  const cat = document.getElementById('s-c-category').value;
+  const vis = document.getElementById('s-c-visible').value;
+  const kw  = document.getElementById('s-c-keyword').value.toLowerCase();
+  const result = COMMON_DATA.filter(r => {
+    return (!cat || r.category === cat)
+      && (!vis || (vis === '공개' ? r.visible : !r.visible))
+      && (!kw  || r.title.toLowerCase().includes(kw));
+  });
+  renderCommonTable(result);
+}
+
+/* ──────────────── 기업 선택 (Searchable Combobox) ──────────────── */
+const COMPANIES = [
+  { value:'kt',      name:'KT 연수원' },
+  { value:'sk',      name:'SK 하이닉스' },
+  { value:'lg',      name:'LG CNS' },
+  { value:'hyundai', name:'현대자동차' },
+  { value:'samsung', name:'삼성전자' },
+];
+let selectedCompany = null;
+
+function renderComboOptions(list) {
+  const dd = document.getElementById('company-combo-dropdown');
+  if (!list.length) {
+    dd.innerHTML = '<div class="combo-empty">검색 결과가 없습니다.</div>';
+    return;
+  }
+  dd.innerHTML = list.map(c => `
+    <div class="combo-option ${selectedCompany && selectedCompany.value === c.value ? 'selected' : ''}"
+         onmousedown="selectCompany('${c.value}','${c.name}')">
+      ${c.name}
+    </div>
+  `).join('');
+}
+
+function openCombobox() {
+  const q = (document.getElementById('company-combo-input').value || '').toLowerCase();
+  renderComboOptions(COMPANIES.filter(c => c.name.toLowerCase().includes(q)));
+  document.getElementById('company-combo-dropdown').classList.add('open');
+}
+
+function filterCompanies() {
+  const q = document.getElementById('company-combo-input').value.toLowerCase();
+  renderComboOptions(COMPANIES.filter(c => c.name.toLowerCase().includes(q)));
+  document.getElementById('company-combo-dropdown').classList.add('open');
+}
+
+function closeComboboxDelayed() {
+  setTimeout(() => document.getElementById('company-combo-dropdown').classList.remove('open'), 150);
+}
+
+function selectCompany(value, name) {
+  selectedCompany = { value, name };
+  document.getElementById('company-combo-input').value = name;
+  document.getElementById('company-combo-dropdown').classList.remove('open');
+  renderCompanyTable(COMPANY_DATA);
+  renderPagination('company-pagination', 1, 1);
+  document.getElementById('company-info').textContent = '총 ' + COMPANY_DATA.length + '건';
+}
+
+function resetCombobox() {
+  selectedCompany = null;
+  document.getElementById('company-combo-input').value = '';
+  document.getElementById('company-combo-dropdown').classList.remove('open');
+  document.getElementById('company-info').textContent = '';
+  // 검색·목록 영역은 항상 노출. 기업 미선택 시 빈 목록 표시.
+  renderCompanyTable([]);
+  renderPagination('company-pagination', 1, 1);
+}
+
+/* ──────────────── 공개여부 변경 ──────────────── */
+let _pendingHide = null; // { type, id }
+function toggleVisible(type, id) {
+  const data = type === 'common' ? COMMON_DATA : COMPANY_DATA;
+  const item = data.find(r => r.id === id);
+  if (!item) return;
+  if (item.visible) {
+    // 공개 → 비공개 : 확인 모달
+    _pendingHide = { type, id };
+    document.getElementById('modal-hide').classList.add('open');
+  } else {
+    // 비공개 → 공개 : 즉시 처리
+    item.visible = true;
+    if (type === 'common') renderCommonTable(COMMON_DATA);
+    else renderCompanyTable(COMPANY_DATA);
+    showToast('공개 처리되었습니다.', 'success');
+  }
+}
+function closeConfirmHide() {
+  _pendingHide = null;
+  document.getElementById('modal-hide').classList.remove('open');
+}
+function doHide() {
+  if (!_pendingHide) return;
+  const { type, id } = _pendingHide;
+  const data = type === 'common' ? COMMON_DATA : COMPANY_DATA;
+  const item = data.find(r => r.id === id);
+  if (item) item.visible = false;
+  if (type === 'common') renderCommonTable(COMMON_DATA);
+  else renderCompanyTable(COMPANY_DATA);
+  closeConfirmHide();
+  showToast('비공개 처리되었습니다.', 'success');
+}
+
+/* ──────────────── 등록 유효성 ──────────────── */
+function submitCommonWrite() {
+  let ok = true;
+  const cat   = document.getElementById('w-c-category').value;
+  const title = document.getElementById('w-c-title').value.trim();
+  const cont  = document.getElementById('w-c-content').innerText.trim();
+  ['w-c-category','w-c-title','w-c-content'].forEach(id => {
+    document.getElementById('err-' + id).classList.remove('show');
+  });
+  if (!cat)   { document.getElementById('err-w-c-category').classList.add('show'); ok = false; }
+  if (!title) { document.getElementById('err-w-c-title').classList.add('show');    ok = false; }
+  if (!cont)  { document.getElementById('err-w-c-content').classList.add('show');  ok = false; }
+  if (!ok) return;
+  // 중복 검사: 공통 FAQ 목록 내 동일 제목
+  const dup = COMMON_DATA.some(r => r.title.trim() === title);
+  if (dup) { showToast('이미 동일한 제목의 FAQ가 등록되어 있습니다.', 'error'); return; }
+  showToast('FAQ가 등록되었습니다.', 'success');
+  showView('common-list');
+}
+
+/* ──────────────── 기업별 등록: 다중 기업 선택 ──────────────── */
+let CO_SELECTED_COMPANIES = []; // 등록 화면에서 선택된 기업 목록
+function renderCompanyChips() {
+  const box = document.getElementById('w-co-companies');
+  if (!box) return;
+  if (!CO_SELECTED_COMPANIES.length) {
+    box.innerHTML = '<span style="font-size:12px;color:#94a3b8;">선택된 기업이 없습니다.</span>';
+    return;
+  }
+  box.innerHTML = CO_SELECTED_COMPANIES.map((name, i) => `
+    <span class="badge badge-공개" style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;">
+      ${name}
+      <button type="button" onclick="removeCompany(${i})" style="background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;padding:0 2px;">×</button>
+    </span>
+  `).join('');
+}
+function removeCompany(idx) {
+  CO_SELECTED_COMPANIES.splice(idx, 1);
+  renderCompanyChips();
+}
+function initCoWriteCompanies(defaultName) {
+  CO_SELECTED_COMPANIES = defaultName ? [defaultName] : [];
+  renderCompanyChips();
+  // 콤보박스 입력/드롭다운 초기화
+  const inp = document.getElementById('w-co-company-input');
+  if (inp) inp.value = '';
+  const dd = document.getElementById('w-co-company-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+/* 등록 화면 — 기업 검색 콤보박스 */
+function renderCoComboOptions(list) {
+  const dd = document.getElementById('w-co-company-dropdown');
+  if (!dd) return;
+  if (!list.length) {
+    dd.innerHTML = '<div class="combo-empty">검색 결과가 없습니다.</div>';
+    return;
+  }
+  dd.innerHTML = list.map(c => `
+    <div class="combo-option" onmousedown="selectCoCompany('${c.name.replace(/'/g, "\\'")}')">${c.name}</div>
+  `).join('');
+}
+function openCoCombobox() {
+  const q = (document.getElementById('w-co-company-input').value || '').toLowerCase();
+  const list = COMPANIES.filter(c => !CO_SELECTED_COMPANIES.includes(c.name) && c.name.toLowerCase().includes(q));
+  renderCoComboOptions(list);
+  document.getElementById('w-co-company-dropdown').classList.add('open');
+}
+function filterCoCompanies() {
+  openCoCombobox();
+}
+function closeCoComboboxDelayed() {
+  setTimeout(() => {
+    const dd = document.getElementById('w-co-company-dropdown');
+    if (dd) dd.classList.remove('open');
+  }, 150);
+}
+function selectCoCompany(name) {
+  if (CO_SELECTED_COMPANIES.includes(name)) return;
+  CO_SELECTED_COMPANIES.push(name);
+  document.getElementById('w-co-company-input').value = '';
+  document.getElementById('w-co-company-dropdown').classList.remove('open');
+  renderCompanyChips();
+}
+
+function submitCoWrite() {
+  let ok = true;
+  const cat   = document.getElementById('w-co-category').value;
+  const title = document.getElementById('w-co-title').value.trim();
+  const cont  = document.getElementById('w-co-content').innerText.trim();
+  ['w-co-category','w-co-title','w-co-content','w-co-companies'].forEach(id => {
+    const el = document.getElementById('err-' + id);
+    if (el) el.classList.remove('show');
+  });
+  if (!CO_SELECTED_COMPANIES.length) { document.getElementById('err-w-co-companies').classList.add('show'); ok = false; }
+  if (!cat)   { document.getElementById('err-w-co-category').classList.add('show'); ok = false; }
+  if (!title) { document.getElementById('err-w-co-title').classList.add('show');    ok = false; }
+  if (!cont)  { document.getElementById('err-w-co-content').classList.add('show');  ok = false; }
+  if (!ok) return;
+  // 다중 기업 등록: 기업별로 중복 검사 (해당 기업의 기업별 FAQ + 공통 FAQ)
+  // 프로토타입에서는 단일 COMPANY_DATA만 보유하므로 시뮬레이션:
+  // - 공통 FAQ에 동일 제목이 있으면 모든 기업에서 등록 차단
+  // - 그렇지 않으면 모두 등록 성공으로 간주
+  const dupCommon = COMMON_DATA.some(r => r.title.trim() === title);
+  if (dupCommon) {
+    showToast('공통 FAQ에 동일 제목이 있어 등록할 수 없습니다.', 'error');
+    return;
+  }
+  const total = CO_SELECTED_COMPANIES.length;
+  // 시뮬레이션: 첫 번째 기업이 현재 선택된 기업이면 COMPANY_DATA와 중복 검사
+  const dupCompany = COMPANY_DATA.some(r => r.title.trim() === title);
+  const skipped = dupCompany ? 1 : 0;
+  const success = total - skipped;
+  if (success === 0) {
+    showToast('선택한 모든 기업에 동일 제목이 이미 존재합니다.', 'error');
+    return;
+  }
+  if (skipped > 0) {
+    showToast(`${success}개 기업에 등록 완료, ${skipped}개 기업은 중복으로 제외되었습니다.`, 'success');
+  } else {
+    showToast(`${total}개 기업에 FAQ가 등록되었습니다.`, 'success');
+  }
+  showView('company-list');
+}
+
+/* ──────────────── 수정 저장 ──────────────── */
+function saveEdit(type) {
+  showToast('저장되었습니다.', 'success');
+  showView(type === 'common' ? 'common-detail' : 'company-detail');
+}
+
+/* ──────────────── 삭제 모달 ──────────────── */
+function openConfirmDelete()  { document.getElementById('modal-delete').classList.add('open'); }
+function closeConfirmDelete() { document.getElementById('modal-delete').classList.remove('open'); }
+function doDelete() {
+  closeConfirmDelete();
+  showToast('삭제되었습니다.', 'success');
+  // 현재 뷰 기준으로 목록 복귀
+  const current = ALL_VIEWS.find(v => {
+    const el = document.getElementById('view-' + v);
+    return el && el.style.display !== 'none';
+  });
+  if (current && current.includes('company')) showView('company-list');
+  else showView('common-list');
+}
+
+
+/* ──────────────── 공개여부 토글 라벨 ──────────────── */
+function initToggleLabel(inputId, labelId) {
+  const input = document.getElementById(inputId);
+  const label = document.getElementById(labelId);
+  if (!input || !label) return;
+  function update() {
+    label.textContent = input.checked ? '공개' : '비공개';
+    label.style.color = input.checked ? '#16a34a' : '#64748b';
+  }
+  input.addEventListener('change', update);
+  update();
+}
+
+/* ──────────────── 토스트 ──────────────── */
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ──────────────── 초기화 ──────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  renderCommonTable(COMMON_DATA);
+  renderPagination('common-pagination', 1, 1);
+  initToggleLabel('w-c-visible', 'w-c-visible-label');
+  initToggleLabel('e-c-visible', 'e-c-visible-label');
+  initToggleLabel('w-co-visible', 'w-co-visible-label');
+  initToggleLabel('e-co-visible', 'e-co-visible-label');
+
+  // company-content는 기업 선택 여부와 무관하게 항상 노출 (빈 목록도 함께 표시)
+  const cc = document.getElementById('company-content');
+  cc.style.display = 'flex';
+  cc.style.flexDirection = 'column';
+  cc.style.gap = '14px';
+  // 초기 빈 목록 렌더링
+  renderCompanyTable([]);
+});
+</script>
+</body>
+</html>
