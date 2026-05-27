@@ -1034,20 +1034,51 @@
     if (e.target === this) closeMagamModal();
   });
 
-  // 진단대상자 컬럼 클릭 → 대상자 선택 팝업
+  // 진단대상자 컬럼 클릭 → 목록 팝업
   document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
     const cells = tr.querySelectorAll('td');
     if (cells.length < 5) return;
     const cell = cells[4];
     const link = cell.querySelector('a.diag-link');
     if (link) {
-      link.addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(rowIdx, cell); });
+      link.addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
     } else if (cell.textContent.trim() === '-') {
       cell.innerHTML = '<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>';
-      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagMemberModal(rowIdx, cell); });
+      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
     }
   });
 </script>
+
+<!-- ═══ 진단 대상자 목록 팝업 ═══ -->
+<div id="diag-target-list-modal" onclick="if(event.target===this)diagListClose()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2900;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:560px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+    <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;font-weight:700;">진단 대상자 목록</span>
+        <span id="diag-list-cnt" style="font-size:12px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 8px;border-radius:10px;">0명</span>
+      </div>
+      <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagListClose()">×</span>
+    </div>
+    <div style="flex:1;overflow-y:auto;">
+      <table class="main-table" style="font-size:12px;">
+        <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
+          <th style="width:36px;">No</th>
+          <th>이름</th>
+          <th style="width:100px;">사번</th>
+          <th>부서명</th>
+          <th style="width:60px;">삭제</th>
+        </tr></thead>
+        <tbody id="diag-list-tbody">
+          <tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 대상자가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
+      <button class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="openDiagAddModal()">+ 추가 등록</button>
+      <button class="btn btn-reset" style="height:30px;padding:0 16px;" onclick="diagListClose()">닫기</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ 진단 대상자 등록 팝업 ═══ -->
 <style>
@@ -1320,39 +1351,70 @@ let meMbrCurSplitType = null;
 let meMbrTargetTypeIdx = null;
 const meMbrDeptCollapsed = new Set();
 
-// ── 저장 + 닫기 공통 헬퍼 ──
-function _diagSaveAndClose() {
-  const rowIdx = _currentDiagRowIdx;
-  const cell = _currentDiagCell;
-  if(rowIdx >= 0) {
-    DIAG_ROW_MEMBERS[rowIdx] = [...ME_COLLECTED];
-    if(cell) {
-      const cnt = ME_COLLECTED.length;
-      cell.innerHTML = `<a class="diag-link" href="#">${cnt}</a>`;
-      cell.querySelector('a').addEventListener('click', e => {
-        e.preventDefault();
-        openDiagMemberModal(rowIdx, cell);
-      });
-    }
-  }
-  const cnt = ME_COLLECTED.length;
-  document.getElementById('me-member-modal').style.display = 'none';
-  showToast('진단 대상자 ' + cnt + '명이 등록되었습니다.');
-}
-
-// ── 팝업 열기 ──
-function openDiagMemberModal(rowIdx, cell) {
+// ── 목록 팝업 열기 ──
+function openDiagListModal(rowIdx, cell) {
   _currentDiagRowIdx = rowIdx ?? -1;
   _currentDiagCell = cell ?? null;
-  const existing = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  diagListRender();
+  document.getElementById('diag-target-list-modal').style.display = 'flex';
+}
+function diagListRender() {
+  const members = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  document.getElementById('diag-list-cnt').textContent = members.length + '명';
+  const tbody = document.getElementById('diag-list-tbody');
+  if(!members.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 대상자가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = members.map((m, i) => `<tr>
+    <td style="text-align:center;padding:5px 4px;color:#888;font-size:11px;">${i+1}</td>
+    <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
+    <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
+    <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
+    <td style="text-align:center;padding:5px 4px;"><button onclick="diagListDelete(${i})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button></td>
+  </tr>`).join('');
+}
+function diagListDelete(idx) {
+  const members = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  members.splice(idx, 1);
+  DIAG_ROW_MEMBERS[_currentDiagRowIdx] = members;
+  diagListRender();
+  _diagUpdateCell(members.length);
+}
+function diagListClose() {
+  document.getElementById('diag-target-list-modal').style.display = 'none';
+}
+function _diagUpdateCell(cnt) {
+  const cell = _currentDiagCell;
+  const rowIdx = _currentDiagRowIdx;
+  if(!cell) return;
+  cell.innerHTML = cnt > 0 ? `<a class="diag-link" href="#">${cnt}</a>` : `<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>`;
+  cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
+}
+
+// ── 추가 등록 팝업 열기 (목록 팝업에서 호출) ──
+function openDiagAddModal() {
   ME_COLLECTED.length = 0;
-  existing.forEach(m => ME_COLLECTED.push({...m}));
   const sel = document.getElementById('me-mbr-s-company');
   if(sel) sel.innerHTML = ['회사 선택','동아ST','동아쏘시오홀딩스'].map((c,i)=>`<option value="${i===0?'':c}">${c}</option>`).join('');
   meMbrUpdateCollected();
   meMbrTab('single', document.querySelector('.mbr-tab'));
   meMbrSingleAll();
   document.getElementById('me-member-modal').style.display = 'flex';
+}
+
+// ── 등록 저장 (등록 팝업 닫기 + 목록 팝업 갱신) ──
+function _diagSaveAndClose() {
+  if(_currentDiagRowIdx >= 0) {
+    const existing = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+    ME_COLLECTED.forEach(m => { if(!existing.find(e => e.empno === m.empno)) existing.push({...m}); });
+    DIAG_ROW_MEMBERS[_currentDiagRowIdx] = existing;
+    _diagUpdateCell(existing.length);
+  }
+  const addedCnt = ME_COLLECTED.length;
+  document.getElementById('me-member-modal').style.display = 'none';
+  if(document.getElementById('diag-target-list-modal').style.display !== 'none') diagListRender();
+  showToast(addedCnt + '명이 추가 등록되었습니다.');
 }
 
 // ── 탭 전환 ──
@@ -1372,22 +1434,23 @@ function meMbrTab(type, btn) {
 }
 
 // ── 개별 검색/등록 ──
-function _meMbrSingleRow(m) {
-  const isReg = !!ME_COLLECTED.find(c => c.empno === m.empno);
-  return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}" style="${isReg?'background:#f0faf4;':''}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()" ${isReg?'checked':''}></td>
-    <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-    <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;font-size:11px;">${isReg?'<span style="color:#1e7e50;font-weight:700;">✓ 등록됨</span>':'<span style="color:#1e7e50;">재직</span>'}</td>
-  </tr>`;
-}
 function meMbrSingleAll() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   if(!tbody) return;
-  tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => _meMbrSingleRow(m)).join('');
+  // 이미 행의 대상자로 등록된 인원 표시
+  const rowMembers = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => {
+    const isReg = !!rowMembers.find(r => r.empno === m.empno);
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}" style="${isReg?'background:#f0faf4;':''}">
+      <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()" ${isReg?'disabled':''}></td>
+      <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
+      <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId)}</td>
+      <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
+      <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
+      <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
+      <td style="text-align:center;padding:5px 4px;font-size:11px;">${isReg?'<span style="color:#1e7e50;font-weight:700;">등록됨</span>':'<span style="color:#888;">재직</span>'}</td>
+    </tr>`;
+  }).join('');
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
   meMbrSelCount();
 }
@@ -1395,9 +1458,21 @@ function meMbrSingleSearch() {
   const kw = document.getElementById('me-mbr-s-kw')?.value.trim();
   if(!kw) { meMbrSingleAll(); return; }
   const filtered = ME_SAMPLE_MEMBERS.filter(m=>m.name.includes(kw)||m.empno.includes(kw)||m.dept.includes(kw)||(m.loginId||'').includes(kw));
+  const rowMembers = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length
-    ? filtered.map(m => _meMbrSingleRow(m)).join('')
+    ? filtered.map(m => {
+        const isReg = !!rowMembers.find(r => r.empno === m.empno);
+        return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId}" data-company="${m.company}" data-dept="${m.dept}" style="${isReg?'background:#f0faf4;':''}">
+          <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()" ${isReg?'disabled':''}></td>
+          <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
+          <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId)}</td>
+          <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
+          <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
+          <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
+          <td style="text-align:center;padding:5px 4px;font-size:11px;">${isReg?'<span style="color:#1e7e50;font-weight:700;">등록됨</span>':'<span style="color:#888;">재직</span>'}</td>
+        </tr>`;
+      }).join('')
     : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
@@ -1407,19 +1482,13 @@ function meMbrSelCount() {
 }
 function meMbrSingleReg() {
   const checked = [...document.querySelectorAll('.me-mbr-s-chk:checked')];
-  if(!checked.length && !ME_COLLECTED.length) { alert('등록할 인원을 선택해주세요.'); return; }
-  // 체크된 행 기준으로 ME_COLLECTED 재구성 (추가 + 해제 반영)
-  const checkedEmpnos = new Set(checked.map(c => c.closest('tr')?.dataset?.empno).filter(Boolean));
-  // 검색 결과에 없는 기존 등록 인원은 유지
-  const visibleEmpnos = new Set([...document.querySelectorAll('#me-mbr-s-tbody tr')].map(tr => tr.dataset?.empno).filter(Boolean));
-  const kept = ME_COLLECTED.filter(m => !visibleEmpnos.has(m.empno));
+  if(!checked.length) { alert('등록할 인원을 선택해주세요.'); return; }
+  ME_COLLECTED.length = 0;
   checked.forEach(chk => {
     const tr = chk.closest('tr');
     const name = tr?.dataset?.name, empno = tr?.dataset?.empno, dept = tr?.dataset?.dept, company = tr?.dataset?.company;
-    if(name && empno && !kept.find(m => m.empno === empno)) kept.push({name, empno, dept, company});
+    if(name && empno) ME_COLLECTED.push({name, empno, dept, company});
   });
-  ME_COLLECTED.length = 0;
-  kept.forEach(m => ME_COLLECTED.push(m));
   _diagSaveAndClose();
 }
 
