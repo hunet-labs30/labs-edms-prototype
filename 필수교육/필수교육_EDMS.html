@@ -3465,13 +3465,16 @@ function meMbrSelectDept(id) {
   document.getElementById('me-mbr-right-title').textContent = node.name;
   document.getElementById('me-mbr-right-cnt').textContent = members.length;
   const tbody = document.getElementById('me-mbr-right-tbody');
-  tbody.innerHTML = members.length ? members.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-r-chk"></td>
-    <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
-    <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-    <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
-  </tr>`).join('')
+  tbody.innerHTML = members.length ? members.map(m=>{
+    const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+    <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-r-chk">'}</td>
+    <td style="padding:5px 8px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+    <td style="padding:5px 8px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+    <td style="padding:5px 8px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
+  </tr>`;
+  }).join('')
   : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
 }
 
@@ -3656,15 +3659,18 @@ function meMbrSelectLeft(idx, type) {
 function meMbrSingleAll() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   if(!tbody) return;
-  const rows = ME_SAMPLE_MEMBERS.map((m,i)=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}">
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
-    <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-    <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-    <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button></td>
-  </tr>`).join('');
+  const rows = ME_SAMPLE_MEMBERS.map(m=>{
+    const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+    <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
+    <td style="padding:5px 6px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#666'};font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+    <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.company}</td>
+    <td style="padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button>'}</td>
+  </tr>`;
+  }).join('');
   tbody.innerHTML = rows;
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
   meMbrSelCount();
@@ -3675,15 +3681,18 @@ function meMbrSingleSearch() {
   const filtered = ME_SAMPLE_MEMBERS.filter(m=>m.name.includes(kw)||m.empno.includes(kw)||m.dept.includes(kw)||(m.loginId||'').includes(kw));
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length
-    ? filtered.map(m=>`<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}">
-        <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()"></td>
-        <td style="padding:5px 6px;font-weight:600;">${_maskN(m.name)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#666;font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
-        <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
-        <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-        <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button></td>
-      </tr>`).join('')
+    ? filtered.map(m=>{
+        const isReg = ME_REG_MEMBERS.some(r=>r.empno===m.empno);
+        return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg?' style="background:#fafafa;"':''}>
+        <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':'<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
+        <td style="padding:5px 6px;font-weight:600;${isReg?'color:#bbb;':''}">${_maskN(m.name)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#666'};font-size:11px;">${_maskL(m.loginId||m.empno)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${_maskE(m.empno)}</td>
+        <td style="text-align:center;padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.company}</td>
+        <td style="padding:5px 6px;color:${isReg?'#ccc':'#888'};font-size:11px;">${m.dept}</td>
+        <td style="text-align:center;padding:3px 4px;">${isReg?'':'<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button>'}</td>
+      </tr>`;
+      }).join('')
     : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
