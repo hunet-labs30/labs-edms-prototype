@@ -627,12 +627,12 @@ body {
       </div>
 
       <div class="analysis-tree" id="analysisTree">
-        <!-- 진단 유형 1: 자가진단 -->
+        <!-- 진단 유형 1: 본인 진단 -->
         <div class="type-block open">
           <div class="type-header" onclick="toggleBlock(this)">
             <span class="type-toggle">▶</span>
             <span class="type-tag">유형</span>
-            <span class="type-name">리더십 역량 진단 — 자가진단</span>
+            <span class="type-name">리더십 역량 진단 — 본인 진단</span>
             <div class="respondent-wrap">
               <span class="respondent-label">응답자:</span>
               <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">본인</span>
@@ -722,12 +722,12 @@ body {
           </div>
         </div>
 
-        <!-- 진단 유형 2: 다면평가 -->
+        <!-- 진단 유형 2: 구성원 진단 -->
         <div class="type-block">
           <div class="type-header" onclick="toggleBlock(this)">
             <span class="type-toggle">▶</span>
             <span class="type-tag">유형</span>
-            <span class="type-name">리더십 역량 진단 — 다면평가</span>
+            <span class="type-name">리더십 역량 진단 — 구성원 진단</span>
             <div class="respondent-wrap">
               <span class="respondent-label">응답자:</span>
               <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">구성원</span>
@@ -807,6 +807,92 @@ body {
               </div>
             </div>
           </div>
+        <!-- 진단 유형 3: 상사 진단 -->
+        <div class="type-block">
+          <div class="type-header" onclick="toggleBlock(this)">
+            <span class="type-toggle">▶</span>
+            <span class="type-tag">유형</span>
+            <span class="type-name">리더십 역량 진단 — 상사 진단</span>
+            <div class="respondent-wrap">
+              <span class="respondent-label">응답자:</span>
+              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">상사</span>
+            </div>
+          </div>
+          <div class="type-body">
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">리더십 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">비전 및 목표 설정</span>
+                  <div class="course-badges" id="cb-3-1-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','3-1-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">구성원 육성 및 동기부여</span>
+                  <div class="course-badges" id="cb-3-1-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','3-1-2')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">성과 창출 및 관리</span>
+                  <div class="course-badges" id="cb-3-1-3"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','3-1-3')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+            <div class="area-block open">
+              <div class="area-header" onclick="toggleBlock(this)">
+                <span class="area-toggle">▶</span>
+                <span class="area-tag">영역</span>
+                <span class="area-name">조직문화 역량</span>
+                <div class="score-inputs">
+                  <div class="score-group">
+                    <span class="lbl-strong">강점</span>
+                    <input class="score-input" type="number" placeholder="70" value="70">
+                    <span class="score-unit">점 이상</span>
+                  </div>
+                  <div class="score-group">
+                    <span class="lbl-weak">약점</span>
+                    <input class="score-input" type="number" placeholder="50" value="50">
+                    <span class="score-unit">점 미만</span>
+                  </div>
+                </div>
+              </div>
+              <div class="area-body">
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">윤리경영 및 책임의식</span>
+                  <div class="course-badges" id="cb-3-2-1"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','3-2-1')">과정 설정</button>
+                </div>
+                <div class="sub-row">
+                  <span class="sub-dot"></span>
+                  <span class="sub-name">소통 및 협력</span>
+                  <div class="course-badges" id="cb-3-2-2"></div>
+                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','3-2-2')">과정 설정</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div><!-- /analysis-tree -->
     </div><!-- /step-content-2 -->
@@ -844,38 +930,34 @@ body {
                 <tr>
                   <th style="width:36px;"><input type="checkbox"></th>
                   <th style="width:36px;">No</th>
-                  <th>구성원코드</th>
-                  <th>사번</th>
                   <th>이름</th>
+                  <th>아이디</th>
+                  <th>사번</th>
+                  <th>회사</th>
+                  <th>부서/팀</th>
                   <th>직급</th>
-                  <th>조직</th>
-                  <th>역할</th>
-                  <th>이메일</th>
-                  <th>연락처</th>
+                  <th>휴대번호</th>
                   <th>응답자<br>(본인진단)</th>
                 </tr>
               </thead>
               <tbody id="tbody-0">
                 <tr>
                   <td><input type="checkbox"></td><td>1</td>
-                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
-                  <td>20230101</td><td>홍길동</td><td>팀장</td>
-                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
-                  <td style="color:#555;">홍길동</td>
+                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
+                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
+                  <td style="color:#555;">홍*동</td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>2</td>
-                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
-                  <td>20210505</td><td>김철수</td><td>팀장</td>
-                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
-                  <td style="color:#555;">김철수</td>
+                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
+                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
+                  <td style="color:#555;">김*수</td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>3</td>
-                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
-                  <td>20190812</td><td>이영희</td><td>팀장</td>
-                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
-                  <td style="color:#555;">이영희</td>
+                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
+                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
+                  <td style="color:#555;">이*희</td>
                 </tr>
               </tbody>
             </table>
@@ -905,38 +987,34 @@ body {
                 <tr>
                   <th style="width:36px;"><input type="checkbox"></th>
                   <th style="width:36px;">No</th>
-                  <th>구성원코드</th>
-                  <th>사번</th>
                   <th>이름</th>
+                  <th>아이디</th>
+                  <th>사번</th>
+                  <th>회사</th>
+                  <th>부서/팀</th>
                   <th>직급</th>
-                  <th>조직</th>
-                  <th>역할</th>
-                  <th>이메일</th>
-                  <th>연락처</th>
+                  <th>휴대번호</th>
                   <th>응답자<br>(구성원진단)</th>
                 </tr>
               </thead>
               <tbody id="tbody-1">
                 <tr>
                   <td><input type="checkbox"></td><td>1</td>
-                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
-                  <td>20230101</td><td>홍길동</td><td>팀장</td>
-                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍길동','구성원진단',1)">설정</button></td>
+                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
+                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍*동','구성원진단',1)">설정</button></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>2</td>
-                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
-                  <td>20210505</td><td>김철수</td><td>팀장</td>
-                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
-                  <td><a class="resp-count-link" onclick="openRespondentModal('김철수','구성원진단',1)">3명</a></td>
+                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
+                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
+                  <td><a class="resp-count-link" onclick="openRespondentModal('김*수','구성원진단',1)">3명</a></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>3</td>
-                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
-                  <td>20190812</td><td>이영희</td><td>팀장</td>
-                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이영희','구성원진단',1)">설정</button></td>
+                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
+                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이*희','구성원진단',1)">설정</button></td>
                 </tr>
               </tbody>
             </table>
@@ -965,38 +1043,34 @@ body {
                 <tr>
                   <th style="width:36px;"><input type="checkbox"></th>
                   <th style="width:36px;">No</th>
-                  <th>구성원코드</th>
-                  <th>사번</th>
                   <th>이름</th>
+                  <th>아이디</th>
+                  <th>사번</th>
+                  <th>회사</th>
+                  <th>부서/팀</th>
                   <th>직급</th>
-                  <th>조직</th>
-                  <th>역할</th>
-                  <th>이메일</th>
-                  <th>연락처</th>
+                  <th>휴대번호</th>
                   <th>응답자<br>(상사진단)</th>
                 </tr>
               </thead>
               <tbody id="tbody-2">
                 <tr>
                   <td><input type="checkbox"></td><td>1</td>
-                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
-                  <td>20230101</td><td>홍길동</td><td>팀장</td>
-                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍길동','상사진단',2)">설정</button></td>
+                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
+                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍*동','상사진단',2)">설정</button></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>2</td>
-                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
-                  <td>20210505</td><td>김철수</td><td>팀장</td>
-                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('김철수','상사진단',2)">설정</button></td>
+                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
+                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('김*수','상사진단',2)">설정</button></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox"></td><td>3</td>
-                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
-                  <td>20190812</td><td>이영희</td><td>팀장</td>
-                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이영희','상사진단',2)">설정</button></td>
+                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
+                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이*희','상사진단',2)">설정</button></td>
                 </tr>
               </tbody>
             </table>
@@ -1416,54 +1490,66 @@ function openAddParticipant(tabIdx) {
   openModal('participantModal');
 }
 
+function maskName(n) {
+  if (!n || n.length <= 1) return n;
+  return n[0] + '*'.repeat(Math.max(1, n.length - 2)) + n[n.length - 1];
+}
+function maskId(email) {
+  const at = email.indexOf('@');
+  if (at < 0) return email;
+  return email.slice(0, 2) + '**' + email.slice(at);
+}
+function maskPhone(phone) {
+  return phone.replace(/(\d{3})-(\d{4})-(\d{4})/, '$1-****-$3');
+}
+
 function addParticipants() {
   const selected = document.querySelectorAll('#participantModal .product-item.selected');
   if (!selected.length) { showToast('추가할 대상자를 선택하세요.'); return; }
 
   selected.forEach(item => {
-    const name = item.querySelector('.product-item-name').textContent.trim();
-    const meta = item.querySelector('.product-item-meta').textContent.trim();
-    const parts = meta.split('·').map(s => s.trim());
-    const empNo = parts[0] || '';
-    const dept  = parts[1] || '';
-    const rank  = parts[2] || '';
+    const name    = item.querySelector('.product-item-name').textContent.trim();
+    const meta    = item.querySelector('.product-item-meta').textContent.trim();
+    const parts   = meta.split('·').map(s => s.trim());
+    const empNo   = parts[0] || '';
+    const dept    = parts[1] || '';
+    const rank    = parts[2] || '';
+    const mName   = maskName(name);
+    const mId     = maskId(name.toLowerCase().replace(/\s/g,'') + '@company.com');
+    const mPhone  = maskPhone('010-0000-0000');
 
     [0, 1, 2].forEach(tabIdx => {
       const tbody = document.getElementById('tbody-' + tabIdx);
-      // 이미 동일한 사번이 있으면 중복 추가 안함
-      const exists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
+      const exists = [...tbody.querySelectorAll('tr')].some(r => r.cells[4] && r.cells[4].textContent === empNo);
       if (exists) return;
 
       const rowCount = tbody.querySelectorAll('tr').length + 1;
       let respondentCell = '';
       if (tabIdx === 0) {
-        respondentCell = name;
+        respondentCell = `<span style="color:#555;">${mName}</span>`;
       } else if (tabIdx === 1) {
-        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${name}','구성원진단',1)">설정</button>`;
+        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${mName}','구성원진단',1)">설정</button>`;
       } else {
-        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${name}','상사진단',2)">설정</button>`;
+        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${mName}','상사진단',2)">설정</button>`;
       }
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><input type="checkbox"></td>
         <td>${rowCount}</td>
-        <td><a href="#" class="link">${empNo}</a></td>
+        <td>${mName}</td>
+        <td>${mId}</td>
         <td>${empNo}</td>
-        <td>${name}</td>
-        <td>${rank}</td>
+        <td>휴넷</td>
         <td>${dept}</td>
-        <td>${tabIdx === 0 ? '피진단자' : tabIdx === 1 ? '구성원' : '상사'}</td>
-        <td></td>
-        <td></td>
+        <td>${rank}</td>
+        <td>${mPhone}</td>
         <td>${respondentCell}</td>
-        <td><button class="btn btn-gray btn-xs" onclick="delRow(this,${tabIdx})">삭제</button></td>
       `;
       tbody.appendChild(tr);
     });
   });
 
-  // 선택 초기화
   selected.forEach(item => item.classList.remove('selected'));
   closeModal('participantModal');
   showToast('대상자가 추가되었습니다. (3개 유형에 모두 반영)');
@@ -1471,11 +1557,11 @@ function addParticipants() {
 
 function delRow(btn, tabIdx) {
   const tr = btn.closest('tr');
-  const empNo = tr.cells[3].textContent;
+  const empNo = tr.cells[4].textContent;
   [0, 1, 2].forEach(i => {
     const tbody = document.getElementById('tbody-' + i);
     tbody.querySelectorAll('tr').forEach(r => {
-      if (r.cells[3] && r.cells[3].textContent === empNo) r.remove();
+      if (r.cells[4] && r.cells[4].textContent === empNo) r.remove();
     });
     tbody.querySelectorAll('tr').forEach((r, idx) => r.cells[1].textContent = idx + 1);
   });
