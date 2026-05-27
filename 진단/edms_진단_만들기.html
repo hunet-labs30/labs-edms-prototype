@@ -156,9 +156,11 @@ body {
 .product-tag-del { background: none; border: none; color: #aaa; cursor: pointer; font-size: 15px; line-height: 1; }
 .product-tag-del:hover { color: #c00; }
 
-/* 템플릿 행 (알림 Y일 때만 표시) */
-.template-section { display: none; }
-.template-section.visible { display: table-row; }
+/* ── 응답자 등록 모달 탭 ── */
+.resp-right-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+.resp-right-tab { padding: 9px 14px; font-size: 12px; color: #555; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+.resp-right-tab:hover { color: var(--primary); background: #f5f8ff; }
+.resp-right-tab.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
 
 /* ── STEP 2: 결과분석 트리 ── */
 .analysis-info-bar {
@@ -564,29 +566,6 @@ body {
             </td>
           </tr>
           <tr>
-            <th class="form-th">알림 사용여부</th>
-            <td class="form-td">
-              <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="notifUse" value="Y" onchange="toggleTemplate(true)"> Y (자동등록)</label>
-                <label class="radio-label"><input type="radio" name="notifUse" value="N" checked onchange="toggleTemplate(false)"> N</label>
-              </div>
-            </td>
-          </tr>
-          <tr class="template-section" id="templateRow">
-            <th class="form-th">템플릿 선택</th>
-            <td class="form-td">
-              <div style="display:flex;flex-direction:column;gap:10px;">
-                <div class="inline-row">
-                  <select class="form-select" style="width:120px;"><option>참여 (진단시작일)</option><option>독려</option><option>결과</option></select>
-                  <input class="form-input w-md" placeholder="템플릿을 선택하세요" readonly>
-                  <button class="search-btn">검색</button>
-                  <button class="btn btn-primary btn-sm">추가</button>
-                </div>
-                <div class="hint">참여(진단시작일) · 독려(진단마감 7일 전) · 결과(진단완료 시) 알림을 각각 설정할 수 있습니다.</div>
-              </div>
-            </td>
-          </tr>
-          <tr>
             <th class="form-th">진단 소개 및 설명</th>
             <td class="form-td">
               <textarea class="form-textarea" style="height:200px;max-width:100%;">휴넷 역량 진단
@@ -902,8 +881,8 @@ body {
     ══════════════════════════════════ -->
     <div class="step-content" id="step-content-3">
       <div class="form-section">
-        <div class="form-section-header"><span class="section-icon">👥</span> 유형별 대상자 선정
-          <span style="font-size:11px;color:#888;font-weight:400;margin-left:8px;">진단 유형별로 대상자(진단 받는 사람)와 응답자(진단 하는 사람)를 설정합니다.</span>
+        <div class="form-section-header"><span class="section-icon">👥</span> 대상자 선정
+          <span style="font-size:11px;color:#888;font-weight:400;margin-left:8px;">진단 대상자(진단 받는 사람)와 응답자(진단 하는 사람)을 설정합니다.</span>
         </div>
         <div style="padding:16px 20px;">
           <div class="type-tabs" id="typeTabs">
@@ -1240,43 +1219,55 @@ body {
 
       <!-- 오른쪽 패널 -->
       <div class="resp-right-panel">
-        <div class="resp-right-header" id="respRightHeader">구성원 진단 응답자 설정 — 홍길동</div>
+        <div class="resp-right-header" id="respRightHeader">구성원진단 응답자 설정 — 홍*동</div>
+        <!-- 탭 -->
+        <div class="resp-right-tabs" id="respRightTabs">
+          <div class="resp-right-tab active" onclick="switchRespTab(this)">개별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">부서별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">직급별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">직책별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">직무별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">직군별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">대상구분별</div>
+          <div class="resp-right-tab" onclick="switchRespTab(this)">일괄등록</div>
+        </div>
+        <!-- 검색 -->
         <div class="resp-search-row">
-          <select class="form-select" style="width:90px;height:30px;font-size:12px;"><option>이름</option><option>사번</option><option>조직</option></select>
-          <input class="modal-input" placeholder="검색어를 입력하세요" id="respSearchInput">
-          <button class="btn btn-primary btn-sm" onclick="showToast('응답자 후보를 검색합니다.')">🔍</button>
+          <select class="form-select" style="width:100px;height:30px;font-size:12px;"><option>회사 선택</option><option>휴넷</option><option>동아ST</option><option>동아SI</option></select>
+          <select class="form-select" style="width:80px;height:30px;font-size:12px;"><option>이름</option><option>사번</option><option>부서</option></select>
+          <input class="modal-input" placeholder="검색어를 입력하세요." id="respSearchInput" style="flex:1;">
+          <button class="btn btn-primary btn-sm" onclick="showToast('검색합니다.')">🔍 검색</button>
+          <button class="btn btn-gray btn-sm" onclick="showToast('전체 검색합니다.')">전체검색</button>
         </div>
         <div class="resp-right-body">
           <div class="resp-count-bar">
-            <span>총 <strong style="color:var(--primary);">5</strong>건</span>
-            <button class="btn btn-primary btn-sm" onclick="addRespondents()">+ 응답자 추가</button>
+            <span>검색 결과: <strong style="color:var(--primary);">8</strong>명 &nbsp;·&nbsp; 선택: <strong id="respSelectCount">0</strong>명</span>
+            <button class="btn btn-primary btn-sm" onclick="addRespondents()">추가 →</button>
           </div>
           <div class="resp-table-wrap">
             <table class="resp-table">
               <thead>
                 <tr>
                   <th style="width:36px;"><input type="checkbox" id="respAllCheck" onchange="toggleAllResp(this)"></th>
-                  <th>사번</th><th>이름</th><th>직급</th><th>조직</th><th>역할</th><th>이메일</th><th>연락처</th>
+                  <th>이름</th><th>아이디</th><th>사번</th><th>회사명</th><th>부서명</th><th style="width:52px;"></th>
                 </tr>
               </thead>
               <tbody id="respCandidateBody">
-                <tr><td><input type="checkbox"></td><td>20230201</td><td>박민수</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>park@company.com</td><td>010-4567-8901</td></tr>
-                <tr><td><input type="checkbox"></td><td>20220314</td><td>정다은</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>jung@company.com</td><td>010-5678-9012</td></tr>
-                <tr><td><input type="checkbox"></td><td>20210909</td><td>최준혁</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>choi@company.com</td><td>010-6789-0123</td></tr>
-                <tr><td><input type="checkbox"></td><td>20200707</td><td>윤서현</td><td>팀원</td><td>개발팀</td><td>팀원</td><td>yoon@company.com</td><td>010-7890-1234</td></tr>
-                <tr><td><input type="checkbox"></td><td>20190415</td><td>강태양</td><td>팀원</td><td>개발팀</td><td>팀원</td><td>kang@company.com</td><td>010-8901-2345</td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>홍*동</strong></td><td>h***@hunet.co.kr</td><td>20240001</td><td>동아ST</td><td>인사팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>이*언</strong></td><td>l****@hunet.co.kr</td><td>20230002</td><td>동아SI</td><td>기획팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>김*문</strong></td><td>k***@hunet.co.kr</td><td>20220010</td><td>동아ST</td><td>안전팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>박*현</strong></td><td>p****@hunet.co.kr</td><td>20210020</td><td>동이쏘시오홀딩스</td><td>HR팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>최*연</strong></td><td>c*****@hunet.co.kr</td><td>20200030</td><td>동아ST</td><td>교육팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>정*진</strong></td><td>j*******@hunet.co.kr</td><td>20190040</td><td>동아싸이오홀딩스</td><td>재무팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>강*원</strong></td><td>k*******@hunet.co.kr</td><td>20180050</td><td>동아ST</td><td>전략팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
+                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>이*은</strong></td><td>l*******@hunet.co.kr</td><td>20250001</td><td>동아ST</td><td>기획팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
               </tbody>
             </table>
-          </div>
-          <div class="table-footer" style="padding:8px 0;">
-            <button class="pg-btn">«</button>
-            <button class="pg-btn active">1</button>
-            <button class="pg-btn">»</button>
           </div>
 
           <!-- 등록된 응답자 -->
           <div class="resp-divider">
-            <span>등록된 응답자 <strong style="color:var(--primary);" id="registeredRespCount">3</strong>명</span>
+            <span>등록된 응답자 <strong style="color:var(--primary);" id="registeredRespCount">0</strong>명</span>
             <button class="btn btn-gray btn-xs" onclick="showToast('선택 응답자를 삭제합니다.')">삭제</button>
           </div>
           <div class="resp-registered-wrap">
@@ -1284,13 +1275,11 @@ body {
               <thead>
                 <tr>
                   <th style="width:36px;"><input type="checkbox"></th>
-                  <th>사번</th><th>이름</th><th>직급</th><th>조직</th><th>역할</th><th>이메일</th><th>연락처</th>
+                  <th>이름</th><th>아이디</th><th>사번</th><th>회사명</th><th>부서명</th><th style="width:52px;"></th>
                 </tr>
               </thead>
               <tbody id="respRegisteredBody">
-                <tr><td><input type="checkbox"></td><td>20230201</td><td>박민수</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>park@company.com</td><td>010-4567-8901</td></tr>
-                <tr><td><input type="checkbox"></td><td>20220314</td><td>정다은</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>jung@company.com</td><td>010-5678-9012</td></tr>
-                <tr><td><input type="checkbox"></td><td>20210909</td><td>최준혁</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>choi@company.com</td><td>010-6789-0123</td></tr>
+                <tr><td colspan="7" style="color:#aaa;padding:20px;text-align:center;">등록된 응답자가 없습니다.</td></tr>
               </tbody>
             </table>
           </div>
@@ -1346,19 +1335,6 @@ function prevStep() {
 function toggleBlock(headerEl) {
   headerEl.closest('.type-block, .area-block').classList.toggle('open');
 }
-
-/* ── TEMPLATE ROW ── */
-function toggleTemplate(show) {
-  document.getElementById('templateRow').classList.toggle('template-section', true);
-  document.getElementById('templateRow').classList.toggle('visible', show);
-}
-/* init: hide template row */
-document.getElementById('templateRow').style.display = 'none';
-document.querySelectorAll('input[name="notifUse"]').forEach(r => {
-  r.addEventListener('change', function() {
-    document.getElementById('templateRow').style.display = this.value === 'Y' ? '' : 'none';
-  });
-});
 
 /* ── PRODUCT MODAL ── */
 let selectedProductEl = null;
@@ -1591,27 +1567,72 @@ function selectRespMember(el) {
   el.querySelector('span').style.background = 'var(--primary)';
 }
 
+function switchRespTab(el) {
+  el.closest('.resp-right-tabs').querySelectorAll('.resp-right-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateRespSelectCount() {
+  const cnt = document.querySelectorAll('#respCandidateBody input[type=checkbox]:checked').length;
+  document.getElementById('respSelectCount').textContent = cnt;
+}
+
 function toggleAllResp(cb) {
   document.querySelectorAll('#respCandidateBody input[type=checkbox]').forEach(c => c.checked = cb.checked);
+  updateRespSelectCount();
+}
+
+function addSingleResp(btn) {
+  const row = btn.closest('tr');
+  const cells = row.querySelectorAll('td');
+  const tbody = document.getElementById('respRegisteredBody');
+  const empNo = cells[3].textContent;
+  const alreadyExists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
+  if (alreadyExists) { showToast('이미 추가된 응답자입니다.'); return; }
+  const placeholder = tbody.querySelector('td[colspan]');
+  if (placeholder) placeholder.closest('tr').remove();
+  const newRow = tbody.insertRow();
+  newRow.innerHTML = `
+    <td><input type="checkbox"></td>
+    <td>${cells[1].textContent}</td>
+    <td>${cells[2].textContent}</td>
+    <td>${cells[3].textContent}</td>
+    <td>${cells[4].textContent}</td>
+    <td>${cells[5].textContent}</td>
+    <td><button class="btn btn-outline btn-xs" onclick="this.closest('tr').remove(); document.getElementById('registeredRespCount').textContent = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;">삭제</button></td>`;
+  document.getElementById('registeredRespCount').textContent = tbody.querySelectorAll('tr').length;
+  showToast('응답자가 추가되었습니다.');
 }
 
 function addRespondents() {
   const checked = document.querySelectorAll('#respCandidateBody input[type=checkbox]:checked');
   if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
   const tbody = document.getElementById('respRegisteredBody');
+  let added = 0;
   checked.forEach(cb => {
     const row = cb.closest('tr');
     const cells = row.querySelectorAll('td');
+    const empNo = cells[3].textContent;
+    const alreadyExists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
+    if (alreadyExists) return;
+    const placeholder = tbody.querySelector('td[colspan]');
+    if (placeholder) placeholder.closest('tr').remove();
     const newRow = tbody.insertRow();
-    newRow.innerHTML = `<td><input type="checkbox"></td>
-      <td>${cells[1].textContent}</td><td>${cells[2].textContent}</td>
-      <td>${cells[3].textContent}</td><td>${cells[4].textContent}</td>
-      <td>${cells[5].textContent}</td><td>${cells[6].textContent}</td>
-      <td>${cells[7].textContent}</td>`;
+    newRow.innerHTML = `
+      <td><input type="checkbox"></td>
+      <td>${cells[1].textContent}</td>
+      <td>${cells[2].textContent}</td>
+      <td>${cells[3].textContent}</td>
+      <td>${cells[4].textContent}</td>
+      <td>${cells[5].textContent}</td>
+      <td><button class="btn btn-outline btn-xs" onclick="this.closest('tr').remove(); document.getElementById('registeredRespCount').textContent = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;">삭제</button></td>`;
+    added++;
   });
   document.getElementById('registeredRespCount').textContent = tbody.querySelectorAll('tr').length;
   document.getElementById('respAllCheck').checked = false;
-  showToast(checked.length + '명이 응답자로 추가되었습니다.');
+  document.querySelectorAll('#respCandidateBody input[type=checkbox]').forEach(c => c.checked = false);
+  updateRespSelectCount();
+  showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
 }
 
 function saveRespondents() {
