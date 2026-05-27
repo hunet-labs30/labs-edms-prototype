@@ -236,6 +236,10 @@ function _meMbrInjectDOM() {
 .mbr-tab{padding:8px 13px;font-size:12px;font-weight:600;color:#888;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;font-family:inherit;transition:all .15s;}
 .mbr-tab:hover{color:var(--primary,#3f61ed);}
 .mbr-tab.active{color:var(--primary,#3f61ed);border-bottom-color:var(--primary,#3f61ed);}
+#me-member-modal table{width:100%;border-collapse:collapse;table-layout:auto;}
+#me-member-modal table th,#me-member-modal table td{border-bottom:1px solid #e8eaed;padding:5px 8px;font-size:12px;vertical-align:middle;text-align:left;}
+#me-member-modal table thead th{background:#f0f2f5;font-weight:600;color:#555;white-space:nowrap;}
+#me-member-modal table tbody tr:hover{background:#f8f9fc;}
 `;
   document.head.appendChild(style);
 
@@ -246,7 +250,7 @@ function _meMbrInjectDOM() {
 
     <!-- 헤더 -->
     <div style="padding:13px 20px;border-bottom:1px solid var(--border,#e0e3e8);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <span style="font-size:14px;font-weight:700;">교육인원 등록</span>
+      <span style="font-size:14px;font-weight:700;">대상자 등록</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="document.getElementById('me-member-modal').style.display='none'">×</span>
     </div>
 
@@ -463,22 +467,22 @@ function meMbrAddCheckedToCollected() {
   const checked = [...document.querySelectorAll('.me-mbr-r-chk:checked')];
   if (!checked.length) { alert('추가할 인원을 선택해주세요.'); return; }
   checked.forEach(chk => {
-    const cells = chk.closest('tr').querySelectorAll('td');
-    const name = cells[1].textContent.trim(), empno = cells[2].textContent.trim(), dept = cells[3].textContent.trim();
-    if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, empno, dept});
+    const row = chk.closest('tr');
+    const name = row.dataset.name, empno = row.dataset.empno, loginId = row.dataset.loginid, company = row.dataset.company, dept = row.dataset.dept;
+    if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, loginId, company, empno, dept});
   });
   meMbrUpdateCollected();
 }
 function meMbrAddRowToCollected(btn) {
-  const cells = btn.closest('tr').querySelectorAll('td');
-  const name = cells[1].textContent.trim(), empno = cells[2].textContent.trim(), dept = cells[3].textContent.trim();
-  if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, empno, dept});
+  const row = btn.closest('tr');
+  const name = row.dataset.name, empno = row.dataset.empno, loginId = row.dataset.loginid, company = row.dataset.company, dept = row.dataset.dept;
+  if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, loginId, company, empno, dept});
   meMbrUpdateCollected();
 }
 function meMbrAddSingleRowToCollected(btn) {
   const row = btn.closest('tr');
-  const name = row.dataset.name, empno = row.dataset.empno, dept = row.dataset.dept;
-  if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, empno, dept});
+  const name = row.dataset.name, empno = row.dataset.empno, loginId = row.dataset.loginid, company = row.dataset.company, dept = row.dataset.dept;
+  if (!ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, loginId, company, empno, dept});
   meMbrUpdateCollected();
 }
 function meMbrRemoveCollected(i) { ME_COLLECTED.splice(i, 1); meMbrUpdateCollected(); }
@@ -573,12 +577,12 @@ function meMbrSelectDept(id) {
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = members.length ? members.map(m => {
     const isReg = registered.some(r => r.empno === m.empno);
-    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
-    <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
+    <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${_mbr_maskE(m.empno)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:3px 4px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;width:78px;">${_mbr_maskE(m.empno)}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept||''}</td>
+    <td style="text-align:center;padding:3px 4px;width:46px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
     </tr>`;
   }).join('') : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
 }
@@ -674,12 +678,12 @@ function meMbrSelectTargetDiv(typeIdx, divIdx) {
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = d.members.map(m => {
     const isReg = registered.some(r => r.empno === m.empno);
-    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
-    <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
+    <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${_mbr_maskE(m.empno)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:3px 4px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;width:78px;">${_mbr_maskE(m.empno)}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept||''}</td>
+    <td style="text-align:center;padding:3px 4px;width:46px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
     </tr>`;
   }).join('');
 }
@@ -698,12 +702,12 @@ function meMbrSelectLeft(idx, type) {
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = item.members.map(m => {
     const isReg = registered.some(r => r.empno === m.empno);
-    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
-    <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
+    return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
+    <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${_mbr_maskE(m.empno)}</td>
-    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:3px 4px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;width:78px;">${_mbr_maskE(m.empno)}</td>
+    <td style="padding:5px 8px;color:${isReg ? '#ccc' : '#888'};font-size:11px;">${m.dept||''}</td>
+    <td style="text-align:center;padding:3px 4px;width:46px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>'}</td>
     </tr>`;
   }).join('');
 }
@@ -761,8 +765,8 @@ function meMbrSingleAddChecked() {
   if (!checked.length) { alert('추가할 인원을 선택해주세요.'); return; }
   checked.forEach(chk => {
     const row = chk.closest('tr');
-    const name = row.dataset.name, empno = row.dataset.empno, dept = row.dataset.dept;
-    if (name && empno && !ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, empno, dept});
+    const name = row.dataset.name, empno = row.dataset.empno, loginId = row.dataset.loginid, company = row.dataset.company, dept = row.dataset.dept;
+    if (name && empno && !ME_COLLECTED.find(m => m.empno === empno)) ME_COLLECTED.push({name, loginId, company, empno, dept});
   });
   meMbrUpdateCollected();
 }
