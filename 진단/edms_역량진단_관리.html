@@ -453,7 +453,7 @@
     </div>
 
     <!-- 검색 -->
-    <div class="card">
+    <div class="card" style="margin-top:16px;">
       <div class="search-row">
         <span class="label-auto">상태</span>
         <select class="select" style="width:100px;">
@@ -495,235 +495,240 @@
         <thead>
           <tr>
             <th style="width:40px;">No</th>
+            <th style="width:190px;">진단기간</th>
             <th style="text-align:left; padding-left:10px;">진단명</th>
-            <th style="width:70px;">대상자</th>
-            <th style="width:160px;">응답 기간</th>
-            <th style="width:170px;">응답 현황</th>
+            <th style="width:50px;">문항</th>
+            <th style="width:70px;">진단대상자</th>
+            <th style="width:70px;">진단응답자</th>
+            <th style="width:160px;">응답 현황</th>
+            <th style="width:80px;">응답데이터</th>
             <th style="width:72px;">상태</th>
-            <th style="width:130px;">관리 <span style="font-size:10px; font-weight:400; color:#888;">(TP 어드민 상세 이동)</span></th>
+            <th style="width:80px;">등록일</th>
           </tr>
         </thead>
         <tbody>
 
-          <!-- ① 진행중 (텍스트) : 진단 시작 후 -->
+          <!-- ① 진행중 -->
           <tr>
             <td>12</td>
+            <td style="font-size:11px;">2025.05.01 00:00 ~<br>2025.05.31 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 상반기 리더십 역량진단</a></td>
-            <td>245</td>
-            <td>2025.05.01 ~ 05.31</td>
+            <td>36</td>
+            <td><a class="diag-link" href="#">245</a></td>
+            <td><a class="diag-link" href="#">245</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:62%;"></div></div>
                 <span class="progress-text">152/245 <span style="color:#1a73e8;">(62%)</span></span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-outline" onclick="openDownloadModal('2025년 상반기 리더십 역량진단', 245)">다운로드</button></td>
             <td><span class="badge badge-blue">진행중</span></td>
-            <td>
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2025.04.20</td>
           </tr>
           <tr>
             <td>11</td>
+            <td style="font-size:11px;">2025.05.05 00:00 ~<br>2025.05.25 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">팀장급 코칭리더십 진단 (2차)</a></td>
-            <td>38</td>
-            <td>2025.05.05 ~ 05.25</td>
+            <td>48</td>
+            <td><a class="diag-link" href="#">38</a></td>
+            <td><a class="diag-link" href="#">38</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:47%;"></div></div>
                 <span class="progress-text">18/38 <span style="color:#1a73e8;">(47%)</span></span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-outline" onclick="openDownloadModal('팀장급 코칭리더십 진단 (2차)', 38)">다운로드</button></td>
             <td><span class="badge badge-blue">진행중</span></td>
-            <td>
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2025.04.28</td>
           </tr>
 
-          <!-- ② 마감하기 (버튼) : 조건 미충족 — 미완료 대상자 있음 -->
+          <!-- ② 마감하기 : 미완료 대상자 있음 -->
           <tr id="row-magam-10">
             <td>10</td>
+            <td style="font-size:11px;">2025.04.10 00:00 ~<br>2025.04.30 23:59</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">신임 팀장 온보딩 역량진단</a>
               <span style="font-size:10px; color:#bbb; margin-left:4px;">[미완료 대상자 있음]</span>
             </td>
-            <td>22</td>
-            <td>2025.04.10 ~ 04.30</td>
+            <td>24</td>
+            <td><a class="diag-link" href="#">22</a></td>
+            <td><a class="diag-link" href="#">22</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:82%; background:#f4b65a;"></div></div>
                 <span class="progress-text">18/22 <span style="color:#b35c00;">(82%)</span></span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-outline" onclick="openDownloadModal('신임 팀장 온보딩 역량진단', 22)">다운로드</button></td>
             <td class="status-cell">
               <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '신임 팀장 온보딩 역량진단', 22, 18, '2025.04.10', '2025.04.30')">마감하기</button>
             </td>
-            <td class="action-cell">
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2025.03.31</td>
           </tr>
 
-          <!-- ② 마감하기 (버튼) : 조건 충족 — 전원 응답 완료 -->
+          <!-- ② 마감하기 : 전원 완료 -->
           <tr id="row-magam-9b">
             <td>10</td>
+            <td style="font-size:11px;">2025.03.01 00:00 ~<br>2025.03.31 23:59</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 상반기 핵심인재 역량진단</a>
               <span style="font-size:10px; color:#bbb; margin-left:4px;">[전원 완료]</span>
             </td>
-            <td>45</td>
-            <td>2025.03.01 ~ 03.31</td>
+            <td>60</td>
+            <td><a class="diag-link" href="#">45</a></td>
+            <td><a class="diag-link" href="#">45</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%; background:#f4b65a;"></div></div>
                 <span class="progress-text">45/45 <span style="color:#b35c00;">(100%)</span></span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-outline" onclick="openDownloadModal('2025년 상반기 핵심인재 역량진단', 45)">다운로드</button></td>
             <td class="status-cell">
               <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '2025년 상반기 핵심인재 역량진단', 45, 45, '2025.03.01', '2025.03.31')">마감하기</button>
             </td>
-            <td class="action-cell">
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2025.02.20</td>
           </tr>
 
-          <!-- ③ 대기 시나리오 1: 대상자 미설정 → 팝업1 -->
+          <!-- ③ 대기 : 대상자 미설정 -->
           <tr id="row-11">
             <td>11</td>
+            <td style="font-size:11px;">2026.09.01 00:00 ~<br>2026.09.30 23:59</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 하반기 팀장 역량진단</a>
               <span style="font-size:10px; color:#bbb; margin-left:4px;">[대상자 미설정]</span>
             </td>
+            <td>36</td>
             <td style="color:#bbb;">-</td>
-            <td>2026.09.01 ~ 09.30</td>
+            <td style="color:#bbb;">-</td>
             <td style="color:#bbb; font-size:11px;">대상자 미배정</td>
+            <td style="color:#bbb;">-</td>
             <td class="status-cell">
               <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 팀장 역량진단', 0, '2026-09-01', '2026-09-30')">대기</button>
             </td>
-            <td class="action-cell">
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2026.05.10</td>
           </tr>
-          <!-- ③ 대기 시나리오 2: 기간 불일치 → 팝업2 -->
+
+          <!-- ③ 대기 : 기간 미도래 -->
           <tr id="row-10">
             <td>10</td>
+            <td style="font-size:11px;">2026.08.01 00:00 ~<br>2026.08.31 23:59</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 하반기 전사 역량진단</a>
               <span style="font-size:10px; color:#bbb; margin-left:4px;">[기간 미도래]</span>
             </td>
-            <td>200</td>
-            <td>2026.08.01 ~ 08.31</td>
+            <td>104</td>
+            <td><a class="diag-link" href="#">200</a></td>
+            <td><a class="diag-link" href="#">200</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%;"></div></div>
                 <span class="progress-text">0/200</span>
               </div>
             </td>
+            <td style="color:#bbb;">-</td>
             <td class="status-cell">
               <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 전사 역량진단', 200, '2026-08-01', '2026-08-31')">대기</button>
             </td>
-            <td class="action-cell">
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2026.05.01</td>
           </tr>
-          <!-- ③ 대기 시나리오 3: 정상 → 팝업3 (진단 시작 확인) -->
+
+          <!-- ③ 대기 : 시작 가능 -->
           <tr id="row-9">
             <td>9</td>
+            <td style="font-size:11px;">2026.05.14 00:00 ~<br>2026.06.13 23:59</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%EC%A0%84_1&id=ax50o8&g=1" target="_blank">2026년 상반기 전사 역량진단</a>
               <span style="font-size:10px; color:#bbb; margin-left:4px;">[시작 가능]</span>
             </td>
-            <td>580</td>
-            <td>2026.05.14 ~ 06.13</td>
+            <td>104</td>
+            <td><a class="diag-link" href="#">580</a></td>
+            <td><a class="diag-link" href="#">580</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:0%;"></div></div>
                 <span class="progress-text">0/580</span>
               </div>
             </td>
+            <td style="color:#bbb;">-</td>
             <td class="status-cell">
               <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 상반기 전사 역량진단', 580, '2026-05-14', '2026-06-13')">대기</button>
             </td>
-            <td class="action-cell">
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td style="font-size:11px;">2026.04.14</td>
           </tr>
 
-          <!-- ④ 마감 (텍스트, 비활성) : 마감 실행 후 TP 어드민 확정 대기 중 -->
+          <!-- ④ 마감 -->
           <tr>
             <td>8</td>
+            <td style="font-size:11px;">2025.03.03 00:00 ~<br>2025.03.28 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2025년 1분기 영업팀 역량진단</a></td>
-            <td>67</td>
-            <td>2025.03.03 ~ 03.28</td>
+            <td>36</td>
+            <td><a class="diag-link" href="#">67</a></td>
+            <td><a class="diag-link" href="#">67</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%; background:#f4b65a;"></div></div>
                 <span class="progress-text">67/67 <span style="color:#b35c00;">(100%)</span></span>
               </div>
             </td>
-            <td>
-              <span class="badge badge-orange">마감</span>
-            </td>
-            <td>
-              <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리</a>
-            </td>
+            <td><button class="btn btn-sm btn-outline" onclick="openDownloadModal('2025년 1분기 영업팀 역량진단', 67)">다운로드</button></td>
+            <td><span class="badge badge-orange">마감</span></td>
+            <td style="font-size:11px;">2025.02.10</td>
           </tr>
 
-          <!-- ⑤ 완료 (텍스트) : 진단 완료 -->
+          <!-- ⑤ 완료 -->
           <tr>
             <td>7</td>
+            <td style="font-size:11px;">2024.11.01 00:00 ~<br>2024.11.30 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 하반기 리더십 역량진단</a></td>
-            <td>312</td>
-            <td>2024.11.01 ~ 11.30</td>
+            <td>36</td>
+            <td><a class="diag-link" href="#">312</a></td>
+            <td><a class="diag-link" href="#">303</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:97%;"></div></div>
                 <span class="progress-text" style="color:#1a7a4a;">303/312 (97%)</span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 하반기 리더십 역량진단', 312)">다운로드</button></td>
             <td><span class="badge badge-green">완료</span></td>
-            <td>
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
-                <button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 하반기 리더십 역량진단', 312)">데이터 다운로드</button>
-              </div>
-            </td>
+            <td style="font-size:11px;">2024.10.01</td>
           </tr>
           <tr>
             <td>6</td>
+            <td style="font-size:11px;">2024.09.02 00:00 ~<br>2024.09.27 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 중간리더 핵심역량 진단</a></td>
-            <td>89</td>
-            <td>2024.09.02 ~ 09.27</td>
+            <td>48</td>
+            <td><a class="diag-link" href="#">89</a></td>
+            <td><a class="diag-link" href="#">89</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:100%;"></div></div>
                 <span class="progress-text" style="color:#1a7a4a;">89/89 (100%)</span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 중간리더 핵심역량 진단', 89)">다운로드</button></td>
             <td><span class="badge badge-green">완료</span></td>
-            <td>
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
-                <button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 중간리더 핵심역량 진단', 89)">데이터 다운로드</button>
-              </div>
-            </td>
+            <td style="font-size:11px;">2024.08.20</td>
           </tr>
           <tr>
             <td>5</td>
+            <td style="font-size:11px;">2024.05.01 00:00 ~<br>2024.05.31 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="https://y0i1u2.axshare.com/?p=%EC%A7%84%EB%8B%A8%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%83%81%EC%84%B8_%EC%8B%9C%EC%9E%91_%ED%9B%84_1&id=pb3rmj&g=1" target="_blank">2024년 상반기 전사 역량진단</a></td>
-            <td>540</td>
-            <td>2024.05.01 ~ 05.31</td>
+            <td>104</td>
+            <td><a class="diag-link" href="#">540</a></td>
+            <td><a class="diag-link" href="#">507</a></td>
             <td>
               <div class="progress-wrap">
                 <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:94%;"></div></div>
                 <span class="progress-text" style="color:#1a7a4a;">507/540 (94%)</span>
               </div>
             </td>
+            <td><button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 상반기 전사 역량진단', 540)">다운로드</button></td>
             <td><span class="badge badge-green">완료</span></td>
-            <td>
-              <div style="display:flex;flex-direction:column;gap:4px;">
-                <a class="btn btn-sm btn-outline" href="https://y0i1u2.axshare.com/?p=%EA%B8%B0%EC%97%85%EC%83%81%EC%84%B8%EC%A0%95%EB%B3%B4_1&id=slhqj8&g=1" target="_blank">관리 및 보고서 확인</a>
-                <button class="btn btn-sm btn-primary" onclick="openDownloadModal('2024년 상반기 전사 역량진단', 540)">데이터 다운로드</button>
-              </div>
-            </td>
+            <td style="font-size:11px;">2024.04.01</td>
           </tr>
         </tbody>
       </table>
