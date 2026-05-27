@@ -93,6 +93,23 @@
   .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
   .breadcrumb { font-size: 11px; color: #999; }
 
+  /* TABS */
+  .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e0e3e8; margin-bottom: 16px; }
+  .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 13px; font-weight: 500; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s, border-color .15s; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+  .tab-btn:hover:not(.active) { color: #555; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SETTINGS TABLE */
+  .setting-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .setting-table th { background: #f5f6f8; border: 1px solid var(--border); padding: 10px 14px; font-weight: 600; color: #444; text-align: left; width: 220px; }
+  .setting-table td { border: 1px solid var(--border); padding: 10px 14px; color: #333; }
+  .setting-table .section-header td { background: #f0f2f5; font-weight: 700; font-size: 12px; color: #555; padding: 8px 14px; }
+  .radio-group { display: flex; gap: 20px; align-items: center; }
+  .radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: #333; }
+  .radio-group input[type=radio] { accent-color: var(--primary); width: 15px; height: 15px; cursor: pointer; }
+
   /* CARD */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
   .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #222; }
@@ -396,6 +413,15 @@
       <div class="page-header-title">역량진단 관리</div>
       <div class="breadcrumb">부가서비스 &gt; 역량진단 관리</div>
     </div>
+
+    <!-- 탭 바 -->
+    <div class="tab-bar" style="margin-top:16px;">
+      <button class="tab-btn active" onclick="switchTab('manage')">역량진단 관리</button>
+      <button class="tab-btn" onclick="switchTab('setting')">역량진단 설정</button>
+    </div>
+
+    <!-- 탭: 역량진단 관리 -->
+    <div class="tab-panel active" id="tab-manage">
 
     <!-- 요약 통계 -->
     <div class="stat-row">
@@ -714,6 +740,31 @@
       </div>
     </div>
 
+    </div><!-- /tab-manage -->
+
+    <!-- 탭: 역량진단 설정 -->
+    <div class="tab-panel" id="tab-setting">
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table class="setting-table">
+          <tbody>
+            <tr class="section-header"><td colspan="2">역량진단 사용 설정</td></tr>
+            <tr>
+              <th>역량진단 기능 사용</th>
+              <td>
+                <div class="radio-group">
+                  <label><input type="radio" name="diagUse" value="use"> 사용</label>
+                  <label><input type="radio" name="diagUse" value="unuse" checked> 미사용</label>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex; justify-content:center; margin-top:20px;">
+        <button class="btn btn-primary" onclick="saveSetting()">저장</button>
+      </div>
+    </div><!-- /tab-setting -->
+
   </main>
 </div>
 
@@ -838,6 +889,20 @@
 <div id="toast"></div>
 
 <script>
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', ['manage','setting'][i] === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-' + name);
+    });
+  }
+
+  function saveSetting() {
+    const val = document.querySelector('input[name="diagUse"]:checked').value;
+    showToast(val === 'use' ? '역량진단 기능이 사용으로 설정되었습니다.' : '역량진단 기능이 미사용으로 설정되었습니다.');
+  }
+
   function toggleNav(header) {
     const group = header.parentElement;
     const isOpen = group.classList.contains('open');
