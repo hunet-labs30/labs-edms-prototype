@@ -1102,7 +1102,7 @@ body {
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('participantModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="showToast('대상자가 추가되었습니다.'); closeModal('participantModal')">추가</button>
+      <button class="btn btn-primary btn-sm" onclick="addParticipants()">추가</button>
     </div>
   </div>
 </div>
@@ -1391,9 +1391,61 @@ function switchTab(idx) {
 }
 
 function openAddParticipant(tabIdx) {
-  const titles = ['본인 진단 대상 추가', '구성원 진단 대상 추가', '상사 진단 대상 추가'];
-  document.getElementById('participantModalTitle').textContent = titles[tabIdx] || '대상자 추가';
+  document.getElementById('participantModalTitle').textContent = '대상자 추가';
   openModal('participantModal');
+}
+
+function addParticipants() {
+  const selected = document.querySelectorAll('#participantModal .product-item.selected');
+  if (!selected.length) { showToast('추가할 대상자를 선택하세요.'); return; }
+
+  selected.forEach(item => {
+    const name = item.querySelector('.product-item-name').textContent.trim();
+    const meta = item.querySelector('.product-item-meta').textContent.trim();
+    const parts = meta.split('·').map(s => s.trim());
+    const empNo = parts[0] || '';
+    const dept  = parts[1] || '';
+    const rank  = parts[2] || '';
+
+    [0, 1, 2].forEach(tabIdx => {
+      const tbody = document.getElementById('tbody-' + tabIdx);
+      // 이미 동일한 사번이 있으면 중복 추가 안함
+      const exists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
+      if (exists) return;
+
+      const rowCount = tbody.querySelectorAll('tr').length + 1;
+      let respondentCell = '';
+      if (tabIdx === 0) {
+        respondentCell = name;
+      } else if (tabIdx === 1) {
+        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${name}','구성원진단',1)">설정</button>`;
+      } else {
+        respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${name}','상사진단',2)">설정</button>`;
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="checkbox"></td>
+        <td>${rowCount}</td>
+        <td><a href="#" class="link">${empNo}</a></td>
+        <td>${empNo}</td>
+        <td>${name}</td>
+        <td>${rank}</td>
+        <td>${dept}</td>
+        <td>${tabIdx === 0 ? '피진단자' : tabIdx === 1 ? '구성원' : '상사'}</td>
+        <td></td>
+        <td></td>
+        <td>${respondentCell}</td>
+        <td><button class="btn btn-gray btn-xs" onclick="delRow(this,${tabIdx})">삭제</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+
+  // 선택 초기화
+  selected.forEach(item => item.classList.remove('selected'));
+  closeModal('participantModal');
+  showToast('대상자가 추가되었습니다. (3개 유형에 모두 반영)');
 }
 
 function delRow(btn, tabIdx) {
