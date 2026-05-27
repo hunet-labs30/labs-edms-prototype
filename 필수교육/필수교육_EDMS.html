@@ -2063,9 +2063,9 @@
             <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
               <th style="width:34px;"><input type="checkbox" id="me-mbr-s-chk-all" onchange="document.querySelectorAll('.me-mbr-s-chk').forEach(c=>c.checked=this.checked);meMbrSelCount()"></th>
               <th>이름</th><th style="width:86px;">아이디</th><th style="width:78px;">사번</th>
-              <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th>
+              <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th><th style="width:46px;"></th>
             </tr></thead>
-            <tbody id="me-mbr-s-tbody"><tr><td colspan="6" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
+            <tbody id="me-mbr-s-tbody"><tr><td colspan="7" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
           </table>
         </div>
         <div class="table-footer" style="padding:4px 0;flex-shrink:0;">
@@ -3132,6 +3132,12 @@ function meMbrAddRowToCollected(btn) {
   if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
   meMbrUpdateCollected();
 }
+function meMbrAddSingleRowToCollected(btn) {
+  const row = btn.closest('tr');
+  const name=row.dataset.name, empno=row.dataset.empno, dept=row.dataset.dept;
+  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
+  meMbrUpdateCollected();
+}
 function meMbrRemoveCollected(i) { ME_COLLECTED.splice(i,1); meMbrUpdateCollected(); }
 function meMbrClearCollected()   { ME_COLLECTED.length=0; meMbrUpdateCollected(); }
 
@@ -3657,6 +3663,7 @@ function meMbrSingleAll() {
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
     <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button></td>
   </tr>`).join('');
   tbody.innerHTML = rows;
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
@@ -3675,8 +3682,9 @@ function meMbrSingleSearch() {
         <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
         <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
         <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
+        <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button></td>
       </tr>`).join('')
-    : '<tr><td colspan="6" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
+    : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
 }
