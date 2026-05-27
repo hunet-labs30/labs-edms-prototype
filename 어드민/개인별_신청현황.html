@@ -943,7 +943,7 @@ function renderTable() {
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
       <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
       <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
-      <td style="text-align:right;padding-right:12px;">${r.fee.toLocaleString()}</td>
+      <td style="text-align:right;padding-right:12px;">${r.fee === 0 ? '0원' : r.fee.toLocaleString()}</td>
       <td>${r.applyDate.replace(/-/g,'.')}</td>
       <td><span class="badge ${r.status.badge}">${r.status.label}</span></td>
       <td>${r.approveDate ? r.approveDate.replace(/-/g,'.') : '-'}</td>

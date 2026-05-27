@@ -123,13 +123,18 @@
   }
 
   /* ── SEARCH ── */
-  .search-wrap { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
-  .search-row { display: flex; align-items: center; gap: 8px; min-height: 32px; }
-  .search-label {
-    width: 52px; font-size: 12px; font-weight: 600; color: var(--text-muted);
-    flex-shrink: 0; text-align: right; padding-right: 4px;
+  .search-wrap { padding: 0; display: flex; flex-direction: column; }
+  .search-row {
+    display: flex; align-items: flex-start;
+    padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 0;
   }
-  .search-body { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .search-row:last-of-type { border-bottom: none; }
+  .search-label {
+    width: 68px; flex-shrink: 0;
+    font-size: 12px; font-weight: 600; color: #475569;
+    padding-top: 7px; line-height: 1.3;
+  }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .input {
     height: 32px; padding: 0 10px; border: 1px solid #cbd5e1;
     border-radius: 5px; font-size: 13px; color: var(--text); outline: none;
@@ -154,14 +159,28 @@
 
   .search-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 2px; }
 
-  /* ── TYPEAHEAD ── */
-  .typeahead-wrap { position: relative; }
-  .typeahead-clear {
-    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-    border: none; background: none; font-size: 14px; color: #94a3b8;
-    cursor: pointer; line-height: 1; padding: 2px 3px;
+  /* ── MULTISELECT (회사검색) ── */
+  .multiselect-wrap {
+    position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+    width: 340px; min-height: 32px;
+    border: 1px solid #cbd5e1; border-radius: 5px;
+    padding: 3px 6px; background: #fff; cursor: text;
   }
-  .typeahead-clear:hover { color: #475569; }
+  .multiselect-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,99,235,.1); }
+  .multiselect-input {
+    flex: 1; min-width: 100px; border: none; outline: none;
+    font-size: 13px; padding: 3px 4px; background: transparent;
+    font-family: inherit; color: var(--text);
+  }
+  .company-chip {
+    display: inline-flex; align-items: center;
+    background: var(--primary-light); color: var(--primary);
+    font-size: 12px; font-weight: 500; padding: 2px 2px 2px 8px; border-radius: 4px;
+  }
+  .company-chip .chip-x {
+    background: none; border: none; cursor: pointer; font-size: 14px;
+    color: var(--primary); padding: 0 4px; line-height: 1;
+  }
   .typeahead-list {
     position: absolute; top: calc(100% + 2px); left: 0; min-width: 100%;
     background: #fff; border: 1px solid #e2e8f0; border-radius: 6px;
@@ -169,11 +188,14 @@
     max-height: 200px; overflow-y: auto; z-index: 100;
   }
   .typeahead-list li {
-    padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text);
-    transition: background .1s;
+    padding: 8px 12px; font-size: 13px; cursor: pointer; color: var(--text); transition: background .1s;
   }
   .typeahead-list li:hover { background: var(--primary-light); }
   .typeahead-list li strong { color: var(--primary); }
+
+  /* ── 날짜탭 ── */
+  .date-section { display: flex; align-items: center; gap: 6px; }
+  .date-section.disabled { opacity: .4; pointer-events: none; }
 
   /* ── BUTTONS ── */
   .btn {
@@ -190,7 +212,7 @@
   /* ── STAT GRID ── */
   .stat-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     gap: 0;
   }
   .stat-card {
@@ -237,9 +259,33 @@
   .badge-type-off   { background: #f3e8ff; color: #7c3aed; }
   .badge-type-hybrid{ background: #d1fae5; color: #065f46; }
 
-  .badge-studying   { background: #dbeafe; color: #1d4ed8; }
-  .badge-complete   { background: #d1fae5; color: #15803d; }
-  .badge-incomplete { background: #fee2e2; color: #b91c1c; }
+  .badge-scheduled    { background: #f1f5f9; color: #475569; }
+  .badge-studying     { background: #dbeafe; color: #1d4ed8; }
+  .badge-ended        { background: #f1f5f9; color: #475569; }
+  .badge-pre-complete { background: #f1f5f9; color: #475569; }
+  .badge-complete     { background: #d1fae5; color: #15803d; }
+  .badge-incomplete   { background: #fee2e2; color: #b91c1c; }
+
+  /* ── 콘텐츠유형 배지 ── */
+  .badge-ct-video   { background: #dbeafe; color: #1d4ed8; }
+  .badge-ct-image   { background: #ede9fe; color: #7c3aed; }
+  .badge-ct-article { background: #d1fae5; color: #065f46; }
+  .badge-ct-file    { background: #f1f5f9; color: #475569; }
+  .badge-ct-exam    { background: #fee2e2; color: #b91c1c; }
+  .badge-ct-task    { background: #fef3c7; color: #b45309; }
+  .badge-ct-survey  { background: #ccfbf1; color: #0f766e; }
+  .badge-ct-quiz    { background: #ffedd5; color: #c2410c; }
+  .badge-ct-pdf     { background: #fce7f3; color: #9d174d; }
+  .badge-ct-link    { background: #e0f2fe; color: #0369a1; }
+  .badge-ct-offline { background: #e2e8f0; color: #334155; }
+
+  /* ── 상세 화면 ── */
+  .detail-nav { display: flex; justify-content: space-between; align-items: center; }
+  .detail-nav-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+  .detail-nav-btns { display: flex; gap: 8px; }
+  .detail-section-title { font-size: 13px; font-weight: 700; color: #0f172a; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .yn-y { color: #16a34a; font-weight: 700; }
+  .yn-n { color: #94a3b8; }
 
   /* ── PROGRESS BAR ── */
   .progress-wrap { display: flex; align-items: center; gap: 6px; min-width: 100px; }
@@ -426,20 +472,39 @@
       <div class="breadcrumb">학습 관리 &gt; 학습관리 &gt; 개인별</div>
     </div>
 
+    <!-- 목록 섹션 -->
+    <div id="list-section" style="display:flex;flex-direction:column;gap:14px;">
+
     <!-- 검색 -->
     <div class="card search-wrap">
-      <!-- 학습기간 -->
+      <!-- 과정구분 -->
       <div class="search-row">
-        <div class="search-label">학습기간</div>
+        <div class="search-label">과정구분</div>
         <div class="search-body">
-          <input class="input input-date" type="date" id="s-date-from" value="2026-04-01">
-          <span class="date-sep">~</span>
-          <input class="input input-date" type="date" id="s-date-to" value="2026-04-30">
+          <select class="select" id="s-course-div" style="width:88px;" onchange="onCourseDivChange()">
+            <option value="">전체</option>
+            <option value="정시">정시</option>
+            <option value="수시">수시</option>
+          </select>
         </div>
       </div>
-      <!-- 학습자 -->
+      <!-- 과정 학습기간 -->
       <div class="search-row">
-        <div class="search-label">학습자</div>
+        <div class="search-label">과정<br>학습기간</div>
+        <div class="search-body date-section disabled" id="date-section">
+          <select class="select" id="s-date-type" style="width:110px;">
+            <option value="start">학습시작일</option>
+            <option value="end">학습종료일</option>
+            <option value="period">기간검색</option>
+          </select>
+          <input class="input input-date" type="date" id="s-date-from" onchange="onDateFromChange()" onkeydown="return false;">
+          <span class="date-sep">~</span>
+          <input class="input input-date" type="date" id="s-date-to" onchange="onDateToChange()" onkeydown="return false;">
+        </div>
+      </div>
+      <!-- 학습자검색 -->
+      <div class="search-row">
+        <div class="search-label">학습자검색</div>
         <div class="search-body">
           <select class="select" id="s-learner-field" style="width:88px;">
             <option value="name">이름</option>
@@ -448,18 +513,19 @@
           </select>
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
-            <input class="input" id="s-learner-kw" type="text" placeholder="검색어 입력">
+            <input class="input" id="s-learner-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
-          <select class="select" id="s-learner-status" style="width:110px;">
-            <option value="">재직상태 전체</option>
-            <option value="active">재직</option>
-            <option value="monitoring">모니터링</option>
+          <select class="select" id="s-complete-status" style="width:130px;">
+            <option value="">수료여부 전체</option>
+            <option value="pre-complete">수료처리전</option>
+            <option value="complete">수료</option>
+            <option value="incomplete">미수료</option>
           </select>
         </div>
       </div>
-      <!-- 과정 -->
+      <!-- 과정검색 -->
       <div class="search-row">
-        <div class="search-label">과정</div>
+        <div class="search-label">과정검색</div>
         <div class="search-body">
           <select class="select" id="s-course-field" style="width:88px;">
             <option value="name">과정명</option>
@@ -467,53 +533,40 @@
           </select>
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
-            <input class="input" id="s-course-kw" type="text" placeholder="검색어 입력">
+            <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
-          <select class="select" id="s-course-type" style="width:120px;">
+          <select class="select" id="s-course-type" style="width:130px;">
             <option value="">과정유형 전체</option>
             <option value="online">온라인</option>
-            <option value="offline">오프라인</option>
-            <option value="hybrid">하이브리드</option>
             <option value="micro">마이크로러닝</option>
           </select>
           <select class="select" id="s-course-cat" style="width:120px;">
             <option value="">과정분류 전체</option>
-            <option>직무</option>
-            <option>리더십</option>
-            <option>어학</option>
-            <option>IT</option>
+            <option>외국어</option>
+            <option>자격/공인</option>
+            <option>자기개발</option>
+            <option>전문직무</option>
+            <option>직무공통</option>
           </select>
         </div>
       </div>
-      <!-- 수료상태 -->
+      <!-- 회사검색 -->
       <div class="search-row">
-        <div class="search-label">수료상태</div>
+        <div class="search-label">회사검색</div>
         <div class="search-body">
-          <select class="select" id="s-complete-status" style="width:140px;">
-            <option value="">전체</option>
-            <option value="studying">학습중</option>
-            <option value="complete">수료</option>
-            <option value="incomplete">미수료</option>
-          </select>
-        </div>
-      </div>
-      <!-- 회사 -->
-      <div class="search-row">
-        <div class="search-label">회사</div>
-        <div class="search-body">
-          <div class="typeahead-wrap">
-            <input type="text" class="input" id="s-company-input" placeholder="전체 회사 (입력하여 검색)"
-              autocomplete="off" style="width:260px;padding-right:26px;"
-              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onblur="onCompanyBlur()">
-            <button class="typeahead-clear" id="company-clear" onclick="clearCompany()" style="display:none;">×</button>
+          <div class="multiselect-wrap" id="company-multiselect" onclick="focusCompanyInput(event)">
+            <input type="text" class="multiselect-input" id="s-company-input"
+              placeholder="회사 검색 (복수 선택 가능)"
+              autocomplete="off"
+              oninput="onCompanyInput()" onfocus="onCompanyFocus()" onkeydown="onCompanyKeydown(event)">
             <ul class="typeahead-list" id="company-list" style="display:none;"></ul>
           </div>
         </div>
       </div>
       <!-- 버튼 -->
       <div class="search-actions">
-        <button class="btn btn-reset" onclick="doReset()">초기화</button>
         <button class="btn btn-primary" onclick="doSearch()">검색</button>
+        <button class="btn btn-reset" onclick="doReset()">초기화</button>
       </div>
     </div>
 
@@ -521,20 +574,28 @@
     <div class="card">
       <div class="stat-grid">
         <div class="stat-card">
+          <div class="stat-label">전체 과정 수</div>
+          <div class="stat-val" id="sum-course-total">0</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-label">전체 학습자 수</div>
           <div class="stat-val" id="sum-total">0</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">온라인 과정</div>
-          <div class="stat-val blue" id="sum-online">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">마이크로러닝</div>
-          <div class="stat-val blue" id="sum-micro">0</div>
+          <div class="stat-label">예정</div>
+          <div class="stat-val slate" id="sum-scheduled">0</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">학습중</div>
-          <div class="stat-val orange" id="sum-studying">0</div>
+          <div class="stat-val blue" id="sum-studying">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">종료</div>
+          <div class="stat-val" id="sum-ended">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">수료처리전</div>
+          <div class="stat-val slate" id="sum-pre-complete">0</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">수료</div>
@@ -543,10 +604,6 @@
         <div class="stat-card">
           <div class="stat-label">미수료</div>
           <div class="stat-val red" id="sum-incomplete">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">수료율</div>
-          <div class="stat-val blue" id="sum-rate">0%</div>
         </div>
       </div>
     </div>
@@ -564,15 +621,16 @@
           <thead>
             <tr>
               <th style="width:44px;">No.</th>
-              <th style="width:110px;">회사</th>
-              <th style="width:76px;">부서</th>
+              <th style="width:110px;">회사명</th>
+              <th style="width:76px;">부서명</th>
               <th style="width:76px;">이름</th>
               <th style="width:155px;">아이디</th>
               <th style="width:110px;">과정유형</th>
               <th>과정명</th>
-              <th style="width:190px;">학습기간</th>
-              <th style="width:130px;">진도율</th>
-              <th style="width:88px;">수료상태</th>
+              <th style="width:190px;">학습자 학습기간</th>
+              <th style="width:88px;">학습상태</th>
+              <th style="width:72px;">총점</th>
+              <th style="width:100px;">수료여부</th>
               <th style="width:100px;">수료일</th>
             </tr>
           </thead>
@@ -593,6 +651,71 @@
         <div class="pagination" id="pagination"></div>
       </div>
     </div>
+
+    </div><!-- /list-section -->
+
+    <!-- 상세 섹션 -->
+    <div id="detail-section" style="display:none;flex-direction:column;gap:14px;">
+
+      <!-- 상단 내비 -->
+      <div class="detail-nav">
+        <div class="detail-nav-title">개인별 학습 현황 &gt; 상세</div>
+        <div class="detail-nav-btns">
+          <button class="btn btn-outline" onclick="goBackList(false)">이전</button>
+          <button class="btn btn-outline" onclick="goBackList(true)">목록</button>
+        </div>
+      </div>
+
+      <!-- 개인별 학습현황 상세 (가로형 단일 행) -->
+      <div class="card">
+        <div class="detail-section-title">개인별 학습현황 상세</div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:110px;">회사명</th>
+                <th style="width:80px;">부서명</th>
+                <th style="width:80px;">이름</th>
+                <th style="width:180px;">아이디</th>
+                <th style="width:110px;">과정유형</th>
+                <th>과정명</th>
+                <th style="width:190px;">학습자 학습기간</th>
+                <th style="width:88px;">학습상태</th>
+                <th style="width:72px;">총점</th>
+                <th style="width:100px;">수료여부</th>
+                <th style="width:100px;">수료일</th>
+              </tr>
+            </thead>
+            <tbody id="detail-header-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 콘텐츠별 학습 상세 -->
+      <div class="card">
+        <div class="detail-section-title">콘텐츠별 학습 상세</div>
+        <div style="overflow-x:auto;">
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:90px;">콘텐츠유형</th>
+                <th>콘텐츠명</th>
+                <th style="width:64px;">필수여부</th>
+                <th style="width:200px;">학습자 콘텐츠 학습기간</th>
+                <th style="width:130px;">학습한 정보</th>
+                <th style="width:72px;">진행률(%)</th>
+                <th style="width:80px;">콘텐츠 점수</th>
+                <th style="width:64px;">완료여부</th>
+                <th style="width:100px;">최근 학습일</th>
+              </tr>
+            </thead>
+            <tbody id="detail-content-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /detail-section -->
 
   </main>
 </div>
@@ -654,7 +777,7 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
   const learnerStatus = rand(10) < 2 ? 'monitoring' : 'active';
 
   // 진도율 및 수료상태 결정
-  let progress, status, completeDate;
+  let progress, status, completeDate, score;
   const r = rand(100);
   if (r < 55) {
     // 수료
@@ -662,16 +785,19 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
     status = COMPLETE_STATUS[1];
     completeDate = addDays(studyFrom, Math.floor(studyDays * (0.5 + Math.random() * 0.5)));
     if (completeDate > today) completeDate = today;
+    score = 70 + rand(31);
   } else if (r < 80) {
-    // 학습중
+    // 수료처리전
     progress = 10 + rand(89);
     status = COMPLETE_STATUS[0];
     completeDate = '';
+    score = null;
   } else {
-    // 미수료 (학습기간 종료 후 100% 미달)
+    // 미수료
     progress = 10 + rand(75);
     status = COMPLETE_STATUS[2];
     completeDate = '';
+    score = 30 + rand(40);
   }
 
   return {
@@ -680,7 +806,8 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
     empNo: String(20000 + i * 13).slice(-6),
     userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
     courseType: type, courseName: COURSE_NAMES[rand(COURSE_NAMES.length)],
-    studyFrom, studyTo, progress, status, completeDate,
+    courseDiv: rand(2) === 0 ? '정시' : '수시',
+    studyFrom, studyTo, progress, status, completeDate, score,
   };
 });
 
@@ -688,45 +815,209 @@ let filteredData = [...ALL_DATA];
 let currentPage = 1;
 let pageSize = 50;
 
-// ── Typeahead ──
-let selectedCompany = '';
-let _companyBlurTimer = null;
-
-function onCompanyInput() {
-  selectedCompany = '';
-  document.getElementById('company-clear').style.display = 'none';
-  _renderCompanyList(document.getElementById('s-company-input').value.trim());
+// ── 과정구분 / 날짜 ──
+function onCourseDivChange() {
+  const div = document.getElementById('s-course-div').value;
+  const section = document.getElementById('date-section');
+  if (div === '정시') section.classList.remove('disabled');
+  else section.classList.add('disabled');
 }
+
+function onDateFromChange() {
+  const from = document.getElementById('s-date-from').value;
+  document.getElementById('s-date-to').min = from || '';
+}
+function onDateToChange() {
+  const to = document.getElementById('s-date-to').value;
+  document.getElementById('s-date-from').max = to || '';
+}
+
+// ── 회사 멀티셀렉트 ──
+let selectedCompanies = [];
+
+function focusCompanyInput(e) {
+  if (!e.target.closest('.chip-x')) document.getElementById('s-company-input').focus();
+}
+function onCompanyInput() { _renderCompanyList(document.getElementById('s-company-input').value.trim()); }
 function onCompanyFocus() { _renderCompanyList(document.getElementById('s-company-input').value.trim()); }
-function onCompanyBlur() {
-  _companyBlurTimer = setTimeout(() => {
+function onCompanyKeydown(e) {
+  const input = document.getElementById('s-company-input');
+  if (e.key === 'Backspace' && !input.value && selectedCompanies.length) {
+    selectedCompanies.pop(); renderCompanyChips(); _renderCompanyList('');
+  } else if (e.key === 'Escape') {
     document.getElementById('company-list').style.display = 'none';
-    if (!selectedCompany) document.getElementById('s-company-input').value = '';
-  }, 150);
+  }
 }
 function _renderCompanyList(query) {
   const list = document.getElementById('company-list');
-  const filtered = query ? COMPANIES.filter(c => c.toLowerCase().includes(query.toLowerCase())) : COMPANIES;
+  const pool = COMPANIES.filter(c => !selectedCompanies.includes(c));
+  const filtered = query ? pool.filter(c => c.toLowerCase().includes(query.toLowerCase())) : pool;
   if (!filtered.length) { list.style.display = 'none'; return; }
   list.innerHTML = filtered.map(c =>
-    `<li onmousedown="selectCompany(this,'${c.replace(/'/g, "\\'")}')">
+    `<li onmousedown="selectCompany('${c.replace(/'/g, "\\'")}')">
       ${query ? c.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>') : c}
     </li>`
   ).join('');
   list.style.display = 'block';
 }
-function selectCompany(el, name) {
-  if (_companyBlurTimer) clearTimeout(_companyBlurTimer);
-  selectedCompany = name;
-  document.getElementById('s-company-input').value = name;
-  document.getElementById('company-list').style.display = 'none';
-  document.getElementById('company-clear').style.display = 'block';
+function selectCompany(name) {
+  if (!selectedCompanies.includes(name)) selectedCompanies.push(name);
+  const input = document.getElementById('s-company-input');
+  input.value = ''; renderCompanyChips(); _renderCompanyList(''); input.focus();
 }
-function clearCompany() {
-  selectedCompany = '';
-  document.getElementById('s-company-input').value = '';
-  document.getElementById('company-clear').style.display = 'none';
-  document.getElementById('company-list').style.display = 'none';
+function removeCompany(name) {
+  selectedCompanies = selectedCompanies.filter(c => c !== name); renderCompanyChips();
+}
+function renderCompanyChips() {
+  const wrap = document.getElementById('company-multiselect');
+  wrap.querySelectorAll('.company-chip').forEach(el => el.remove());
+  const input = document.getElementById('s-company-input');
+  const html = selectedCompanies.map(c =>
+    `<span class="company-chip">${c}<button class="chip-x" onclick="removeCompany('${c.replace(/'/g, "\\'")}')">×</button></span>`
+  ).join('');
+  input.insertAdjacentHTML('beforebegin', html);
+}
+
+document.addEventListener('mousedown', function(e) {
+  const wrap = document.getElementById('company-multiselect');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('company-list').style.display = 'none';
+});
+
+// ── 상세 화면 ──
+const CONTENT_TYPE_MAP = {
+  video:   { label: '동영상',   cls: 'badge-ct-video',   scored: false },
+  image:   { label: '이미지',   cls: 'badge-ct-image',   scored: false },
+  article: { label: '아티클',   cls: 'badge-ct-article', scored: false },
+  file:    { label: '첨부파일', cls: 'badge-ct-file',    scored: false },
+  exam:    { label: '시험',     cls: 'badge-ct-exam',    scored: true  },
+  task:    { label: '과제',     cls: 'badge-ct-task',    scored: true  },
+  survey:  { label: '설문',     cls: 'badge-ct-survey',  scored: true  },
+  quiz:    { label: '퀴즈',     cls: 'badge-ct-quiz',    scored: true  },
+  pdf:     { label: 'PDF',      cls: 'badge-ct-pdf',     scored: false },
+  link:    { label: '외부링크', cls: 'badge-ct-link',    scored: false },
+  offline: { label: '오프라인', cls: 'badge-ct-offline', scored: false },
+};
+const CONTENT_TEMPLATES = {
+  online: [
+    { type: 'video',   name: '오리엔테이션 영상',   required: true,  totalSec: 300,  totalGroups: null },
+    { type: 'video',   name: '1강. 핵심 개념 이해', required: true,  totalSec: 1200, totalGroups: null },
+    { type: 'video',   name: '2강. 실전 적용 방법', required: true,  totalSec: 900,  totalGroups: null },
+    { type: 'article', name: '보충 학습 자료',       required: false, totalSec: null, totalGroups: 3   },
+    { type: 'quiz',    name: '중간 퀴즈',            required: true,  totalSec: null, totalGroups: 10  },
+    { type: 'exam',    name: '최종 시험',            required: true,  totalSec: null, totalGroups: 20  },
+  ],
+  micro: [
+    { type: 'video', name: '핵심 요약 영상',   required: true, totalSec: 300,  totalGroups: null },
+    { type: 'pdf',   name: '학습 가이드 PDF', required: true, totalSec: null, totalGroups: 5   },
+    { type: 'quiz',  name: '이해도 체크 퀴즈', required: true, totalSec: null, totalGroups: 5  },
+  ],
+};
+
+function fmtSec(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function generateContents(r) {
+  const today = '2026-04-22';
+  const isScheduled = today < r.studyFrom;
+  const templates = CONTENT_TEMPLATES[r.courseType.code] || CONTENT_TEMPLATES.online;
+
+  return templates.map((t, i) => {
+    const ct = CONTENT_TYPE_MAP[t.type];
+    let doneRatio = 0;
+    if (!isScheduled) {
+      doneRatio = r.status.code === 'complete' ? 1
+        : Math.min(0.92, (r.progress / 100) * (0.7 + Math.random() * 0.5));
+    }
+
+    let studiedInfo, progress;
+    if (t.totalSec !== null) {
+      const doneSec = Math.floor(t.totalSec * doneRatio);
+      studiedInfo = fmtSec(doneSec);
+      progress = Math.round(doneRatio * 100);
+    } else {
+      const doneG = Math.round(t.totalGroups * doneRatio);
+      studiedInfo = `${doneG} / ${t.totalGroups}`;
+      progress = Math.round(doneRatio * 100);
+    }
+
+    let scoreDisplay = '';
+    if (ct.scored) {
+      if (doneRatio >= 1) {
+        const base = r.status.code === 'complete' ? 70 : 40;
+        scoreDisplay = (base + rand(r.status.code === 'complete' ? 31 : 30)) + '점';
+      } else {
+        scoreDisplay = '-';
+      }
+    }
+
+    const contentFrom = addDays(r.studyFrom, i * 7);
+    const contentTo   = addDays(contentFrom, 14);
+    const period = `${contentFrom.replace(/-/g,'.')} ~ ${contentTo.replace(/-/g,'.')}`;
+    const recentDate = doneRatio > 0
+      ? addDays(r.studyFrom, rand(14)).replace(/-/g, '.') : '-';
+
+    return {
+      no: i + 1, typeCls: ct.cls, typeLabel: ct.label,
+      name: t.name, required: t.required ? 'Y' : 'N',
+      period, studiedInfo, progress, scoreDisplay,
+      completed: progress >= 100 ? 'Y' : 'N',
+      recentDate,
+    };
+  });
+}
+
+function showDetail(dataIdx) {
+  const r = filteredData[dataIdx];
+  const today = '2026-04-22';
+  const isScheduled = today < r.studyFrom;
+  const isEnded     = today > r.studyTo;
+  const studyStatusLabel = isScheduled ? '예정' : isEnded ? '종료' : '학습중';
+  const studyStatusBadge = isScheduled ? 'badge-scheduled' : isEnded ? 'badge-ended' : 'badge-studying';
+  const completeLabel = !isEnded ? '수료처리전' : r.status.code === 'complete' ? '수료' : '미수료';
+  const completeBadge = !isEnded ? 'badge-pre-complete' : r.status.code === 'complete' ? 'badge-complete' : 'badge-incomplete';
+  const scoreText = !isEnded ? '-' : (r.score !== null ? r.score + '점' : '-');
+
+  document.getElementById('detail-header-tbody').innerHTML = `
+    <tr>
+      <td>${r.company}</td>
+      <td>${r.dept}</td>
+      <td>${r.name}</td>
+      <td style="text-align:left;padding-left:12px;">${r.userId}</td>
+      <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
+      <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
+      <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
+      <td><span class="badge ${studyStatusBadge}">${studyStatusLabel}</span></td>
+      <td>${scoreText}</td>
+      <td><span class="badge ${completeBadge}">${completeLabel}</span></td>
+      <td>${r.completeDate ? r.completeDate.replace(/-/g,'.') : '-'}</td>
+    </tr>`;
+
+  const contents = generateContents(r);
+  document.getElementById('detail-content-tbody').innerHTML = contents.map(c => `
+    <tr>
+      <td>${c.no}</td>
+      <td><span class="badge ${c.typeCls}">${c.typeLabel}</span></td>
+      <td style="text-align:left;padding-left:12px;">${c.name}</td>
+      <td class="${c.required === 'Y' ? 'yn-y' : 'yn-n'}">${c.required}</td>
+      <td>${c.period}</td>
+      <td>${c.studiedInfo}</td>
+      <td>${c.progress}%</td>
+      <td>${c.scoreDisplay}</td>
+      <td class="${c.completed === 'Y' ? 'yn-y' : 'yn-n'}">${c.completed}</td>
+      <td>${c.recentDate}</td>
+    </tr>`).join('');
+
+  document.getElementById('list-section').style.display = 'none';
+  const det = document.getElementById('detail-section');
+  det.style.display = 'flex';
+}
+
+function goBackList(reset) {
+  document.getElementById('detail-section').style.display = 'none';
+  document.getElementById('list-section').style.display = 'flex';
+  if (reset) doReset();
 }
 
 function sortByStudyDateDesc(arr) {
@@ -734,30 +1025,55 @@ function sortByStudyDateDesc(arr) {
 }
 
 function doSearch() {
+  const courseDiv      = document.getElementById('s-course-div').value;
   const dFrom          = document.getElementById('s-date-from').value;
   const dTo            = document.getElementById('s-date-to').value;
   const learnerField   = document.getElementById('s-learner-field').value;
   const learnerKw      = document.getElementById('s-learner-kw').value.trim();
-  const learnerStatus  = document.getElementById('s-learner-status').value;
+  const completeStatus = document.getElementById('s-complete-status').value;
   const courseField    = document.getElementById('s-course-field').value;
   const courseKw       = document.getElementById('s-course-kw').value.trim().toLowerCase();
   const courseType     = document.getElementById('s-course-type').value;
-  const completeStatus = document.getElementById('s-complete-status').value;
-  const company        = selectedCompany;
+  const today          = '2026-04-22';
 
   filteredData = ALL_DATA.filter(r => {
-    if (dFrom && r.studyFrom < dFrom) return false;
-    if (dTo   && r.studyFrom > dTo)   return false;
+    // 과정구분
+    if (courseDiv && r.courseDiv !== courseDiv) return false;
+    // 과정 학습기간 (정시만 적용)
+    if (courseDiv === '정시' && (dFrom || dTo)) {
+      const dateType = document.getElementById('s-date-type').value;
+      if (dateType === 'start') {
+        if (dFrom && r.studyFrom < dFrom) return false;
+        if (dTo   && r.studyFrom > dTo)   return false;
+      } else if (dateType === 'end') {
+        if (dFrom && r.studyTo < dFrom) return false;
+        if (dTo   && r.studyTo > dTo)   return false;
+      } else { // period
+        if (dFrom && r.studyTo < dFrom) return false;
+        if (dTo   && r.studyFrom > dTo) return false;
+      }
+    }
+    // 학습자 검색
     if (learnerKw) {
       if (learnerField === 'name'  && r.name !== learnerKw) return false;
       if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
-      if (learnerField === 'empNo' && !r.empNo.includes(learnerKw)) return false;
+      if (learnerField === 'empNo' && r.empNo !== learnerKw) return false;
     }
-    if (learnerStatus && r.learnerStatus !== learnerStatus) return false;
-    if (courseKw && !r.courseName.toLowerCase().includes(courseKw)) return false;
+    // 수료여부
+    if (completeStatus) {
+      const isEnded = today > r.studyTo;
+      if (completeStatus === 'pre-complete' && isEnded) return false;
+      if (completeStatus === 'complete'     && !(isEnded && r.status.code === 'complete')) return false;
+      if (completeStatus === 'incomplete'   && !(isEnded && r.status.code !== 'complete')) return false;
+    }
+    // 과정 검색
+    if (courseKw) {
+      if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
+      if (courseField === 'code' && !r.courseName.toLowerCase().includes(courseKw)) return false;
+    }
     if (courseType && r.courseType.code !== courseType) return false;
-    if (completeStatus && r.status.code !== completeStatus) return false;
-    if (company && r.company !== company) return false;
+    // 회사
+    if (selectedCompanies.length && !selectedCompanies.includes(r.company)) return false;
     return true;
   });
   sortByStudyDateDesc(filteredData);
@@ -767,36 +1083,44 @@ function doSearch() {
 }
 
 function doReset() {
-  document.getElementById('s-date-from').value = '2026-04-01';
-  document.getElementById('s-date-to').value   = '2026-04-30';
-  document.getElementById('s-learner-field').selectedIndex    = 0;
-  document.getElementById('s-learner-kw').value               = '';
-  document.getElementById('s-learner-status').selectedIndex   = 0;
-  document.getElementById('s-course-field').selectedIndex     = 0;
-  document.getElementById('s-course-kw').value                = '';
-  document.getElementById('s-course-type').selectedIndex      = 0;
-  document.getElementById('s-course-cat').selectedIndex       = 0;
-  document.getElementById('s-complete-status').selectedIndex  = 0;
-  clearCompany();
+  document.getElementById('s-course-div').selectedIndex = 0;
+  document.getElementById('date-section').classList.add('disabled');
+  document.getElementById('s-date-type').selectedIndex = 0;
+  document.getElementById('s-date-from').value = '2026-05-01';
+  document.getElementById('s-date-to').value   = '2026-05-31';
+  document.getElementById('s-date-from').removeAttribute('max');
+  document.getElementById('s-date-to').removeAttribute('min');
+  document.getElementById('s-learner-field').selectedIndex  = 0;
+  document.getElementById('s-learner-kw').value             = '';
+  document.getElementById('s-complete-status').selectedIndex= 0;
+  document.getElementById('s-course-field').selectedIndex   = 0;
+  document.getElementById('s-course-kw').value              = '';
+  document.getElementById('s-course-type').selectedIndex    = 0;
+  document.getElementById('s-course-cat').selectedIndex     = 0;
+  selectedCompanies = [];
+  renderCompanyChips();
   doSearch();
 }
 
 function renderSummary() {
-  const total      = filteredData.length;
-  const online     = filteredData.filter(r => r.courseType.code === 'online').length;
-  const micro      = filteredData.filter(r => r.courseType.code === 'micro').length;
-  const studying   = filteredData.filter(r => r.status.code === 'studying').length;
-  const complete   = filteredData.filter(r => r.status.code === 'complete').length;
-  const incomplete = filteredData.filter(r => r.status.code === 'incomplete').length;
-  const rate       = (total > 0 ? Math.round(complete / total * 100) : 0);
+  const today = '2026-04-22';
+  const courseTotal   = new Set(filteredData.map(r => r.courseName)).size;
+  const learnerTotal  = new Set(filteredData.map(r => r.userId)).size;
+  const scheduled     = filteredData.filter(r => today < r.studyFrom).length;
+  const studying      = filteredData.filter(r => r.studyFrom <= today && today <= r.studyTo).length;
+  const ended         = filteredData.filter(r => today > r.studyTo).length;
+  const preComplete   = filteredData.filter(r => today <= r.studyTo).length;
+  const complete      = filteredData.filter(r => today > r.studyTo && r.status.code === 'complete').length;
+  const incomplete    = filteredData.filter(r => today > r.studyTo && r.status.code === 'incomplete').length;
 
-  document.getElementById('sum-total').textContent     = total.toLocaleString();
-  document.getElementById('sum-online').textContent    = online.toLocaleString();
-  document.getElementById('sum-micro').textContent     = micro.toLocaleString();
-  document.getElementById('sum-studying').textContent  = studying.toLocaleString();
-  document.getElementById('sum-complete').textContent  = complete.toLocaleString();
-  document.getElementById('sum-incomplete').textContent= incomplete.toLocaleString();
-  document.getElementById('sum-rate').textContent      = rate + '%';
+  document.getElementById('sum-course-total').textContent = courseTotal.toLocaleString();
+  document.getElementById('sum-total').textContent        = learnerTotal.toLocaleString();
+  document.getElementById('sum-scheduled').textContent   = scheduled.toLocaleString();
+  document.getElementById('sum-studying').textContent    = studying.toLocaleString();
+  document.getElementById('sum-ended').textContent       = ended.toLocaleString();
+  document.getElementById('sum-pre-complete').textContent= preComplete.toLocaleString();
+  document.getElementById('sum-complete').textContent    = complete.toLocaleString();
+  document.getElementById('sum-incomplete').textContent  = incomplete.toLocaleString();
 }
 
 function renderTable() {
@@ -806,33 +1130,39 @@ function renderTable() {
   const slice = filteredData.slice(start, start + pageSize);
 
   if (!slice.length) {
-    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">현재 조회된 데이터가 없습니다.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">현재 조회된 데이터가 없습니다.</td></tr>`;
     document.getElementById('pagination').innerHTML = '';
     return;
   }
 
+  const today = '2026-04-22';
   tbody.innerHTML = slice.map((r, idx) => {
-    const isComplete = r.status.code === 'complete';
-    const fillClass  = isComplete ? ' complete' : '';
+    const isScheduled = today < r.studyFrom;
+    const isEnded     = today > r.studyTo;
+
+    const studyStatusLabel = isScheduled ? '예정' : isEnded ? '종료' : '학습중';
+    const studyStatusBadge = isScheduled ? 'badge-scheduled' : isEnded ? 'badge-ended' : 'badge-studying';
+
+    const completeLabel = !isEnded ? '수료처리전'
+      : r.status.code === 'complete' ? '수료' : '미수료';
+    const completeBadge = !isEnded ? 'badge-pre-complete'
+      : r.status.code === 'complete' ? 'badge-complete' : 'badge-incomplete';
+
+    const scoreText = !isEnded ? '-' : (r.score !== null ? r.score + '점' : '-');
+
     return `
     <tr>
       <td>${filteredData.length - start - idx}</td>
       <td>${r.company}</td>
       <td>${r.dept}</td>
-      <td>${maskName(r.name)}</td>
+      <td><a href="#" onclick="showDetail(${start + idx});return false;" style="color:var(--primary);text-decoration:underline;cursor:pointer;">${maskName(r.name)}</a></td>
       <td style="text-align:left;padding-left:12px;">${maskId(r.userId)}</td>
       <td><span class="badge ${r.courseType.badge}">${r.courseType.label}</span></td>
       <td style="text-align:left;padding-left:12px;">${r.courseName}</td>
       <td>${r.studyFrom.replace(/-/g,'.')} ~ ${r.studyTo.replace(/-/g,'.')}</td>
-      <td>
-        <div class="progress-wrap">
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill${fillClass}" style="width:${r.progress}%;"></div>
-          </div>
-          <span class="progress-pct">${r.progress}%</span>
-        </div>
-      </td>
-      <td><span class="badge ${r.status.badge}">${r.status.label}</span></td>
+      <td><span class="badge ${studyStatusBadge}">${studyStatusLabel}</span></td>
+      <td>${scoreText}</td>
+      <td><span class="badge ${completeBadge}">${completeLabel}</span></td>
       <td>${r.completeDate ? r.completeDate.replace(/-/g,'.') : '-'}</td>
     </tr>`;
   }).join('');
@@ -860,6 +1190,16 @@ function goPage(p) {
 }
 
 function downloadExcel() { alert('엑셀 다운로드 (Placeholder)\n총 ' + filteredData.length + '건'); }
+
+// 초기 날짜: 당월 1일~말일
+(function initDates() {
+  const d = new Date();
+  const y = d.getFullYear(), m = d.getMonth();
+  const fmt = (n) => String(n).padStart(2, '0');
+  const last = new Date(y, m + 1, 0).getDate();
+  document.getElementById('s-date-from').value = `${y}-${fmt(m + 1)}-01`;
+  document.getElementById('s-date-to').value   = `${y}-${fmt(m + 1)}-${last}`;
+})();
 
 doSearch();
 </script>
