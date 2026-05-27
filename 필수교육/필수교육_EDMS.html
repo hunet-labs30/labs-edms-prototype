@@ -2107,7 +2107,7 @@
               <span style="font-size:12px;font-weight:600;color:#333;" id="me-mbr-right-title">-</span>
               <div style="display:flex;align-items:center;gap:6px;">
                 <span style="font-size:11px;color:#888;"><strong id="me-mbr-right-cnt">0</strong>명</span>
-                <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrAddAllToCollected()">전체 추가 →</button>
+                <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrAddCheckedToCollected()">추가 →</button>
               </div>
             </div>
             <div style="flex:1;overflow-y:auto;">
@@ -2115,9 +2115,8 @@
                 <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
                   <th style="width:34px;"><input type="checkbox" id="me-mbr-r-chk-all" onchange="document.querySelectorAll('.me-mbr-r-chk').forEach(c=>c.checked=this.checked)"></th>
                   <th>이름</th><th style="width:78px;">사번</th><th style="width:90px;">부서명</th>
-                  <th style="width:50px;"><button class="btn btn-primary" style="height:20px;padding:0 6px;font-size:10px;" onclick="meMbrAddCheckedToCollected()">추가→</button></th>
                 </tr></thead>
-                <tbody id="me-mbr-right-tbody"><tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">항목을 선택해주세요.</td></tr></tbody>
+                <tbody id="me-mbr-right-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">항목을 선택해주세요.</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -3127,17 +3126,6 @@ function meMbrAddCheckedToCollected() {
   });
   meMbrUpdateCollected();
 }
-function meMbrAddAllToCollected() {
-  const curItem = (MBR_DATA[meMbrCurSplitType]||[]).find((_,i)=>document.getElementById('mbr-left-'+i)?.classList.contains('selected'));
-  // 현재 우측 렌더된 모든 인원 추가
-  document.querySelectorAll('#me-mbr-right-tbody tr').forEach(tr=>{
-    const cells=tr.querySelectorAll('td');
-    if(cells.length<4) return;
-    const name=cells[1]?.textContent.trim(), empno=cells[2]?.textContent.trim(), dept=cells[3]?.textContent.trim();
-    if(name&&empno&&!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
-  });
-  meMbrUpdateCollected();
-}
 function meMbrRemoveCollected(i) { ME_COLLECTED.splice(i,1); meMbrUpdateCollected(); }
 function meMbrClearCollected()   { ME_COLLECTED.length=0; meMbrUpdateCollected(); }
 
@@ -3470,12 +3458,8 @@ function meMbrSelectDept(id) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
   </tr>`).join('')
-  : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
+  : '<tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
 }
 
 const MBR_DATA = {
@@ -3630,10 +3614,6 @@ function meMbrSelectTargetDiv(typeIdx, divIdx) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
   </tr>`).join('');
 }
 
@@ -3653,17 +3633,9 @@ function meMbrSelectLeft(idx, type) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;">
-      <button style="height:20px;padding:0 6px;font-size:10px;background:#e8f0fe;color:var(--primary);border:1px solid #c5d8f7;border-radius:3px;cursor:pointer;"
-        onclick="meMbrAddOneToCollected('${m.name}','${m.empno}','${m.dept}')">추가</button>
-    </td>
   </tr>`).join('');
 }
 
-function meMbrAddOneToCollected(name, empno, dept) {
-  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
-  meMbrUpdateCollected();
-}
 
 
 function meMbrSingleAll() {
