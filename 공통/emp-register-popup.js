@@ -401,11 +401,15 @@ function _meMbrInjectDOM() {
       <table class="main-table" style="font-size:12px;">
         <thead><tr><th style="width:160px;text-align:left;padding:8px 12px;">오류 유형</th><th style="text-align:left;padding:8px 12px;">오류 설명</th></tr></thead>
         <tbody>
-          <tr><td style="padding:8px 12px;">데이터 없음</td>      <td style="padding:8px 12px;">엑셀 파일에 등록된 데이터가 없는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">파일 용량 초과</td>   <td style="padding:8px 12px;">업로드 파일이 10MB를 초과한 경우</td></tr>
-          <tr><td style="padding:8px 12px;">아이디 미입력</td>    <td style="padding:8px 12px;">아이디를 입력하지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">아이디 오류</td>      <td style="padding:8px 12px;">아이디가 존재하지 않는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">중복 등록</td>        <td style="padding:8px 12px;">이미 등록된 아이디인 경우</td></tr>
+          <tr><td style="padding:8px 12px;">데이터 없음</td>          <td style="padding:8px 12px;">엑셀 파일에 등록된 데이터가 없는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">파일 용량 초과</td>       <td style="padding:8px 12px;">업로드 파일이 10MB를 초과한 경우</td></tr>
+          <tr><td style="padding:8px 12px;">유형코드 오류</td>         <td style="padding:8px 12px;">설정한 유형코드가 아닌 경우</td></tr>
+          <tr><td style="padding:8px 12px;">대상자 아이디 미입력</td>  <td style="padding:8px 12px;">대상자 아이디를 미입력한 경우</td></tr>
+          <tr><td style="padding:8px 12px;">대상자 아이디 오류</td>    <td style="padding:8px 12px;">대상자 아이디가 존재하지 않는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답자 아이디 미입력</td>  <td style="padding:8px 12px;">응답자 아이디를 미입력한 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답자 아이디 오류</td>    <td style="padding:8px 12px;">응답자 아이디가 존재하지 않는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답범위코드 미입력</td>   <td style="padding:8px 12px;">응답범위코드를 미입력한 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답범위코드 오류</td>     <td style="padding:8px 12px;">응답범위코드가 존재하지 않는 경우</td></tr>
         </tbody>
       </table>
     </div>
