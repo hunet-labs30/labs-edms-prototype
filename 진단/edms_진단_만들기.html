@@ -81,6 +81,7 @@ body {
 /* ── STEP WIZARD ── */
 .step-wizard {
   display: flex; background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+  position: sticky; top: 0; z-index: 10;
 }
 .step-item {
   display: flex; align-items: center; gap: 10px; padding: 13px 28px;
@@ -287,6 +288,55 @@ body {
 
 .step-content { display: none; }
 .step-content.active { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── 과정 설정 모달 (새 디자인) ── */
+.course-search-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.course-candidate-list { border: 1px solid var(--border); border-radius: 4px; max-height: 200px; overflow-y: auto; }
+.course-candidate-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid #f0f2f5; font-size: 12px; cursor: pointer; }
+.course-candidate-item:last-child { border-bottom: none; }
+.course-candidate-item:hover { background: #f5f8ff; }
+.course-candidate-item input[type=checkbox] { flex-shrink: 0; }
+.selected-courses-label { font-size: 12px; font-weight: 700; color: #555; margin: 12px 0 6px; display: flex; align-items: center; justify-content: space-between; }
+.selected-course-list { display: flex; flex-direction: column; gap: 4px; min-height: 32px; }
+.selected-course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px; font-size: 12px; }
+.selected-course-item .course-item-name { flex: 1; color: #1a2e5c; }
+
+/* ── 대상자 설정 (Step3) ── */
+.page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+.table-footer { display: flex; align-items: center; justify-content: center; margin-top: 10px; gap: 4px; }
+.pg-btn { height: 28px; min-width: 28px; padding: 0 6px; border: 1px solid #dde1e7; border-radius: 3px; background: #fff; font-size: 12px; cursor: pointer; color: #555; font-family: inherit; }
+.pg-btn:hover { background: #f0f4ff; border-color: var(--primary); color: var(--primary); }
+.pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+.resp-count-link { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; }
+
+/* ── 응답자 등록 모달 ── */
+.resp-modal-box { background: #fff; border-radius: 6px; width: 1100px; max-width: 96vw; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.resp-modal-inner { display: flex; flex: 1; overflow: hidden; }
+.resp-left-panel { width: 300px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.resp-target-info { padding: 14px 16px; border-bottom: 1px solid var(--border); background: #f8f9fb; }
+.resp-target-name { font-size: 14px; font-weight: 700; color: #1a2e5c; margin-bottom: 2px; }
+.resp-target-meta { font-size: 11px; color: #888; }
+.resp-section-title { font-size: 11px; font-weight: 700; color: #888; padding: 10px 16px 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.resp-type-list { display: flex; flex-direction: column; }
+.resp-type-item { padding: 9px 16px; font-size: 12px; color: #444; cursor: pointer; border-left: 3px solid transparent; }
+.resp-type-item:hover { background: #f5f8ff; }
+.resp-type-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 700; background: #f0f4ff; }
+.resp-member-list { display: flex; flex-direction: column; border-top: 1px solid var(--border); flex: 1; overflow-y: auto; }
+.resp-member-item { padding: 8px 16px; font-size: 12px; color: #444; cursor: pointer; border-left: 3px solid transparent; display: flex; align-items: center; gap: 6px; }
+.resp-member-item:hover { background: #f5f8ff; }
+.resp-member-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 700; background: #f0f4ff; }
+.resp-right-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.resp-right-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: #1a2e5c; flex-shrink: 0; }
+.resp-search-row { display: flex; gap: 6px; padding: 12px 16px; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
+.resp-right-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.resp-count-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; font-size: 12px; color: #555; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
+.resp-table-wrap { overflow-x: auto; }
+.resp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.resp-table th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+.resp-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; }
+.resp-table tbody tr:hover td { background: #f5f8ff; }
+.resp-divider { padding: 10px 16px; font-size: 12px; font-weight: 700; color: #555; background: #f8f9fb; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.resp-registered-wrap { overflow-x: auto; flex: 1; }
 </style>
 </head>
 <body>
@@ -468,15 +518,6 @@ body {
         <div class="form-section-header"><span class="section-icon">📋</span> 기본 정보</div>
         <table class="form-table">
           <tr>
-            <th class="form-th">기업 선택 <span class="req">*</span></th>
-            <td class="form-td">
-              <div class="inline-row">
-                <input class="form-input w-lg" placeholder="기업명을 입력하세요" id="inputCompany" readonly value="365연수원">
-                <button class="search-btn">검색</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
             <th class="form-th">진단명 <span class="req">*</span></th>
             <td class="form-td">
               <input class="form-input w-lg" placeholder="진단명을 입력하세요" id="inputDiagName">
@@ -506,8 +547,10 @@ body {
             <td class="form-td">
               <div class="inline-row">
                 <input class="form-input w-date" type="date" id="dateStart">
+                <input class="form-input" type="time" id="timeStart" style="width:100px;">
                 <span style="font-size:12px;color:#888;">~</span>
                 <input class="form-input w-date" type="date" id="dateEnd">
+                <input class="form-input" type="time" id="timeEnd" style="width:100px;">
               </div>
             </td>
           </tr>
@@ -516,7 +559,7 @@ body {
             <td class="form-td">
               <div class="radio-group">
                 <label class="radio-label"><input type="radio" name="displayType" value="all" checked> 모든 진단 문항을 한 페이지에 노출</label>
-                <label class="radio-label"><input type="radio" name="displayType" value="one"> 하나의 진단 문항을 한 페이지에 노출</label>
+                <label class="radio-label" style="color:#bbb;cursor:not-allowed;"><input type="radio" name="displayType" value="one" disabled> 하나의 진단 문항을 한 페이지에 노출</label>
               </div>
             </td>
           </tr>
@@ -546,7 +589,25 @@ body {
           <tr>
             <th class="form-th">진단 소개 및 설명</th>
             <td class="form-td">
-              <textarea class="form-textarea" placeholder="진단에 대한 소개와 설명을 입력하세요."></textarea>
+              <textarea class="form-textarea" style="height:200px;max-width:100%;">휴넷 역량 진단
+
+안녕하세요.
+설문에 참여해 주셔서 감사합니다.
+
+진단은 15분 정도 소요됩니다.  많은 업무로 바쁘시더라도 개인의 발전과 성장 기회 마련을 위해, 진솔한 응답을 부탁드립니다.
+
+※ 주의 사항
+이번 진단은 %{assessmentStartDt}%부터 %{assessmentEndDt}%까지 진행됩니다.
+선택하신 보기는 자동으로 저장되며, 설문지 맨 하단의 [제출] 버튼을 누르기 전까지 언제든지 수정할 수 있습니다.
+[제출] 버튼을 눌러 설문을 완료한 후에는 응답 내용을 수정하실 수 없으니 주의 바랍니다.
+
+리더십 진단과 관련하여 궁금한 점이 있으실 경우, 아래 이메일로 연락 주시기 바랍니다.
+
+	%{managerName}%
+	%{managerEmail}%
+	%{managerPhone}%
+
+감사합니다.</textarea>
             </td>
           </tr>
         </table>
@@ -574,12 +635,7 @@ body {
             <span class="type-name">리더십 역량 진단 — 자가진단</span>
             <div class="respondent-wrap">
               <span class="respondent-label">응답자:</span>
-              <div class="respondent-radio">
-                <label><input type="radio" name="resp-1" value="self" checked> 본인</label>
-                <label><input type="radio" name="resp-1" value="member"> 구성원</label>
-                <label><input type="radio" name="resp-1" value="peer"> 동료</label>
-                <label><input type="radio" name="resp-1" value="superior"> 상사</label>
-              </div>
+              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">본인</span>
             </div>
           </div>
           <div class="type-body">
@@ -674,12 +730,7 @@ body {
             <span class="type-name">리더십 역량 진단 — 다면평가</span>
             <div class="respondent-wrap">
               <span class="respondent-label">응답자:</span>
-              <div class="respondent-radio">
-                <label><input type="radio" name="resp-2" value="self"> 본인</label>
-                <label><input type="radio" name="resp-2" value="member" checked> 구성원</label>
-                <label><input type="radio" name="resp-2" value="peer"> 동료</label>
-                <label><input type="radio" name="resp-2" value="superior"> 상사</label>
-              </div>
+              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">구성원</span>
             </div>
           </div>
           <div class="type-body">
@@ -765,85 +816,176 @@ body {
     ══════════════════════════════════ -->
     <div class="step-content" id="step-content-3">
       <div class="form-section">
-        <div class="form-section-header"><span class="section-icon">👥</span> 대상자 설정
+        <div class="form-section-header"><span class="section-icon">👥</span> 유형별 대상자 선정
           <span style="font-size:11px;color:#888;font-weight:400;margin-left:8px;">진단 유형별로 대상자(진단 받는 사람)와 응답자(진단 하는 사람)를 설정합니다.</span>
         </div>
         <div style="padding:16px 20px;">
           <div class="type-tabs" id="typeTabs">
-            <div class="type-tab active" onclick="switchTab(0)">자가진단</div>
-            <div class="type-tab" onclick="switchTab(1)">다면평가</div>
+            <div class="type-tab active" onclick="switchTab(0)">리더십 역량 진단 본인 진단</div>
+            <div class="type-tab" onclick="switchTab(1)">리더십 역량 진단 구성원 진단</div>
+            <div class="type-tab" onclick="switchTab(2)">리더십 역량 진단 상사 진단</div>
           </div>
 
-          <!-- 탭 1: 자가진단 -->
+          <!-- 탭 0: 본인 진단 -->
           <div class="type-tab-pane active" id="tab-pane-0">
-            <div class="participant-toolbar">
-              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 양식이 다운로드됩니다.')">📥 엑셀 양식 다운로드</button>
-              <button class="btn btn-outline btn-sm" onclick="showToast('파일 선택 팝업이 열립니다.')">📤 일괄 등록</button>
-              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(0)">+ 개별 추가</button>
+            <div class="participant-toolbar" style="margin-top:14px;">
+              <div class="page-size-wrap">
+                <select class="form-select" style="height:28px;font-size:12px;">
+                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
+                </select>
+              </div>
               <div class="spacer"></div>
-              <span class="participant-count">총 <strong id="cnt-0">3</strong>명</span>
+              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
+              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(0)">+ 대상 추가</button>
             </div>
             <table class="ptable">
               <thead>
                 <tr>
-                  <th style="width:40px;">No</th>
-                  <th>이름</th>
+                  <th style="width:36px;"><input type="checkbox"></th>
+                  <th style="width:36px;">No</th>
+                  <th>구성원코드</th>
                   <th>사번</th>
-                  <th>부서</th>
+                  <th>이름</th>
                   <th>직급</th>
+                  <th>조직</th>
+                  <th>역할</th>
                   <th>이메일</th>
-                  <th style="width:50px;">삭제</th>
+                  <th>연락처</th>
+                  <th>응답자<br>(본인진단)</th>
                 </tr>
               </thead>
               <tbody id="tbody-0">
-                <tr><td>1</td><td>홍길동</td><td>20230101</td><td>인재개발팀</td><td>팀장</td><td>hong@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
-                <tr><td>2</td><td>김철수</td><td>20210505</td><td>전략기획팀</td><td>팀장</td><td>kim@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
-                <tr><td>3</td><td>이영희</td><td>20190812</td><td>마케팅팀</td><td>팀장</td><td>lee@company.com</td><td><button class="del-btn" onclick="delRow(this,0)">×</button></td></tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>1</td>
+                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
+                  <td>20230101</td><td>홍길동</td><td>팀장</td>
+                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
+                  <td style="color:#555;">홍길동</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>2</td>
+                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
+                  <td>20210505</td><td>김철수</td><td>팀장</td>
+                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
+                  <td style="color:#555;">김철수</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td><td>3</td>
+                  <td><a href="#" style="color:var(--primary);">MBR003</a></td>
+                  <td>20190812</td><td>이영희</td><td>팀장</td>
+                  <td>마케팅팀</td><td>팀리더</td><td>lee@company.com</td><td>010-3456-7890</td>
+                  <td style="color:#555;">이영희</td>
+                </tr>
               </tbody>
             </table>
+            <div class="table-footer">
+              <button class="pg-btn">«</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn">»</button>
+            </div>
           </div>
 
-          <!-- 탭 2: 다면평가 -->
+          <!-- 탭 1: 구성원 진단 -->
           <div class="type-tab-pane" id="tab-pane-1">
-            <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:10px 14px;font-size:12px;color:#7a5c00;margin-bottom:12px;">
-              💡 다면평가는 <strong>대상자(진단 받는 사람)</strong>를 먼저 등록한 후, 대상자별로 <strong>응답자(진단 하는 사람)</strong>를 설정합니다.
-            </div>
-            <div class="participant-toolbar">
-              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 양식이 다운로드됩니다.')">📥 엑셀 양식 다운로드</button>
-              <button class="btn btn-outline btn-sm" onclick="showToast('파일 선택 팝업이 열립니다.')">📤 일괄 등록</button>
-              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(1)">+ 대상자 추가</button>
+            <div class="participant-toolbar" style="margin-top:14px;">
+              <div class="page-size-wrap">
+                <select class="form-select" style="height:28px;font-size:12px;">
+                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
+                </select>
+              </div>
               <div class="spacer"></div>
-              <span class="participant-count">총 <strong id="cnt-1">2</strong>명</span>
+              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
+              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(1)">+ 대상 추가</button>
             </div>
             <table class="ptable">
               <thead>
                 <tr>
-                  <th style="width:40px;">No</th>
-                  <th>이름 (대상자)</th>
+                  <th style="width:36px;"><input type="checkbox"></th>
+                  <th style="width:36px;">No</th>
+                  <th>구성원코드</th>
                   <th>사번</th>
-                  <th>부서</th>
+                  <th>이름</th>
                   <th>직급</th>
-                  <th>응답자 수</th>
-                  <th style="width:80px;">응답자 설정</th>
-                  <th style="width:50px;">삭제</th>
+                  <th>조직</th>
+                  <th>역할</th>
+                  <th>이메일</th>
+                  <th>연락처</th>
+                  <th>응답자<br>(구성원진단)</th>
                 </tr>
               </thead>
               <tbody id="tbody-1">
                 <tr>
-                  <td>1</td><td>박지훈</td><td>20180303</td><td>개발팀</td><td>팀장</td>
-                  <td><span style="color:var(--primary);font-weight:700;">5명</span></td>
-                  <td><button class="btn btn-outline btn-xs" onclick="showToast('응답자 설정 팝업이 열립니다.')">설정</button></td>
-                  <td><button class="del-btn" onclick="delRow(this,1)">×</button></td>
+                  <td><input type="checkbox"></td><td>1</td>
+                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
+                  <td>20230101</td><td>홍길동</td><td>팀장</td>
+                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍길동','구성원진단',1)">설정</button></td>
                 </tr>
                 <tr>
-                  <td>2</td><td>최수연</td><td>20200707</td><td>디자인팀</td><td>팀장</td>
-                  <td><span style="color:#aaa;">미설정</span></td>
-                  <td><button class="btn btn-outline btn-xs" onclick="showToast('응답자 설정 팝업이 열립니다.')">설정</button></td>
-                  <td><button class="del-btn" onclick="delRow(this,1)">×</button></td>
+                  <td><input type="checkbox"></td><td>2</td>
+                  <td><a href="#" style="color:var(--primary);">MBR002</a></td>
+                  <td>20210505</td><td>김철수</td><td>팀장</td>
+                  <td>전략기획팀</td><td>팀리더</td><td>kim@company.com</td><td>010-2345-6789</td>
+                  <td><a class="resp-count-link" onclick="openRespondentModal('김철수','구성원진단',1)">3명</a></td>
                 </tr>
               </tbody>
             </table>
+            <div class="table-footer">
+              <button class="pg-btn">«</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">»</button>
+            </div>
           </div>
+
+          <!-- 탭 2: 상사 진단 -->
+          <div class="type-tab-pane" id="tab-pane-2">
+            <div class="participant-toolbar" style="margin-top:14px;">
+              <div class="page-size-wrap">
+                <select class="form-select" style="height:28px;font-size:12px;">
+                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
+                </select>
+              </div>
+              <div class="spacer"></div>
+              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
+              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
+              <button class="btn btn-primary btn-sm" onclick="openAddParticipant(2)">+ 대상 추가</button>
+            </div>
+            <table class="ptable">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox"></th>
+                  <th style="width:36px;">No</th>
+                  <th>구성원코드</th>
+                  <th>사번</th>
+                  <th>이름</th>
+                  <th>직급</th>
+                  <th>조직</th>
+                  <th>역할</th>
+                  <th>이메일</th>
+                  <th>연락처</th>
+                  <th>응답자<br>(상사진단)</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-2">
+                <tr>
+                  <td><input type="checkbox"></td><td>1</td>
+                  <td><a href="#" style="color:var(--primary);">MBR001</a></td>
+                  <td>20230101</td><td>홍길동</td><td>팀장</td>
+                  <td>인재개발팀</td><td>팀리더</td><td>hong@company.com</td><td>010-1234-5678</td>
+                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍길동','상사진단',2)">설정</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="table-footer">
+              <button class="pg-btn">«</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">»</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div><!-- /step-content-3 -->
@@ -902,34 +1044,26 @@ body {
       <button class="modal-close" onclick="closeModal('courseModal')">×</button>
     </div>
     <div class="modal-body">
-      <div class="modal-notice">
-        세부 영역의 역량 진단 결과에 따라 추천할 과정을 설정합니다.<br>
-        강점 역량 과정: 해당 영역 점수가 강점 기준 이상일 때 추천<br>
-        약점 역량 과정: 해당 영역 점수가 약점 기준 미만일 때 추천
+      <div class="modal-notice">세부 영역의 역량 진단 결과에 따라 추천할 과정을 설정합니다. 세부 유형에 맞는 과정을 검색하여 추가하세요.</div>
+
+      <!-- 과정 검색 -->
+      <div class="course-search-row">
+        <input class="modal-input" placeholder="과정명 검색" id="courseSearchInput">
+        <button class="btn btn-primary btn-sm" onclick="searchCourses()">검색</button>
       </div>
 
-      <!-- 강점 역량 과정 -->
-      <div>
-        <div class="course-section-label"><span class="course-dot-strong"></span> 강점 역량 추천 과정</div>
-        <div class="course-list" id="strongCourseList">
-          <div class="empty-course">추가된 과정이 없습니다.</div>
-        </div>
-        <div class="add-course-row">
-          <input class="modal-input" placeholder="과정명 검색" id="strongCourseInput">
-          <button class="btn btn-outline btn-sm" onclick="addCourse('strong')">+ 추가</button>
-        </div>
+      <!-- 과정 후보 리스트 -->
+      <div class="course-candidate-list" id="courseCandidateList">
+        <div class="course-candidate-item" style="color:#aaa;justify-content:center;">과정명을 검색하세요.</div>
       </div>
 
-      <!-- 약점 역량 과정 -->
-      <div>
-        <div class="course-section-label"><span class="course-dot-weak"></span> 약점 역량 추천 과정</div>
-        <div class="course-list" id="weakCourseList">
-          <div class="empty-course">추가된 과정이 없습니다.</div>
-        </div>
-        <div class="add-course-row">
-          <input class="modal-input" placeholder="과정명 검색" id="weakCourseInput">
-          <button class="btn btn-outline btn-sm" onclick="addCourse('weak')">+ 추가</button>
-        </div>
+      <!-- 선택된 과정 -->
+      <div class="selected-courses-label">
+        <span>선택된 과정</span>
+        <span id="selectedCourseCount" style="font-size:11px;color:#888;font-weight:400;">0개</span>
+      </div>
+      <div class="selected-course-list" id="selectedCourseList">
+        <div style="font-size:12px;color:#bbb;padding:6px 0;">추가된 과정이 없습니다.</div>
       </div>
     </div>
     <div class="modal-footer">
@@ -969,6 +1103,108 @@ body {
     <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('participantModal')">취소</button>
       <button class="btn btn-primary btn-sm" onclick="showToast('대상자가 추가되었습니다.'); closeModal('participantModal')">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: 진단 응답자 등록 ══ -->
+<div class="modal-overlay" id="respondentModal">
+  <div class="resp-modal-box">
+    <div class="modal-header">
+      <h3>진단 응답자 등록</h3>
+      <button class="modal-close" onclick="closeModal('respondentModal')">×</button>
+    </div>
+    <div class="resp-modal-inner">
+      <!-- 왼쪽 패널 -->
+      <div class="resp-left-panel">
+        <div class="resp-target-info">
+          <div class="resp-target-name" id="respTargetName">홍길동</div>
+          <div class="resp-target-meta">팀장 · 인재개발팀</div>
+        </div>
+        <div class="resp-section-title">진단 유형 선택</div>
+        <div class="resp-type-list" id="respTypeList">
+          <div class="resp-type-item active" onclick="selectRespType(this,'구성원진단')">구성원 진단</div>
+          <div class="resp-type-item" onclick="selectRespType(this,'상사진단')">상사 진단</div>
+        </div>
+        <div class="resp-section-title" style="margin-top:4px;">진단 대상자 선택</div>
+        <div class="resp-member-list" id="respMemberList">
+          <div class="resp-member-item active" onclick="selectRespMember(this)">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;"></span>
+            홍길동 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+          </div>
+          <div class="resp-member-item" onclick="selectRespMember(this)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;"></span>
+            김철수 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+          </div>
+          <div class="resp-member-item" onclick="selectRespMember(this)">
+            <span style="width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;"></span>
+            이영희 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽 패널 -->
+      <div class="resp-right-panel">
+        <div class="resp-right-header" id="respRightHeader">구성원 진단 응답자 설정 — 홍길동</div>
+        <div class="resp-search-row">
+          <select class="form-select" style="width:90px;height:30px;font-size:12px;"><option>이름</option><option>사번</option><option>조직</option></select>
+          <input class="modal-input" placeholder="검색어를 입력하세요" id="respSearchInput">
+          <button class="btn btn-primary btn-sm" onclick="showToast('응답자 후보를 검색합니다.')">🔍</button>
+        </div>
+        <div class="resp-right-body">
+          <div class="resp-count-bar">
+            <span>총 <strong style="color:var(--primary);">5</strong>건</span>
+            <button class="btn btn-primary btn-sm" onclick="addRespondents()">+ 응답자 추가</button>
+          </div>
+          <div class="resp-table-wrap">
+            <table class="resp-table">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" id="respAllCheck" onchange="toggleAllResp(this)"></th>
+                  <th>사번</th><th>이름</th><th>직급</th><th>조직</th><th>역할</th><th>이메일</th><th>연락처</th>
+                </tr>
+              </thead>
+              <tbody id="respCandidateBody">
+                <tr><td><input type="checkbox"></td><td>20230201</td><td>박민수</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>park@company.com</td><td>010-4567-8901</td></tr>
+                <tr><td><input type="checkbox"></td><td>20220314</td><td>정다은</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>jung@company.com</td><td>010-5678-9012</td></tr>
+                <tr><td><input type="checkbox"></td><td>20210909</td><td>최준혁</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>choi@company.com</td><td>010-6789-0123</td></tr>
+                <tr><td><input type="checkbox"></td><td>20200707</td><td>윤서현</td><td>팀원</td><td>개발팀</td><td>팀원</td><td>yoon@company.com</td><td>010-7890-1234</td></tr>
+                <tr><td><input type="checkbox"></td><td>20190415</td><td>강태양</td><td>팀원</td><td>개발팀</td><td>팀원</td><td>kang@company.com</td><td>010-8901-2345</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer" style="padding:8px 0;">
+            <button class="pg-btn">«</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">»</button>
+          </div>
+
+          <!-- 등록된 응답자 -->
+          <div class="resp-divider">
+            <span>등록된 응답자 <strong style="color:var(--primary);" id="registeredRespCount">3</strong>명</span>
+            <button class="btn btn-gray btn-xs" onclick="showToast('선택 응답자를 삭제합니다.')">삭제</button>
+          </div>
+          <div class="resp-registered-wrap">
+            <table class="resp-table">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox"></th>
+                  <th>사번</th><th>이름</th><th>직급</th><th>조직</th><th>역할</th><th>이메일</th><th>연락처</th>
+                </tr>
+              </thead>
+              <tbody id="respRegisteredBody">
+                <tr><td><input type="checkbox"></td><td>20230201</td><td>박민수</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>park@company.com</td><td>010-4567-8901</td></tr>
+                <tr><td><input type="checkbox"></td><td>20220314</td><td>정다은</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>jung@company.com</td><td>010-5678-9012</td></tr>
+                <tr><td><input type="checkbox"></td><td>20210909</td><td>최준혁</td><td>팀원</td><td>인재개발팀</td><td>팀원</td><td>choi@company.com</td><td>010-6789-0123</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('respondentModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveRespondents()">저장</button>
     </div>
   </div>
 </div>
@@ -1073,60 +1309,73 @@ function filterProducts() {
 let currentCourseKey = '';
 const courseData = {};
 
+const sampleCourses = [
+  '리더십 핵심 역량 강화 과정', '전략적 사고와 목표 관리', '구성원 코칭 및 동기부여',
+  '성과관리 실전 과정', '조직문화 변화관리 과정', '소통과 협업 리더십',
+  '비전 수립 및 공유 과정', '윤리경영 기초 과정', '혁신 리더십 과정', '팀장 리더십 집중 과정'
+];
+
 function openCourseModal(title, key) {
   currentCourseKey = key;
   document.getElementById('courseModalTitle').textContent = title;
-
-  const data = courseData[key] || { strong: [], weak: [] };
-  renderCourseList('strongCourseList', data.strong);
-  renderCourseList('weakCourseList', data.weak);
-  document.getElementById('strongCourseInput').value = '';
-  document.getElementById('weakCourseInput').value = '';
+  document.getElementById('courseSearchInput').value = '';
+  document.getElementById('courseCandidateList').innerHTML =
+    '<div class="course-candidate-item" style="color:#aaa;justify-content:center;">과정명을 검색하세요.</div>';
+  renderSelectedCourses();
   openModal('courseModal');
 }
 
-function renderCourseList(listId, courses) {
-  const el = document.getElementById(listId);
-  if (!courses.length) {
-    el.innerHTML = '<div class="empty-course">추가된 과정이 없습니다.</div>';
+function searchCourses() {
+  const q = document.getElementById('courseSearchInput').value.trim().toLowerCase();
+  const selected = courseData[currentCourseKey] || [];
+  const results = q ? sampleCourses.filter(c => c.toLowerCase().includes(q)) : sampleCourses;
+  const el = document.getElementById('courseCandidateList');
+  if (!results.length) {
+    el.innerHTML = '<div class="course-candidate-item" style="color:#aaa;justify-content:center;">검색 결과가 없습니다.</div>';
     return;
   }
-  el.innerHTML = courses.map((c, i) =>
-    `<div class="course-item"><span class="course-item-name">${c}</span><button class="course-item-del" onclick="removeCourse('${listId}','${c}')">×</button></div>`
+  el.innerHTML = results.map(c => {
+    const checked = selected.includes(c) ? 'checked' : '';
+    return `<label class="course-candidate-item">
+      <input type="checkbox" ${checked} onchange="toggleCourseItem('${c}',this.checked)">
+      <span>${c}</span>
+    </label>`;
+  }).join('');
+}
+
+function toggleCourseItem(name, add) {
+  if (!courseData[currentCourseKey]) courseData[currentCourseKey] = [];
+  const list = courseData[currentCourseKey];
+  if (add && !list.includes(name)) list.push(name);
+  if (!add) courseData[currentCourseKey] = list.filter(c => c !== name);
+  renderSelectedCourses();
+}
+
+function renderSelectedCourses() {
+  const list = courseData[currentCourseKey] || [];
+  const el = document.getElementById('selectedCourseList');
+  document.getElementById('selectedCourseCount').textContent = list.length + '개';
+  if (!list.length) {
+    el.innerHTML = '<div style="font-size:12px;color:#bbb;padding:6px 0;">추가된 과정이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c =>
+    `<div class="selected-course-item">
+      <span class="course-item-name">${c}</span>
+      <button class="course-item-del" onclick="toggleCourseItem('${c}',false);searchCourses();">×</button>
+    </div>`
   ).join('');
 }
 
-function addCourse(type) {
-  const inputId = type === 'strong' ? 'strongCourseInput' : 'weakCourseInput';
-  const listId  = type === 'strong' ? 'strongCourseList'  : 'weakCourseList';
-  const val = document.getElementById(inputId).value.trim();
-  if (!val) { showToast('과정명을 입력하세요.'); return; }
-
-  const data = courseData[currentCourseKey] || { strong: [], weak: [] };
-  if (!courseData[currentCourseKey]) courseData[currentCourseKey] = data;
-  data[type].push(val);
-  renderCourseList(listId, data[type]);
-  document.getElementById(inputId).value = '';
-}
-
-function removeCourse(listId, courseName) {
-  const type = listId === 'strongCourseList' ? 'strong' : 'weak';
-  const data = courseData[currentCourseKey];
-  if (!data) return;
-  data[type] = data[type].filter(c => c !== courseName);
-  renderCourseList(listId, data[type]);
-}
-
 function saveCourse() {
-  const data = courseData[currentCourseKey] || { strong: [], weak: [] };
-  const btn = document.querySelector(`button[onclick="openCourseModal('${document.getElementById('courseModalTitle').textContent}','${currentCourseKey}')"]`);
+  const list = courseData[currentCourseKey] || [];
   const badgeEl = document.getElementById('cb-' + currentCourseKey);
   if (badgeEl) {
-    let html = '';
-    if (data.strong.length) html += `<span class="course-badge badge-strong">강점 ${data.strong.length}개</span>`;
-    if (data.weak.length)   html += `<span class="course-badge badge-weak">약점 ${data.weak.length}개</span>`;
-    badgeEl.innerHTML = html;
-    if (btn) btn.classList.toggle('has-data', !!(data.strong.length || data.weak.length));
+    badgeEl.innerHTML = list.length
+      ? `<span class="course-badge badge-strong">과정 ${list.length}개</span>`
+      : '';
+    const btn = badgeEl.nextElementSibling;
+    if (btn) btn.classList.toggle('has-data', list.length > 0);
   }
   showToast('과정 설정이 저장되었습니다.');
   closeModal('courseModal');
@@ -1142,16 +1391,68 @@ function switchTab(idx) {
 }
 
 function openAddParticipant(tabIdx) {
-  document.getElementById('participantModalTitle').textContent = tabIdx === 0 ? '대상자 추가' : '대상자 추가 (다면평가)';
+  const titles = ['본인 진단 대상 추가', '구성원 진단 대상 추가', '상사 진단 대상 추가'];
+  document.getElementById('participantModalTitle').textContent = titles[tabIdx] || '대상자 추가';
   openModal('participantModal');
 }
 
 function delRow(btn, tabIdx) {
   btn.closest('tr').remove();
   const tbody = document.getElementById('tbody-' + tabIdx);
-  const cnt = tbody.querySelectorAll('tr').length;
-  document.getElementById('cnt-' + tabIdx).textContent = cnt;
-  tbody.querySelectorAll('tr').forEach((r, i) => r.cells[0].textContent = i + 1);
+  tbody.querySelectorAll('tr').forEach((r, i) => r.cells[1].textContent = i + 1);
+}
+
+/* ── RESPONDENT MODAL ── */
+function openRespondentModal(targetName, diagType, tabIdx) {
+  document.getElementById('respTargetName').textContent = targetName;
+  document.getElementById('respRightHeader').textContent =
+    diagType + ' 응답자 설정 — ' + targetName;
+  openModal('respondentModal');
+}
+
+function selectRespType(el, type) {
+  document.querySelectorAll('.resp-type-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('respRightHeader').textContent =
+    type + ' 응답자 설정 — ' + document.getElementById('respTargetName').textContent;
+}
+
+function selectRespMember(el) {
+  document.querySelectorAll('.resp-member-item').forEach(i => {
+    i.classList.remove('active');
+    i.querySelector('span').style.background = '#ddd';
+  });
+  el.classList.add('active');
+  el.querySelector('span').style.background = 'var(--primary)';
+}
+
+function toggleAllResp(cb) {
+  document.querySelectorAll('#respCandidateBody input[type=checkbox]').forEach(c => c.checked = cb.checked);
+}
+
+function addRespondents() {
+  const checked = document.querySelectorAll('#respCandidateBody input[type=checkbox]:checked');
+  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
+  const tbody = document.getElementById('respRegisteredBody');
+  checked.forEach(cb => {
+    const row = cb.closest('tr');
+    const cells = row.querySelectorAll('td');
+    const newRow = tbody.insertRow();
+    newRow.innerHTML = `<td><input type="checkbox"></td>
+      <td>${cells[1].textContent}</td><td>${cells[2].textContent}</td>
+      <td>${cells[3].textContent}</td><td>${cells[4].textContent}</td>
+      <td>${cells[5].textContent}</td><td>${cells[6].textContent}</td>
+      <td>${cells[7].textContent}</td>`;
+  });
+  document.getElementById('registeredRespCount').textContent = tbody.querySelectorAll('tr').length;
+  document.getElementById('respAllCheck').checked = false;
+  showToast(checked.length + '명이 응답자로 추가되었습니다.');
+}
+
+function saveRespondents() {
+  const cnt = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;
+  showToast('응답자 ' + cnt + '명이 저장되었습니다.');
+  closeModal('respondentModal');
 }
 
 /* ── MODAL HELPERS ── */
