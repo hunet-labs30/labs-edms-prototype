@@ -481,8 +481,8 @@ body {
         <div class="page-header-title">진단 만들기</div>
       </div>
       <div class="page-actions" id="pageActions">
-        <button class="btn btn-gray" onclick="showToast('임시저장되었습니다.')">임시저장</button>
         <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">이전</button>
+        <button class="btn btn-gray" id="btnPreview" onclick="openDiagPreview()" style="display:none;">미리보기</button>
         <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음</button>
       </div>
     </div>
@@ -1282,7 +1282,12 @@ function goStep(n) {
   document.getElementById('step-tab-' + currentStep).classList.remove('done');
 
   document.getElementById('btnPrev').style.display = currentStep > 1 ? '' : 'none';
+  document.getElementById('btnPreview').style.display = currentStep === 3 ? '' : 'none';
   document.getElementById('btnNext').textContent = currentStep === 3 ? '저장' : '다음';
+}
+
+function openDiagPreview() {
+  window.open('진단_응답_화면.html', '_blank');
 }
 
 function nextStep() {

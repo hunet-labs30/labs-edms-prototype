@@ -405,7 +405,7 @@ function _meMbrInjectDOM() {
           <tr><td style="padding:8px 12px;">파일 용량 초과</td>   <td style="padding:8px 12px;">업로드 파일이 10MB를 초과한 경우</td></tr>
           <tr><td style="padding:8px 12px;">아이디 미입력</td>    <td style="padding:8px 12px;">아이디를 입력하지 않은 경우</td></tr>
           <tr><td style="padding:8px 12px;">아이디 오류</td>      <td style="padding:8px 12px;">아이디가 존재하지 않는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">중복 등록</td>        <td style="padding:8px 12px;">이미 해당 필수교육에 등록된 아이디인 경우</td></tr>
+          <tr><td style="padding:8px 12px;">중복 등록</td>        <td style="padding:8px 12px;">이미 등록된 아이디인 경우</td></tr>
         </tbody>
       </table>
     </div>
@@ -848,7 +848,7 @@ function meMbrBatchPreview() {
   tbody.innerHTML = `
     <tr style="background:#fff8f8;">
       <td style="padding:7px 12px;color:#e53935;font-size:11px;">ho*****01</td>
-      <td style="padding:7px 12px;font-size:11px;color:#555;">이미 해당 필수교육에 등록된 아이디</td>
+      <td style="padding:7px 12px;font-size:11px;color:#555;">이미 등록된 아이디</td>
     </tr>
     <tr>
       <td style="padding:7px 12px;color:#e53935;font-size:11px;"></td>
