@@ -2056,16 +2056,16 @@
       <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 14px;gap:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <span style="font-size:11px;color:#888;">검색 결과: <strong id="me-mbr-s-total">0</strong>명 &nbsp;·&nbsp; 선택: <strong id="me-mbr-s-sel">0</strong>명</span>
-          <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrSingleAddChecked()">선택 추가 →</button>
+          <button class="btn btn-reset" style="height:22px;padding:0 8px;font-size:11px;" onclick="meMbrSingleAddChecked()">추가 →</button>
         </div>
         <div style="border:1px solid var(--border);border-radius:4px;overflow:hidden;flex:1;overflow-y:auto;">
           <table class="main-table" style="font-size:12px;">
             <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
               <th style="width:34px;"><input type="checkbox" id="me-mbr-s-chk-all" onchange="document.querySelectorAll('.me-mbr-s-chk').forEach(c=>c.checked=this.checked);meMbrSelCount()"></th>
               <th>이름</th><th style="width:86px;">아이디</th><th style="width:78px;">사번</th>
-              <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th><th style="width:60px;">근무상태</th>
+              <th style="width:96px;">회사명</th><th style="width:96px;">부서명</th>
             </tr></thead>
-            <tbody id="me-mbr-s-tbody"><tr><td colspan="7" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
+            <tbody id="me-mbr-s-tbody"><tr><td colspan="6" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr></tbody>
           </table>
         </div>
         <div class="table-footer" style="padding:4px 0;flex-shrink:0;">
@@ -2114,9 +2114,9 @@
               <table class="main-table" style="font-size:12px;">
                 <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
                   <th style="width:34px;"><input type="checkbox" id="me-mbr-r-chk-all" onchange="document.querySelectorAll('.me-mbr-r-chk').forEach(c=>c.checked=this.checked)"></th>
-                  <th>이름</th><th style="width:78px;">사번</th><th style="width:90px;">부서명</th>
+                  <th>이름</th><th style="width:78px;">사번</th><th style="width:90px;">부서명</th><th style="width:46px;"></th>
                 </tr></thead>
-                <tbody id="me-mbr-right-tbody"><tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">항목을 선택해주세요.</td></tr></tbody>
+                <tbody id="me-mbr-right-tbody"><tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">항목을 선택해주세요.</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -3126,6 +3126,12 @@ function meMbrAddCheckedToCollected() {
   });
   meMbrUpdateCollected();
 }
+function meMbrAddRowToCollected(btn) {
+  const cells = btn.closest('tr').querySelectorAll('td');
+  const name=cells[1].textContent.trim(), empno=cells[2].textContent.trim(), dept=cells[3].textContent.trim();
+  if(!ME_COLLECTED.find(m=>m.empno===empno)) ME_COLLECTED.push({name,empno,dept});
+  meMbrUpdateCollected();
+}
 function meMbrRemoveCollected(i) { ME_COLLECTED.splice(i,1); meMbrUpdateCollected(); }
 function meMbrClearCollected()   { ME_COLLECTED.length=0; meMbrUpdateCollected(); }
 
@@ -3458,8 +3464,9 @@ function meMbrSelectDept(id) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
   </tr>`).join('')
-  : '<tr><td colspan="4" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
+  : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#aaa;">해당 부서에 임직원이 없습니다.</td></tr>';
 }
 
 const MBR_DATA = {
@@ -3614,6 +3621,7 @@ function meMbrSelectTargetDiv(typeIdx, divIdx) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
   </tr>`).join('');
 }
 
@@ -3633,6 +3641,7 @@ function meMbrSelectLeft(idx, type) {
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept}</td>
+    <td style="text-align:center;padding:3px 4px;"><button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button></td>
   </tr>`).join('');
 }
 
@@ -3648,7 +3657,6 @@ function meMbrSingleAll() {
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
     <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
     <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-    <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
   </tr>`).join('');
   tbody.innerHTML = rows;
   document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
@@ -3667,9 +3675,8 @@ function meMbrSingleSearch() {
         <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${_maskE(m.empno)}</td>
         <td style="text-align:center;padding:5px 6px;color:#888;font-size:11px;">${m.company}</td>
         <td style="padding:5px 6px;color:#888;font-size:11px;">${m.dept}</td>
-        <td style="text-align:center;padding:5px 4px;color:#1e7e50;font-size:11px;">재직</td>
       </tr>`).join('')
-    : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
+    : '<tr><td colspan="6" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
   document.getElementById('me-mbr-s-total').textContent = filtered.length;
   meMbrSelCount();
 }
