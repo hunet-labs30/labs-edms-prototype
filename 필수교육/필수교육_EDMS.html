@@ -2578,7 +2578,7 @@ function meOpenDetail(id, fromTab) {
 
   // 인원/과정 채우기
   ME_REG_MEMBERS.length = 0;
-  d.members.forEach(m=>ME_REG_MEMBERS.push({name:m.name, loginId:m.loginId||'', empno:m.empno, company:m.company, dept:m.dept}));
+  d.members.forEach(m=>ME_REG_MEMBERS.push({name:m.name, loginId:m.loginId||'', empno:m.empno, company:m.company, dept:m.dept, resigned:m.resigned||false}));
   ME_REG_COURSES.length = 0;
   d.courseList.forEach(c=>ME_REG_COURSES.push({name:c.name, code:c.code, type:c.type, partner:c.partner||'', done:c.done, doneDate:c.doneDate}));
   meRegRenderMembers();
@@ -2813,6 +2813,19 @@ function meRegRenderMembers(list) {
     tbody.innerHTML = data.map((m)=>{
       const i = ME_REG_MEMBERS.indexOf(m);
       const no = ME_REG_MEMBERS.indexOf(m) + 1;
+      // 탈퇴한 임직원: 이름 → "탈퇴한 임직원", 개인정보 컬럼 → "-" (체크박스·삭제는 유지)
+      if(m.resigned){
+        return `<tr style="border-bottom:1px solid #f5f5f5;color:#9ca3af;">
+      <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-reg-m-chk" data-idx="${i}"></td>
+      <td style="text-align:center;padding:5px 4px;color:#aaa;font-size:11px;">${no}</td>
+      <td style="padding:5px 6px;font-weight:600;font-style:italic;">탈퇴한 임직원</td>
+      <td style="padding:5px 6px;font-size:11px;">-</td>
+      <td style="text-align:center;padding:5px 6px;font-size:11px;">-</td>
+      <td style="text-align:center;padding:5px 6px;font-size:11px;">-</td>
+      <td style="padding:5px 6px;font-size:11px;">-</td>
+      <td style="text-align:center;padding:5px 4px;white-space:nowrap;width:42px;"><button class="reg-delete-btn" onclick="meRegDelMember(${i})">삭제</button></td>
+    </tr>`;
+      }
       return `<tr style="border-bottom:1px solid #f5f5f5;">
       <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-reg-m-chk" data-idx="${i}"></td>
       <td style="text-align:center;padding:5px 4px;color:#aaa;font-size:11px;">${no}</td>
