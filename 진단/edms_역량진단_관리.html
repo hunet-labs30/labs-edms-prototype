@@ -1083,7 +1083,7 @@
     <!-- 결과 헤더 -->
     <div style="padding:7px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;background:#fff;">
       <span id="diag-list-result-cnt" style="font-size:12px;color:#666;">검색결과 0건</span>
-      <button id="diag-btn-del-selected" onclick="diagListDeleteSelected()" style="display:none;height:26px;padding:0 12px;font-size:11px;font-weight:700;background:#fff0f0;border:1px solid #f5c2c2;color:#e53935;border-radius:3px;cursor:pointer;">선택 삭제</button>
+      <button id="diag-btn-del-selected" onclick="diagListDeleteSelected()" style="height:26px;padding:0 12px;font-size:11px;font-weight:700;background:#fff0f0;border:1px solid #f5c2c2;color:#e53935;border-radius:3px;cursor:pointer;">선택 삭제</button>
     </div>
 
     <!-- 테이블 -->
@@ -1219,7 +1219,7 @@ function diagListRender() {
     });
   document.getElementById('diag-list-result-cnt').textContent = '검색결과 ' + _diagFilteredMembers.length + '건';
   document.getElementById('diag-chk-all').checked = false;
-  document.getElementById('diag-btn-del-selected').style.display = 'none';
+  document.getElementById('diag-btn-del-selected').textContent = '선택 삭제';
   const tbody = document.getElementById('diag-list-tbody');
   const emptyLabel = _currentDiagType === 'respondent' ? '등록된 응답자가 없습니다.' : '등록된 대상자가 없습니다.';
   if (!_diagFilteredMembers.length) {
@@ -1258,12 +1258,12 @@ function diagListOnCheck() {
   const checked = document.querySelectorAll('.diag-row-chk:checked').length;
   const total   = document.querySelectorAll('.diag-row-chk').length;
   const btn = document.getElementById('diag-btn-del-selected');
-  btn.style.display = checked > 0 ? '' : 'none';
-  btn.textContent = '선택 삭제 (' + checked + ')';
+  btn.textContent = checked > 0 ? '선택 삭제 (' + checked + ')' : '선택 삭제';
   document.getElementById('diag-chk-all').checked = total > 0 && checked === total;
 }
 function diagListDeleteSelected() {
   const idxs = [...document.querySelectorAll('.diag-row-chk:checked')].map(c => +c.dataset.idx);
+  if (!idxs.length) { showToast('삭제할 임직원을 선택하세요.'); return; }
   const dict = _currentDict();
   const members = dict[_currentDiagRowIdx] || [];
   idxs.sort((a, b) => b - a).forEach(i => members.splice(i, 1));
