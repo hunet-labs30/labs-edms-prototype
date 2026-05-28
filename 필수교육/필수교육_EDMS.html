@@ -2769,16 +2769,6 @@ const ME_REG_MEMBERS = [];
 const ME_REG_COURSES = [];
 
 // 샘플 인원 풀
-const ME_SAMPLE_MEMBERS = [
-  {name:'홍길동', loginId:'hong@hunet.co.kr',   empno:'20240001', company:'동아ST',          dept:'인사팀'},
-  {name:'이수연', loginId:'leesy@hunet.co.kr',   empno:'20230002', company:'동아ST',          dept:'기획팀'},
-  {name:'김민준', loginId:'kimm@hunet.co.kr',    empno:'20220010', company:'동아ST',          dept:'안전팀'},
-  {name:'박지현', loginId:'parkjh@hunet.co.kr',  empno:'20210020', company:'동아쏘시오홀딩스', dept:'HR팀'},
-  {name:'최서연', loginId:'choisy@hunet.co.kr',  empno:'20200030', company:'동아ST',          dept:'교육팀'},
-  {name:'정유진', loginId:'jungyj9902@hunet.co.kr',  empno:'20190040', company:'동아쏘시오홀딩스', dept:'재무팀'},
-  {name:'강동원', loginId:'kangdw3312@hunet.co.kr',  empno:'20180050', company:'동아ST',          dept:'전략팀'},
-  {name:'이강은', loginId:'leegeun0011@hunet.co.kr', empno:'20250001', company:'동아ST',          dept:'기획팀'},
-];
 // 샘플 과정 풀
 const ME_SAMPLE_COURSES = [
   {name:'개인정보보호 교육',          code:'LEC001', type:'온라인'},
@@ -3127,11 +3117,70 @@ document.addEventListener('DOMContentLoaded', () => {
     getCompanies  : () => meGetCompanies(),
   });
   meInitCompanySelects();
+  meRenderDashboard();
   meRenderListTable(ME_DATA);
   meRenderPersonal();
   const meNav = document.querySelector('[data-page="mandatory-edu"]');
   if(meNav) meNav.addEventListener('click', ()=>setTimeout(()=>meRenderDashboard(),0));
 });
+
+// ═══ 전역 노출 (onclick 핸들러 및 블록2 접근용) ═══
+window.meGetStatus        = meGetStatus;
+window.meDday             = meDday;
+window.meRateClass        = meRateClass;
+window.meRateFillClass    = meRateFillClass;
+window.meRateColor        = meRateColor;
+window.meOpenPage         = meOpenPage;
+window.meGoBack           = meGoBack;
+window.meSwitchMainTab    = meSwitchMainTab;
+window.meRenderDashboard  = meRenderDashboard;
+window.meSlide            = meSlide;
+window.meSlideToPage      = meSlideToPage;
+window.meRenderListTable  = meRenderListTable;
+window.meGetCompanies     = meGetCompanies;
+window.meInitCompanySelects = meInitCompanySelects;
+window.meListSearch       = meListSearch;
+window.meListSearchAll    = meListSearchAll;
+window.meToggleUse        = meToggleUse;
+window.meOpenDetail       = meOpenDetail;
+window.meDetSubTab        = meDetSubTab;
+window.meRenderDetMembers = meRenderDetMembers;
+window.meDetSearchMembers = meDetSearchMembers;
+window.meDetAllMembers    = meDetAllMembers;
+window.meRenderDetCourses = meRenderDetCourses;
+window.meDetSearchCourses = meDetSearchCourses;
+window.meDetAllCourses    = meDetAllCourses;
+window.meOpenPersonPage   = meOpenPersonPage;
+window.mePsRenderCourse   = mePsRenderCourse;
+window.mePsSearchCourse   = mePsSearchCourse;
+window.mePsAllCourse      = mePsAllCourse;
+window.meOpenPersonFromPersonal = meOpenPersonFromPersonal;
+window.meRenderPersonal   = meRenderPersonal;
+window.meRegRenderMembers = meRegRenderMembers;
+window.meRegRenderCourses = meRegRenderCourses;
+window.meRegDelSelectedMembers = meRegDelSelectedMembers;
+window.meRegDelSelectedCourses = meRegDelSelectedCourses;
+window.meRegAddMember     = meRegAddMember;
+window.meRegAddMemberAll  = meRegAddMemberAll;
+window.meRegDelMember     = meRegDelMember;
+window.meRegAddCourse     = meRegAddCourse;
+window.meRegAddCourseAll  = meRegAddCourseAll;
+window.meRegDelCourse     = meRegDelCourse;
+window.meRegSave          = meRegSave;
+window.meOpenEditModal    = meOpenEditModal;
+window.meDetSave          = meDetSave;
+window.meEditSave         = meEditSave;
+window.meOpenCourseModal  = meOpenCourseModal;
+window.meCrsTab           = meCrsTab;
+window.meCrsSingleAll     = meCrsSingleAll;
+window.meCrsSingleSearch  = meCrsSingleSearch;
+window.meCrsSelCount      = meCrsSelCount;
+window.meCrsSingleReg     = meCrsSingleReg;
+window.meCrsBatchSetFile  = meCrsBatchSetFile;
+window.meCrsBatchRemoveFile = meCrsBatchRemoveFile;
+window.meCrsBatchPreview  = meCrsBatchPreview;
+window.meCrsBatchRegist   = meCrsBatchRegist;
+window.meOpenRegView      = meOpenRegView;
 </script>
 
   </main>
@@ -3900,7 +3949,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 showPage('mandatory-edu');
 const meInitNavItem = document.querySelector('[data-page="mandatory-edu"]');
 if (meInitNavItem) activateNavItem(meInitNavItem);
-setTimeout(() => { meRenderDashboard(); }, 0);
+setTimeout(() => { if(window.meRenderDashboard) window.meRenderDashboard(); }, 0);
 </script>
 
 <!-- ══════════════════════════════════════════ -->
