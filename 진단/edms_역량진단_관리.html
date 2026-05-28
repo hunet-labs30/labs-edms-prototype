@@ -1114,36 +1114,109 @@
   </div>
 </div>
 
-<!-- ═══ 진단 응답자 목록 팝업 ═══ -->
+<!-- ═══ 진단 응답자 등록 팝업 ═══ -->
 <div id="diag-resp-list-modal" onclick="if(event.target===this)diagRespListClose()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2900;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:6px;width:560px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
-    <!-- 헤더 -->
+  <div style="background:#fff;border-radius:6px;width:1060px;height:690px;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+
+    <!-- 타이틀바 -->
     <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:14px;font-weight:700;">진단 응답자 목록</span>
-        <span id="diag-resp-list-cnt" style="font-size:12px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 8px;border-radius:10px;">0명</span>
-      </div>
+      <span style="font-size:14px;font-weight:700;">진단 응답자 등록</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagRespListClose()">×</span>
     </div>
-    <!-- 테이블 -->
-    <div style="flex:1;overflow-y:auto;">
-      <table class="main-table" style="font-size:12px;">
-        <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
-          <th style="width:40px;">No</th>
-          <th>이름</th>
-          <th style="width:110px;">사번</th>
-          <th>부서명</th>
-          <th style="width:60px;">삭제</th>
-        </tr></thead>
-        <tbody id="diag-resp-list-tbody">
-          <tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 응답자가 없습니다.</td></tr>
-        </tbody>
-      </table>
+
+    <!-- 바디 (3-column) -->
+    <div style="flex:1;display:flex;overflow:hidden;">
+
+      <!-- ① 왼쪽 사이드바 -->
+      <div style="width:178px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;background:#fafafa;flex-shrink:0;">
+        <!-- 상단 인물 정보 -->
+        <div style="padding:14px 14px 10px;border-bottom:1px solid #eee;">
+          <div id="diag-resp-person-name" style="font-size:13px;font-weight:700;color:#222;">—</div>
+          <div id="diag-resp-person-role" style="font-size:11px;color:#888;margin-top:2px;">—</div>
+        </div>
+        <!-- 진단 유형 선택 -->
+        <div style="padding:10px 12px 8px;">
+          <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;">진단 유형 선택</div>
+          <div id="diag-resp-type-member" onclick="diagRespSelectType('member')" style="padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:3px;background:var(--primary);color:#fff;font-weight:600;">구성원 진단</div>
+          <div id="diag-resp-type-manager" onclick="diagRespSelectType('manager')" style="padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;color:#555;">상사 진단</div>
+        </div>
+        <!-- 진단 대상자 선택 -->
+        <div style="padding:4px 12px 8px;">
+          <div style="font-size:11px;color:#999;font-weight:600;padding:8px 0 6px;border-top:1px solid #eee;">진단 대상자 선택</div>
+          <ul id="diag-resp-target-list" style="list-style:none;padding:0;margin:0;"></ul>
+        </div>
+      </div>
+
+      <!-- ② 가운데 패널 -->
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;">
+        <!-- 서브타이틀 -->
+        <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#fff;">
+          <span id="diag-resp-subtitle" style="font-size:13px;font-weight:700;color:#222;">구성원진단 응답자 설정</span>
+        </div>
+        <!-- 탭 -->
+        <div style="padding:0 16px;border-bottom:1px solid var(--border);display:flex;flex-shrink:0;overflow-x:auto;background:#fff;">
+          <span class="diag-resp-tab" data-tab="개별"    onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid var(--primary);color:var(--primary);font-weight:700;white-space:nowrap;">개별</span>
+          <span class="diag-resp-tab" data-tab="부서별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">부서별</span>
+          <span class="diag-resp-tab" data-tab="직급별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직급별</span>
+          <span class="diag-resp-tab" data-tab="직책별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직책별</span>
+          <span class="diag-resp-tab" data-tab="직무별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직무별</span>
+          <span class="diag-resp-tab" data-tab="직군별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직군별</span>
+          <span class="diag-resp-tab" data-tab="대상구분별" onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">대상구분별</span>
+          <span class="diag-resp-tab" data-tab="일괄등록" onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">일괄등록</span>
+        </div>
+        <!-- 검색 -->
+        <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fb;">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <select id="diag-resp-search-company" class="select" style="width:130px;">
+              <option value="">회사 선택</option>
+              <option>동아ST</option>
+              <option>동아쏘시오홀딩스</option>
+            </select>
+            <select id="diag-resp-search-type" class="select" style="width:70px;">
+              <option value="name">이름</option>
+              <option value="empno">사번</option>
+            </select>
+            <input id="diag-resp-search-keyword" class="input" type="text" placeholder="검색어를 입력해주세요." style="flex:1;" onkeydown="if(event.key==='Enter')diagRespSearch()">
+            <button class="btn btn-primary btn-sm" style="height:28px;" onclick="diagRespSearch()">🔍 검색</button>
+            <button class="btn btn-reset btn-sm" style="height:28px;" onclick="diagRespResetSearch()">전체검색</button>
+          </div>
+        </div>
+        <!-- 결과 헤더 -->
+        <div style="padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;">
+          <span id="diag-resp-result-info" style="font-size:12px;color:#666;">검색 결과 : 0명 · 선택 : 0명</span>
+          <button onclick="diagRespAddSelected()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
+        </div>
+        <!-- 테이블 -->
+        <div style="flex:1;overflow-y:auto;">
+          <table class="main-table" style="font-size:12px;">
+            <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
+              <th style="width:36px;"><input type="checkbox" id="diag-resp-chk-all" onchange="diagRespSelectAll(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
+              <th>이름</th>
+              <th>아이디</th>
+              <th style="width:90px;">사번</th>
+              <th style="width:110px;">회사명</th>
+              <th>부서명</th>
+              <th style="width:50px;">추가</th>
+            </tr></thead>
+            <tbody id="diag-resp-pool-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ③ 오른쪽 패널: 등록된 응답자 -->
+      <div style="width:260px;border-left:1px solid var(--border);display:flex;flex-direction:column;background:#fffde7;flex-shrink:0;">
+        <div style="padding:10px 14px;border-bottom:1px solid #f0e090;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:13px;font-weight:700;color:#555;">등록된 응답자 리스트</span>
+          <span id="diag-resp-reg-cnt" style="font-size:11px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:1px 7px;border-radius:10px;">0명</span>
+        </div>
+        <div id="diag-resp-registered-list" style="flex:1;overflow-y:auto;"></div>
+      </div>
     </div>
+
     <!-- 푸터 -->
-    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
-      <button class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="openDiagAddModal()">+ 추가 등록</button>
-      <button class="btn btn-reset" style="height:30px;padding:0 16px;" onclick="diagRespListClose()">닫기</button>
+    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fafafa;">
+      <button class="btn btn-reset" style="height:30px;padding:0 20px;" onclick="diagRespListClose()">취소</button>
+      <button class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">저장</button>
     </div>
   </div>
 </div>
@@ -1224,7 +1297,7 @@ function openDiagListModal(rowIdx, cell, type) {
   _currentDiagCell   = cell ?? null;
   _currentDiagType   = type || 'target';
   if (_currentDiagType === 'respondent') {
-    diagRespListRender();
+    diagRespModalInit();
     document.getElementById('diag-resp-list-modal').style.display = 'flex';
   } else {
     _diagSearchKeyword = '';
@@ -1242,29 +1315,166 @@ function openDiagListModal(rowIdx, cell, type) {
   }
 }
 
-// ── 응답자 목록 팝업 전용 함수 ──
-function diagRespListRender() {
-  const members = DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [];
-  document.getElementById('diag-resp-list-cnt').textContent = members.length + '명';
-  const tbody = document.getElementById('diag-resp-list-tbody');
-  if (!members.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 응답자가 없습니다.</td></tr>';
+// ── 응답자 등록 팝업 상태 ──
+let _diagRespType = 'member';           // 'member' | 'manager'
+let _diagRespSelPersonIdx = 0;          // 왼쪽 사이드바 선택 대상자 index
+let _diagRespFilteredPool = [];         // 검색 필터된 풀
+let _diagRespTempList = [];             // 편집 중인 임시 등록 목록
+
+// ── 응답자 팝업 초기화 ──
+function diagRespModalInit() {
+  _diagRespType = 'member';
+  _diagRespSelPersonIdx = 0;
+  _diagRespTempList = [...(DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [])];
+  document.getElementById('diag-resp-search-keyword').value = '';
+  document.getElementById('diag-resp-search-type').value = 'name';
+  document.getElementById('diag-resp-search-company').value = '';
+  _diagRespRenderSidebar();
+  _diagRespRenderPool();
+  _diagRespRenderRegistered();
+}
+
+function _diagRespRenderSidebar() {
+  const targets = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  // 인물 정보 (선택된 대상자)
+  const sel = targets[_diagRespSelPersonIdx];
+  document.getElementById('diag-resp-person-name').textContent = sel ? _maskN(sel.name) : '—';
+  document.getElementById('diag-resp-person-role').textContent = sel ? (sel.dept || '—') : '—';
+  // 서브타이틀
+  document.getElementById('diag-resp-subtitle').textContent =
+    (_diagRespType === 'member' ? '구성원진단' : '상사진단') + ' 응답자 설정' + (sel ? ' — ' + _maskN(sel.name) : '');
+  // 대상자 목록
+  const ul = document.getElementById('diag-resp-target-list');
+  if (!targets.length) { ul.innerHTML = '<li style="font-size:12px;color:#aaa;padding:6px 4px;">대상자 없음</li>'; return; }
+  ul.innerHTML = targets.map((t, i) => {
+    const active = i === _diagRespSelPersonIdx;
+    return `<li onclick="diagRespSelectPerson(${i})" style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:2px;${active?'color:var(--primary);font-weight:700;':'color:#555;'}">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${active?'var(--primary)':'#ccc'};"></span>
+      ${_maskN(t.name)} <span style="color:#aaa;font-size:11px;">${t.dept||''}</span>
+    </li>`;
+  }).join('');
+  // 진단 유형 버튼 스타일
+  const baseStyle = 'padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:3px;';
+  document.getElementById('diag-resp-type-member').style.cssText =
+    baseStyle + (_diagRespType==='member' ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:#555;');
+  document.getElementById('diag-resp-type-manager').style.cssText =
+    'padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;' + (_diagRespType==='manager' ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:#555;');
+}
+
+function diagRespSelectPerson(idx) {
+  _diagRespSelPersonIdx = idx;
+  _diagRespRenderSidebar();
+}
+function diagRespSelectType(type) {
+  _diagRespType = type;
+  _diagRespRenderSidebar();
+}
+function diagRespSelectTab(el) {
+  document.querySelectorAll('.diag-resp-tab').forEach(t => {
+    t.style.borderBottom = '2px solid transparent';
+    t.style.color = '#888';
+    t.style.fontWeight = 'normal';
+  });
+  el.style.borderBottom = '2px solid var(--primary)';
+  el.style.color = 'var(--primary)';
+  el.style.fontWeight = '700';
+}
+
+function _diagRespRenderPool() {
+  const keyword = (document.getElementById('diag-resp-search-keyword')?.value || '').trim().toLowerCase();
+  const sType   = document.getElementById('diag-resp-search-type')?.value || 'name';
+  const company = document.getElementById('diag-resp-search-company')?.value || '';
+  _diagRespFilteredPool = DIAG_MEMBERS_POOL.filter(m => {
+    if (company && m.company !== company) return false;
+    if (keyword) {
+      const v = sType === 'name' ? (m.name||'').toLowerCase() : (m.empno||'').toLowerCase();
+      if (!v.includes(keyword)) return false;
+    }
+    return true;
+  });
+  document.getElementById('diag-resp-result-info').textContent =
+    '검색 결과 : ' + _diagRespFilteredPool.length + '명 · 선택 : 0명';
+  document.getElementById('diag-resp-chk-all').checked = false;
+  const tbody = document.getElementById('diag-resp-pool-tbody');
+  if (!_diagRespFilteredPool.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
     return;
   }
-  tbody.innerHTML = members.map((m, i) => `<tr>
-    <td style="text-align:center;padding:5px 4px;color:#888;font-size:11px;">${i+1}</td>
+  tbody.innerHTML = _diagRespFilteredPool.map((m, i) => `<tr>
+    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="diag-resp-pool-chk" data-idx="${i}" onchange="diagRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);"></td>
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
+    <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskL(m.loginId)}</td>
     <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
+    <td style="text-align:center;padding:5px 8px;font-size:11px;">${m.company||'-'}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-    <td style="text-align:center;padding:5px 4px;"><button onclick="diagRespListDelete(${i})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button></td>
+    <td style="text-align:center;padding:5px 4px;"><button onclick="diagRespAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button></td>
   </tr>`).join('');
 }
-function diagRespListDelete(idx) {
-  const members = DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [];
-  members.splice(idx, 1);
-  DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] = members;
-  _diagUpdateCell(members.length);
-  diagRespListRender();
+function _diagRespRenderRegistered() {
+  document.getElementById('diag-resp-reg-cnt').textContent = _diagRespTempList.length + '명';
+  const list = document.getElementById('diag-resp-registered-list');
+  if (!_diagRespTempList.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px 14px;color:#aaa;font-size:12px;">등록된 응답자가 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = _diagRespTempList.map((m, i) => `<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid #f5f0b0;gap:8px;">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:12px;font-weight:600;">${_maskN(m.name)}</div>
+      <div style="font-size:11px;color:#999;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.company||''} · ${m.dept||''}</div>
+    </div>
+    <button onclick="diagRespRemove(${i})" style="width:20px;height:20px;border:none;background:none;color:#ccc;font-size:18px;cursor:pointer;line-height:1;padding:0;flex-shrink:0;">×</button>
+  </div>`).join('');
+}
+
+function diagRespSearch()      { _diagRespRenderPool(); }
+function diagRespResetSearch() {
+  document.getElementById('diag-resp-search-keyword').value = '';
+  document.getElementById('diag-resp-search-type').value = 'name';
+  document.getElementById('diag-resp-search-company').value = '';
+  _diagRespRenderPool();
+}
+function diagRespSelectAll(checked) {
+  document.querySelectorAll('.diag-resp-pool-chk').forEach(c => c.checked = checked);
+  diagRespOnPoolCheck();
+}
+function diagRespOnPoolCheck() {
+  const checked = document.querySelectorAll('.diag-resp-pool-chk:checked').length;
+  const total   = document.querySelectorAll('.diag-resp-pool-chk').length;
+  document.getElementById('diag-resp-chk-all').checked = total > 0 && checked === total;
+  document.getElementById('diag-resp-result-info').textContent =
+    '검색 결과 : ' + _diagRespFilteredPool.length + '명 · 선택 : ' + checked + '명';
+}
+function diagRespAddOne(poolIdx) {
+  const m = _diagRespFilteredPool[poolIdx];
+  if (!m) return;
+  if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
+  _diagRespTempList.push({...m});
+  _diagRespRenderRegistered();
+  showToast(_maskN(m.name) + ' 추가되었습니다.');
+}
+function diagRespAddSelected() {
+  const checked = [...document.querySelectorAll('.diag-resp-pool-chk:checked')];
+  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
+  let cnt = 0;
+  checked.forEach(c => {
+    const m = _diagRespFilteredPool[+c.dataset.idx];
+    if (m && !_diagRespTempList.find(r => r.empno === m.empno)) { _diagRespTempList.push({...m}); cnt++; }
+  });
+  document.querySelectorAll('.diag-resp-pool-chk').forEach(c => c.checked = false);
+  document.getElementById('diag-resp-chk-all').checked = false;
+  diagRespOnPoolCheck();
+  _diagRespRenderRegistered();
+  showToast(cnt + '명이 추가되었습니다.');
+}
+function diagRespRemove(idx) {
+  _diagRespTempList.splice(idx, 1);
+  _diagRespRenderRegistered();
+}
+function diagRespSave() {
+  DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] = [..._diagRespTempList];
+  _diagUpdateCell(_diagRespTempList.length);
+  diagRespListClose();
+  showToast('저장되었습니다. (' + _diagRespTempList.length + '명)');
 }
 function diagRespListClose() {
   document.getElementById('diag-resp-list-modal').style.display = 'none';
