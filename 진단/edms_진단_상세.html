@@ -1074,13 +1074,8 @@
     }
     // 진행중 포함 여부에 따라 메시지 분기
     // 진행중 아닌 대상 → 시작/종료일 모두 반영, 진행중 대상 → 종료일만 반영
-    const hasInProgress = document.getElementById('modalStartDateNote').style.display !== 'none';
     closeModalById('dateChangeModal');
-    if (hasInProgress) {
-      showToast('변경이 완료되었습니다. (진행중인 진단은 시작일이 적용되지 않았습니다.)');
-    } else {
-      showToast('시작/종료일이 변경되었습니다.');
-    }
+    showToast('시작/종료일이 변경되었습니다.');
   }
 
   // ── 대상자 등록: 공통 모듈 사용 ──
