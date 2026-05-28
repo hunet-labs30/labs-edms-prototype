@@ -264,7 +264,53 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   letter-spacing:-.1px;
 }
 .btn-action:hover{background:#1a56d6;}
+.btn-action.btn-enroll{
+  background:var(--white);
+  color:var(--primary);
+  border:1.5px solid var(--primary);
+}
+.btn-action.btn-enroll:hover{background:var(--primary-light);}
 .btn-chevron{font-size:13px;font-weight:700;line-height:1;}
+
+/* 수료완료 버튼 */
+.btn-complete{
+  display:inline-flex;align-items:center;
+  padding:8px 16px;
+  border-radius:6px;
+  font-size:13px;font-weight:600;
+  background:var(--green-bg);
+  color:var(--green);
+  border:1px solid var(--green);
+  white-space:nowrap;
+  letter-spacing:-.1px;
+  cursor:default;
+}
+
+/* 필수 학습기간 툴팁 */
+.tooltip-wrap{display:inline-flex;align-items:center;gap:5px;}
+.tooltip-icon{
+  width:15px;height:15px;border-radius:50%;
+  border:1.5px solid var(--text-400);color:var(--text-400);
+  font-size:10px;font-weight:700;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;background:none;padding:0;flex-shrink:0;
+  transition:border-color .12s,color .12s;
+}
+.tooltip-icon:hover{border-color:var(--primary);color:var(--primary);}
+.tooltip-anchor{position:relative;display:inline-flex;align-items:center;}
+.tooltip-layer{
+  position:absolute;bottom:calc(100% + 8px);left:0;
+  background:var(--text-900);color:white;
+  font-size:12px;line-height:1.5;
+  padding:9px 12px;border-radius:var(--r-md);
+  width:280px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:600;
+  display:none;
+}
+.tooltip-layer::after{
+  content:'';position:absolute;top:100%;left:14px;
+  border:5px solid transparent;border-top-color:var(--text-900);
+}
 </style>
 </head>
 <body>
@@ -335,21 +381,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       </a>
       <h1 class="page-title">필수교육현황</h1>
 
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab(this,'tab-p')">
-          진행중인 교육<span class="tab-cnt" id="cnt-p">0</span>
-        </button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-d')">
-          종료된 교육<span class="tab-cnt" id="cnt-d">0</span>
-        </button>
-      </div>
-
-      <div id="tab-p" class="tab-content active">
-        <div class="group-list" id="gl-p"></div>
-      </div>
-      <div id="tab-d" class="tab-content">
-        <div class="group-list" id="gl-d"></div>
-      </div>
+      <div class="group-list" id="gl-all"></div>
 
       <div class="page-footer">© hunet All rights reserved.<a href="#">개인정보 처리방침</a></div>
     </main>
@@ -388,16 +420,55 @@ function rateColor(pct){
   return             { color:'var(--rate-low)',  bg:'var(--rate-low-bg)'  };
 }
 
-/* ─── 버튼 렌더 ─── 상태별 이동 분기
-   예정(waiting) → 수강신청 상세 페이지
-   학습중/수료/미수료 → 학습 페이지
-────────────────────────────────────────────── */
-function actionBtn(status, courseName){
-  const isStudy = (status === 'progress' || status === 'done' || status === 'fail');
-  const dest = isStudy ? '학습 페이지' : '수강신청 상세 페이지';
-  const msg = encodeURIComponent(`[${courseName}]\n${dest}로 이동합니다.\n※ 별도 구현 예정`);
+/* ─── 버튼 렌더 ─── 상태 × 유형 분기
+   ┌──────────────────────────────────────────────────────────────┐
+   │ 공통 (모든 유형)                                              │
+   │  done           → 수료완료(비활성화)                          │
+   │  expired        → 버튼 없음  (기간 종료 + 미수료)             │
+   ├──────────────────────────────────────────────────────────────┤
+   │ 일반 과정 (온라인 / 오프라인 / 하이브리드)                     │
+   │  progress       → 학습하기  → 콘텐츠창                       │
+   │  waiting / fail → 수강신청  → 미리보기 (기간 중 + 미수료)     │
+   ├──────────────────────────────────────────────────────────────┤
+   │ 마이크로러닝                                                  │
+   │  waiting        → 수강신청  → 미리보기 (수강신청 전, 미신청)  │
+   │  progress / fail→ 학습하기  → 콘텐츠창                       │
+   └──────────────────────────────────────────────────────────────┘ */
+function actionBtn(status, courseName, type){
+  /* 수료완료 — 공통 */
+  if(status === 'done'){
+    return `<span class="btn-complete">수료완료</span>`;
+  }
+  /* 기간 종료 + 미수료 — 버튼 없음 (공통) */
+  if(status === 'expired'){
+    return '';
+  }
+
+  if(type === 'micro'){
+    /* ── 마이크로러닝 ── */
+    if(status === 'waiting'){
+      /* 수강신청 전 (기간 내, 미신청) → 수강신청 */
+      const msg = encodeURIComponent(`[${courseName}]\n미리보기 페이지로 이동합니다.\n※ 별도 구현 예정`);
+      const click = `onclick="alert(decodeURIComponent('${msg}'));return false;"`;
+      return `<a href="#" class="btn-action btn-enroll" ${click}>수강신청 <span class="btn-chevron">›</span></a>`;
+    }
+    /* progress / fail (기간 중 + 미수료) → 학습하기 */
+    const msg = encodeURIComponent(`[${courseName}]\n콘텐츠 창으로 이동합니다.\n※ 별도 구현 예정`);
+    const click = `onclick="alert(decodeURIComponent('${msg}'));return false;"`;
+    return `<a href="#" class="btn-action" ${click}>학습하기 <span class="btn-chevron">›</span></a>`;
+  }
+
+  /* ── 일반 과정 (온라인 / 오프라인 / 하이브리드) ── */
+  if(status === 'progress'){
+    /* 학습중 → 학습하기 */
+    const msg = encodeURIComponent(`[${courseName}]\n콘텐츠 창으로 이동합니다.\n※ 별도 구현 예정`);
+    const click = `onclick="alert(decodeURIComponent('${msg}'));return false;"`;
+    return `<a href="#" class="btn-action" ${click}>학습하기 <span class="btn-chevron">›</span></a>`;
+  }
+  /* waiting / fail (기간 중 + 미수료) → 수강신청 */
+  const msg = encodeURIComponent(`[${courseName}]\n미리보기 페이지로 이동합니다.\n※ 별도 구현 예정`);
   const click = `onclick="alert(decodeURIComponent('${msg}'));return false;"`;
-  return `<a href="#" class="btn-action" ${click}>학습하기 <span class="btn-chevron">›</span></a>`;
+  return `<a href="#" class="btn-action btn-enroll" ${click}>수강신청 <span class="btn-chevron">›</span></a>`;
 }
 
 /* ─── 상태 배지 ─── */
@@ -406,11 +477,12 @@ const SBADGE = {
   progress: `<span class="sbadge progress"><span class="dot"></span>학습중</span>`,
   fail:     `<span class="sbadge fail"><span class="dot"></span>미수료</span>`,
   waiting:  `<span class="sbadge waiting"><span class="dot"></span>예정</span>`,
+  expired:  `<span class="sbadge waiting"><span class="dot"></span>기간종료</span>`,
 };
 
 /* ─── 데이터 ─── */
 const progressGroups = [
-  { id:1, name:'동아ST 2025 상반기 셀링모델', date:'교육기간 : 2026-04-16 ~ 2026-04-30',
+  { id:1, name:'동아ST 2025 상반기 셀링모델', date:'필수 학습기간 : 2026-04-16 ~ 2026-04-30',
     courses:[
       { no:6, type:'offline',  name:'동아ST 부서장 리더십',               period:'2026-04-16 ~ 2026-04-30', status:'waiting'  },
       { no:5, type:'hybrid',   name:'동아ST 2025 상반기 셀링모델',        period:'2026-04-16 ~ 2026-04-30', status:'progress' },
@@ -419,15 +491,15 @@ const progressGroups = [
       { no:2, type:'micro',    name:'MZ세대 소통법 - 마이크로러닝',        period:'2026-04-16 ~ 2026-04-30', status:'progress' },
       { no:1, type:'offline',  name:'외부 세미나 - 제약 산업 트렌드 2026', period:'2026-04-16 ~ 2026-04-30', status:'waiting'  },
     ]},
-  { id:2, name:'2026 상반기 전사 역량강화', date:'교육기간 : 2026-03-01 ~ 2026-06-30',
+  { id:2, name:'2026 상반기 전사 역량강화', date:'필수 학습기간 : 2026-03-01 ~ 2026-06-30',
     courses:[
       { no:5, type:'online',   name:'2026 직무역량 강화 기초과정',         period:'2026-03-01 ~ 2026-06-30', status:'done'     },
-      { no:4, type:'micro',    name:'CS 마인드 강화 교육 시리즈',          period:'2026-03-01 ~ 2026-05-31', status:'progress' },
+      { no:4, type:'micro',    name:'CS 마인드 강화 교육 시리즈',          period:'2026-03-01 ~ 2026-05-31', status:'fail' },
       { no:3, type:'hybrid',   name:'팀장급 리더십 집중 과정',              period:'2026-03-01 ~ 2026-04-30', status:'fail'     },
       { no:2, type:'online',   name:'데이터 기반 의사결정 트레이닝',        period:'2026-03-01 ~ 2026-06-30', status:'done'     },
       { no:1, type:'offline',  name:'조직문화 혁신 워크숍',                period:'2026-03-01 ~ 2026-06-30', status:'waiting'  },
     ]},
-  { id:3, name:'2026 컴플라이언스 필수교육', date:'교육기간 : 2026-01-01 ~ 2026-12-31',
+  { id:3, name:'2026 컴플라이언스 필수교육', date:'필수 학습기간 : 2026-01-01 ~ 2026-12-31',
     courses:[
       { no:5, type:'online', name:'개인정보보호 법정의무교육',              period:'2026-01-01 ~ 2026-12-31', status:'done'    },
       { no:4, type:'online', name:'산업안전보건법 필수 이수',               period:'2026-01-01 ~ 2026-12-31', status:'done'    },
@@ -435,7 +507,7 @@ const progressGroups = [
       { no:2, type:'online', name:'장애인 인식개선 교육',                   period:'2026-01-01 ~ 2026-12-31', status:'waiting' },
       { no:1, type:'online', name:'직장 내 괴롭힘 방지교육',                period:'2026-01-01 ~ 2026-12-31', status:'waiting' },
     ]},
-  { id:7, name:'2026 상반기 리더십 아카데미', date:'교육기간 : 2026-02-01 ~ 2026-04-30',
+  { id:7, name:'2026 상반기 리더십 아카데미', date:'필수 학습기간 : 2026-02-01 ~ 2026-04-30',
     courses:[
       { no:5, type:'offline',  name:'리더십 역량 기초 과정',                period:'2026-02-01 ~ 2026-04-30', status:'done' },
       { no:4, type:'online',   name:'전략적 사고와 의사결정',                period:'2026-02-01 ~ 2026-04-30', status:'done' },
@@ -446,7 +518,7 @@ const progressGroups = [
 ];
 
 const doneGroups = [
-  { id:6, name:'2025 하반기 법정의무교육', date:'교육기간 : 2025-07-01 ~ 2025-12-31',
+  { id:6, name:'2025 하반기 법정의무교육', date:'필수 학습기간 : 2025-07-01 ~ 2025-12-31',
     courses:[
       { no:5, type:'online', name:'개인정보보호 법정의무교육 2025',          period:'2025-07-01 ~ 2025-12-31', status:'done' },
       { no:4, type:'online', name:'산업안전보건 교육 2025',                 period:'2025-07-01 ~ 2025-12-31', status:'done' },
@@ -454,7 +526,7 @@ const doneGroups = [
       { no:2, type:'online', name:'장애인 인식개선 교육 2025',               period:'2025-07-01 ~ 2025-12-31', status:'done' },
       { no:1, type:'online', name:'직장 내 괴롭힘 방지교육 2025',            period:'2025-07-01 ~ 2025-12-31', status:'done' },
     ]},
-  { id:4, name:'동아ST 2024 하반기 셀링모델', date:'교육기간 : 2024-07-01 ~ 2024-12-31',
+  { id:4, name:'동아ST 2024 하반기 셀링모델', date:'필수 학습기간 : 2024-07-01 ~ 2024-12-31',
     courses:[
       { no:5, type:'offline',  name:'동아ST 2024 하반기 리더십 아카데미',     period:'2024-07-01 ~ 2024-12-31', status:'done' },
       { no:4, type:'online',   name:'2024 직무역량 강화 - 영업 커뮤니케이션', period:'2024-07-01 ~ 2024-12-31', status:'done' },
@@ -462,18 +534,25 @@ const doneGroups = [
       { no:2, type:'hybrid',   name:'조직관리 및 성과 코칭',                  period:'2024-07-01 ~ 2024-12-31', status:'done' },
       { no:1, type:'offline',  name:'고객 중심 사고 전환 프로그램',            period:'2024-07-01 ~ 2024-12-31', status:'done' },
     ]},
-  { id:5, name:'2024 상반기 전사 교육', date:'교육기간 : 2024-01-01 ~ 2024-06-30',
+  { id:5, name:'2024 상반기 전사 교육', date:'필수 학습기간 : 2024-01-01 ~ 2024-06-30',
     courses:[
       { no:5, type:'online',   name:'리더십 기초과정 2024',                  period:'2024-01-01 ~ 2024-06-30', status:'done' },
       { no:4, type:'offline',  name:'신입사원 온보딩 교육',                   period:'2024-01-01 ~ 2024-03-31', status:'done' },
       { no:3, type:'micro',    name:'업무 생산성 향상 - 마이크로러닝',         period:'2024-01-01 ~ 2024-06-30', status:'done' },
-      { no:2, type:'online',   name:'글로벌 비즈니스 매너',                   period:'2024-01-01 ~ 2024-06-30', status:'fail' },
+      { no:2, type:'online',   name:'글로벌 비즈니스 매너',                   period:'2024-01-01 ~ 2024-06-30', status:'expired' },
       { no:1, type:'hybrid',   name:'외부 연수 - 혁신성장 아카데미',           period:'2024-01-01 ~ 2024-06-30', status:'done' },
     ]},
 ];
 
+/* ─── 전체 그룹 — 필수 학습기간 시작일 최신순 정렬 ─── */
+function getStartDate(g){
+  const m = g.date.match(/(\d{4}-\d{2}-\d{2})/);
+  return m ? new Date(m[1]) : new Date(0);
+}
+const allGroups = [...progressGroups, ...doneGroups].sort((a,b)=>getStartDate(b)-getStartDate(a));
+
 /* ─── 상태 ─── */
-let selectedId = null, currentTab = 'p';
+let selectedId = null;
 let filterTypes = ['online','offline','hybrid','micro'];
 
 /* ─── 통계 ─── */
@@ -499,7 +578,15 @@ function renderCards(groups, elId){
     <div class="group-card${sel?' selected':''}" onclick="selectGroup(${g.id})">
       <div class="gc-left">
         <div class="gc-name">${g.name}</div>
-        <div class="gc-date">${g.date}</div>
+        <div class="gc-date">
+          <span class="tooltip-wrap">
+            ${g.date}
+            <span class="tooltip-anchor">
+              <button class="tooltip-icon" onclick="toggleTooltip(this,event)">?</button>
+              <div class="tooltip-layer">해당 기간 동안 학습 시작을 진행한 과정의 경우 기간 종료 후에도 수료가 가능합니다.</div>
+            </span>
+          </span>
+        </div>
       </div>
       <div class="gc-right">
         <div class="gc-stat"><span class="gc-stat-lbl">과정</span><span class="gc-stat-val">${s.total}</span></div>
@@ -532,7 +619,7 @@ function buildCourseItem(c){
           <span class="p-ci-dot">·</span>
           <span class="p-ci-type">${t.label}</span>
         </span>
-        ${actionBtn(c.status, c.name)}
+        ${actionBtn(c.status, c.name, c.type)}
       </div>
     </div>
   </div>`;
@@ -548,8 +635,8 @@ function buildPanel(g){
     : `<div class="empty" style="padding:24px 0"><p>선택한 유형의 과정이 없습니다.</p></div>`;
 
   return `
-    <!-- 교육 정보 -->
-    <div class="psec">교육 정보</div>
+    <!-- 필수교육 정보 -->
+    <div class="psec">필수교육 정보</div>
     <div class="p-period">
       <div class="p-period-name">${g.name}</div>
       <div class="p-period-date">${g.date}</div>
@@ -601,12 +688,11 @@ function buildPanel(g){
 
 /* ─── 그룹 선택 ─── */
 function selectGroup(id){
-  const groups = currentTab==='p' ? progressGroups : doneGroups;
-  const g = groups.find(g=>g.id===id);
+  const g = allGroups.find(g=>g.id===id);
   if(!g) return;
-  if(selectedId===id){ selectedId=null; closePanel(); renderCards(groups,'gl-'+currentTab); return; }
+  if(selectedId===id){ selectedId=null; closePanel(); return; }
   selectedId = id;
-  renderCards(groups,'gl-'+currentTab);
+  renderCards(allGroups,'gl-all');
   document.getElementById('panel-body').innerHTML = buildPanel(g);
   document.getElementById('panel').classList.add('open');
   document.getElementById('mainWrap').classList.add('panel-open');
@@ -616,8 +702,7 @@ function selectGroup(id){
 function panelFilter(gid){
   const checks = document.querySelectorAll('#p-filter input');
   filterTypes = [...checks].filter(c=>c.checked).map(c=>c.dataset.type);
-  const groups = currentTab==='p' ? progressGroups : doneGroups;
-  const g = groups.find(g=>g.id===gid);
+  const g = allGroups.find(g=>g.id===gid);
   if(!g) return;
   const filtered = g.courses.filter(c=>filterTypes.includes(c.type));
   document.getElementById('p-course-list').innerHTML = filtered.length
@@ -631,28 +716,24 @@ function closePanel(){
   document.getElementById('mainWrap').classList.remove('panel-open');
   selectedId = null;
   filterTypes = ['online','offline','hybrid','micro'];
-  const groups = currentTab==='p' ? progressGroups : doneGroups;
-  renderCards(groups,'gl-'+currentTab);
+  renderCards(allGroups,'gl-all');
 }
 
-/* ─── 탭 전환 ─── */
-function switchTab(btn,id){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(id).classList.add('active');
-  currentTab = id.replace('tab-','');
-  selectedId = null;
-  filterTypes = ['online','offline','hybrid','micro'];
-  closePanel();
+/* ─── 툴팁 토글 ─── */
+function toggleTooltip(btn, e){
+  e.stopPropagation();
+  const layer = btn.nextElementSibling;
+  const isOpen = layer.style.display === 'block';
+  document.querySelectorAll('.tooltip-layer').forEach(t=>t.style.display='none');
+  if(!isOpen) layer.style.display = 'block';
 }
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.tooltip-layer').forEach(t=>t.style.display='none');
+});
 
 /* ─── 초기 렌더 ─── */
 function init(){
-  renderCards(progressGroups,'gl-p');
-  renderCards(doneGroups,'gl-d');
-  document.getElementById('cnt-p').textContent = progressGroups.length;
-  document.getElementById('cnt-d').textContent = doneGroups.length;
+  renderCards(allGroups,'gl-all');
 }
 init();
 </script>
