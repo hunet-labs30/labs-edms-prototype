@@ -1143,112 +1143,160 @@ body {
 
 <!-- ══ MODAL: 진단 응답자 등록 ══ -->
 <div class="modal-overlay" id="respondentModal">
-  <div class="resp-modal-box">
+  <div class="resp-modal-box" style="width:1060px;">
     <div class="modal-header">
       <h3>진단 응답자 등록</h3>
       <button class="modal-close" onclick="closeModal('respondentModal')">×</button>
     </div>
-    <div class="resp-modal-inner">
-      <!-- 왼쪽 패널 -->
-      <div class="resp-left-panel">
-        <div class="resp-target-info">
-          <div class="resp-target-name" id="respTargetName">홍길동</div>
-          <div class="resp-target-meta">팀장 · 인재개발팀</div>
+    <!-- 3-panel body -->
+    <div style="display:flex;flex:1;overflow:hidden;height:630px;">
+
+      <!-- ① 왼쪽 사이드바 178px -->
+      <div style="width:178px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:#fafbfc;">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:#f0f4ff;flex-shrink:0;">
+          <div id="mk-person-name" style="font-size:13px;font-weight:700;color:#1a2e5c;margin-bottom:2px;">홍*동</div>
+          <div id="mk-person-meta" style="font-size:11px;color:#888;">팀장 · 인재개발팀</div>
         </div>
-        <div class="resp-section-title">진단 유형 선택</div>
-        <div class="resp-type-list" id="respTypeList">
-          <div class="resp-type-item active" onclick="selectRespType(this,'구성원진단')">구성원 진단</div>
-          <div class="resp-type-item" onclick="selectRespType(this,'상사진단')">상사 진단</div>
+        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;flex-shrink:0;">진단 유형 선택</div>
+        <div id="mk-type-list" style="flex-shrink:0;">
+          <div class="mk-type-item" data-type="구성원진단" onclick="mkRespSelectType(this)"
+               style="padding:8px 14px 8px 16px;font-size:12px;color:#444;cursor:pointer;border-left:3px solid transparent;">구성원 진단</div>
+          <div class="mk-type-item" data-type="상사진단" onclick="mkRespSelectType(this)"
+               style="padding:8px 14px 8px 16px;font-size:12px;color:#444;cursor:pointer;border-left:3px solid transparent;">상사 진단</div>
         </div>
-        <div class="resp-section-title" style="margin-top:4px;">진단 대상자 선택</div>
-        <div class="resp-member-list" id="respMemberList">
-          <div class="resp-member-item active" onclick="selectRespMember(this)">
-            <span style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;"></span>
-            홍길동 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;border-top:1px solid var(--border);margin-top:4px;flex-shrink:0;">진단 대상자 선택</div>
+        <div id="mk-member-list" style="flex:1;overflow-y:auto;"></div>
+      </div>
+
+      <!-- ② 중앙 패널 -->
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);">
+        <div id="mk-center-title" style="padding:9px 14px;font-size:12px;font-weight:700;color:#1a2e5c;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
+          구성원진단 응답자 설정 — 홍*동
+        </div>
+        <!-- 탭 row -->
+        <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 8px;background:#fff;">
+          <span class="mk-resp-tab" data-tab="개별"      onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid var(--primary);color:var(--primary);font-weight:700;">개별</span>
+          <span class="mk-resp-tab" data-tab="부서별"    onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">부서별</span>
+          <span class="mk-resp-tab" data-tab="직급별"    onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직급별</span>
+          <span class="mk-resp-tab" data-tab="직책별"    onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직책별</span>
+          <span class="mk-resp-tab" data-tab="직무별"    onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직무별</span>
+          <span class="mk-resp-tab" data-tab="직군별"    onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직군별</span>
+          <span class="mk-resp-tab" data-tab="대상구분별" onclick="mkRespSelectTab(this)"
+                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">대상구분별</span>
+        </div>
+        <!-- 검색 row -->
+        <div id="mk-search-row" style="display:flex;gap:6px;padding:7px 12px;border-bottom:1px solid #f0f2f5;flex-shrink:0;">
+          <select id="mk-search-company" style="width:90px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff;">
+            <option value="">회사 전체</option><option>동아ST</option><option>동아쏘시오홀딩스</option><option>휴넷</option>
+          </select>
+          <select id="mk-search-type" style="width:68px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px;font-family:inherit;background:#fff;">
+            <option value="name">이름</option><option value="empno">사번</option><option value="dept">부서</option>
+          </select>
+          <input id="mk-search-keyword" placeholder="검색어를 입력하세요."
+                 style="flex:1;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 8px;font-size:12px;font-family:inherit;outline:none;"
+                 onkeydown="if(event.key==='Enter')mkRespSearch()">
+          <button onclick="mkRespSearch()"
+                  style="height:28px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">검색</button>
+          <button onclick="mkRespSearchAll()"
+                  style="height:28px;padding:0 10px;background:#f0f2f5;color:#444;border:1px solid #ccc;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">전체검색</button>
+        </div>
+
+        <!-- 개별 패널 -->
+        <div id="mk-panel-single" style="display:flex;flex:1;overflow:hidden;flex-direction:column;">
+          <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <span id="mk-pool-info">총 0명</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span>선택: <strong id="mk-sel-count" style="color:var(--primary);">0</strong>명</span>
+              <button onclick="mkRespAddChecked()"
+                      style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
+            </div>
           </div>
-          <div class="resp-member-item" onclick="selectRespMember(this)">
-            <span style="width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;"></span>
-            김철수 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+          <div style="flex:1;overflow-y:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#f0f2f5;">
+                  <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;">
+                    <input type="checkbox" id="mk-pool-chk-all" onchange="mkRespToggleAllPool(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
+                  </th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">이름</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">아이디</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">사번</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">회사명</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">부서명</th>
+                  <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
+                </tr>
+              </thead>
+              <tbody id="mk-pool-tbody"></tbody>
+            </table>
           </div>
-          <div class="resp-member-item" onclick="selectRespMember(this)">
-            <span style="width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;"></span>
-            이영희 <span style="color:#aaa;font-size:11px;margin-left:4px;">팀장</span>
+        </div>
+
+        <!-- 분류별 패널 (split) -->
+        <div id="mk-panel-split" style="display:none;flex:1;overflow:hidden;flex-direction:row;">
+          <div id="mk-split-left" style="width:180px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;background:#fafafa;"></div>
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+              <span id="mk-split-info">항목을 선택하세요.</span>
+              <button onclick="mkRespAddSplitChecked()"
+                      style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
+            </div>
+            <div style="flex:1;overflow-y:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <thead>
+                  <tr style="background:#f0f2f5;">
+                    <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;">
+                      <input type="checkbox" id="mk-split-chk-all" onchange="mkRespToggleAllSplit(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
+                    </th>
+                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">이름</th>
+                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">아이디</th>
+                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">사번</th>
+                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">회사명</th>
+                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">부서명</th>
+                    <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
+                  </tr>
+                </thead>
+                <tbody id="mk-split-tbody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 오른쪽 패널 -->
-      <div class="resp-right-panel">
-        <div class="resp-right-header" id="respRightHeader">구성원진단 응답자 설정 — 홍*동</div>
-        <!-- 탭 -->
-        <div class="resp-right-tabs" id="respRightTabs">
-          <div class="resp-right-tab active" onclick="switchRespTab(this)">개별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">부서별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">직급별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">직책별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">직무별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">직군별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">대상구분별</div>
-          <div class="resp-right-tab" onclick="switchRespTab(this)">일괄등록</div>
+      <!-- ③ 오른쪽 패널 260px (등록된 응답자) -->
+      <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;background:#fffef5;overflow:hidden;">
+        <div style="padding:9px 12px;border-bottom:1px solid #e8d88a;font-size:12px;font-weight:700;color:#7a6a00;background:#fff8c5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span>등록된 응답자 <strong id="mk-reg-count" style="color:var(--primary);">0</strong>명</span>
+          <button onclick="mkRespDelSelected()"
+                  style="height:22px;padding:0 8px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">삭제</button>
         </div>
-        <!-- 검색 -->
-        <div class="resp-search-row">
-          <select class="form-select" style="width:100px;height:30px;font-size:12px;"><option>회사 선택</option><option>휴넷</option><option>동아ST</option><option>동아SI</option></select>
-          <select class="form-select" style="width:80px;height:30px;font-size:12px;"><option>이름</option><option>사번</option><option>부서</option></select>
-          <input class="modal-input" placeholder="검색어를 입력하세요." id="respSearchInput" style="flex:1;">
-          <button class="btn btn-primary btn-sm" onclick="showToast('검색합니다.')">🔍 검색</button>
-          <button class="btn btn-gray btn-sm" onclick="showToast('전체 검색합니다.')">전체검색</button>
-        </div>
-        <div class="resp-right-body">
-          <div class="resp-count-bar">
-            <span>검색 결과: <strong style="color:var(--primary);">8</strong>명 &nbsp;·&nbsp; 선택: <strong id="respSelectCount">0</strong>명</span>
-            <button class="btn btn-primary btn-sm" onclick="addRespondents()">추가 →</button>
-          </div>
-          <div class="resp-table-wrap">
-            <table class="resp-table">
-              <thead>
-                <tr>
-                  <th style="width:36px;"><input type="checkbox" id="respAllCheck" onchange="toggleAllResp(this)"></th>
-                  <th>이름</th><th>아이디</th><th>사번</th><th>회사명</th><th>부서명</th><th style="width:52px;"></th>
-                </tr>
-              </thead>
-              <tbody id="respCandidateBody">
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>홍*동</strong></td><td>h***@hunet.co.kr</td><td>20240001</td><td>동아ST</td><td>인사팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>이*언</strong></td><td>l****@hunet.co.kr</td><td>20230002</td><td>동아SI</td><td>기획팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>김*문</strong></td><td>k***@hunet.co.kr</td><td>20220010</td><td>동아ST</td><td>안전팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>박*현</strong></td><td>p****@hunet.co.kr</td><td>20210020</td><td>동이쏘시오홀딩스</td><td>HR팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>최*연</strong></td><td>c*****@hunet.co.kr</td><td>20200030</td><td>동아ST</td><td>교육팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>정*진</strong></td><td>j*******@hunet.co.kr</td><td>20190040</td><td>동아싸이오홀딩스</td><td>재무팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>강*원</strong></td><td>k*******@hunet.co.kr</td><td>20180050</td><td>동아ST</td><td>전략팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-                <tr><td><input type="checkbox" onchange="updateRespSelectCount()"></td><td><strong>이*은</strong></td><td>l*******@hunet.co.kr</td><td>20250001</td><td>동아ST</td><td>기획팀</td><td><button class="btn btn-outline btn-xs" onclick="addSingleResp(this)">추가</button></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- 등록된 응답자 -->
-          <div class="resp-divider">
-            <span>등록된 응답자 <strong style="color:var(--primary);" id="registeredRespCount">0</strong>명</span>
-            <button class="btn btn-gray btn-xs" onclick="showToast('선택 응답자를 삭제합니다.')">삭제</button>
-          </div>
-          <div class="resp-registered-wrap">
-            <table class="resp-table">
-              <thead>
-                <tr>
-                  <th style="width:36px;"><input type="checkbox"></th>
-                  <th>이름</th><th>아이디</th><th>사번</th><th>회사명</th><th>부서명</th><th style="width:52px;"></th>
-                </tr>
-              </thead>
-              <tbody id="respRegisteredBody">
-                <tr><td colspan="7" style="color:#aaa;padding:20px;text-align:center;">등록된 응답자가 없습니다.</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div style="flex:1;overflow-y:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <thead>
+              <tr style="background:#fff3c0;">
+                <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;text-align:center;">
+                  <input type="checkbox" id="mk-reg-chk-all" onchange="mkRespToggleAllReg(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
+                </th>
+                <th style="padding:5px 6px;border:1px solid #e8d88a;text-align:center;white-space:nowrap;">이름</th>
+                <th style="padding:5px 6px;border:1px solid #e8d88a;text-align:center;white-space:nowrap;">부서</th>
+                <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;"></th>
+              </tr>
+            </thead>
+            <tbody id="mk-reg-tbody">
+              <tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray" onclick="closeModal('respondentModal')">취소</button>
-      <button class="btn btn-primary" onclick="saveRespondents()">저장</button>
+      <button class="btn btn-primary" onclick="mkRespSave()">저장</button>
     </div>
   </div>
 </div>
@@ -1480,101 +1528,373 @@ function delRow(btn, tabIdx) {
   });
 }
 
-/* ── RESPONDENT MODAL ── */
+/* ══ MK: 진단 응답자 등록 모달 (3-패널) ══ */
+const MK_RESPONDENTS = {};   // "tabIdx:rowIdx" → [{empno,name,loginId,company,dept}, ...]
+
+const MK_DIAG_TARGETS = [
+  {name:'홍*동', meta:'팀장 · 인재개발팀', rowIdx:0},
+  {name:'김*수', meta:'팀장 · 전략기획팀', rowIdx:1},
+  {name:'이*희', meta:'팀장 · 마케팅팀',   rowIdx:2},
+];
+
+let _mkTabIdx  = 1;   // 1=구성원진단, 2=상사진단
+let _mkRowIdx  = 0;   // 현재 선택된 대상자 인덱스
+let _mkTempList = [];
+let _mkFilteredPool = [];
+let _mkSplitItems = [];
+let _mkSplitSelIdx = -1;
+let _mkSplitMembers = [];
+
+function _mkKey() { return _mkTabIdx + ':' + _mkRowIdx; }
+
 function openRespondentModal(targetName, diagType, tabIdx) {
-  document.getElementById('respTargetName').textContent = targetName;
-  document.getElementById('respRightHeader').textContent =
-    diagType + ' 응답자 설정 — ' + targetName;
+  _mkTabIdx  = tabIdx;
+  _mkRowIdx  = MK_DIAG_TARGETS.findIndex(t => t.name === targetName);
+  if (_mkRowIdx < 0) _mkRowIdx = 0;
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  _mkInitModal();
   openModal('respondentModal');
 }
 
-function selectRespType(el, type) {
-  document.querySelectorAll('.resp-type-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('respRightHeader').textContent =
-    type + ' 응답자 설정 — ' + document.getElementById('respTargetName').textContent;
-}
+function _mkInitModal() {
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-person-name').textContent = target.name;
+  document.getElementById('mk-person-meta').textContent = target.meta;
 
-function selectRespMember(el) {
-  document.querySelectorAll('.resp-member-item').forEach(i => {
-    i.classList.remove('active');
-    i.querySelector('span').style.background = '#ddd';
+  // 진단유형 active 표시
+  document.querySelectorAll('.mk-type-item').forEach(el => {
+    const active = (_mkTabIdx === 1 ? '구성원진단' : '상사진단') === el.dataset.type;
+    el.style.borderLeftColor = active ? 'var(--primary)' : 'transparent';
+    el.style.color = active ? 'var(--primary)' : '#444';
+    el.style.fontWeight = active ? '700' : 'normal';
+    el.style.background = active ? '#f0f4ff' : '';
   });
-  el.classList.add('active');
-  el.querySelector('span').style.background = 'var(--primary)';
+
+  // center title
+  const typeLabel = _mkTabIdx === 1 ? '구성원진단' : '상사진단';
+  document.getElementById('mk-center-title').textContent = typeLabel + ' 응답자 설정 — ' + target.name;
+
+  // 탭 초기화 (개별)
+  document.querySelectorAll('.mk-resp-tab').forEach(t => {
+    const first = t.dataset.tab === '개별';
+    t.style.borderBottom = first ? '2px solid var(--primary)' : '2px solid transparent';
+    t.style.color = first ? 'var(--primary)' : '#888';
+    t.style.fontWeight = first ? '700' : 'normal';
+  });
+  document.getElementById('mk-panel-single').style.display = 'flex';
+  document.getElementById('mk-panel-split').style.display  = 'none';
+  document.getElementById('mk-search-row').style.display   = 'flex';
+
+  // 검색 초기화
+  document.getElementById('mk-search-keyword').value = '';
+  document.getElementById('mk-search-company').value = '';
+  document.getElementById('mk-search-type').value    = 'name';
+
+  _mkRenderMemberList();
+  _mkFilterPool(ME_SAMPLE_MEMBERS);
+  _mkRenderPool();
+  _mkRenderReg();
 }
 
-function switchRespTab(el) {
-  el.closest('.resp-right-tabs').querySelectorAll('.resp-right-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
+function _mkRenderMemberList() {
+  const el = document.getElementById('mk-member-list');
+  el.innerHTML = MK_DIAG_TARGETS.map((t, i) => {
+    const active = i === _mkRowIdx;
+    const cnt = (MK_RESPONDENTS[_mkTabIdx + ':' + i] || []).length;
+    return `<div onclick="mkRespSelectMember(${i})" style="padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid ${active?'var(--primary)':'transparent'};color:${active?'var(--primary)':'#444'};font-weight:${active?'700':'normal'};background:${active?'#f0f4ff':''};display:flex;align-items:center;gap:5px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:${active?'var(--primary)':'#ddd'};flex-shrink:0;"></span>
+      <span>${t.name}</span>
+      ${cnt>0?`<span style="margin-left:auto;font-size:10px;color:var(--primary);font-weight:700;">${cnt}명</span>`:''}
+    </div>`;
+  }).join('');
 }
 
-function updateRespSelectCount() {
-  const cnt = document.querySelectorAll('#respCandidateBody input[type=checkbox]:checked').length;
-  document.getElementById('respSelectCount').textContent = cnt;
+function mkRespSelectMember(rowIdx) {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 임시 저장
+  _mkRowIdx  = rowIdx;
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-person-name').textContent = target.name;
+  document.getElementById('mk-person-meta').textContent = target.meta;
+  const typeLabel = _mkTabIdx === 1 ? '구성원진단' : '상사진단';
+  document.getElementById('mk-center-title').textContent = typeLabel + ' 응답자 설정 — ' + target.name;
+  _mkRenderMemberList();
+  _mkFilterPool(ME_SAMPLE_MEMBERS);
+  _mkRenderPool();
+  _mkRenderReg();
 }
 
-function toggleAllResp(cb) {
-  document.querySelectorAll('#respCandidateBody input[type=checkbox]').forEach(c => c.checked = cb.checked);
-  updateRespSelectCount();
+function mkRespSelectType(el) {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 임시 저장
+  const type = el.dataset.type;
+  _mkTabIdx = type === '구성원진단' ? 1 : 2;
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  document.querySelectorAll('.mk-type-item').forEach(e => {
+    const active = e.dataset.type === type;
+    e.style.borderLeftColor = active ? 'var(--primary)' : 'transparent';
+    e.style.color = active ? 'var(--primary)' : '#444';
+    e.style.fontWeight = active ? '700' : 'normal';
+    e.style.background = active ? '#f0f4ff' : '';
+  });
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-center-title').textContent = type + ' 응답자 설정 — ' + target.name;
+  _mkRenderMemberList();
+  _mkFilterPool(ME_SAMPLE_MEMBERS);
+  _mkRenderPool();
+  _mkRenderReg();
 }
 
-function addSingleResp(btn) {
-  const row = btn.closest('tr');
-  const cells = row.querySelectorAll('td');
-  const tbody = document.getElementById('respRegisteredBody');
-  const empNo = cells[3].textContent;
-  const alreadyExists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
-  if (alreadyExists) { showToast('이미 추가된 응답자입니다.'); return; }
-  const placeholder = tbody.querySelector('td[colspan]');
-  if (placeholder) placeholder.closest('tr').remove();
-  const newRow = tbody.insertRow();
-  newRow.innerHTML = `
-    <td><input type="checkbox"></td>
-    <td>${cells[1].textContent}</td>
-    <td>${cells[2].textContent}</td>
-    <td>${cells[3].textContent}</td>
-    <td>${cells[4].textContent}</td>
-    <td>${cells[5].textContent}</td>
-    <td><button class="btn btn-outline btn-xs" onclick="this.closest('tr').remove(); document.getElementById('registeredRespCount').textContent = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;">삭제</button></td>`;
-  document.getElementById('registeredRespCount').textContent = tbody.querySelectorAll('tr').length;
-  showToast('응답자가 추가되었습니다.');
+function _mkFilterPool(members) {
+  const company = document.getElementById('mk-search-company').value;
+  const type    = document.getElementById('mk-search-type').value;
+  const kw      = document.getElementById('mk-search-keyword').value.trim().toLowerCase();
+  _mkFilteredPool = members.filter(m => {
+    if (company && m.company !== company) return false;
+    if (kw) {
+      const val = type === 'empno' ? m.empno : (type === 'dept' ? m.dept : m.name);
+      if (!(val||'').toLowerCase().includes(kw)) return false;
+    }
+    return true;
+  });
 }
 
-function addRespondents() {
-  const checked = document.querySelectorAll('#respCandidateBody input[type=checkbox]:checked');
+function mkRespSearch() { _mkFilterPool(ME_SAMPLE_MEMBERS); _mkRenderPool(); }
+function mkRespSearchAll() {
+  document.getElementById('mk-search-keyword').value = '';
+  document.getElementById('mk-search-company').value = '';
+  _mkFilterPool(ME_SAMPLE_MEMBERS); _mkRenderPool();
+}
+
+function _mkRenderPool() {
+  const tbody = document.getElementById('mk-pool-tbody');
+  document.getElementById('mk-pool-info').textContent = '총 ' + _mkFilteredPool.length + '명';
+  document.getElementById('mk-sel-count').textContent = '0';
+  document.getElementById('mk-pool-chk-all').checked = false;
+  if (!_mkFilteredPool.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;">검색 결과가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _mkFilteredPool.map((m, i) => {
+    const isReg = _mkTempList.some(r => r.empno === m.empno);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
+      <td style="text-align:center;padding:5px 4px;">${isReg
+        ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
+        : `<input type="checkbox" class="mk-pool-chk" data-idx="${i}" onchange="mkRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}
+      </td>
+      <td style="padding:5px 8px;"><strong>${_mbr_maskN(m.name)}</strong></td>
+      <td style="padding:5px 8px;font-size:11px;color:#666;">${_mbr_maskL(m.loginId||'')}</td>
+      <td style="padding:5px 8px;">${m.empno}</td>
+      <td style="padding:5px 8px;">${m.company||''}</td>
+      <td style="padding:5px 8px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg
+        ? ''
+        : `<button onclick="mkRespAddOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function mkRespOnPoolCheck() {
+  const cnt = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
+  document.getElementById('mk-sel-count').textContent = cnt;
+  const all = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk');
+  document.getElementById('mk-pool-chk-all').checked = all.length > 0 && cnt === all.length;
+}
+function mkRespToggleAllPool(checked) {
+  document.querySelectorAll('#mk-pool-tbody .mk-pool-chk').forEach(c => c.checked = checked);
+  document.getElementById('mk-sel-count').textContent =
+    document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
+}
+
+function mkRespAddOne(idx) {
+  const m = _mkFilteredPool[idx];
+  if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
+  _mkTempList.push(m);
+  _mkRenderPool();
+  _mkRenderReg();
+}
+
+function mkRespAddChecked() {
+  const checked = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked');
   if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
-  const tbody = document.getElementById('respRegisteredBody');
   let added = 0;
   checked.forEach(cb => {
-    const row = cb.closest('tr');
-    const cells = row.querySelectorAll('td');
-    const empNo = cells[3].textContent;
-    const alreadyExists = [...tbody.querySelectorAll('tr')].some(r => r.cells[3] && r.cells[3].textContent === empNo);
-    if (alreadyExists) return;
-    const placeholder = tbody.querySelector('td[colspan]');
-    if (placeholder) placeholder.closest('tr').remove();
-    const newRow = tbody.insertRow();
-    newRow.innerHTML = `
-      <td><input type="checkbox"></td>
-      <td>${cells[1].textContent}</td>
-      <td>${cells[2].textContent}</td>
-      <td>${cells[3].textContent}</td>
-      <td>${cells[4].textContent}</td>
-      <td>${cells[5].textContent}</td>
-      <td><button class="btn btn-outline btn-xs" onclick="this.closest('tr').remove(); document.getElementById('registeredRespCount').textContent = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;">삭제</button></td>`;
-    added++;
+    const m = _mkFilteredPool[+cb.dataset.idx];
+    if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
   });
-  document.getElementById('registeredRespCount').textContent = tbody.querySelectorAll('tr').length;
-  document.getElementById('respAllCheck').checked = false;
-  document.querySelectorAll('#respCandidateBody input[type=checkbox]').forEach(c => c.checked = false);
-  updateRespSelectCount();
+  _mkRenderPool();
+  _mkRenderReg();
   showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
 }
 
-function saveRespondents() {
-  const cnt = document.getElementById('respRegisteredBody').querySelectorAll('tr').length;
-  showToast('응답자 ' + cnt + '명이 저장되었습니다.');
+function _mkRenderReg() {
+  const tbody = document.getElementById('mk-reg-tbody');
+  document.getElementById('mk-reg-count').textContent = _mkTempList.length;
+  document.getElementById('mk-reg-chk-all').checked = false;
+  if (!_mkTempList.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _mkTempList.map((m, i) =>
+    `<tr>
+      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;">
+        <input type="checkbox" class="mk-reg-chk" style="cursor:pointer;accent-color:var(--primary);">
+      </td>
+      <td style="padding:4px 6px;border:1px solid #e8d88a;"><strong>${_mbr_maskN(m.name)}</strong></td>
+      <td style="padding:4px 6px;border:1px solid #e8d88a;color:#666;font-size:11px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;">
+        <button onclick="mkRespDelOne(${i})" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:14px;line-height:1;">×</button>
+      </td>
+    </tr>`
+  ).join('');
+}
+
+function mkRespDelOne(idx) {
+  _mkTempList.splice(idx, 1);
+  _mkRenderPool();
+  _mkRenderReg();
+}
+function mkRespToggleAllReg(checked) {
+  document.querySelectorAll('#mk-reg-tbody .mk-reg-chk').forEach(c => c.checked = checked);
+}
+function mkRespDelSelected() {
+  const indices = [...document.querySelectorAll('#mk-reg-tbody .mk-reg-chk:checked')]
+    .map(cb => [...document.querySelectorAll('#mk-reg-tbody tr')].indexOf(cb.closest('tr')))
+    .sort((a, b) => b - a);
+  if (!indices.length) { showToast('삭제할 응답자를 선택하세요.'); return; }
+  indices.forEach(i => _mkTempList.splice(i, 1));
+  _mkRenderPool();
+  _mkRenderReg();
+}
+
+/* ── 탭 전환 ── */
+function mkRespSelectTab(el) {
+  document.querySelectorAll('.mk-resp-tab').forEach(t => {
+    t.style.borderBottom = '2px solid transparent';
+    t.style.color = '#888';
+    t.style.fontWeight = 'normal';
+  });
+  el.style.borderBottom = '2px solid var(--primary)';
+  el.style.color = 'var(--primary)';
+  el.style.fontWeight = '700';
+  const tab = el.dataset.tab;
+  const single = document.getElementById('mk-panel-single');
+  const split  = document.getElementById('mk-panel-split');
+  const srow   = document.getElementById('mk-search-row');
+  if (tab === '개별') {
+    single.style.display = 'flex'; split.style.display = 'none'; srow.style.display = 'flex';
+  } else {
+    single.style.display = 'none'; split.style.display = 'flex'; srow.style.display = 'none';
+    _mkLoadSplit(tab);
+  }
+}
+
+/* ── 분류별 split ── */
+function _mkFlattenDept(nodes, depth) {
+  const res = [];
+  (nodes||[]).forEach(n => {
+    res.push({label:'　'.repeat(depth||0) + n.name, members: n.members||[]});
+    if (n.children && n.children.length) res.push(..._mkFlattenDept(n.children, (depth||0)+1));
+  });
+  return res;
+}
+
+function _mkLoadSplit(tab) {
+  _mkSplitSelIdx = -1; _mkSplitMembers = [];
+  if      (tab==='부서별')    _mkSplitItems = _mkFlattenDept(MBR_DEPT_TREE, 0);
+  else if (tab==='직급별')    _mkSplitItems = MBR_DATA.grade.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직책별')    _mkSplitItems = MBR_DATA.position.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직무별')    _mkSplitItems = MBR_DATA.job.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직군별')    _mkSplitItems = MBR_DATA.jobgroup.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='대상구분별') _mkSplitItems = MBR_TARGET_TYPES.map(t=>({label:t.typeName,members:t.divs.flatMap(d=>d.members)}));
+  _mkRenderSplitLeft();
+  _mkRenderSplitRight([]);
+  document.getElementById('mk-split-info').textContent = '항목을 선택하세요.';
+}
+
+function _mkRenderSplitLeft() {
+  document.getElementById('mk-split-left').innerHTML = _mkSplitItems.map((item, i) =>
+    `<div onclick="mkRespSelectSplitItem(${i})" style="padding:7px 10px;font-size:12px;cursor:pointer;border-left:3px solid ${i===_mkSplitSelIdx?'var(--primary)':'transparent'};color:${i===_mkSplitSelIdx?'var(--primary)':'#333'};background:${i===_mkSplitSelIdx?'#f0f4ff':''};border-bottom:1px solid #eee;word-break:keep-all;">${item.label}</div>`
+  ).join('');
+}
+
+function mkRespSelectSplitItem(idx) {
+  _mkSplitSelIdx = idx;
+  _mkSplitMembers = _mkSplitItems[idx].members || [];
+  _mkRenderSplitLeft();
+  _mkRenderSplitRight(_mkSplitMembers);
+  document.getElementById('mk-split-info').textContent =
+    _mkSplitItems[idx].label.trim() + ' — ' + _mkSplitMembers.length + '명';
+}
+
+function _mkRenderSplitRight(members) {
+  const tbody = document.getElementById('mk-split-tbody');
+  document.getElementById('mk-split-chk-all').checked = false;
+  if (!members.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">항목을 선택하세요.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = members.map((m, i) => {
+    const isReg = _mkTempList.some(r => r.empno === m.empno);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
+      <td style="text-align:center;padding:5px 4px;">${isReg
+        ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
+        : `<input type="checkbox" class="mk-split-chk" data-idx="${i}" style="cursor:pointer;accent-color:var(--primary);">`}
+      </td>
+      <td style="padding:5px 8px;"><strong>${_mbr_maskN(m.name)}</strong></td>
+      <td style="padding:5px 8px;font-size:11px;color:#666;">${_mbr_maskL(m.loginId||'')}</td>
+      <td style="padding:5px 8px;">${m.empno}</td>
+      <td style="padding:5px 8px;">${m.company||''}</td>
+      <td style="padding:5px 8px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg
+        ? ''
+        : `<button onclick="mkRespAddSplitOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function mkRespToggleAllSplit(checked) {
+  document.querySelectorAll('#mk-split-tbody .mk-split-chk').forEach(c => c.checked = checked);
+}
+function mkRespAddSplitOne(idx) {
+  const m = _mkSplitMembers[idx];
+  if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
+  _mkTempList.push(m); _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
+}
+function mkRespAddSplitChecked() {
+  const checked = document.querySelectorAll('#mk-split-tbody .mk-split-chk:checked');
+  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
+  let added = 0;
+  checked.forEach(cb => {
+    const m = _mkSplitMembers[+cb.dataset.idx];
+    if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
+  });
+  _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
+  showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
+}
+
+/* ── 저장 ── */
+function mkRespSave() {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 확정 저장
+  // 테이블 셀 업데이트
+  MK_DIAG_TARGETS.forEach((target, rowIdx) => {
+    [1, 2].forEach(tabIdx => {
+      const list = MK_RESPONDENTS[tabIdx + ':' + rowIdx] || [];
+      const tbody = document.getElementById('tbody-' + tabIdx);
+      if (!tbody) return;
+      const rows = tbody.querySelectorAll('tr');
+      if (!rows[rowIdx]) return;
+      const lastCell = rows[rowIdx].cells[rows[rowIdx].cells.length - 1];
+      const diagTypeStr = tabIdx === 1 ? '구성원진단' : '상사진단';
+      if (list.length > 0) {
+        lastCell.innerHTML = `<a class="resp-count-link" onclick="openRespondentModal('${target.name}','${diagTypeStr}',${tabIdx})">${list.length}명</a>`;
+      } else {
+        lastCell.innerHTML = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${target.name}','${diagTypeStr}',${tabIdx})">설정</button>`;
+      }
+    });
+  });
+  showToast('응답자 설정이 저장되었습니다.');
   closeModal('respondentModal');
 }
 
