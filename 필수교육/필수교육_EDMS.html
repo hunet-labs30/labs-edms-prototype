@@ -2008,7 +2008,7 @@
 
 <!-- ════ 필수과정 등록 팝업 ════ -->
 <div class="modal-overlay" id="me-course-modal" onclick="if(event.target===this)this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:6px;width:820px;height:600px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+  <div style="background:#fff;border-radius:6px;width:920px;height:600px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
     <!-- 헤더 -->
     <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <span style="font-size:14px;font-weight:700;">필수과정 등록</span>
@@ -2029,37 +2029,53 @@
       .me-crs-add{width:30px;height:30px;border-radius:50%;border:1px solid #d7dce2;background:#fff;color:#1565c0;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
       .me-crs-add:hover{background:#eef4ff;border-color:#1565c0;}
       .me-crs-add.added{background:#eef7ee;border-color:#bcdcbc;color:#2e7d32;font-size:13px;cursor:default;}
+      .me-crs-sel-item{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:9px 10px;background:#fff;border:1px solid #eceef1;border-radius:6px;margin-bottom:6px;}
+      .me-crs-sel-name{font-size:12px;font-weight:600;color:#333;line-height:1.35;}
+      .me-crs-sel-meta{font-size:10px;color:#aaa;margin-top:2px;}
+      .me-crs-sel-del{flex-shrink:0;width:18px;height:18px;border:none;background:none;color:#bbb;font-size:15px;line-height:1;cursor:pointer;}
+      .me-crs-sel-del:hover{color:#e53935;}
     </style>
-    <!-- 개별등록 패널 -->
-    <div id="me-crs-panel-s" style="flex:1;overflow:hidden;padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
-      <!-- 분류 계단식 드롭다운 (대 > 중 > 소) -->
-      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
-        <select class="select" id="me-crs-cat1" style="height:38px;font-size:13px;" onchange="meCrsCatChange(1)"></select>
-        <select class="select" id="me-crs-cat2" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(2)"></select>
-        <select class="select" id="me-crs-cat3" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(3)"></select>
+    <!-- 개별등록 패널 (좌: 카탈로그 / 우: 선택한 필수과정) -->
+    <div id="me-crs-panel-s" style="flex:1;overflow:hidden;padding:14px 20px;display:flex;flex-direction:row;gap:14px;">
+      <!-- 좌측: 카탈로그 -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;overflow:hidden;">
+        <!-- 분류 계단식 드롭다운 (대 > 중 > 소) -->
+        <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+          <select class="select" id="me-crs-cat1" style="height:38px;font-size:13px;" onchange="meCrsCatChange(1)"></select>
+          <select class="select" id="me-crs-cat2" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(2)"></select>
+          <select class="select" id="me-crs-cat3" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(3)"></select>
+        </div>
+        <!-- 검색 -->
+        <div style="position:relative;flex-shrink:0;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;">&#128269;</span>
+          <input class="input" id="me-crs-s-kw" style="width:100%;height:40px;font-size:13px;padding-left:38px;border-radius:22px;background:#f5f6f8;border:1px solid #eceef1;" placeholder="원하는 콘텐츠를 검색해 보세요." oninput="meCrsRenderCatalog()">
+        </div>
+        <!-- 필터 칩 -->
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+          <span style="font-size:15px;color:#999;">&#9776;</span>
+          <span style="color:#e0e3e8;">|</span>
+          <select class="select" id="me-crs-f-type" style="height:30px;font-size:12px;border-radius:16px;width:auto;padding:0 10px;" onchange="meCrsRenderCatalog()">
+            <option value="">유형</option>
+            <option value="온라인">온라인</option>
+            <option value="오프라인">오프라인</option>
+          </select>
+          <span class="me-crs-chip">교육비 &#9662;</span>
+          <span class="me-crs-chip">학습 시간 &#9662;</span>
+          <span class="me-crs-chip">교재 제공</span>
+        </div>
+        <!-- 결과 카운트 -->
+        <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="me-crs-s-total">0</strong>개</div>
+        <!-- 과정 리스트 (썸네일 미노출) -->
+        <div id="me-crs-catalog" style="border:1px solid var(--border);border-radius:8px;flex:1;overflow-y:auto;background:#fff;"></div>
       </div>
-      <!-- 검색 -->
-      <div style="position:relative;flex-shrink:0;">
-        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;">&#128269;</span>
-        <input class="input" id="me-crs-s-kw" style="width:100%;height:40px;font-size:13px;padding-left:38px;border-radius:22px;background:#f5f6f8;border:1px solid #eceef1;" placeholder="원하는 콘텐츠를 검색해 보세요." oninput="meCrsRenderCatalog()">
+      <!-- 우측: 선택한 필수과정 패널 -->
+      <div style="width:270px;flex-shrink:0;border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+        <div style="padding:11px 14px;border-bottom:1px solid #eceef1;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:700;color:#444;">선택한 필수과정 <span style="color:var(--primary);">(<span id="me-crs-s-sel">0</span>)</span></span>
+          <button onclick="meCrsClearSelected()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;text-decoration:underline;">전체삭제</button>
+        </div>
+        <div id="me-crs-selected" style="flex:1;overflow-y:auto;padding:8px;"></div>
       </div>
-      <!-- 필터 칩 -->
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
-        <span style="font-size:15px;color:#999;">&#9776;</span>
-        <span style="color:#e0e3e8;">|</span>
-        <select class="select" id="me-crs-f-type" style="height:30px;font-size:12px;border-radius:16px;width:auto;padding:0 10px;" onchange="meCrsRenderCatalog()">
-          <option value="">유형</option>
-          <option value="온라인">온라인</option>
-          <option value="오프라인">오프라인</option>
-        </select>
-        <span class="me-crs-chip">교육비 &#9662;</span>
-        <span class="me-crs-chip">학습 시간 &#9662;</span>
-        <span class="me-crs-chip">교재 제공</span>
-      </div>
-      <!-- 결과 카운트 -->
-      <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="me-crs-s-total">0</strong>개 &nbsp;·&nbsp; 등록: <strong id="me-crs-s-sel">0</strong>개</div>
-      <!-- 과정 리스트 (썸네일 미노출) -->
-      <div id="me-crs-catalog" style="border:1px solid var(--border);border-radius:8px;flex:1;overflow-y:auto;background:#fff;"></div>
     </div>
     <!-- 일괄등록 패널 -->
     <div id="me-crs-panel-b" style="flex:1;overflow-y:auto;padding:16px 20px;display:none;flex-direction:column;gap:12px;">
@@ -3018,6 +3034,7 @@ function meOpenCourseModal() {
   document.getElementById('me-crs-s-kw').value = '';
   document.getElementById('me-crs-f-type').value = '';
   meCrsRenderCatalog();
+  meCrsRenderSelected();
   document.getElementById('me-course-modal').style.display = 'flex';
 }
 function meCrsTab(tab, btn) {
@@ -3082,9 +3099,28 @@ function meCrsRenderCatalog() {
     </div>`;
   }).join('') : '<div style="text-align:center;padding:40px;color:#aaa;font-size:13px;">조건에 맞는 과정이 없습니다.</div>';
   document.getElementById('me-crs-s-total').textContent = list.length;
-  document.getElementById('me-crs-s-sel').textContent   = ME_REG_COURSES.length;
 }
-// 항목 + 버튼 클릭 → 필수과정에 즉시 추가 (모달 유지, 중복 자동 제거)
+// 우측 패널: 선택(추가)한 필수과정 목록 렌더
+function meCrsRenderSelected() {
+  const wrap = document.getElementById('me-crs-selected');
+  if(!wrap) return;
+  wrap.innerHTML = ME_REG_COURSES.length
+    ? ME_REG_COURSES.map(c=>{
+        const tcolor = c.type==='온라인'?'#1565c0':'#6a1b9a';
+        const tbg    = c.type==='온라인'?'#e3f2fd':'#f3e5f5';
+        return `<div class="me-crs-sel-item">
+          <div style="min-width:0;">
+            <div class="me-crs-sel-name">${c.name}</div>
+            <div class="me-crs-sel-meta"><span style="padding:1px 5px;border-radius:3px;background:${tbg};color:${tcolor};">${c.type}</span> &nbsp;·&nbsp; ${c.code}</div>
+          </div>
+          <button class="me-crs-sel-del" title="삭제" onclick="meCrsRemoveSelected('${c.code}')">×</button>
+        </div>`;
+      }).join('')
+    : '<div style="text-align:center;padding:30px 10px;color:#bbb;font-size:11px;line-height:1.6;">좌측 목록에서 <b>+</b> 버튼을 눌러<br>필수과정을 추가하세요.</div>';
+  const cnt = document.getElementById('me-crs-s-sel');
+  if(cnt) cnt.textContent = ME_REG_COURSES.length;
+}
+// 항목 + 버튼 클릭 → 필수과정에 즉시 추가 (모달 유지, 중복 자동 제거, 우측 패널에 누적)
 function meCrsAddCourse(code) {
   const c = ME_SAMPLE_COURSES.find(x=>x.code===code);
   if(!c) return;
@@ -3093,6 +3129,24 @@ function meCrsAddCourse(code) {
   }
   meRegRenderCourses();
   meCrsRenderCatalog();
+  meCrsRenderSelected();
+}
+// 우측 패널에서 개별 삭제
+function meCrsRemoveSelected(code) {
+  const i = ME_REG_COURSES.findIndex(x=>x.code===code);
+  if(i>-1) ME_REG_COURSES.splice(i,1);
+  meRegRenderCourses();
+  meCrsRenderCatalog();
+  meCrsRenderSelected();
+}
+// 우측 패널 전체삭제
+function meCrsClearSelected() {
+  if(!ME_REG_COURSES.length) return;
+  if(!confirm('선택한 필수과정을 모두 삭제할까요?')) return;
+  ME_REG_COURSES.length = 0;
+  meRegRenderCourses();
+  meCrsRenderCatalog();
+  meCrsRenderSelected();
 }
 
 // ═══ 필수과정 일괄등록 JS ═══
