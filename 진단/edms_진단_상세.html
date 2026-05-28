@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS — 진단 상세</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px; background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }
+
+  /* DIAGNOSIS TITLE LINK */
+  .diag-link { color: var(--primary); text-decoration: none; }
+  .diag-link:hover { text-decoration: underline; cursor: pointer; }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg); color: #fff; height: 46px;
+    display: flex; align-items: center; padding: 0 20px; gap: 16px;
+    flex-shrink: 0; z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .lang-select {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s; border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; display: inline-block; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+  .nav-group.open > .nav-sub { max-height: 300px; padding: 2px 0 6px; }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-flat {
+    display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700;
+    text-decoration: none; cursor: pointer; border-left: 3px solid transparent; transition: background 0.15s;
+  }
+  .nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* PAGE HEADER */
+  .page-header-row { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 2px; }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* BACK BUTTON */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #f0f2f5; border: 1px solid #ccc; color: #555;
+    padding: 5px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+    text-decoration: none; font-family: inherit; transition: background 0.15s;
+  }
+  .back-btn:hover { background: #e4e6ea; }
+
+  /* INFO GRID */
+  .info-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff;
+  }
+  .info-cell { padding: 10px 14px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .info-cell:nth-child(4n) { border-right: none; }
+  .info-cell:nth-last-child(-n+4) { border-bottom: none; }
+  .info-cell.span2 { grid-column: span 2; }
+  .info-label { font-size: 11px; color: #888; font-weight: 600; margin-bottom: 3px; }
+  .info-value { font-size: 13px; color: #222; font-weight: 500; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+
+  /* TABS (type tabs) */
+  .type-tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e0e3e8; }
+  .type-tab-btn {
+    background: none; border: none; padding: 9px 18px; font-size: 12px; font-weight: 500;
+    color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: color .15s, border-color .15s; font-family: inherit;
+  }
+  .type-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+  .type-tab-btn:hover:not(.active) { color: #555; }
+
+  /* NOTICE BOX */
+  .notice-box {
+    background: #fffbe6; border: 1px solid #fde68a; border-radius: 4px;
+    padding: 10px 14px; font-size: 12px; color: #78350f; line-height: 1.8;
+  }
+
+  /* BTN */
+  .btn {
+    height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px;
+    font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; font-family: inherit;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+  .btn-danger { background: #fff0f0; color: #e53935; border: 1px solid #f5c2c2; }
+  .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
+  .btn-xs { height: 24px; padding: 0 8px; font-size: 11px; }
+
+  /* ACTION ROW */
+  .action-row { display: flex; align-items: center; gap: 6px; }
+  .action-row-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 3px; padding: 2px 8px; font-size: 11px; font-weight: 700; white-space: nowrap;
+  }
+  .badge-blue   { background: #e8f0fe; color: #1a5cc8; }
+  .badge-green  { background: #e6f7ee; color: #1a7a4a; }
+  .badge-orange { background: #fff4e0; color: #b35c00; }
+  .badge-gray   { background: #f0f2f5; color: #888; }
+  .badge-red    { background: #fff0f0; color: #e53935; }
+
+  /* STATUS BADGE (stat summary) */
+  .stat-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap;
+  }
+  .stat-badge-total { background: #f0f2f5; color: #444; }
+  .stat-badge-active { background: #e6f7ee; color: #1a7a4a; }
+  .stat-badge-stopped { background: #fff0f0; color: #e53935; }
+  .stat-badge .num { font-size: 14px; font-weight: 800; }
+
+  /* SEARCH ROW */
+  .search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .input, .select {
+    height: 28px; border: 1px solid #ccc; border-radius: 3px;
+    padding: 0 8px; font-size: 12px; color: var(--text); background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); }
+  .input { min-width: 100px; }
+  .select { cursor: pointer; }
+
+  /* MAIN TABLE */
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th {
+    background: var(--table-header); border: 1px solid var(--border);
+    padding: 7px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap;
+  }
+  .main-table td {
+    border: 1px solid #e8eaed; padding: 6px 7px; text-align: center; color: #333; white-space: nowrap;
+  }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+  .main-table tbody tr.stopped td { color: #aaa; background: #fafafa; }
+  .main-table tbody tr.stopped:hover td { background: #f5f5f5; }
+
+  /* GROUP HEADER */
+  .main-table th.group-header {
+    background: #e8edf5; font-weight: 700; color: #2c3e50; font-size: 11px;
+    border-bottom: 2px solid #c5d0df;
+  }
+
+  /* DROPDOWN SELECT */
+  .dropdown-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 28px; padding: 0 10px; border: 1px solid #ccc; border-radius: 3px;
+    background: #fff; font-size: 12px; color: #444; cursor: pointer; font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .dropdown-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* TOAST */
+  #toast {
+    display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px;
+    font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    white-space: nowrap;
+  }
+
+  /* ACCESS DROPDOWN */
+  .access-dropdown-wrap { position: relative; display: inline-block; }
+  .access-dropdown-menu {
+    display: none; position: absolute; right: 0; top: 100%; z-index: 100;
+    background: #fff; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    min-width: 110px; overflow: hidden;
+  }
+  .access-dropdown-menu.open { display: block; }
+  .access-dropdown-item {
+    padding: 8px 14px; font-size: 12px; color: #333; cursor: pointer; white-space: nowrap;
+  }
+  .access-dropdown-item:hover { background: #f0f2f5; }
+  .access-dropdown-item.danger { color: #e53935; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo"><span>LABS</span> New EDMS</div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">학습</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">결과</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">교육비용</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">사외교육</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">러닝메이커</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">커넥트</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">게시글</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+
+    <!-- 부가서비스 — ACTIVE -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item active" href="edms_역량진단_관리.html">역량진단 관리</a>
+        <a class="nav-item" href="#">IDP 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기본 설정</a>
+        <a class="nav-item" href="#">메뉴 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">관리자 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item" href="#">계정 권한</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- 페이지 헤더 -->
+    <div class="page-header-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a class="back-btn" href="edms_역량진단_관리.html">← 목록</a>
+        <div class="page-header-title">진단 상세</div>
+      </div>
+      <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단 상세</div>
+    </div>
+
+    <!-- 진단 기본 정보 -->
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="info-label">기업코드</div>
+        <div class="info-value">92089</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-label">기업형</div>
+        <div class="info-value">휴넷</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-label">진단시작일</div>
+        <div class="info-value" id="diagStartDate">2025.05.01</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-label">진단종료일</div>
+        <div class="info-value" id="diagEndDate">2025.05.31</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-label">진단코드</div>
+        <div class="info-value">92089_Diagnosis-25-001</div>
+      </div>
+      <div class="info-cell span2" style="border-right:none;">
+        <div class="info-label">진단명</div>
+        <div class="info-value">2025년 상반기 리더십 역량진단</div>
+      </div>
+      <div class="info-cell" style="display:none;"></div>
+    </div>
+
+    <!-- ====== BEFORE STATE ====== -->
+    <div id="state-before">
+
+      <!-- 진단 유형 탭 -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:14px 20px 0;">
+          <div class="type-tab-bar" id="typeTabs">
+            <button class="type-tab-btn active" onclick="switchTypeTab(this)">비즈니스상황진단</button>
+            <button class="type-tab-btn" onclick="switchTypeTab(this)">리더십역량진단</button>
+            <button class="type-tab-btn" onclick="switchTypeTab(this)">기타</button>
+          </div>
+        </div>
+
+        <div style="padding:14px 20px;">
+          <!-- 안내 문구 -->
+          <div class="notice-box" style="margin-bottom:14px;">
+            - 진단 상품에 등록된 유형 출력 &nbsp;/&nbsp; - 진단 유형별로 등록된 응답범위 출력
+          </div>
+
+          <!-- 액션 버튼 -->
+          <div class="action-row" style="margin-bottom:12px;">
+            <div class="action-row-right">
+              <button class="btn btn-gray btn-sm" onclick="location.href='edms_진단_만들기.html'">진단 관리</button>
+              <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
+              <button class="btn btn-danger btn-sm" onclick="showToast('삭제 기능은 준비 중입니다.')">삭제</button>
+              <button class="btn btn-primary btn-sm" onclick="showToast('대상추가 기능은 준비 중입니다.')">대상추가</button>
+            </div>
+          </div>
+
+          <!-- 대상자 테이블 (시작 전) -->
+          <div style="overflow-x:auto;">
+            <table class="main-table">
+              <thead>
+                <tr>
+                  <th style="width:36px;"><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></th>
+                  <th style="width:36px;">NO</th>
+                  <th style="width:80px;">사번</th>
+                  <th style="width:70px;">이름</th>
+                  <th style="width:60px;">직급</th>
+                  <th>부서/팀</th>
+                  <th style="width:100px;">아이디</th>
+                  <th style="width:90px;">휴대번호</th>
+                  <th style="width:70px;">응답자(본인)</th>
+                  <th style="width:70px;">응답자(상사)</th>
+                  <th style="width:70px;">응답자(부하)</th>
+                  <th style="width:70px;">응답자(동료)</th>
+                  <th style="width:70px;">응답자(기타)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>1</td><td>2024001</td><td>김민준</td><td>팀장</td><td>경영전략팀</td>
+                  <td>minjun.kim</td><td>010-1234-5678</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">부하 3</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>2</td><td>2022015</td><td>이수진</td><td>차장</td><td>인재개발팀</td>
+                  <td>sujin.lee</td><td>010-2345-6789</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>3</td><td>2021008</td><td>박지훈</td><td>팀장</td><td>영업1팀</td>
+                  <td>jihoon.park</td><td>010-3456-7890</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">부하 5</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>4</td><td>2023022</td><td>최유리</td><td>과장</td><td>마케팅팀</td>
+                  <td>yuri.choi</td><td>010-4567-8901</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 4</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>5</td><td>2020031</td><td>정승호</td><td>팀장</td><td>IT개발팀</td>
+                  <td>seungho.jung</td><td>010-5678-9012</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">부하 7</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>6</td><td>2022044</td><td>한미래</td><td>차장</td><td>재무팀</td>
+                  <td>mirae.han</td><td>010-6789-0123</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>7</td><td>2019003</td><td>오동현</td><td>부장</td><td>고객서비스팀</td>
+                  <td>donghyun.oh</td><td>010-7890-1234</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">부하 4</span></td>
+                  <td>-</td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>8</td><td>2023011</td><td>강나연</td><td>과장</td><td>구매팀</td>
+                  <td>nayeon.kang</td><td>010-8901-2345</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>9</td><td>2021019</td><td>윤태양</td><td>팀장</td><td>품질관리팀</td>
+                  <td>taeyang.yun</td><td>010-9012-3456</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">부하 6</span></td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>10</td><td>2024038</td><td>신혜원</td><td>차장</td><td>법무팀</td>
+                  <td>hyewon.shin</td><td>010-0123-4567</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ====== /BEFORE STATE ====== -->
+
+    <!-- ====== AFTER STATE ====== -->
+    <div id="state-after" style="display:none;">
+      <div class="card" style="padding:16px 20px;">
+
+        <!-- 상태 요약 + 액션 버튼 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="stat-badge stat-badge-total">총 대상자 <span class="num">20</span></span>
+            <span class="stat-badge stat-badge-active">활성 <span class="num">17</span></span>
+            <span class="stat-badge stat-badge-stopped">중단 <span class="num">3</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="btn btn-gray btn-sm" onclick="location.href='edms_진단_만들기.html'">진단 관리</button>
+            <button class="btn btn-reset btn-sm" id="selCountBtn" style="min-width:70px;" onclick="showToast('선택한 대상자에 대한 작업을 선택해주세요.')">선택 0건</button>
+            <select class="select" style="height:28px;font-size:12px;" onchange="handleWorkSelect(this)">
+              <option value="">작업 선택 ▼</option>
+              <option value="resend">링크 재발송</option>
+              <option value="stop">중단 처리</option>
+              <option value="resume">중단 해제</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="showToast('대상자등록 기능은 준비 중입니다.')">대상자등록</button>
+            <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
+          </div>
+        </div>
+
+        <!-- 검색 필터 -->
+        <div class="search-row" style="margin-bottom:12px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
+          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">링크발송상태</span>
+          <select class="select" style="width:110px;">
+            <option>전체</option>
+            <option>발송완료</option>
+            <option>미발송</option>
+          </select>
+          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
+          <select class="select" style="width:110px;">
+            <option>전체</option>
+            <option>응답완료</option>
+            <option>진행중</option>
+            <option>미시작</option>
+            <option>중단</option>
+          </select>
+          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
+          <select class="select" style="width:80px;">
+            <option>이름</option>
+            <option>사번</option>
+            <option>아이디</option>
+          </select>
+          <input class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
+          <button class="btn btn-primary btn-sm">검색</button>
+          <button class="btn btn-reset btn-sm">초기화</button>
+        </div>
+
+        <!-- 복합 헤더 테이블 -->
+        <div style="overflow-x:auto;">
+          <table class="main-table" id="afterTable">
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:36px;"><input type="checkbox" id="afterChkAll" style="cursor:pointer;accent-color:var(--primary);" onchange="afterSelectAll(this.checked)"></th>
+                <th rowspan="2" style="width:36px;">No</th>
+                <th colspan="6" class="group-header">진단 대상자 정보</th>
+                <th colspan="5" class="group-header">응답(평가자) 정보</th>
+                <th colspan="5" class="group-header">진단 진행 관리</th>
+              </tr>
+              <tr>
+                <!-- 진단 대상자 정보 -->
+                <th style="width:65px;">이름</th>
+                <th style="width:75px;">사번</th>
+                <th style="width:55px;">직급</th>
+                <th style="width:100px;">아이디</th>
+                <th style="width:95px;">휴대번호</th>
+                <th style="width:55px;">응답범위</th>
+                <!-- 응답(평가자) 정보 -->
+                <th style="width:65px;">이름</th>
+                <th style="width:75px;">사번</th>
+                <th style="width:55px;">직급</th>
+                <th style="width:100px;">아이디</th>
+                <th style="width:95px;">휴대번호</th>
+                <!-- 진단 진행 관리 -->
+                <th style="width:75px;">링크발송상태</th>
+                <th style="width:75px;">진단진행상태</th>
+                <th style="width:80px;">진단시작일</th>
+                <th style="width:80px;">진단종료일</th>
+                <th style="width:80px;">계정관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1: 완료 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>1</td>
+                <td>김민준</td><td>2024001</td><td>팀장</td><td>minjun.kim</td><td>010-1234-5678</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-green">응답완료</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 2: 진행중 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>2</td>
+                <td>이수진</td><td>2022015</td><td>차장</td><td>sujin.lee</td><td>010-2345-6789</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-blue">진행중</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 3: 완료 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>3</td>
+                <td>박지훈</td><td>2021008</td><td>팀장</td><td>jihoon.park</td><td>010-3456-7890</td><td><span class="badge badge-green">상사</span></td>
+                <td>이건우</td><td>2019005</td><td>부장</td><td>geonwoo.lee</td><td>010-1111-2222</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-green">응답완료</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 4: 미시작 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>4</td>
+                <td>최유리</td><td>2023022</td><td>과장</td><td>yuri.choi</td><td>010-4567-8901</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-gray">미시작</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 5: 완료 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>5</td>
+                <td>정승호</td><td>2020031</td><td>팀장</td><td>seungho.jung</td><td>010-5678-9012</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-green">응답완료</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 6: 중단 (grayed) -->
+              <tr class="stopped">
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>6</td>
+                <td>한미래</td><td>2022044</td><td>차장</td><td>mirae.han</td><td>010-6789-0123</td><td><span class="badge badge-gray">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-gray">미발송</span></td>
+                <td><span class="badge badge-red">중단</span></td>
+                <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스중단 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('엑세스 설정이 재개되었습니다.');closeAllAccess()">중단 해제</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 7: 진행중 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>7</td>
+                <td>오동현</td><td>2019003</td><td>부장</td><td>donghyun.oh</td><td>010-7890-1234</td><td><span class="badge badge-gray">부하</span></td>
+                <td>이정우</td><td>2021030</td><td>과장</td><td>jungwoo.lee</td><td>010-2222-3333</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-blue">진행중</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 8: 미시작 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>8</td>
+                <td>강나연</td><td>2023011</td><td>과장</td><td>nayeon.kang</td><td>010-8901-2345</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-gray">미시작</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 9: 완료 -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>9</td>
+                <td>윤태양</td><td>2021019</td><td>팀장</td><td>taeyang.yun</td><td>010-9012-3456</td><td><span class="badge badge-orange">동료</span></td>
+                <td>박수경</td><td>2022055</td><td>차장</td><td>sukyung.park</td><td>010-3333-4444</td>
+                <td><span class="badge badge-green">발송완료</span></td>
+                <td><span class="badge badge-green">응답완료</span></td>
+                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스설정 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('링크 재발송 처리되었습니다.');closeAllAccess()">링크 재발송</div>
+                      <div class="access-dropdown-item danger" onclick="showToast('엑세스 중단 처리되었습니다.');closeAllAccess()">엑세스 중단</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 10: 중단 (grayed) -->
+              <tr class="stopped">
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>10</td>
+                <td>신혜원</td><td>2024038</td><td>차장</td><td>hyewon.shin</td><td>010-0123-4567</td><td><span class="badge badge-gray">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-gray">미발송</span></td>
+                <td><span class="badge badge-red">중단</span></td>
+                <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
+                <td>
+                  <div class="access-dropdown-wrap">
+                    <button class="btn btn-xs btn-gray" onclick="toggleAccess(this)">엑세스중단 ▾</button>
+                    <div class="access-dropdown-menu">
+                      <div class="access-dropdown-item" onclick="showToast('엑세스 설정이 재개되었습니다.');closeAllAccess()">중단 해제</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ====== /AFTER STATE ====== -->
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── URL 파라미터로 상태 전환 ──
+  function initState() {
+    const params = new URLSearchParams(window.location.search);
+    const state = params.get('state') || 'before';
+    document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
+    document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
+  }
+  initState();
+
+  // ── 사이드바 토글 ──
+  function toggleNav(header) {
+    const group = header.parentElement;
+    const isOpen = group.classList.contains('open');
+    document.querySelectorAll('.nav-group.open').forEach(g => g.classList.remove('open'));
+    if (!isOpen) group.classList.add('open');
+  }
+
+  // ── 진단 유형 탭 ──
+  function switchTypeTab(btn) {
+    btn.closest('.type-tab-bar').querySelectorAll('.type-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // ── 직접 다운로드 (Blob CSV) ──
+  function directDownload(diagName) {
+    const header = '순번,이름,사번,직급,부서/팀,아이디,휴대번호,응답상태,응답일시';
+    const rows = [
+      '1,김민준,2024001,팀장,경영전략팀,minjun.kim,010-1234-5678,완료,2025-05-10 09:32',
+      '2,이수진,2022015,차장,인재개발팀,sujin.lee,010-2345-6789,완료,2025-05-11 14:20',
+      '3,박지훈,2021008,팀장,영업1팀,jihoon.park,010-3456-7890,완료,2025-05-09 10:05',
+      '4,최유리,2023022,과장,마케팅팀,yuri.choi,010-4567-8901,미완료,',
+      '5,정승호,2020031,팀장,IT개발팀,seungho.jung,010-5678-9012,완료,2025-05-12 16:45',
+    ];
+    const csv = '﻿' + [header, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = diagName + '_응답로우데이터.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('⬇ ' + diagName + ' — 응답 로우데이터 다운로드 중...');
+  }
+
+  // ── 토스트 ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(window._tt);
+    window._tt = setTimeout(() => { t.style.display = 'none'; }, 2500);
+  }
+
+  // ── After 상태: 선택 건수 업데이트 ──
+  function updateSelCount() {
+    const count = document.querySelectorAll('.after-row-chk:checked').length;
+    document.getElementById('selCountBtn').textContent = '선택 ' + count + '건';
+  }
+
+  function afterSelectAll(checked) {
+    document.querySelectorAll('.after-row-chk').forEach(c => { c.checked = checked; });
+    updateSelCount();
+  }
+
+  function handleWorkSelect(sel) {
+    const val = sel.value;
+    if (!val) return;
+    const count = document.querySelectorAll('.after-row-chk:checked').length;
+    if (count === 0) {
+      showToast('먼저 대상자를 선택해주세요.');
+      sel.value = '';
+      return;
+    }
+    const labels = { resend: '링크 재발송', stop: '중단 처리', resume: '중단 해제' };
+    showToast(count + '건에 대해 ' + labels[val] + ' 처리되었습니다.');
+    sel.value = '';
+  }
+
+  // ── 계정관리 드롭다운 ──
+  function toggleAccess(btn) {
+    const menu = btn.nextElementSibling;
+    const isOpen = menu.classList.contains('open');
+    closeAllAccess();
+    if (!isOpen) menu.classList.add('open');
+  }
+
+  function closeAllAccess() {
+    document.querySelectorAll('.access-dropdown-menu.open').forEach(m => m.classList.remove('open'));
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.access-dropdown-wrap')) closeAllAccess();
+  });
+</script>
+</body>
+</html>
