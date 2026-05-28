@@ -1034,18 +1034,20 @@
     if (e.target === this) closeMagamModal();
   });
 
-  // 진단대상자 컬럼 클릭 → 목록 팝업
-  document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
-    const cells = tr.querySelectorAll('td');
-    if (cells.length < 5) return;
-    const cell = cells[4];
+  // 진단대상자·진단응답자 컬럼 클릭 → 목록 팝업
+  function _bindDiagCell(cell, rowIdx, type) {
     const link = cell.querySelector('a.diag-link');
     if (link) {
-      link.addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
+      link.addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
     } else if (cell.textContent.trim() === '-') {
       cell.innerHTML = '<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>';
-      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
+      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
     }
+  }
+  document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
+    const cells = tr.querySelectorAll('td');
+    if (cells.length >= 5) _bindDiagCell(cells[4], rowIdx, 'target');
+    if (cells.length >= 6) _bindDiagCell(cells[5], rowIdx, 'respondent');
   });
 </script>
 
@@ -1054,7 +1056,7 @@
   <div style="background:#fff;border-radius:6px;width:560px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
     <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:14px;font-weight:700;">진단 대상자 목록</span>
+        <span id="diag-list-title" style="font-size:14px;font-weight:700;">진단 대상자 목록</span>
         <span id="diag-list-cnt" style="font-size:12px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 8px;border-radius:10px;">0명</span>
       </div>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagListClose()">×</span>
@@ -1095,11 +1097,13 @@ const ME_SAMPLE_MEMBERS = [
   {name:'강동원', loginId:'kangdw@hunet.co.kr',  empno:'20180050', company:'동아ST',          dept:'전략팀'},
   {name:'이강은', loginId:'leegeun@hunet.co.kr', empno:'20250001', company:'동아ST',          dept:'기획팀'},
 ];
-const DIAG_ROW_MEMBERS = {}; // { rowIdx: [member, ...] }
+const DIAG_ROW_MEMBERS = {};      // 진단대상자 { rowIdx: [member, ...] }
+const DIAG_ROW_RESPONDENTS = {};   // 진단응답자 { rowIdx: [member, ...] }
 let _currentDiagRowIdx = -1;
 let _currentDiagCell = null;
+let _currentDiagType = 'target';   // 'target' | 'respondent'
 
-// 샘플 기등록 데이터
+// 샘플 기등록 데이터 — 대상자
 DIAG_ROW_MEMBERS[0] = ME_SAMPLE_MEMBERS.slice(0, 4);
 DIAG_ROW_MEMBERS[1] = ME_SAMPLE_MEMBERS.slice(2, 5);
 DIAG_ROW_MEMBERS[2] = ME_SAMPLE_MEMBERS.slice(0, 3);
@@ -1110,6 +1114,17 @@ DIAG_ROW_MEMBERS[7] = ME_SAMPLE_MEMBERS.slice(0, 5);
 DIAG_ROW_MEMBERS[8] = ME_SAMPLE_MEMBERS.slice(2, 7);
 DIAG_ROW_MEMBERS[9] = ME_SAMPLE_MEMBERS.slice(1, 6);
 DIAG_ROW_MEMBERS[10] = ME_SAMPLE_MEMBERS.slice(0, 7);
+// 샘플 기등록 데이터 — 응답자 (대상자와 동일 풀)
+DIAG_ROW_RESPONDENTS[0] = ME_SAMPLE_MEMBERS.slice(0, 4);
+DIAG_ROW_RESPONDENTS[1] = ME_SAMPLE_MEMBERS.slice(2, 5);
+DIAG_ROW_RESPONDENTS[2] = ME_SAMPLE_MEMBERS.slice(0, 3);
+DIAG_ROW_RESPONDENTS[3] = ME_SAMPLE_MEMBERS.slice(1, 4);
+DIAG_ROW_RESPONDENTS[5] = ME_SAMPLE_MEMBERS.slice(0, 6);
+DIAG_ROW_RESPONDENTS[6] = ME_SAMPLE_MEMBERS.slice(3, 8);
+DIAG_ROW_RESPONDENTS[7] = ME_SAMPLE_MEMBERS.slice(0, 5);
+DIAG_ROW_RESPONDENTS[8] = ME_SAMPLE_MEMBERS.slice(2, 7);
+DIAG_ROW_RESPONDENTS[9] = ME_SAMPLE_MEMBERS.slice(1, 6);
+DIAG_ROW_RESPONDENTS[10] = ME_SAMPLE_MEMBERS.slice(0, 7);
 
 // ── 마스킹 헬퍼 ──
 function _maskN(n) {
@@ -1126,19 +1141,28 @@ function _maskL(id) {
 }
 function _maskE(e) { return e||'-'; }
 
+// ── 현재 type에 맞는 dict 반환 ──
+function _currentDict() {
+  return _currentDiagType === 'respondent' ? DIAG_ROW_RESPONDENTS : DIAG_ROW_MEMBERS;
+}
+
 // ── 목록 팝업 열기 ──
-function openDiagListModal(rowIdx, cell) {
+function openDiagListModal(rowIdx, cell, type) {
   _currentDiagRowIdx = rowIdx ?? -1;
-  _currentDiagCell = cell ?? null;
+  _currentDiagCell   = cell ?? null;
+  _currentDiagType   = type || 'target';
+  document.getElementById('diag-list-title').textContent =
+    _currentDiagType === 'respondent' ? '진단 응답자 목록' : '진단 대상자 목록';
   diagListRender();
   document.getElementById('diag-target-list-modal').style.display = 'flex';
 }
 function diagListRender() {
-  const members = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  const members = _currentDict()[_currentDiagRowIdx] || [];
   document.getElementById('diag-list-cnt').textContent = members.length + '명';
   const tbody = document.getElementById('diag-list-tbody');
+  const emptyLabel = _currentDiagType === 'respondent' ? '등록된 응답자가 없습니다.' : '등록된 대상자가 없습니다.';
   if(!members.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 대상자가 없습니다.</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">${emptyLabel}</td></tr>`;
     return;
   }
   tbody.innerHTML = members.map((m, i) => `<tr>
@@ -1150,9 +1174,10 @@ function diagListRender() {
   </tr>`).join('');
 }
 function diagListDelete(idx) {
-  const members = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  const dict = _currentDict();
+  const members = dict[_currentDiagRowIdx] || [];
   members.splice(idx, 1);
-  DIAG_ROW_MEMBERS[_currentDiagRowIdx] = members;
+  dict[_currentDiagRowIdx] = members;
   diagListRender();
   _diagUpdateCell(members.length);
 }
@@ -1162,9 +1187,10 @@ function diagListClose() {
 function _diagUpdateCell(cnt) {
   const cell = _currentDiagCell;
   const rowIdx = _currentDiagRowIdx;
+  const type = _currentDiagType;
   if(!cell) return;
   cell.innerHTML = cnt > 0 ? `<a class="diag-link" href="#">${cnt}</a>` : `<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>`;
-  cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell); });
+  cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
 }
 
 // ── 추가 등록 팝업 열기 (목록 팝업 → 공통 모듈 위임) ──
@@ -1179,9 +1205,10 @@ document.addEventListener('DOMContentLoaded', () => {
       getRegistered: () => DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [],
       onRegister: (members) => {
         if (_currentDiagRowIdx >= 0) {
-          const existing = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+          const dict = _currentDict();
+          const existing = dict[_currentDiagRowIdx] || [];
           members.forEach(m => { if (!existing.find(e => e.empno === m.empno)) existing.push({...m}); });
-          DIAG_ROW_MEMBERS[_currentDiagRowIdx] = existing;
+          dict[_currentDiagRowIdx] = existing;
           _diagUpdateCell(existing.length);
         }
         if (document.getElementById('diag-target-list-modal')?.style.display !== 'none') diagListRender();
