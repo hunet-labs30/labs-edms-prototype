@@ -99,7 +99,7 @@
   .info-cell.span2 { grid-column: span 2; }
   .info-cell.span3 { grid-column: span 3; }
   .info-label { font-size: 11px; color: #888; font-weight: 600; margin-bottom: 4px; }
-  .info-value { font-size: 13px; color: #222; font-weight: 500; }
+  .info-value { font-size: 13px; color: #222; font-weight: 500; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 
   /* CARD */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
@@ -147,6 +147,7 @@
   .badge-orange { background: #fff4e0; color: #b35c00; }
   .badge-gray   { background: #f0f2f5; color: #888; }
   .badge-red    { background: #fff0f0; color: #e53935; }
+  .badge-purple { background: #f3e8ff; color: #7c3aed; }
 
   /* STAT BADGES */
   .stat-badge {
@@ -165,8 +166,9 @@
     padding: 0 8px; font-size: 12px; color: var(--text); background: #fff; outline: none; transition: border-color 0.15s;
   }
   .input:focus, .select:focus { border-color: var(--primary); }
-  .input { min-width: 80px; }
+  .input { min-width: 60px; }
   .select { cursor: pointer; }
+  .input-sm { height: 24px; padding: 0 4px; font-size: 11px; min-width: unset; }
 
   /* TABLE */
   .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -189,6 +191,13 @@
   .main-table tbody tr.withdrawn-row:hover td { background: #fff0f0; }
   .withdrawn-text { color: #e53935; font-size: 11px; font-weight: 600; }
 
+  /* 날짜 인라인 편집 셀 */
+  .date-cell { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+  .date-cell-row { display: flex; gap: 2px; align-items: center; }
+
+  /* 선택 건수 텍스트 */
+  .sel-count-text { font-size: 12px; color: #555; white-space: nowrap; padding: 0 4px; }
+
   /* TOAST */
   #toast {
     display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
@@ -207,14 +216,17 @@
     background: #fff; border-radius: 6px;
     box-shadow: 0 8px 32px rgba(0,0,0,.2); width: 400px; padding: 24px 24px 20px;
   }
+  .modal-box-lg { width: 640px; padding: 24px 24px 20px; max-height: 80vh; display: flex; flex-direction: column; }
   .modal-title {
     font-size: 14px; font-weight: 700; color: #1a1a2e;
     margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
   }
   .modal-msg { font-size: 13px; color: #333; margin-bottom: 18px; line-height: 1.7; }
   .modal-date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .modal-date-label { font-size: 12px; font-weight: 600; color: #555; width: 40px; flex-shrink: 0; }
-  .modal-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+  .modal-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-shrink: 0; }
+  .modal-scroll { overflow-y: auto; flex: 1; }
 </style>
 </head>
 <body>
@@ -338,7 +350,7 @@
       <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단 상세</div>
     </div>
 
-    <!-- 진단 기본 정보 카드 (진단 관리 버튼 포함) -->
+    <!-- 진단 기본 정보 카드 -->
     <div class="info-card">
       <div class="info-card-header">
         <span class="info-card-header-title">진단 기본 정보</span>
@@ -347,11 +359,11 @@
       <div class="info-grid">
         <div class="info-cell span2" style="border-bottom:1px solid var(--border);">
           <div class="info-label">진단시작일</div>
-          <div class="info-value" id="diagStartDate">2025.05.01</div>
+          <div class="info-value" id="diagStartDate">2025.05.01 00:00</div>
         </div>
         <div class="info-cell span2" style="border-right:none;border-bottom:1px solid var(--border);">
           <div class="info-label">진단종료일</div>
-          <div class="info-value" id="diagEndDate">2025.05.31</div>
+          <div class="info-value" id="diagEndDate">2025.05.31 23:59</div>
         </div>
         <div class="info-cell" style="border-bottom:none;">
           <div class="info-label">진단코드</div>
@@ -382,7 +394,7 @@
             <div class="action-row-right">
               <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
               <button class="btn btn-danger btn-sm" onclick="showToast('삭제 기능은 준비 중입니다.')">삭제</button>
-              <button class="btn btn-primary btn-sm" onclick="showToast('대상추가 기능은 준비 중입니다.')">대상추가</button>
+              <button class="btn btn-primary btn-sm" onclick="openMemberRegModal()">대상자 등록</button>
             </div>
           </div>
           <div style="overflow-x:auto;">
@@ -391,109 +403,99 @@
                 <tr>
                   <th style="width:36px;"><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></th>
                   <th style="width:36px;">NO</th>
-                  <th style="width:80px;">사번</th>
                   <th style="width:70px;">이름</th>
-                  <th style="width:60px;">직급</th>
+                  <th style="width:130px;">아이디</th>
+                  <th style="width:75px;">사번</th>
+                  <th style="width:65px;">회사</th>
                   <th>부서/팀</th>
-                  <th style="width:100px;">아이디</th>
-                  <th style="width:90px;">휴대번호</th>
+                  <th style="width:52px;">직급</th>
+                  <th style="width:100px;">휴대번호</th>
                   <th style="width:70px;">응답자(본인)</th>
                   <th style="width:70px;">응답자(상사)</th>
-                  <th style="width:70px;">응답자(부하)</th>
+                  <th style="width:70px;">응답자(구성원)</th>
                   <th style="width:70px;">응답자(동료)</th>
-                  <th style="width:70px;">응답자(기타)</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>1</td><td>2024001</td><td>김민준</td><td>팀장</td><td>경영전략팀</td>
-                  <td>minjun.kim</td><td>010-1234-5678</td>
+                  <td>1</td><td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
-                  <td><span class="badge badge-gray">부하 3</span></td>
-                  <td><span class="badge badge-orange">동료 2</span></td><td>-</td>
+                  <td><span class="badge badge-gray">구성원 3</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>2</td><td>2022015</td><td>이수진</td><td>차장</td><td>인재개발팀</td>
-                  <td>sujin.lee</td><td>010-2345-6789</td>
+                  <td>2</td><td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
-                  <td><span class="badge badge-orange">동료 3</span></td><td>-</td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>3</td><td>2021008</td><td>박지훈</td><td>팀장</td><td>영업1팀</td>
-                  <td>jihoon.park</td><td>010-3456-7890</td>
+                  <td>3</td><td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
-                  <td><span class="badge badge-gray">부하 5</span></td>
-                  <td><span class="badge badge-orange">동료 2</span></td><td>-</td>
+                  <td><span class="badge badge-gray">구성원 5</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>4</td><td>2023022</td><td>최유리</td><td>과장</td><td>마케팅팀</td>
-                  <td>yuri.choi</td><td>010-4567-8901</td>
-                  <td><span class="badge badge-blue">본인</span></td>
-                  <td><span class="badge badge-green">상사</span></td>
-                  <td>-</td>
-                  <td><span class="badge badge-orange">동료 4</span></td><td>-</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>5</td><td>2020031</td><td>정승호</td><td>팀장</td><td>IT개발팀</td>
-                  <td>seungho.jung</td><td>010-5678-9012</td>
-                  <td><span class="badge badge-blue">본인</span></td>
-                  <td><span class="badge badge-green">상사</span></td>
-                  <td><span class="badge badge-gray">부하 7</span></td>
-                  <td><span class="badge badge-orange">동료 2</span></td><td>-</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>6</td><td>2022044</td><td>한미래</td><td>차장</td><td>재무팀</td>
-                  <td>mirae.han</td><td>010-6789-0123</td>
+                  <td>4</td><td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
-                  <td><span class="badge badge-orange">동료 3</span></td><td>-</td>
+                  <td><span class="badge badge-orange">동료 4</span></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>7</td><td>2019003</td><td>오동현</td><td>부장</td><td>고객서비스팀</td>
-                  <td>donghyun.oh</td><td>010-7890-1234</td>
+                  <td>5</td><td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
-                  <td><span class="badge badge-gray">부하 4</span></td>
-                  <td>-</td><td>-</td>
+                  <td><span class="badge badge-gray">구성원 7</span></td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>8</td><td>2023011</td><td>강나연</td><td>과장</td><td>구매팀</td>
-                  <td>nayeon.kang</td><td>010-8901-2345</td>
-                  <td><span class="badge badge-blue">본인</span></td>
-                  <td><span class="badge badge-green">상사</span></td>
-                  <td>-</td>
-                  <td><span class="badge badge-orange">동료 2</span></td><td>-</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>9</td><td>2021019</td><td>윤태양</td><td>팀장</td><td>품질관리팀</td>
-                  <td>taeyang.yun</td><td>010-9012-3456</td>
-                  <td><span class="badge badge-blue">본인</span></td>
-                  <td><span class="badge badge-green">상사</span></td>
-                  <td><span class="badge badge-gray">부하 6</span></td>
-                  <td><span class="badge badge-orange">동료 3</span></td><td>-</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>10</td><td>2024038</td><td>신혜원</td><td>차장</td><td>법무팀</td>
-                  <td>hyewon.shin</td><td>010-0123-4567</td>
+                  <td>6</td><td>한*래</td><td>mira***@hunet.co.kr</td><td>2022044</td><td>휴넷</td><td>재무팀</td><td>차장</td><td>010-****-0123</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
-                  <td><span class="badge badge-orange">동료 2</span></td><td>-</td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>7</td><td>오*현</td><td>dong***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">구성원 4</span></td>
+                  <td>-</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>8</td><td>강*연</td><td>naye***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>9</td><td>윤*양</td><td>taey***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td><span class="badge badge-gray">구성원 6</span></td>
+                  <td><span class="badge badge-orange">동료 3</span></td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>10</td><td>신*원</td><td>hyew***@hunet.co.kr</td><td>2024038</td><td>휴넷</td><td>법무팀</td><td>차장</td><td>010-****-4567</td>
+                  <td><span class="badge badge-blue">본인</span></td>
+                  <td><span class="badge badge-green">상사</span></td>
+                  <td>-</td>
+                  <td><span class="badge badge-orange">동료 2</span></td>
                 </tr>
               </tbody>
             </table>
@@ -515,13 +517,13 @@
             <span class="stat-badge stat-badge-stopped">중단(탈퇴) <span class="num">2</span></span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <button class="btn btn-reset btn-sm" id="selCountBtn" style="min-width:70px;">선택 0건</button>
+            <span class="sel-count-text" id="selCountText">선택 0건</span>
             <select class="select" style="height:28px;font-size:12px;" onchange="handleWorkSelect(this)">
               <option value="">작업 선택 ▼</option>
               <option value="mail">메일 발송</option>
               <option value="datechange">시작/종료일 변경</option>
             </select>
-            <button class="btn btn-outline btn-sm" onclick="showToast('대상자등록 기능은 준비 중입니다.')">대상자등록</button>
+            <button class="btn btn-outline btn-sm" onclick="openMemberRegModal()">대상자 등록</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
           </div>
         </div>
@@ -552,36 +554,41 @@
           <button class="btn btn-reset btn-sm">초기화</button>
         </div>
 
-        <!-- 복합 헤더 테이블 -->
-        <!-- 컬럼 구성: checkbox(rowspan2) | No(rowspan2) | 진단대상자(colspan7: 이름,사번,회사,직급,아이디,휴대번호,응답범위) | 응답평가자(colspan6: 이름,사번,회사,직급,아이디,휴대번호) | 진단진행관리(colspan4: 메일발송상태,진단진행상태,진단시작일,진단종료일) -->
+        <!-- 복합 헤더 테이블
+             대상자(8): 이름,아이디,사번,회사,부서/팀,직급,휴대번호,응답범위
+             응답자(7): 이름,아이디,사번,회사,부서/팀,직급,휴대번호
+             관리(4):   메일발송상태,진단진행상태,진단시작일,진단종료일
+        -->
         <div style="overflow-x:auto;">
           <table class="main-table" id="afterTable">
             <thead>
               <tr>
                 <th rowspan="2" style="width:36px;"><input type="checkbox" id="afterChkAll" style="cursor:pointer;accent-color:var(--primary);" onchange="afterSelectAll(this.checked)"></th>
-                <th rowspan="2" style="width:36px;">No</th>
-                <th colspan="7" class="group-header">진단 대상자 정보</th>
-                <th colspan="6" class="group-header">응답(평가자) 정보</th>
+                <th rowspan="2" style="width:32px;">No</th>
+                <th colspan="8" class="group-header">진단 대상자 정보</th>
+                <th colspan="7" class="group-header">응답(평가자) 정보</th>
                 <th colspan="4" class="group-header">진단 진행 관리</th>
               </tr>
               <tr>
-                <th style="width:65px;">이름</th>
-                <th style="width:70px;">사번</th>
-                <th style="width:65px;">회사</th>
-                <th style="width:52px;">직급</th>
-                <th style="width:95px;">아이디</th>
+                <th style="width:60px;">이름</th>
+                <th style="width:130px;">아이디</th>
+                <th style="width:68px;">사번</th>
+                <th style="width:55px;">회사</th>
+                <th style="width:90px;">부서/팀</th>
+                <th style="width:48px;">직급</th>
                 <th style="width:95px;">휴대번호</th>
                 <th style="width:52px;">응답범위</th>
-                <th style="width:65px;">이름</th>
-                <th style="width:70px;">사번</th>
-                <th style="width:65px;">회사</th>
-                <th style="width:52px;">직급</th>
-                <th style="width:95px;">아이디</th>
+                <th style="width:60px;">이름</th>
+                <th style="width:130px;">아이디</th>
+                <th style="width:68px;">사번</th>
+                <th style="width:55px;">회사</th>
+                <th style="width:90px;">부서/팀</th>
+                <th style="width:48px;">직급</th>
                 <th style="width:95px;">휴대번호</th>
-                <th style="width:72px;">메일발송상태</th>
-                <th style="width:72px;">진단진행상태</th>
-                <th style="width:78px;">진단시작일</th>
-                <th style="width:78px;">진단종료일</th>
+                <th style="width:70px;">메일발송상태</th>
+                <th style="width:70px;">진단진행상태</th>
+                <th style="width:130px;">진단시작일</th>
+                <th style="width:130px;">진단종료일</th>
               </tr>
             </thead>
             <tbody>
@@ -589,98 +596,132 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>1</td>
-                <td>김민준</td><td>2024001</td><td>휴넷</td><td>팀장</td><td>minjun.kim</td><td>010-1234-5678</td><td><span class="badge badge-blue">본인</span></td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
-              <!-- Row 2: 진행중 (본인) -->
+              <!-- Row 2: 진행중 (본인) — 종료일만 편집 가능 -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>2</td>
-                <td>이수진</td><td>2022015</td><td>휴넷</td><td>차장</td><td>sujin.lee</td><td>010-2345-6789</td><td><span class="badge badge-blue">본인</span></td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;" title="현재 날짜 이전으로 변경 불가">
+                    <input type="time" class="input input-sm" value="23:59" style="width:82px;">
+                  </div>
+                </td>
               </tr>
-              <!-- Row 3: 완료 (상사 평가자 있음) -->
+              <!-- Row 3: 완료 (상사 평가자) -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>3</td>
-                <td>박지훈</td><td>2021008</td><td>휴넷</td><td>팀장</td><td>jihoon.park</td><td>010-3456-7890</td><td><span class="badge badge-green">상사</span></td>
-                <td>이건우</td><td>2019005</td><td>휴넷</td><td>부장</td><td>geonwoo.lee</td><td>010-1111-2222</td>
+                <td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td><td><span class="badge badge-green">상사</span></td>
+                <td>이*우</td><td>geon***@hunet.co.kr</td><td>2019005</td><td>휴넷</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
-              <!-- Row 4: 시작 전 (본인) -->
+              <!-- Row 4: 시작 전 (본인) — 시작일/종료일 모두 편집 가능, 값 없음 -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>4</td>
-                <td>최유리</td><td>2023022</td><td>휴넷</td><td>과장</td><td>yuri.choi</td><td>010-4567-8901</td><td><span class="badge badge-blue">본인</span></td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" placeholder="날짜 선택" style="width:112px;">
+                    <input type="time" class="input input-sm" style="width:82px;">
+                  </div>
+                </td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" placeholder="날짜 선택" style="width:112px;">
+                    <input type="time" class="input input-sm" style="width:82px;">
+                  </div>
+                </td>
               </tr>
               <!-- Row 5: 완료 (본인) -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>5</td>
-                <td>정승호</td><td>2020031</td><td>휴넷</td><td>팀장</td><td>seungho.jung</td><td>010-5678-9012</td><td><span class="badge badge-blue">본인</span></td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
-              <!-- Row 6: 진행중 (부하 평가자 있음) -->
+              <!-- Row 6: 진행중 (구성원 평가자) — 종료일만 편집 가능 -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>6</td>
-                <td>오동현</td><td>2019003</td><td>휴넷</td><td>부장</td><td>donghyun.oh</td><td>010-7890-1234</td><td><span class="badge badge-gray">부하</span></td>
-                <td>이정우</td><td>2021030</td><td>휴넷</td><td>과장</td><td>jungwoo.lee</td><td>010-2222-3333</td>
+                <td>오*현</td><td>dong***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td><td><span class="badge badge-purple">구성원</span></td>
+                <td>이*우</td><td>jung***@hunet.co.kr</td><td>2021030</td><td>휴넷</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;" title="현재 날짜 이전으로 변경 불가">
+                    <input type="time" class="input input-sm" value="23:59" style="width:82px;">
+                  </div>
+                </td>
               </tr>
-              <!-- Row 7: 시작 전 (본인) -->
+              <!-- Row 7: 시작 전 (본인) — 시작일/종료일 모두 편집 가능, 값 없음 -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>7</td>
-                <td>강나연</td><td>2023011</td><td>휴넷</td><td>과장</td><td>nayeon.kang</td><td>010-8901-2345</td><td><span class="badge badge-blue">본인</span></td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>강*연</td><td>naye***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" placeholder="날짜 선택" style="width:112px;">
+                    <input type="time" class="input input-sm" style="width:82px;">
+                  </div>
+                </td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" placeholder="날짜 선택" style="width:112px;">
+                    <input type="time" class="input input-sm" style="width:82px;">
+                  </div>
+                </td>
               </tr>
-              <!-- Row 8: 완료 (동료 평가자 있음) -->
+              <!-- Row 8: 완료 (동료 평가자) -->
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>8</td>
-                <td>윤태양</td><td>2021019</td><td>휴넷</td><td>팀장</td><td>taeyang.yun</td><td>010-9012-3456</td><td><span class="badge badge-orange">동료</span></td>
-                <td>박수경</td><td>2022055</td><td>휴넷</td><td>차장</td><td>sukyung.park</td><td>010-3333-4444</td>
+                <td>윤*양</td><td>taey***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td><td><span class="badge badge-orange">동료</span></td>
+                <td>박*경</td><td>suky***@hunet.co.kr</td><td>2022055</td><td>휴넷</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01</td><td style="font-size:11px;">2025.05.31</td>
+                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
-              <!-- Row 9: 중단 — 진단 대상자 탈퇴 -->
+              <!-- Row 9: 중단 — 진단 대상자 탈퇴 (체크박스 비활성화) -->
               <tr class="withdrawn-row">
-                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>9</td>
-                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
                 <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
               </tr>
-              <!-- Row 10: 중단 — 응답(평가자) 탈퇴 -->
+              <!-- Row 10: 중단 — 응답(평가자) 탈퇴 (체크박스 비활성화) -->
               <tr class="withdrawn-row">
-                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>10</td>
-                <td>정다은</td><td>2023055</td><td>휴넷</td><td>대리</td><td>daeun.jung</td><td>010-4444-5555</td><td><span class="badge badge-green">상사</span></td>
-                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td>정*은</td><td>daeu***@hunet.co.kr</td><td>2023055</td><td>휴넷</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
+                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
                 <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
@@ -715,16 +756,64 @@
     <div class="modal-date-row">
       <div class="modal-date-label">시작일</div>
       <input type="date" class="input" value="2025-05-01" style="width:140px;height:30px;">
-      <input type="time" class="input" value="00:00" style="width:110px;height:30px;">
+      <input type="time" class="input" value="00:00" style="width:100px;height:30px;">
     </div>
     <div class="modal-date-row">
       <div class="modal-date-label">종료일</div>
       <input type="date" class="input" value="2025-05-31" style="width:140px;height:30px;">
-      <input type="time" class="input" value="23:59" style="width:110px;height:30px;">
+      <input type="time" class="input" value="23:59" style="width:100px;height:30px;">
     </div>
     <div class="modal-btn-row">
       <button class="btn btn-primary btn-sm" onclick="confirmDateChange()">확인</button>
       <button class="btn btn-reset btn-sm" onclick="closeModalById('dateChangeModal')">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 대상자 등록 팝업 -->
+<div id="memberRegModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('memberRegModal')">
+  <div class="modal-box modal-box-lg">
+    <div class="modal-title">대상자 등록</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-shrink:0;">
+      <select class="select" style="width:80px;"><option>이름</option><option>사번</option><option>아이디</option></select>
+      <input class="input" type="text" placeholder="검색어를 입력하세요" style="flex:1;">
+      <button class="btn btn-primary btn-sm">검색</button>
+    </div>
+    <div class="modal-scroll">
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></th>
+            <th>이름</th><th>아이디</th><th>사번</th><th>회사</th><th>부서/팀</th><th>직급</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn btn-primary btn-sm" onclick="confirmMemberReg()">등록</button>
+      <button class="btn btn-reset btn-sm" onclick="closeModalById('memberRegModal')">취소</button>
     </div>
   </div>
 </div>
@@ -741,18 +830,24 @@
     setupInfoDates(state);
   }
 
-  // ── 진단 날짜 필드: 상태에 따라 편집 가능 여부 설정 ──
+  // ── 진단 날짜 필드: 상태에 따라 편집 가능 여부 설정 (날짜+시간) ──
   function setupInfoDates(state) {
     const startEl = document.getElementById('diagStartDate');
     const endEl   = document.getElementById('diagEndDate');
     if (state === 'before') {
-      // 시작 전: 시작일·종료일 모두 수정 가능
-      startEl.innerHTML = '<input type="date" class="input" value="2025-05-01" style="width:150px;">';
-      endEl.innerHTML   = '<input type="date" class="input" value="2025-05-31" style="width:150px;">';
+      // 시작 전: 시작일·종료일 모두 수정 가능 (날짜 + 시간)
+      startEl.innerHTML =
+        '<input type="date" class="input" value="2025-05-01" style="width:130px;">' +
+        '<input type="time" class="input" value="00:00" style="width:90px;">';
+      endEl.innerHTML =
+        '<input type="date" class="input" value="2025-05-31" style="width:130px;">' +
+        '<input type="time" class="input" value="23:59" style="width:90px;">';
     } else {
-      // 시작 후: 시작일은 읽기 전용, 종료일만 늘릴 수 있음(min = 현재 종료일)
-      startEl.textContent = '2025.05.01';
-      endEl.innerHTML = '<input type="date" class="input" value="2025-05-31" min="2025-05-31" style="width:150px;" title="종료일은 현재 날짜 이전으로 변경할 수 없습니다.">';
+      // 시작 후: 시작일은 읽기 전용, 종료일만 날짜+시간 변경 가능 (이전 날짜 불가)
+      startEl.textContent = '2025.05.01 00:00';
+      endEl.innerHTML =
+        '<input type="date" class="input" value="2025-05-31" min="2025-05-31" style="width:130px;" title="종료일은 현재 날짜 이전으로 변경할 수 없습니다.">' +
+        '<input type="time" class="input" value="23:59" style="width:90px;">';
     }
   }
 
@@ -776,11 +871,11 @@
   function directDownload(diagName) {
     const header = '순번,이름,사번,직급,부서/팀,아이디,휴대번호,응답상태,응답일시';
     const rows = [
-      '1,김민준,2024001,팀장,경영전략팀,minjun.kim,010-1234-5678,완료,2025-05-10 09:32',
-      '2,이수진,2022015,차장,인재개발팀,sujin.lee,010-2345-6789,완료,2025-05-11 14:20',
-      '3,박지훈,2021008,팀장,영업1팀,jihoon.park,010-3456-7890,완료,2025-05-09 10:05',
-      '4,최유리,2023022,과장,마케팅팀,yuri.choi,010-4567-8901,미완료,',
-      '5,정승호,2020031,팀장,IT개발팀,seungho.jung,010-5678-9012,완료,2025-05-12 16:45',
+      '1,김*준,2024001,팀장,경영전략팀,minj***@hunet.co.kr,010-****-5678,완료,2025-05-10 09:32',
+      '2,이*진,2022015,차장,인재개발팀,suji***@hunet.co.kr,010-****-6789,완료,2025-05-11 14:20',
+      '3,박*훈,2021008,팀장,영업1팀,jiho***@hunet.co.kr,010-****-7890,완료,2025-05-09 10:05',
+      '4,최*리,2023022,과장,마케팅팀,yuri***@hunet.co.kr,010-****-8901,미완료,',
+      '5,정*호,2020031,팀장,IT개발팀,seun***@hunet.co.kr,010-****-9012,완료,2025-05-12 16:45',
     ];
     const csv = '﻿' + [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'application/vnd.ms-excel' });
@@ -800,13 +895,13 @@
     window._tt = setTimeout(() => { t.style.display = 'none'; }, 2800);
   }
 
-  // ── After 상태: 선택 건수 ──
+  // ── After 상태: 선택 건수 (disabled 제외) ──
   function updateSelCount() {
-    const count = document.querySelectorAll('.after-row-chk:checked').length;
-    document.getElementById('selCountBtn').textContent = '선택 ' + count + '건';
+    const count = document.querySelectorAll('.after-row-chk:not(:disabled):checked').length;
+    document.getElementById('selCountText').textContent = '선택 ' + count + '건';
   }
   function afterSelectAll(checked) {
-    document.querySelectorAll('.after-row-chk').forEach(c => { c.checked = checked; });
+    document.querySelectorAll('.after-row-chk:not(:disabled)').forEach(c => { c.checked = checked; });
     updateSelCount();
   }
 
@@ -814,7 +909,7 @@
   function handleWorkSelect(sel) {
     const val = sel.value;
     if (!val) return;
-    const count = document.querySelectorAll('.after-row-chk:checked').length;
+    const count = document.querySelectorAll('.after-row-chk:not(:disabled):checked').length;
     if (count === 0) {
       showToast('먼저 대상자를 선택해주세요.');
       sel.value = ''; return;
@@ -837,6 +932,13 @@
   function confirmDateChange() {
     closeModalById('dateChangeModal');
     showToast('변경이 완료되었습니다.');
+  }
+  function openMemberRegModal() {
+    document.getElementById('memberRegModal').classList.add('open');
+  }
+  function confirmMemberReg() {
+    closeModalById('memberRegModal');
+    showToast('대상자가 등록되었습니다.');
   }
   function closeModalById(id) {
     document.getElementById(id).classList.remove('open');
