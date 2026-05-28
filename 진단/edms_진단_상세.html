@@ -1027,17 +1027,17 @@
       } else if (tabIdx === 1) {
         // 상사답변유형: 상사 인원수 or 설정 버튼
         if (bossCell) bossCell.innerHTML = boss > 0
-          ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;">${boss}명</span>`
+          ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;cursor:pointer;" onclick="openRespSetModal(${rowNo},'상사')">${boss}명</span>`
           : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'상사')">설정</button>`;
       } else if (tabIdx === 2) {
         // 구성원답변유형: 구성원 인원수 or 설정 버튼
         if (memberCell) memberCell.innerHTML = member > 0
-          ? `<span class="badge" style="background:#e3f2fd;color:#1565c0;">${member}명</span>`
+          ? `<span class="badge" style="background:#e3f2fd;color:#1565c0;cursor:pointer;" onclick="openRespSetModal(${rowNo},'구성원')">${member}명</span>`
           : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'구성원')">설정</button>`;
       } else if (tabIdx === 3) {
         // 동료답변유형: 동료 인원수 or 설정 버튼
         if (peerCell) peerCell.innerHTML = peer > 0
-          ? `<span class="badge" style="background:#fff3e0;color:#e65100;">${peer}명</span>`
+          ? `<span class="badge" style="background:#fff3e0;color:#e65100;cursor:pointer;" onclick="openRespSetModal(${rowNo},'동료')">${peer}명</span>`
           : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'동료')">설정</button>`;
       }
     });
