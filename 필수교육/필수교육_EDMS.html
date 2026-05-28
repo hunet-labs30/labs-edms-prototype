@@ -3010,7 +3010,7 @@ function meOpenCourseModal() {
   meCrsTab('s', document.getElementById('me-crs-tab-s'));
   // 대분류 옵션 채우기 + 초기화
   const c1 = document.getElementById('me-crs-cat1');
-  c1.innerHTML = '<option value="">전체 분류</option>' +
+  c1.innerHTML = '<option value="">카테고리 1단계</option>' +
     Object.keys(ME_CRS_CATS).map(k=>`<option value="${k}">${k}</option>`).join('');
   c1.value = '';
   document.getElementById('me-crs-cat2').style.display = 'none';
@@ -3035,7 +3035,7 @@ function meCrsCatChange(level) {
   if(level === 1) {
     const sub = ME_CRS_CATS[c1.value];
     if(c1.value && sub) {
-      c2.innerHTML = '<option value="">중분류 선택</option>' +
+      c2.innerHTML = '<option value="">카테고리 2단계</option>' +
         Object.keys(sub).map(k=>`<option value="${k}">${k}</option>`).join('');
       c2.style.display = '';
     } else { c2.style.display = 'none'; }
@@ -3043,7 +3043,7 @@ function meCrsCatChange(level) {
   } else if(level === 2) {
     const sub = (ME_CRS_CATS[c1.value]||{})[c2.value];
     if(c2.value && sub) {
-      c3.innerHTML = '<option value="">소분류 선택</option>' +
+      c3.innerHTML = '<option value="">카테고리 3단계</option>' +
         sub.map(k=>`<option value="${k}">${k}</option>`).join('');
       c3.style.display = '';
     } else { c3.style.display = 'none'; }
