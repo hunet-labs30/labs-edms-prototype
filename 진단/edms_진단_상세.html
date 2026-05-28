@@ -169,6 +169,7 @@
   .input { min-width: 60px; }
   .select { cursor: pointer; }
   .input-sm { height: 24px; padding: 0 4px; font-size: 11px; min-width: unset; }
+  .input:disabled { background: #f5f5f5; color: #bbb; cursor: not-allowed; }
 
   /* TABLE */
   .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -197,6 +198,9 @@
 
   /* 선택 건수 텍스트 */
   .sel-count-text { font-size: 12px; color: #555; white-space: nowrap; padding: 0 4px; }
+
+  /* 미할당 셀 UI */
+  .unassigned-cell { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 
   /* TOAST */
   #toast {
@@ -227,6 +231,7 @@
   .modal-date-label { font-size: 12px; font-weight: 600; color: #555; width: 40px; flex-shrink: 0; }
   .modal-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-shrink: 0; }
   .modal-scroll { overflow-y: auto; flex: 1; }
+  .modal-notice { font-size: 11px; color: #b35c00; background: #fff4e0; border: 1px solid #fde68a; border-radius: 3px; padding: 5px 10px; margin-bottom: 4px; display: none; }
 </style>
 </head>
 <body>
@@ -417,9 +422,10 @@
                 </tr>
               </thead>
               <tbody>
+                <!-- 기존 등록 행 (응답자 설정 완료) -->
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>1</td><td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td>
+                  <td>1</td><td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td><span class="badge badge-gray">구성원 3</span></td>
@@ -427,7 +433,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>2</td><td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td>
+                  <td>2</td><td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
@@ -435,7 +441,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>3</td><td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td>
+                  <td>3</td><td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td><span class="badge badge-gray">구성원 5</span></td>
@@ -443,7 +449,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>4</td><td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td>
+                  <td>4</td><td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
@@ -451,7 +457,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>5</td><td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td>
+                  <td>5</td><td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td><span class="badge badge-gray">구성원 7</span></td>
@@ -459,7 +465,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>6</td><td>한*래</td><td>mira***@hunet.co.kr</td><td>2022044</td><td>휴넷</td><td>재무팀</td><td>차장</td><td>010-****-0123</td>
+                  <td>6</td><td>한*래</td><td>m***@hunet.co.kr</td><td>2022044</td><td>휴넷</td><td>재무팀</td><td>차장</td><td>010-****-0123</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
@@ -467,7 +473,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>7</td><td>오*현</td><td>dong***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td>
+                  <td>7</td><td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td><span class="badge badge-gray">구성원 4</span></td>
@@ -475,7 +481,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>8</td><td>강*연</td><td>naye***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td>
+                  <td>8</td><td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
@@ -483,7 +489,7 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>9</td><td>윤*양</td><td>taey***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td>
+                  <td>9</td><td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td><span class="badge badge-gray">구성원 6</span></td>
@@ -491,11 +497,68 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>10</td><td>신*원</td><td>hyew***@hunet.co.kr</td><td>2024038</td><td>휴넷</td><td>법무팀</td><td>차장</td><td>010-****-4567</td>
+                  <td>10</td><td>신*원</td><td>h***@hunet.co.kr</td><td>2024038</td><td>휴넷</td><td>법무팀</td><td>차장</td><td>010-****-4567</td>
                   <td><span class="badge badge-blue">본인</span></td>
                   <td><span class="badge badge-green">상사</span></td>
                   <td>-</td>
                   <td><span class="badge badge-orange">동료 2</span></td>
+                </tr>
+                <!-- 신규 등록 행 — 응답자 미할당 상태 -->
+                <tr style="background:#fafff5;">
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>11</td><td>임*현</td><td>l***@hunet.co.kr</td><td>2025101</td><td>휴넷</td><td>디지털전략팀</td><td>과장</td><td>010-****-6677</td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(11,'본인')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(11,'상사')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(11,'구성원')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(11,'동료')">설정</button>
+                    </div>
+                  </td>
+                </tr>
+                <tr style="background:#fafff5;">
+                  <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+                  <td>12</td><td>황*은</td><td>c***@hunet.co.kr</td><td>2025102</td><td>휴넷</td><td>글로벌사업팀</td><td>대리</td><td>010-****-7788</td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(12,'본인')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(12,'상사')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(12,'구성원')">설정</button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="unassigned-cell">
+                      <span class="badge badge-gray" style="font-size:10px;padding:1px 5px;">미할당</span>
+                      <button class="btn btn-outline btn-xs" onclick="openRespSetModal(12,'동료')">설정</button>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -554,11 +617,6 @@
           <button class="btn btn-reset btn-sm">초기화</button>
         </div>
 
-        <!-- 복합 헤더 테이블
-             대상자(8): 이름,아이디,사번,회사,부서/팀,직급,휴대번호,응답범위
-             응답자(7): 이름,아이디,사번,회사,부서/팀,직급,휴대번호
-             관리(4):   메일발송상태,진단진행상태,진단시작일,진단종료일
-        -->
         <div style="overflow-x:auto;">
           <table class="main-table" id="afterTable">
             <thead>
@@ -596,7 +654,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>1</td>
-                <td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td><td><span class="badge badge-blue">본인</span></td>
+                <td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
@@ -606,7 +664,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>2</td>
-                <td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td><td><span class="badge badge-blue">본인</span></td>
+                <td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
@@ -622,8 +680,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>3</td>
-                <td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td><td><span class="badge badge-green">상사</span></td>
-                <td>이*우</td><td>geon***@hunet.co.kr</td><td>2019005</td><td>휴넷</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
+                <td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td><td><span class="badge badge-green">상사</span></td>
+                <td>이*우</td><td>g***@hunet.co.kr</td><td>2019005</td><td>휴넷</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
                 <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
@@ -632,7 +690,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>4</td>
-                <td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
+                <td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
@@ -653,7 +711,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>5</td>
-                <td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td><td><span class="badge badge-blue">본인</span></td>
+                <td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
@@ -663,8 +721,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>6</td>
-                <td>오*현</td><td>dong***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td><td><span class="badge badge-purple">구성원</span></td>
-                <td>이*우</td><td>jung***@hunet.co.kr</td><td>2021030</td><td>휴넷</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
+                <td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td><td><span class="badge badge-purple">구성원</span></td>
+                <td>이*우</td><td>j***@hunet.co.kr</td><td>2021030</td><td>휴넷</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
                 <td style="font-size:11px;">2025.05.01 00:00</td>
@@ -679,7 +737,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>7</td>
-                <td>강*연</td><td>naye***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
+                <td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
@@ -700,8 +758,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>8</td>
-                <td>윤*양</td><td>taey***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td><td><span class="badge badge-orange">동료</span></td>
-                <td>박*경</td><td>suky***@hunet.co.kr</td><td>2022055</td><td>휴넷</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
+                <td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td><td><span class="badge badge-orange">동료</span></td>
+                <td>박*경</td><td>s***@hunet.co.kr</td><td>2022055</td><td>휴넷</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
                 <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
@@ -720,7 +778,7 @@
               <tr class="withdrawn-row">
                 <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>10</td>
-                <td>정*은</td><td>daeu***@hunet.co.kr</td><td>2023055</td><td>휴넷</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
+                <td>정*은</td><td>d***@hunet.co.kr</td><td>2023055</td><td>휴넷</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
                 <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
@@ -755,8 +813,13 @@
     <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?</div>
     <div class="modal-date-row">
       <div class="modal-date-label">시작일</div>
-      <input type="date" class="input" value="2025-05-01" style="width:140px;height:30px;">
-      <input type="time" class="input" value="00:00" style="width:100px;height:30px;">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+        <div style="display:flex;gap:6px;">
+          <input type="date" id="modalStartDateInp" class="input" value="2025-05-01" style="width:140px;height:30px;">
+          <input type="time" id="modalStartTimeInp" class="input" value="00:00" style="width:100px;height:30px;">
+        </div>
+        <div class="modal-notice" id="modalStartDateNote">진행중인 진단이 포함되어 있어 시작일은 변경할 수 없습니다.</div>
+      </div>
     </div>
     <div class="modal-date-row">
       <div class="modal-date-label">종료일</div>
@@ -770,12 +833,14 @@
   </div>
 </div>
 
-<!-- 대상자 등록 팝업 -->
-<div id="memberRegModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('memberRegModal')">
+<!-- 응답자 설정 팝업 -->
+<div id="respSetModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('respSetModal')">
   <div class="modal-box modal-box-lg">
-    <div class="modal-title">대상자 등록</div>
+    <div class="modal-title" id="respSetModalTitle">응답자 설정 — 본인</div>
     <div style="display:flex;gap:6px;margin-bottom:12px;flex-shrink:0;">
-      <select class="select" style="width:80px;"><option>이름</option><option>사번</option><option>아이디</option></select>
+      <select class="select" style="width:80px;">
+        <option>이름</option><option>사번</option><option>아이디</option>
+      </select>
       <input class="input" type="text" placeholder="검색어를 입력하세요" style="flex:1;">
       <button class="btn btn-primary btn-sm">검색</button>
     </div>
@@ -790,37 +855,63 @@
         <tbody>
           <tr>
             <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-            <td>김*준</td><td>minj***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td>
+            <td>홍*동</td><td>h***@hunet.co.kr</td><td>20240001</td><td>동아ST</td><td>인사팀</td><td>팀장</td>
           </tr>
           <tr>
             <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-            <td>이*진</td><td>suji***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td>
+            <td>이*연</td><td>l***@hunet.co.kr</td><td>20230002</td><td>동아ST</td><td>기획팀</td><td>차장</td>
           </tr>
           <tr>
             <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-            <td>박*훈</td><td>jiho***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td>
+            <td>김*준</td><td>k***@hunet.co.kr</td><td>20220010</td><td>동아ST</td><td>안전팀</td><td>과장</td>
           </tr>
           <tr>
             <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-            <td>최*리</td><td>yuri***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td>
+            <td>박*현</td><td>p***@hunet.co.kr</td><td>20210020</td><td>동아쏘시오홀딩스</td><td>HR팀</td><td>부장</td>
           </tr>
           <tr>
             <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-            <td>정*호</td><td>seun***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td>
+            <td>최*연</td><td>c***@hunet.co.kr</td><td>20200030</td><td>동아ST</td><td>교육팀</td><td>대리</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>정*진</td><td>j***@hunet.co.kr</td><td>20190040</td><td>동아쏘시오홀딩스</td><td>재무팀</td><td>차장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
+            <td>강*원</td><td>k***@hunet.co.kr</td><td>20180050</td><td>동아ST</td><td>전략팀</td><td>팀장</td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="modal-btn-row">
-      <button class="btn btn-primary btn-sm" onclick="confirmMemberReg()">등록</button>
-      <button class="btn btn-reset btn-sm" onclick="closeModalById('memberRegModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmRespSet()">설정</button>
+      <button class="btn btn-reset btn-sm" onclick="closeModalById('respSetModal')">취소</button>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
+<script src="../공통/emp-register-popup.js"></script>
 <script>
+  // ── 마스킹 함수 (공통 모듈에 주입) ──
+  function maskName(name) {
+    if (!name) return '-';
+    if (name.length === 1) return name;
+    if (name.length === 2) return name[0] + '*';
+    return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+  }
+  function maskId(id) {
+    if (!id) return '-';
+    const at = id.indexOf('@');
+    if (at >= 0) return id[0] + '***' + id.slice(at);
+    return id[0] + '***';
+  }
+  // 공통 모듈 마스킹 함수 등록
+  window._maskN = maskName;
+  window._maskL = (id) => maskId(id);
+
   // ── URL 파라미터로 상태 전환 ──
   function initState() {
     const params = new URLSearchParams(window.location.search);
@@ -835,7 +926,6 @@
     const startEl = document.getElementById('diagStartDate');
     const endEl   = document.getElementById('diagEndDate');
     if (state === 'before') {
-      // 시작 전: 시작일·종료일 모두 수정 가능 (날짜 + 시간)
       startEl.innerHTML =
         '<input type="date" class="input" value="2025-05-01" style="width:130px;">' +
         '<input type="time" class="input" value="00:00" style="width:90px;">';
@@ -843,7 +933,6 @@
         '<input type="date" class="input" value="2025-05-31" style="width:130px;">' +
         '<input type="time" class="input" value="23:59" style="width:90px;">';
     } else {
-      // 시작 후: 시작일은 읽기 전용, 종료일만 날짜+시간 변경 가능 (이전 날짜 불가)
       startEl.textContent = '2025.05.01 00:00';
       endEl.innerHTML =
         '<input type="date" class="input" value="2025-05-31" min="2025-05-31" style="width:130px;" title="종료일은 현재 날짜 이전으로 변경할 수 없습니다.">' +
@@ -852,6 +941,19 @@
   }
 
   initState();
+
+  // ── 공통 모듈 초기화 ──
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof meMbrInit === 'function') {
+      meMbrInit({
+        getRegistered: () => [],
+        onRegister: (members) => {
+          showToast(members.length + '명이 대상자로 등록되었습니다.');
+        },
+        getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
+      });
+    }
+  });
 
   // ── 사이드바 토글 ──
   function toggleNav(header) {
@@ -871,11 +973,11 @@
   function directDownload(diagName) {
     const header = '순번,이름,사번,직급,부서/팀,아이디,휴대번호,응답상태,응답일시';
     const rows = [
-      '1,김*준,2024001,팀장,경영전략팀,minj***@hunet.co.kr,010-****-5678,완료,2025-05-10 09:32',
-      '2,이*진,2022015,차장,인재개발팀,suji***@hunet.co.kr,010-****-6789,완료,2025-05-11 14:20',
-      '3,박*훈,2021008,팀장,영업1팀,jiho***@hunet.co.kr,010-****-7890,완료,2025-05-09 10:05',
-      '4,최*리,2023022,과장,마케팅팀,yuri***@hunet.co.kr,010-****-8901,미완료,',
-      '5,정*호,2020031,팀장,IT개발팀,seun***@hunet.co.kr,010-****-9012,완료,2025-05-12 16:45',
+      '1,김*준,2024001,팀장,경영전략팀,m***@hunet.co.kr,010-****-5678,완료,2025-05-10 09:32',
+      '2,이*진,2022015,차장,인재개발팀,s***@hunet.co.kr,010-****-6789,완료,2025-05-11 14:20',
+      '3,박*훈,2021008,팀장,영업1팀,j***@hunet.co.kr,010-****-7890,완료,2025-05-09 10:05',
+      '4,최*리,2023022,과장,마케팅팀,y***@hunet.co.kr,010-****-8901,미완료,',
+      '5,정*호,2020031,팀장,IT개발팀,s***@hunet.co.kr,010-****-9012,완료,2025-05-12 16:45',
     ];
     const csv = '﻿' + [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'application/vnd.ms-excel' });
@@ -918,6 +1020,19 @@
       document.getElementById('mailModalMsg').textContent = count + '선택 인원에게 메일을 전송하겠습니까?';
       document.getElementById('mailModal').classList.add('open');
     } else if (val === 'datechange') {
+      // 선택된 행 중 진행중 상태가 있으면 시작일 비활성화
+      const checkedRows = [...document.querySelectorAll('.after-row-chk:not(:disabled):checked')]
+        .map(cb => cb.closest('tr'));
+      const hasInProgress = checkedRows.some(tr =>
+        [...tr.querySelectorAll('.badge')].some(b => b.textContent.trim() === '진행중')
+      );
+      const startDateInp = document.getElementById('modalStartDateInp');
+      const startTimeInp = document.getElementById('modalStartTimeInp');
+      const note         = document.getElementById('modalStartDateNote');
+      startDateInp.disabled = hasInProgress;
+      startTimeInp.disabled = hasInProgress;
+      note.style.display    = hasInProgress ? '' : 'none';
+
       document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
       document.getElementById('dateChangeModal').classList.add('open');
     }
@@ -933,13 +1048,26 @@
     closeModalById('dateChangeModal');
     showToast('변경이 완료되었습니다.');
   }
+
+  // ── 대상자 등록: 공통 모듈 사용 ──
   function openMemberRegModal() {
-    document.getElementById('memberRegModal').classList.add('open');
+    if (typeof meOpenMemberSingleModal === 'function') {
+      meOpenMemberSingleModal();
+    } else {
+      showToast('대상자 등록 모듈을 불러오는 중입니다.');
+    }
   }
-  function confirmMemberReg() {
-    closeModalById('memberRegModal');
-    showToast('대상자가 등록되었습니다.');
+
+  // ── 응답자 설정 팝업 ──
+  function openRespSetModal(rowNo, type) {
+    document.getElementById('respSetModalTitle').textContent = '응답자 설정 — ' + type + ' (No.' + rowNo + ')';
+    document.getElementById('respSetModal').classList.add('open');
   }
+  function confirmRespSet() {
+    closeModalById('respSetModal');
+    showToast('응답자 설정이 저장되었습니다.');
+  }
+
   function closeModalById(id) {
     document.getElementById(id).classList.remove('open');
   }
