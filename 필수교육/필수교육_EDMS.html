@@ -2019,53 +2019,47 @@
       <button class="tab-btn active" id="me-crs-tab-s" onclick="meCrsTab('s',this)" style="font-size:12px;padding:8px 16px;">개별등록</button>
       <button class="tab-btn" id="me-crs-tab-b" onclick="meCrsTab('b',this)" style="font-size:12px;padding:8px 16px;">일괄등록</button>
     </div>
+    <style>
+      .me-crs-chip{font-size:12px;color:#555;border:1px solid #e0e3e8;border-radius:16px;padding:5px 12px;background:#fff;cursor:pointer;white-space:nowrap;}
+      .me-crs-chip:hover{background:#f5f6f8;}
+      .me-crs-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid #f0f2f5;}
+      .me-crs-item:last-child{border-bottom:none;}
+      .me-crs-item-name{font-size:13px;font-weight:600;color:#222;margin-bottom:3px;}
+      .me-crs-item-meta{font-size:11px;color:#999;}
+      .me-crs-add{width:30px;height:30px;border-radius:50%;border:1px solid #d7dce2;background:#fff;color:#1565c0;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+      .me-crs-add:hover{background:#eef4ff;border-color:#1565c0;}
+      .me-crs-add.added{background:#eef7ee;border-color:#bcdcbc;color:#2e7d32;font-size:13px;cursor:default;}
+    </style>
     <!-- 개별등록 패널 -->
-    <div id="me-crs-panel-s" style="flex:1;overflow-y:auto;padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
+    <div id="me-crs-panel-s" style="flex:1;overflow:hidden;padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
+      <!-- 분류 계단식 드롭다운 (대 > 중 > 소) -->
+      <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+        <select class="select" id="me-crs-cat1" style="height:38px;font-size:13px;" onchange="meCrsCatChange(1)"></select>
+        <select class="select" id="me-crs-cat2" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(2)"></select>
+        <select class="select" id="me-crs-cat3" style="height:38px;font-size:13px;display:none;" onchange="meCrsCatChange(3)"></select>
+      </div>
       <!-- 검색 -->
-      <div style="display:flex;gap:6px;align-items:center;">
-        <span style="font-size:12px;font-weight:600;color:#444;white-space:nowrap;">필수과정 검색</span>
-        <input class="input" id="me-crs-s-kw" style="flex:1;height:28px;font-size:12px;" placeholder="과정명 or 과정코드를 입력해 주세요.">
-        <button class="btn btn-primary" style="height:28px;background:#e53935;border-color:#e53935;" onclick="meCrsSingleSearch()">&#128269; 검색</button>
-        <button class="btn btn-reset" style="height:28px;" onclick="meCrsSingleAll()">전체검색</button>
+      <div style="position:relative;flex-shrink:0;">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;">&#128269;</span>
+        <input class="input" id="me-crs-s-kw" style="width:100%;height:40px;font-size:13px;padding-left:38px;border-radius:22px;background:#f5f6f8;border:1px solid #eceef1;" placeholder="원하는 콘텐츠를 검색해 보세요." oninput="meCrsRenderCatalog()">
       </div>
-      <!-- 등록 버튼 -->
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-size:11px;color:#888;">
-          검색 결과: <strong id="me-crs-s-total">0</strong>개
-          &nbsp;·&nbsp; 선택: <strong id="me-crs-s-sel">0</strong>개
-        </span>
-        <button class="btn btn-primary" style="height:28px;background:#e53935;border-color:#e53935;" onclick="meCrsSingleReg()">선택 과정 등록</button>
+      <!-- 필터 칩 -->
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+        <span style="font-size:15px;color:#999;">&#9776;</span>
+        <span style="color:#e0e3e8;">|</span>
+        <select class="select" id="me-crs-f-type" style="height:30px;font-size:12px;border-radius:16px;width:auto;padding:0 10px;" onchange="meCrsRenderCatalog()">
+          <option value="">유형</option>
+          <option value="온라인">온라인</option>
+          <option value="오프라인">오프라인</option>
+        </select>
+        <span class="me-crs-chip">교육비 &#9662;</span>
+        <span class="me-crs-chip">학습 시간 &#9662;</span>
+        <span class="me-crs-chip">교재 제공</span>
       </div>
-      <!-- 테이블 -->
-      <div style="border:1px solid var(--border);border-radius:4px;overflow:hidden;flex:1;">
-        <table class="main-table" style="font-size:12px;">
-          <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;">
-            <tr>
-              <th style="width:36px;"><input type="checkbox" id="me-crs-s-chk-all" onchange="document.querySelectorAll('.me-crs-s-chk').forEach(c=>c.checked=this.checked);meCrsSelCount()"></th>
-              <th style="width:60px;">No</th>
-              <th style="text-align:left;padding-left:10px;">과정명</th>
-              <th style="width:110px;">과정코드</th>
-              <th style="width:90px;">과정유형</th>
-              <th style="width:110px;">파트너명</th>
-              <th style="width:90px;">파트너코드</th>
-            </tr>
-          </thead>
-          <tbody id="me-crs-s-tbody">
-            <tr><td colspan="7" style="text-align:center;padding:28px;color:#aaa;">검색 결과가 없습니다.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="table-footer" style="padding:6px 0;flex-shrink:0;">
-        <div class="page-size-wrap">
-          <select class="select" style="height:26px;width:56px;"><option selected>10</option><option>30</option><option>50</option></select>
-          <span>항목 (페이지 당)</span>
-        </div>
-        <div class="pagination">
-          <button class="pg-btn">&#8676;</button><button class="pg-btn">&#8249;</button>
-          <button class="pg-btn active">1</button>
-          <button class="pg-btn">&#8250;</button><button class="pg-btn">&#8677;</button>
-        </div>
-      </div>
+      <!-- 결과 카운트 -->
+      <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="me-crs-s-total">0</strong>개 &nbsp;·&nbsp; 등록: <strong id="me-crs-s-sel">0</strong>개</div>
+      <!-- 과정 리스트 (썸네일 미노출) -->
+      <div id="me-crs-catalog" style="border:1px solid var(--border);border-radius:8px;flex:1;overflow-y:auto;background:#fff;"></div>
     </div>
     <!-- 일괄등록 패널 -->
     <div id="me-crs-panel-b" style="flex:1;overflow-y:auto;padding:16px 20px;display:none;flex-direction:column;gap:12px;">
@@ -2786,16 +2780,44 @@ const ME_REG_MEMBERS = [];
 const ME_REG_COURSES = [];
 
 // 샘플 인원 풀
-// 샘플 과정 풀
+// ── 과정 분류 트리 (대분류 > 중분류 > 소분류) ──
+const ME_CRS_CATS = {
+  '직무공통': {
+    '리더십':        ['사람관리','성과관리','코칭/멘토링'],
+    '커뮤니케이션':  ['보고/설득','협상/조정'],
+    '비즈니스스킬':  ['기획/문서','데이터분석'],
+  },
+  '법정의무교육': {
+    '안전보건':   ['산업안전보건','중대재해예방'],
+    '인권/윤리':  ['성희롱예방','직장내괴롭힘예방','장애인인식개선'],
+    '정보보호':   ['개인정보보호'],
+  },
+  '신입/직무전환': {
+    '온보딩':   ['회사이해','비즈니스매너'],
+    'OA실무':   ['엑셀','문서작성'],
+  },
+};
+// 샘플 과정 풀 (분류·학습시간 포함)
 const ME_SAMPLE_COURSES = [
-  {name:'개인정보보호 교육',          code:'LEC001', type:'온라인'},
-  {name:'직장 내 괴롭힘 예방 교육',   code:'LEC002', type:'온라인'},
-  {name:'산업안전보건 교육(상반기)',   code:'LEC003', type:'온라인'},
-  {name:'성희롱 예방 교육',           code:'LEC005', type:'온라인'},
-  {name:'동아ST 부서장 리더십',       code:'SZC07410', type:'오프라인'},
-  {name:'동아ST 2025 상반기 셀링모델',code:'SZC07411', type:'오프라인'},
-  {name:'동아ST 자회사 워크숍',       code:'SZC07421', type:'오프라인'},
-  {name:'동아ST 업무효율화 과정',     code:'SZC07420', type:'오프라인'},
+  {name:'개인정보보호 교육',                       code:'LEC001',   type:'온라인',  cat1:'법정의무교육',  cat2:'정보보호',     cat3:'개인정보보호',     hours:'1시간 30분'},
+  {name:'직장 내 괴롭힘 예방 교육',                code:'LEC002',   type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'직장내괴롭힘예방', hours:'1시간 0분'},
+  {name:'산업안전보건 교육(상반기)',               code:'LEC003',   type:'온라인',  cat1:'법정의무교육',  cat2:'안전보건',     cat3:'산업안전보건',     hours:'2시간 0분'},
+  {name:'성희롱 예방 교육',                        code:'LEC005',   type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'성희롱예방',       hours:'1시간 0분'},
+  {name:'장애인 인식 개선 교육',                   code:'LEC006',   type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'장애인인식개선',   hours:'1시간 0분'},
+  {name:'중대재해처벌법의 이해와 대응',            code:'LEC010',   type:'온라인',  cat1:'법정의무교육',  cat2:'안전보건',     cat3:'중대재해예방',     hours:'2시간 0분'},
+  {name:'VUCA 시대 빛나는 코칭 리더십',            code:'LDR101',   type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'코칭/멘토링',      hours:'13시간 0분'},
+  {name:'사람을 움직이는 사람관리의 기술',         code:'LDR102',   type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리',         hours:'3시간 0분'},
+  {name:'[Z세대 PICK] 하마터면 꼰대가 될 뻔했다',  code:'LDR103',   type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리',         hours:'2시간 0분'},
+  {name:'성과를 만드는 목표관리(OKR)',             code:'LDR110',   type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'성과관리',         hours:'2시간 0분'},
+  {name:'설득의 보고서 작성법',                    code:'COM201',   type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'보고/설득',        hours:'2시간 0분'},
+  {name:'갈등을 줄이는 협상의 정석',               code:'COM202',   type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'협상/조정',        hours:'2시간 0분'},
+  {name:'실무자를 위한 데이터 분석 입문',          code:'BIZ301',   type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'데이터분석',       hours:'4시간 0분'},
+  {name:'기획서 한 장으로 끝내기',                 code:'BIZ302',   type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'기획/문서',        hours:'2시간 0분'},
+  {name:'동아ST 부서장 리더십',                    code:'SZC07410', type:'오프라인', cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리',         hours:'7시간 0분'},
+  {name:'동아ST 2025 상반기 셀링모델',             code:'SZC07411', type:'오프라인', cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'기획/문서',        hours:'7시간 0분'},
+  {name:'신입사원 비즈니스 매너',                  code:'NEW401',   type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'비즈니스매너',     hours:'2시간 0분'},
+  {name:'한 눈에 보는 우리 회사 이해',             code:'NEW402',   type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'회사이해',         hours:'1시간 0분'},
+  {name:'실무 엑셀 마스터 과정',                   code:'OA501',    type:'온라인',  cat1:'신입/직무전환', cat2:'OA실무',       cat3:'엑셀',             hours:'5시간 0분'},
 ];
 
 
@@ -2986,7 +3008,16 @@ function meEditSave() { alert('수정되었습니다.'); document.getElementById
 // ═══ 필수과정 팝업 ═══
 function meOpenCourseModal() {
   meCrsTab('s', document.getElementById('me-crs-tab-s'));
-  meCrsSingleAll();
+  // 대분류 옵션 채우기 + 초기화
+  const c1 = document.getElementById('me-crs-cat1');
+  c1.innerHTML = '<option value="">전체 분류</option>' +
+    Object.keys(ME_CRS_CATS).map(k=>`<option value="${k}">${k}</option>`).join('');
+  c1.value = '';
+  document.getElementById('me-crs-cat2').style.display = 'none';
+  document.getElementById('me-crs-cat3').style.display = 'none';
+  document.getElementById('me-crs-s-kw').value = '';
+  document.getElementById('me-crs-f-type').value = '';
+  meCrsRenderCatalog();
   document.getElementById('me-course-modal').style.display = 'flex';
 }
 function meCrsTab(tab, btn) {
@@ -2996,57 +3027,72 @@ function meCrsTab(tab, btn) {
     if(p) p.style.display = t===tab ? 'flex' : 'none';
   });
 }
-function meCrsSingleAll() {
-  const tbody = document.getElementById('me-crs-s-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = ME_SAMPLE_COURSES.map((c,i)=>`<tr>
-    <td style="text-align:center;"><input type="checkbox" class="me-crs-s-chk" onchange="meCrsSelCount()"></td>
-    <td style="text-align:center;color:#888;">${27231-i}</td>
-    <td style="text-align:left;padding-left:10px;font-weight:500;">${c.name}</td>
-    <td style="color:#888;font-size:11px;">${c.code}</td>
-    <td><span style="font-size:11px;padding:2px 6px;border-radius:3px;background:${c.type==='온라인'?'#e3f2fd':'#f3e5f5'};color:${c.type==='온라인'?'#1565c0':'#6a1b9a'};">${c.type}</span></td>
-    <td style="color:#888;font-size:11px;"></td>
-    <td style="color:#888;font-size:11px;"></td>
-  </tr>`).join('');
-  document.getElementById('me-crs-s-total').textContent = ME_SAMPLE_COURSES.length;
-  meCrsSelCount();
+// 계단식 분류 선택: 1번 선택 → 2번 노출, 2번 선택 → 3번 노출
+function meCrsCatChange(level) {
+  const c1 = document.getElementById('me-crs-cat1');
+  const c2 = document.getElementById('me-crs-cat2');
+  const c3 = document.getElementById('me-crs-cat3');
+  if(level === 1) {
+    const sub = ME_CRS_CATS[c1.value];
+    if(c1.value && sub) {
+      c2.innerHTML = '<option value="">중분류 선택</option>' +
+        Object.keys(sub).map(k=>`<option value="${k}">${k}</option>`).join('');
+      c2.style.display = '';
+    } else { c2.style.display = 'none'; }
+    c2.value = ''; c3.style.display = 'none'; c3.value = '';
+  } else if(level === 2) {
+    const sub = (ME_CRS_CATS[c1.value]||{})[c2.value];
+    if(c2.value && sub) {
+      c3.innerHTML = '<option value="">소분류 선택</option>' +
+        sub.map(k=>`<option value="${k}">${k}</option>`).join('');
+      c3.style.display = '';
+    } else { c3.style.display = 'none'; }
+    c3.value = '';
+  }
+  meCrsRenderCatalog();
 }
-function meCrsSingleSearch() {
-  const kw = document.getElementById('me-crs-s-kw')?.value.trim();
-  if(!kw) { meCrsSingleAll(); return; }
-  const filtered = ME_SAMPLE_COURSES.filter(c=>c.name.includes(kw)||c.code.includes(kw));
-  const tbody = document.getElementById('me-crs-s-tbody');
-  tbody.innerHTML = filtered.length
-    ? filtered.map((c,i)=>`<tr>
-        <td style="text-align:center;"><input type="checkbox" class="me-crs-s-chk" onchange="meCrsSelCount()"></td>
-        <td style="text-align:center;color:#888;">${27231-i}</td>
-        <td style="text-align:left;padding-left:10px;font-weight:500;">${c.name}</td>
-        <td style="color:#888;font-size:11px;">${c.code}</td>
-        <td><span style="font-size:11px;padding:2px 6px;border-radius:3px;background:${c.type==='온라인'?'#e3f2fd':'#f3e5f5'};color:${c.type==='온라인'?'#1565c0':'#6a1b9a'};">${c.type}</span></td>
-        <td style="color:#888;font-size:11px;"></td><td style="color:#888;font-size:11px;"></td>
-      </tr>`).join('')
-    : '<tr><td colspan="7" style="text-align:center;padding:20px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
-  document.getElementById('me-crs-s-total').textContent = filtered.length;
-  meCrsSelCount();
-}
-function meCrsSelCount() {
-  const cnt = document.querySelectorAll('.me-crs-s-chk:checked').length;
-  document.getElementById('me-crs-s-sel').textContent = cnt;
-}
-function meCrsSingleReg() {
-  const checked = [...document.querySelectorAll('.me-crs-s-chk:checked')];
-  if(!checked.length) { alert('등록할 과정을 선택해주세요.'); return; }
-  checked.forEach(chk => {
-    const cells = chk.closest('tr').querySelectorAll('td');
-    const name = cells[2].textContent.trim();
-    const code = cells[3].textContent.trim();
-    const type = cells[4].textContent.trim();
-    if(!ME_REG_COURSES.find(c=>c.code===code)) {
-      ME_REG_COURSES.push({name, code, type, done:false, doneDate:''});
-    }
+// 분류·검색·유형 조건으로 과정 리스트 렌더 (썸네일 미노출)
+function meCrsRenderCatalog() {
+  const cat1 = document.getElementById('me-crs-cat1').value;
+  const cat2 = document.getElementById('me-crs-cat2').value;
+  const cat3 = document.getElementById('me-crs-cat3').value;
+  const kw   = (document.getElementById('me-crs-s-kw').value||'').trim();
+  const type = document.getElementById('me-crs-f-type').value;
+  const list = ME_SAMPLE_COURSES.filter(c=>{
+    if(cat1 && c.cat1 !== cat1) return false;
+    if(cat2 && c.cat2 !== cat2) return false;
+    if(cat3 && c.cat3 !== cat3) return false;
+    if(type && c.type !== type) return false;
+    if(kw && !(c.name.includes(kw) || c.code.includes(kw))) return false;
+    return true;
   });
+  const wrap = document.getElementById('me-crs-catalog');
+  wrap.innerHTML = list.length ? list.map(c=>{
+    const added = ME_REG_COURSES.some(x=>x.code===c.code);
+    const tcolor = c.type==='온라인'?'#1565c0':'#6a1b9a';
+    const tbg    = c.type==='온라인'?'#e3f2fd':'#f3e5f5';
+    return `<div class="me-crs-item">
+      <div style="min-width:0;">
+        <div class="me-crs-item-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.name}</div>
+        <div class="me-crs-item-meta"><span style="padding:1px 6px;border-radius:3px;background:${tbg};color:${tcolor};">${c.type}</span> &nbsp;·&nbsp; ${c.code} &nbsp;·&nbsp; ${c.hours}</div>
+      </div>
+      ${added
+        ? '<button class="me-crs-add added">&#10003;</button>'
+        : `<button class="me-crs-add" onclick="meCrsAddCourse('${c.code}')">+</button>`}
+    </div>`;
+  }).join('') : '<div style="text-align:center;padding:40px;color:#aaa;font-size:13px;">조건에 맞는 과정이 없습니다.</div>';
+  document.getElementById('me-crs-s-total').textContent = list.length;
+  document.getElementById('me-crs-s-sel').textContent   = ME_REG_COURSES.length;
+}
+// 항목 + 버튼 클릭 → 필수과정에 즉시 추가 (모달 유지, 중복 자동 제거)
+function meCrsAddCourse(code) {
+  const c = ME_SAMPLE_COURSES.find(x=>x.code===code);
+  if(!c) return;
+  if(!ME_REG_COURSES.find(x=>x.code===code)) {
+    ME_REG_COURSES.push({name:c.name, code:c.code, type:c.type, done:false, doneDate:''});
+  }
   meRegRenderCourses();
-  document.getElementById('me-course-modal').style.display = 'none';
+  meCrsRenderCatalog();
 }
 
 // ═══ 필수과정 일괄등록 JS ═══
