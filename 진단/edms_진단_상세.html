@@ -818,7 +818,7 @@
           <input type="date" id="modalStartDateInp" class="input" value="2025-05-01" style="width:140px;height:30px;">
           <input type="time" id="modalStartTimeInp" class="input" value="00:00" style="width:100px;height:30px;">
         </div>
-        <div class="modal-notice" id="modalStartDateNote">진행중인 진단이 포함되어 있어 시작일은 변경할 수 없습니다.</div>
+        <div class="modal-notice" id="modalStartDateNote">진행중인 진단이 포함되어 있어 시작일 변경은 적용되지 않습니다.</div>
       </div>
     </div>
     <div class="modal-date-row">
@@ -1020,18 +1020,13 @@
       document.getElementById('mailModalMsg').textContent = count + '선택 인원에게 메일을 전송하겠습니까?';
       document.getElementById('mailModal').classList.add('open');
     } else if (val === 'datechange') {
-      // 선택된 행 중 진행중 상태가 있으면 시작일 비활성화
+      // 선택된 행 중 진행중 상태가 있으면 안내 문구 표시 (시작일 입력은 가능하지만 확인 시 무시됨)
       const checkedRows = [...document.querySelectorAll('.after-row-chk:not(:disabled):checked')]
         .map(cb => cb.closest('tr'));
       const hasInProgress = checkedRows.some(tr =>
         [...tr.querySelectorAll('.badge')].some(b => b.textContent.trim() === '진행중')
       );
-      const startDateInp = document.getElementById('modalStartDateInp');
-      const startTimeInp = document.getElementById('modalStartTimeInp');
-      const note         = document.getElementById('modalStartDateNote');
-      startDateInp.disabled = hasInProgress;
-      startTimeInp.disabled = hasInProgress;
-      note.style.display    = hasInProgress ? '' : 'none';
+      document.getElementById('modalStartDateNote').style.display = hasInProgress ? '' : 'none';
 
       document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
       document.getElementById('dateChangeModal').classList.add('open');
@@ -1045,8 +1040,14 @@
     showToast('메일 전송이 완료되었습니다.');
   }
   function confirmDateChange() {
+    // 진행중 상태가 포함된 경우 시작일은 무시하고 종료일만 반영
+    const hasInProgress = document.getElementById('modalStartDateNote').style.display !== 'none';
     closeModalById('dateChangeModal');
-    showToast('변경이 완료되었습니다.');
+    if (hasInProgress) {
+      showToast('종료일이 변경되었습니다. (진행중인 진단의 시작일은 변경되지 않았습니다.)');
+    } else {
+      showToast('시작/종료일이 변경되었습니다.');
+    }
   }
 
   // ── 대상자 등록: 공통 모듈 사용 ──
