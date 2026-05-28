@@ -823,8 +823,13 @@
     </div>
     <div class="modal-date-row">
       <div class="modal-date-label">종료일</div>
-      <input type="date" class="input" value="2025-05-31" style="width:140px;height:30px;">
-      <input type="time" class="input" value="23:59" style="width:100px;height:30px;">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+        <div style="display:flex;gap:6px;">
+          <input type="date" id="modalEndDateInp" class="input" value="2025-05-31" style="width:140px;height:30px;">
+          <input type="time" id="modalEndTimeInp" class="input" value="23:59" style="width:100px;height:30px;">
+        </div>
+        <div class="modal-notice" id="modalEndDateNote" style="display:none;">현재 설정된 종료일 이전으로는 변경할 수 없습니다.</div>
+      </div>
     </div>
     <div class="modal-btn-row">
       <button class="btn btn-primary btn-sm" onclick="confirmDateChange()">확인</button>
@@ -1028,6 +1033,27 @@
       );
       document.getElementById('modalStartDateNote').style.display = hasInProgress ? '' : 'none';
 
+      // 선택된 행들의 현재 종료일 중 가장 늦은 날짜를 min으로 설정
+      const endDates = checkedRows.map(tr => {
+        const lastTd = tr.querySelector('td:last-child');
+        if (!lastTd) return '';
+        const inp = lastTd.querySelector('input[type="date"]');
+        if (inp && inp.value) return inp.value;
+        const txt = lastTd.textContent.trim();
+        const m = txt.match(/(\d{4})\.(\d{2})\.(\d{2})/);
+        return m ? `${m[1]}-${m[2]}-${m[3]}` : '';
+      }).filter(Boolean);
+      const maxEndDate = endDates.length ? [...endDates].sort().reverse()[0] : '';
+      const endDateInp = document.getElementById('modalEndDateInp');
+      const endDateNote = document.getElementById('modalEndDateNote');
+      endDateInp.min = maxEndDate;
+      if (maxEndDate) {
+        if (endDateInp.value < maxEndDate) endDateInp.value = maxEndDate;
+        endDateNote.style.display = '';
+      } else {
+        endDateNote.style.display = 'none';
+      }
+
       document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
       document.getElementById('dateChangeModal').classList.add('open');
     }
@@ -1040,6 +1066,12 @@
     showToast('메일 전송이 완료되었습니다.');
   }
   function confirmDateChange() {
+    // 종료일 유효성 검사: 현재 설정된 종료일 이전으로 변경 불가
+    const endDateInp = document.getElementById('modalEndDateInp');
+    if (endDateInp.min && endDateInp.value < endDateInp.min) {
+      showToast('종료일은 현재 설정된 날짜(' + endDateInp.min + ') 이전으로 변경할 수 없습니다.');
+      return;
+    }
     // 진행중 포함 여부에 따라 메시지 분기
     // 진행중 아닌 대상 → 시작/종료일 모두 반영, 진행중 대상 → 종료일만 반영
     const hasInProgress = document.getElementById('modalStartDateNote').style.display !== 'none';
