@@ -1162,7 +1162,6 @@
           <span class="diag-resp-tab" data-tab="직무별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직무별</span>
           <span class="diag-resp-tab" data-tab="직군별"  onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">직군별</span>
           <span class="diag-resp-tab" data-tab="대상구분별" onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">대상구분별</span>
-          <span class="diag-resp-tab" data-tab="일괄등록" onclick="diagRespSelectTab(this)" style="padding:9px 12px;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;color:#888;white-space:nowrap;">일괄등록</span>
         </div>
         <!-- ── 개별 탭 패널 ── -->
         <div id="diag-resp-panel-single" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
@@ -1231,51 +1230,6 @@
           </div>
         </div><!-- /panel-split -->
 
-        <!-- ── 일괄등록 탭 패널 ── -->
-        <div id="diag-resp-panel-batch" style="display:none;flex-direction:column;overflow-y:auto;padding:20px 24px;gap:16px;">
-          <!-- Step 1 -->
-          <div style="background:#f0f4ff;border:1px solid #c7d6f5;border-radius:6px;padding:14px 18px;">
-            <div style="font-size:12px;font-weight:700;color:#1a73e8;margin-bottom:6px;">STEP 1. 샘플 양식 다운로드</div>
-            <div style="font-size:12px;color:#555;margin-bottom:10px;">아래 버튼을 클릭하여 일괄등록 양식(엑셀)을 다운로드한 후, 사번을 입력하여 저장하세요.</div>
-            <button onclick="showToast('샘플 파일이 다운로드됩니다.')" style="height:28px;padding:0 14px;font-size:12px;font-weight:600;background:#1a73e8;color:#fff;border:none;border-radius:4px;cursor:pointer;">📥 샘플 양식 다운로드</button>
-          </div>
-          <!-- Step 2 -->
-          <div style="background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px 18px;">
-            <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px;">STEP 2. 파일 업로드</div>
-            <div id="diag-resp-batch-dropzone" onclick="document.getElementById('diag-resp-batch-file').click()" ondragover="event.preventDefault();this.style.background='#e8f0fe';" ondragleave="this.style.background='#fafafa';" ondrop="diagRespBatchDrop(event)" style="border:2px dashed #c8d3e6;border-radius:6px;background:#fafafa;text-align:center;padding:24px 20px;cursor:pointer;transition:background .2s;">
-              <div style="font-size:26px;margin-bottom:6px;">📂</div>
-              <div style="font-size:13px;color:#666;font-weight:600;">엑셀 파일을 드래그하거나 클릭하여 업로드</div>
-              <div style="font-size:11px;color:#aaa;margin-top:3px;">.xlsx / .xls 형식만 지원됩니다.</div>
-              <input id="diag-resp-batch-file" type="file" accept=".xlsx,.xls" style="display:none" onchange="diagRespBatchFileSelect(this)">
-            </div>
-          </div>
-          <!-- Step 3 -->
-          <div id="diag-resp-batch-preview-wrap" style="display:none;background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px 18px;">
-            <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
-              STEP 3. 업로드 결과 확인 후 등록
-              <span id="diag-resp-batch-preview-cnt" style="font-size:11px;background:#e8f0fe;color:#1a73e8;padding:1px 8px;border-radius:10px;"></span>
-            </div>
-            <div style="max-height:160px;overflow-y:auto;border:1px solid #eee;border-radius:4px;margin-bottom:10px;">
-              <table class="main-table" style="font-size:11px;">
-                <thead style="position:sticky;top:0;background:#f0f2f5;"><tr>
-                  <th>이름</th><th>사번</th><th>회사명</th><th>부서명</th><th style="width:60px;">상태</th>
-                </tr></thead>
-                <tbody id="diag-resp-batch-tbody"></tbody>
-              </table>
-            </div>
-            <div id="diag-resp-batch-error-wrap" style="display:none;margin-bottom:10px;">
-              <div style="font-size:11px;font-weight:700;color:#d32f2f;margin-bottom:4px;">⚠ 오류 항목</div>
-              <table style="width:100%;border-collapse:collapse;font-size:11px;">
-                <thead><tr style="background:#fff3f3;">
-                  <th style="padding:4px 8px;text-align:left;border:1px solid #fcc;">오류 유형</th>
-                  <th style="padding:4px 8px;text-align:left;border:1px solid #fcc;">설명</th>
-                </tr></thead>
-                <tbody id="diag-resp-batch-error-tbody"></tbody>
-              </table>
-            </div>
-            <button onclick="diagRespBatchRegister()" style="height:28px;padding:0 18px;font-size:12px;font-weight:700;background:#1a73e8;color:#fff;border:none;border-radius:4px;cursor:pointer;">등록</button>
-          </div>
-        </div><!-- /panel-batch -->
       </div><!-- /가운데 패널 -->
 
       <!-- ③ 오른쪽 패널: 등록된 응답자 -->
@@ -1415,7 +1369,6 @@ function diagRespModalInit() {
   // 패널 초기화
   document.getElementById('diag-resp-panel-single').style.display = 'flex';
   document.getElementById('diag-resp-panel-split').style.display  = 'none';
-  document.getElementById('diag-resp-panel-batch').style.display  = 'none';
   _diagRespRenderSidebar();
   _diagRespRenderPool();
   _diagRespRenderRegistered();
@@ -1469,13 +1422,10 @@ function diagRespSelectTab(el) {
   const tab = el.dataset.tab;
   const single = document.getElementById('diag-resp-panel-single');
   const split  = document.getElementById('diag-resp-panel-split');
-  const batch  = document.getElementById('diag-resp-panel-batch');
   if (tab === '개별') {
-    single.style.display = 'flex'; split.style.display = 'none'; batch.style.display = 'none';
-  } else if (tab === '일괄등록') {
-    single.style.display = 'none'; split.style.display = 'none'; batch.style.display = 'flex';
+    single.style.display = 'flex'; split.style.display = 'none';
   } else {
-    single.style.display = 'none'; split.style.display = 'flex'; batch.style.display = 'none';
+    single.style.display = 'none'; split.style.display = 'flex';
     _diagRespLoadSplit(tab);
   }
 }
@@ -1681,55 +1631,6 @@ function diagRespAddSplitChecked() {
   _diagRespRenderRegistered();
   _diagRespRenderSplitRight(_diagRespSplitFilteredMembers);
   showToast(cnt + '명이 추가되었습니다.');
-}
-
-// ── 일괄등록 패널 ─────────────────────────────────────────────────────
-let _diagRespBatchMembers = [];
-
-function diagRespBatchDrop(e) {
-  e.preventDefault();
-  document.getElementById('diag-resp-batch-dropzone').style.background = '#fafafa';
-  showToast('파일이 업로드되었습니다. (시뮬레이션)');
-  _diagRespBatchSimulate();
-}
-function diagRespBatchFileSelect(input) {
-  if (!input.files.length) return;
-  showToast(input.files[0].name + ' 업로드 완료 (시뮬레이션)');
-  _diagRespBatchSimulate();
-  input.value = '';
-}
-function _diagRespBatchSimulate() {
-  _diagRespBatchMembers = DIAG_MEMBERS_POOL.map(m => ({...m, _status: _diagRespTempList.some(r => r.empno === m.empno) ? 'dup' : 'ok'}));
-  const previewWrap = document.getElementById('diag-resp-batch-preview-wrap');
-  previewWrap.style.display = 'block';
-  const okCnt  = _diagRespBatchMembers.filter(m => m._status === 'ok').length;
-  const dupCnt = _diagRespBatchMembers.filter(m => m._status === 'dup').length;
-  document.getElementById('diag-resp-batch-preview-cnt').textContent = '총 ' + _diagRespBatchMembers.length + '명 (신규 ' + okCnt + '명 / 중복 ' + dupCnt + '명)';
-  document.getElementById('diag-resp-batch-tbody').innerHTML = _diagRespBatchMembers.map(m =>
-    `<tr>
-      <td style="padding:4px 8px;">${_maskN(m.name)}</td>
-      <td style="text-align:center;padding:4px 8px;color:#888;">${m.empno||'-'}</td>
-      <td style="text-align:center;padding:4px 8px;font-size:11px;">${m.company||'-'}</td>
-      <td style="padding:4px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-      <td style="text-align:center;padding:4px 8px;">${m._status==='dup' ? '<span style="color:#f57c00;font-size:11px;">중복</span>' : '<span style="color:#43a047;font-size:11px;">신규</span>'}</td>
-    </tr>`
-  ).join('');
-  if (dupCnt > 0) {
-    document.getElementById('diag-resp-batch-error-wrap').style.display = 'block';
-    document.getElementById('diag-resp-batch-error-tbody').innerHTML =
-      `<tr><td style="padding:4px 8px;border:1px solid #fcc;color:#c62828;">중복 등록</td><td style="padding:4px 8px;border:1px solid #fcc;color:#c62828;">이미 등록된 응답자가 ${dupCnt}명 포함되어 있습니다. 신규 항목만 등록됩니다.</td></tr>`;
-  } else {
-    document.getElementById('diag-resp-batch-error-wrap').style.display = 'none';
-  }
-}
-function diagRespBatchRegister() {
-  const newMembers = _diagRespBatchMembers.filter(m => m._status === 'ok');
-  if (!newMembers.length) { showToast('등록할 신규 인원이 없습니다.'); return; }
-  newMembers.forEach(m => { const {_status, ...rest} = m; _diagRespTempList.push(rest); });
-  _diagRespRenderRegistered();
-  document.getElementById('diag-resp-batch-preview-wrap').style.display = 'none';
-  _diagRespBatchMembers = [];
-  showToast(newMembers.length + '명이 등록되었습니다.');
 }
 
 function diagRespListClose() {
