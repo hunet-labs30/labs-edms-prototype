@@ -2207,7 +2207,7 @@ const ME_DATA = [
       {no:1,name:'홍길동',loginId:'hong@hunet.co.kr',empno:'20240001',company:'동아ST',dept:'인사팀',email:'hong@hunet.co.kr',phone:'010-9999-0001'},
       {no:2,name:'이수연',loginId:'leesy@hunet.co.kr',empno:'20230002',company:'동아ST',dept:'기획팀',email:'lee@hunet.co.kr',phone:'010-1111-2222'},
       {no:3,name:'김민준',loginId:'kimm@hunet.co.kr',empno:'20220010',company:'동아ST',dept:'안전팀',email:'kim@hunet.co.kr',phone:'010-2222-3333'},
-      {no:4,name:'박지현',loginId:'parkjh@hunet.co.kr',empno:'20210020',company:'동아쏘시오홀딩스',dept:'HR팀',email:'park@hunet.co.kr',phone:'010-3333-4444'},
+      {no:4,name:'박지현',loginId:'parkjh@hunet.co.kr',empno:'20210020',company:'동아쏘시오홀딩스',dept:'HR팀',email:'park@hunet.co.kr',phone:'010-3333-4444',resigned:true},
       {no:5,name:'최서연',loginId:'choisy@hunet.co.kr',empno:'20200030',company:'동아ST',dept:'교육팀',email:'choi@hunet.co.kr',phone:'010-4444-5555'},
       {no:6,name:'정유진',loginId:'jungyj@hunet.co.kr',empno:'20190040',company:'동아쏘시오홀딩스',dept:'재무팀',email:'jung@hunet.co.kr',phone:'010-5555-6666'},
       {no:7,name:'강동원',loginId:'kangdw@hunet.co.kr',empno:'20180050',company:'동아ST',dept:'전략팀',email:'kang@hunet.co.kr',phone:'010-6666-7777'},
@@ -2270,7 +2270,7 @@ const ME_PERSONAL = [
   {no:10,name:'홍길동',  loginId:'hong@hunet.co.kr', empno:'20240001',company:'동아ST',         dept:'인사팀',              eduName:'2025 개인정보보호 법정의무교육',          courseName:'개인정보보호 교육',           period:'2025-01-01 ~ 2026-04-17',done:'미수료'},
   {no:9, name:'이수연',  loginId:'lee@hunet.co.kr',  empno:'20230002',company:'동아ST',         dept:'기획팀',              eduName:'2025 직장 내 괴롭힘 예방 교육',           courseName:'직장 내 괴롭힘 예방 교육',    period:'2025-01-01 ~ 2026-04-28',done:'미수료'},
   {no:8, name:'김민준',  loginId:'kimm@hunet.co.kr',  empno:'20220010',company:'동아ST',         dept:'안전팀',              eduName:'2025 산업안전보건 교육_사무직_제조업',    courseName:'산업안전보건 교육(상반기)',   period:'2025-01-01 ~ 2026-05-31',done:'미수료'},
-  {no:7, name:'박지현',  loginId:'parkjh@hunet.co.kr', empno:'20210020',company:'동아쏘시오홀딩스',dept:'HR팀',               eduName:'2025 성희롱 예방 교육',                  courseName:'성희롱 예방 교육',            period:'2025-01-01 ~ 2026-06-30',done:'미수료'},
+  {no:7, name:'박지현',  loginId:'parkjh@hunet.co.kr', empno:'20210020',company:'동아쏘시오홀딩스',dept:'HR팀',               eduName:'2025 성희롱 예방 교육',                  courseName:'성희롱 예방 교육',            period:'2025-01-01 ~ 2026-06-30',done:'미수료',resigned:true},
   {no:6, name:'최서연',  loginId:'choisy@hunet.co.kr', empno:'20200030',company:'동아ST',         dept:'교육팀',              eduName:'2025 장애인 인식 개선 교육',              courseName:'장애인 인식 개선 교육',       period:'2025-01-01 ~ 2026-07-31',done:'수료'},
   {no:5, name:'정유진',  loginId:'jungyj@hunet.co.kr', empno:'20190040',company:'동아쏘시오홀딩스',dept:'재무팀',             eduName:'2025 퇴직연금 가입자 교육',               courseName:'퇴직연금 교육',               period:'2025-01-01 ~ 2026-09-30',done:'수료'},
   {no:4, name:'강동원',  loginId:'kangdw@hunet.co.kr', empno:'20180050',company:'동아ST',         dept:'전략팀',              eduName:'2025 리더십 역량 강화 필수과정_과장급이상',courseName:'리더십 기초',                period:'2025-01-01 ~ 2026-10-31',done:'수료'},
@@ -2624,7 +2624,11 @@ function meDetSubTab(tab, btn) {
 function meRenderDetMembers(list) {
   const data = list !== undefined ? list : (meCurrentItem?.members || []);
   document.getElementById('me-det-member-tbody').innerHTML = data.length
-    ? data.map(m=>`<tr><td>${m.no}</td>
+    ? data.map(m=> m.resigned
+        ? `<tr style="color:#9ca3af;"><td>${m.no}</td>
+        <td style="font-style:italic;">탈퇴한 임직원</td>
+        <td>-</td><td>-</td><td>-</td><td>-</td></tr>`
+        : `<tr><td>${m.no}</td>
         <td style="color:var(--primary);cursor:pointer;" onclick="mePrevPage='me-register';window._mePrevTab='';meOpenPersonPage('${m.empno}')">${_maskN(m.name)}</td>
         <td>${_maskL(m.loginId)}</td><td>${m.empno}</td><td>${m.company}</td><td>${m.dept}</td></tr>`).join('')
     : '<tr><td colspan="6" style="text-align:center;padding:20px;color:#aaa;">등록된 교육인원이 없습니다.</td></tr>';
@@ -2752,7 +2756,20 @@ function meOpenPersonFromPersonal(empno) {
 function meRenderPersonal() {
   const tbody = document.getElementById('me-personal-tbody');
   if(!tbody) return;
-  tbody.innerHTML = ME_PERSONAL.map(d=>`<tr>
+  tbody.innerHTML = ME_PERSONAL.map(d=>{
+    // 탈퇴한 임직원: 이름 → "탈퇴한 임직원", 개인정보 컬럼 → "-", 개인 수료 상세 진입 비활성. 교육정보·수료여부는 유지
+    if(d.resigned){
+      return `<tr style="color:#9ca3af;">
+        <td>${d.no}</td>
+        <td style="font-style:italic;">탈퇴한 임직원</td>
+        <td>-</td><td>-</td><td>-</td><td>-</td>
+        <td style="text-align:left;padding-left:8px;">${d.eduName}</td>
+        <td style="text-align:left;padding-left:8px;">${d.courseName}</td>
+        <td style="font-size:11px;">${d.period}</td>
+        <td style="color:${d.done==='수료'?'#1e7e50':'#e53935'};font-weight:600;">${d.done}</td>
+      </tr>`;
+    }
+    return `<tr>
     <td>${d.no}</td>
     <td>${_maskN(d.name)}</td>
     <td>${_maskL(d.loginId)}</td><td>${d.empno}</td><td>${d.company}</td><td>${d.dept}</td>
@@ -2760,7 +2777,7 @@ function meRenderPersonal() {
     <td style="text-align:left;padding-left:8px;">${d.courseName}</td>
     <td style="font-size:11px;">${d.period}</td>
     <td style="color:${d.done==='수료'?'#1e7e50':'#e53935'};font-weight:600;">${d.done}</td>
-  </tr>`).join('');
+  </tr>`;}).join('');
 }
 
 // ═══ 등록 ═══
