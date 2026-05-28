@@ -1114,6 +1114,40 @@
   </div>
 </div>
 
+<!-- ═══ 진단 응답자 목록 팝업 ═══ -->
+<div id="diag-resp-list-modal" onclick="if(event.target===this)diagRespListClose()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2900;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:560px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+    <!-- 헤더 -->
+    <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:14px;font-weight:700;">진단 응답자 목록</span>
+        <span id="diag-resp-list-cnt" style="font-size:12px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 8px;border-radius:10px;">0명</span>
+      </div>
+      <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagRespListClose()">×</span>
+    </div>
+    <!-- 테이블 -->
+    <div style="flex:1;overflow-y:auto;">
+      <table class="main-table" style="font-size:12px;">
+        <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;"><tr>
+          <th style="width:40px;">No</th>
+          <th>이름</th>
+          <th style="width:110px;">사번</th>
+          <th>부서명</th>
+          <th style="width:60px;">삭제</th>
+        </tr></thead>
+        <tbody id="diag-resp-list-tbody">
+          <tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 응답자가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 푸터 -->
+    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
+      <button class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="openDiagAddModal()">+ 추가 등록</button>
+      <button class="btn btn-reset" style="height:30px;padding:0 16px;" onclick="diagRespListClose()">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ 대상자 등록 공통 모듈 ═══ -->
 <script src="../공통/emp-register-popup.js"></script>
 
@@ -1189,20 +1223,51 @@ function openDiagListModal(rowIdx, cell, type) {
   _currentDiagRowIdx = rowIdx ?? -1;
   _currentDiagCell   = cell ?? null;
   _currentDiagType   = type || 'target';
-  _diagSearchKeyword = '';
-  _diagSearchType    = 'name';
-  _diagSearchCompany = '';
-  document.getElementById('diag-list-title').textContent =
-    _currentDiagType === 'respondent' ? '진단 응답자 목록' : '진단 대상자 목록';
-  // 회사 드롭다운 갱신
-  const allMembers = _currentDict()[_currentDiagRowIdx] || [];
-  const companies = [...new Set(allMembers.map(m => m.company).filter(Boolean))];
-  const sel = document.getElementById('diag-search-company');
-  sel.innerHTML = '<option value="">회사 전체</option>' + companies.map(c => `<option value="${c}">${c}</option>`).join('');
-  document.getElementById('diag-search-keyword').value = '';
-  document.getElementById('diag-search-type').value = 'name';
-  diagListRender();
-  document.getElementById('diag-target-list-modal').style.display = 'flex';
+  if (_currentDiagType === 'respondent') {
+    diagRespListRender();
+    document.getElementById('diag-resp-list-modal').style.display = 'flex';
+  } else {
+    _diagSearchKeyword = '';
+    _diagSearchType    = 'name';
+    _diagSearchCompany = '';
+    // 회사 드롭다운 갱신
+    const allMembers = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+    const companies = [...new Set(allMembers.map(m => m.company).filter(Boolean))];
+    const sel = document.getElementById('diag-search-company');
+    sel.innerHTML = '<option value="">회사 전체</option>' + companies.map(c => `<option value="${c}">${c}</option>`).join('');
+    document.getElementById('diag-search-keyword').value = '';
+    document.getElementById('diag-search-type').value = 'name';
+    diagListRender();
+    document.getElementById('diag-target-list-modal').style.display = 'flex';
+  }
+}
+
+// ── 응답자 목록 팝업 전용 함수 ──
+function diagRespListRender() {
+  const members = DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [];
+  document.getElementById('diag-resp-list-cnt').textContent = members.length + '명';
+  const tbody = document.getElementById('diag-resp-list-tbody');
+  if (!members.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#aaa;">등록된 응답자가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = members.map((m, i) => `<tr>
+    <td style="text-align:center;padding:5px 4px;color:#888;font-size:11px;">${i+1}</td>
+    <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
+    <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
+    <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
+    <td style="text-align:center;padding:5px 4px;"><button onclick="diagRespListDelete(${i})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button></td>
+  </tr>`).join('');
+}
+function diagRespListDelete(idx) {
+  const members = DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [];
+  members.splice(idx, 1);
+  DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] = members;
+  _diagUpdateCell(members.length);
+  diagRespListRender();
+}
+function diagRespListClose() {
+  document.getElementById('diag-resp-list-modal').style.display = 'none';
 }
 function diagListRender() {
   const allMembers = _currentDict()[_currentDiagRowIdx] || [];
