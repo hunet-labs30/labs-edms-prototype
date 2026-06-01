@@ -1764,7 +1764,7 @@
           <div class="label">과정검색</div>
           <select class="select" id="p-sel-course-type">
             <option value="name">과정명</option>
-            <option value="code">과정코드</option>
+            <option value="code">상품코드</option>
           </select>
           <input type="text" class="input" id="p-input-course" placeholder="검색어를 입력해주세요.">
           <select class="select" id="p-sel-course-form">
@@ -1891,7 +1891,7 @@
           <div class="label">과정검색</div>
           <select class="select" id="c-sel-course-type">
             <option value="name">과정명</option>
-            <option value="code">과정코드</option>
+            <option value="code">상품코드</option>
           </select>
           <input type="text" class="input" id="c-input-course" placeholder="검색어를 입력해주세요.">
           <select class="select" id="c-sel-course-form">
@@ -2024,7 +2024,7 @@
           <div class="label-auto" style="margin-left:6px">과정검색</div>
           <select class="select" id="sp-sel-course-type">
             <option value="name">과정명</option>
-            <option value="code">과정코드</option>
+            <option value="code">상품코드</option>
           </select>
           <input type="text" class="input" id="sp-input-course" placeholder="검색어를 입력해주세요.">
           <select class="select" id="sp-sel-course-form">
@@ -2166,7 +2166,7 @@
             <div style="display:flex;align-items:center;gap:6px">
               <select class="select" id="sc-sel-course-type" style="min-width:90px">
                 <option value="name">과정명</option>
-                <option value="code">과정코드</option>
+                <option value="code">상품코드</option>
               </select>
               <input type="text" class="input" id="sc-input-course" placeholder="검색어를 입력해주세요." style="min-width:200px">
               <select class="select" id="sc-sel-course-form" style="min-width:100px">
@@ -2759,7 +2759,7 @@
           <div class="rp-sub-title">등록 시 유의사항</div>
           <div class="rp-notice">
             <ul>
-              <li>아이디, 과정명, 과정코드, 학습기간은 필수이며 선택 해제 하실 수 없습니다.</li>
+              <li>아이디, 과정명, 상품코드, 학습기간은 필수이며 선택 해제 하실 수 없습니다.</li>
               <li>추가적으로 필요한 항목은 추가, 삭제해주세요.</li>
             </ul>
           </div>
@@ -2779,7 +2779,7 @@
             <div>
               <div class="rp-chk-col-title">과정 정보</div>
               <label class="rp-chk-item required"><input type="checkbox" class="rp-chk" data-field="과정명" checked disabled> 과정명</label>
-              <label class="rp-chk-item required"><input type="checkbox" class="rp-chk" data-field="과정코드" checked disabled> 과정코드</label>
+              <label class="rp-chk-item required"><input type="checkbox" class="rp-chk" data-field="상품코드" checked disabled> 상품코드</label>
               <label class="rp-chk-item"><input type="checkbox" class="rp-chk" data-field="CP명"> CP명</label>
               <label class="rp-chk-item"><input type="checkbox" class="rp-chk" data-field="CP코드"> CP코드</label>
               <label class="rp-chk-item"><input type="checkbox" class="rp-chk" data-field="과정유형"> 과정유형</label>
@@ -5306,7 +5306,7 @@ const RV_COL_MAP = {
   '부서/팀':  r => r.dept,
   '직급':     r => r.grade,
   '과정명':   r => r.course,
-  '과정코드': r => r.courseCode,
+  '상품코드': r => r.courseCode,
   '학습기간': r => r.period,
   '연도':     r => r.year,
   '학습상태': r => r.status,
@@ -5314,7 +5314,7 @@ const RV_COL_MAP = {
 };
 
 // 기본 표시 컬럼 (보고서 생성 시 저장된 항목 없을 경우 기본값)
-const RV_DEFAULT_COLS = ['아이디','이름','사번','회사','부서/팀','직급','과정명','과정코드','학습기간','연도','학습상태','수료점수'];
+const RV_DEFAULT_COLS = ['아이디','이름','사번','회사','부서/팀','직급','과정명','상품코드','학습기간','연도','학습상태','수료점수'];
 
 function rvGetCols() {
   // 보고서에 저장된 fields가 있으면 사용, 없으면 기본값
@@ -5496,7 +5496,7 @@ document.getElementById('rp-page-size').addEventListener('change', function() {
 rpRenderTable();
 
 // ── 결과보고서 생성 ──
-const REQUIRED_FIELDS = ['아이디','과정명','과정코드','학습기간'];
+const REQUIRED_FIELDS = ['아이디','과정명','상품코드','학습기간'];
 
 function rpGetSelectedFields() {
   return [...document.querySelectorAll('.rp-chk:checked')].map(el => el.dataset.field);
@@ -5598,7 +5598,7 @@ const FIELD_KEY_MAP = {
   '부서/팀': r => r.dept,
   '직급':   r => r.grade,
   '과정명': r => r.course,
-  '과정코드': r => r.courseCode,
+  '상품코드': r => r.courseCode,
   'CP명':   r => '-',
   'CP코드': r => '-',
   '과정유형': r => r.type,

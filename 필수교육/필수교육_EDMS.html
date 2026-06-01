@@ -1824,7 +1824,7 @@
         <!-- 인라인 빠른 검색 -->
         <div style="display:flex;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);">
           <select class="select" id="me-reg-course-type" style="height:28px;font-size:12px;width:86px;"><option value="">전체</option><option value="온라인">온라인</option><option value="오프라인">오프라인</option><option value="하이브리드">하이브리드</option><option value="마이크로러닝">마이크로러닝</option></select>
-          <input type="text" class="input" id="me-reg-course-kw" placeholder="과정명 or 과정코드" style="height:28px;font-size:12px;flex:1;" onkeydown="if(event.key==='Enter')meRegAddCourse()">
+          <input type="text" class="input" id="me-reg-course-kw" placeholder="과정명 or 상품코드" style="height:28px;font-size:12px;flex:1;" onkeydown="if(event.key==='Enter')meRegAddCourse()">
           <button class="btn btn-primary" onclick="meRegAddCourse()">&#128269; 검색</button>
           <button class="btn btn-reset" onclick="meRegAddCourseAll()">전체보기</button>
         </div>
@@ -1834,7 +1834,7 @@
               <col style="width:32px;"><!-- 체크박스 -->
               <col style="width:32px;"><!-- No -->
               <col><!-- 과정명 -->
-              <col style="width:90px;"><!-- 과정코드 -->
+              <col style="width:90px;"><!-- 상품코드 -->
               <col style="width:60px;"><!-- 유형 -->
               <col style="width:46px;"><!-- 삭제 -->
             </colgroup>
@@ -1845,7 +1845,7 @@
                 </th>
                 <th style="padding:6px 4px;border-bottom:1px solid var(--border);text-align:center;color:#555;font-weight:600;">No</th>
                 <th style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;color:#555;font-weight:600;">과정명</th>
-                <th style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;color:#555;font-weight:600;">과정코드</th>
+                <th style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;color:#555;font-weight:600;">상품코드</th>
                 <th style="padding:6px 8px;border-bottom:1px solid var(--border);text-align:center;color:#555;font-weight:600;">유형</th>
                 <th style="padding:6px 4px;border-bottom:1px solid var(--border);text-align:center;color:#555;font-weight:600;width:42px;white-space:nowrap;">삭제</th>
               </tr>
@@ -1942,14 +1942,14 @@
       <div style="display:flex;align-items:center;gap:8px;">
         <select class="select" id="me-det-course-type" style="height:26px;font-size:12px;width:86px;" onchange="meDetSearchCourses()"><option value="">전체</option><option value="온라인">온라인</option><option value="오프라인">오프라인</option><option value="하이브리드">하이브리드</option><option value="마이크로러닝">마이크로러닝</option></select>
         <span style="font-size:12px;font-weight:600;color:#444;">필수과정</span>
-        <input type="text" class="input" id="me-det-course-kw" placeholder="과정명 or 과정코드" style="height:26px;font-size:12px;width:260px;" onkeydown="if(event.key==='Enter')meDetSearchCourses()">
+        <input type="text" class="input" id="me-det-course-kw" placeholder="과정명 or 상품코드" style="height:26px;font-size:12px;width:260px;" onkeydown="if(event.key==='Enter')meDetSearchCourses()">
         <button class="btn btn-primary" onclick="meDetSearchCourses()">&#128269; 검색</button>
         <button class="btn btn-reset" onclick="meDetAllCourses()">전체보기</button>
       </div>
     </div>
     <div class="card" style="padding:0;">
       <table class="main-table"><thead><tr>
-        <th style="width:56px;">No</th><th style="text-align:left;padding-left:12px;">과정명</th><th style="width:120px;">과정코드</th><th style="width:100px;">과정유형</th><th style="width:120px;">파트너명</th>
+        <th style="width:56px;">No</th><th style="text-align:left;padding-left:12px;">과정명</th><th style="width:120px;">상품코드</th><th style="width:100px;">과정유형</th><th style="width:120px;">파트너명</th>
       </tr></thead><tbody id="me-det-course-tbody"></tbody></table>
       <div class="table-footer" style="padding:8px 14px;">
         <div class="page-size-wrap"><select class="select" style="height:24px;width:56px;"><option>100</option></select><span>항목 (페이지 당)</span></div>
@@ -1987,7 +1987,7 @@
         <option value="">전체</option><option value="온라인">온라인</option><option value="오프라인">오프라인</option><option value="하이브리드">하이브리드</option><option value="마이크로러닝">마이크로러닝</option>
       </select>
       <span style="font-size:12px;font-weight:600;color:#444;">필수과정</span>
-      <input type="text" class="input" id="me-ps-course-kw" placeholder="과정명 or 과정코드" style="height:26px;font-size:12px;width:240px;" onkeydown="if(event.key==='Enter')mePsSearchCourse()">
+      <input type="text" class="input" id="me-ps-course-kw" placeholder="과정명 or 상품코드" style="height:26px;font-size:12px;width:240px;" onkeydown="if(event.key==='Enter')mePsSearchCourse()">
       <button class="btn btn-primary" onclick="mePsSearchCourse()">&#128269; 검색</button>
       <button class="btn btn-reset" onclick="mePsAllCourse()">전체보기</button>
     </div>
@@ -1997,7 +1997,7 @@
       <thead><tr>
         <th style="width:50px;">No</th>
         <th style="text-align:left;padding-left:12px;">필수과정명</th>
-        <th style="width:112px;">과정코드</th>
+        <th style="width:112px;">상품코드</th>
         <th style="width:86px;">과정유형</th>
         <th style="width:86px;">과정시간</th>
         <th style="width:100px;">파트너명</th>
@@ -2144,7 +2144,7 @@
         <div style="border:1px solid #e0e3e8;border-radius:4px;overflow:hidden;max-height:150px;overflow-y:auto;">
           <table style="width:100%;border-collapse:collapse;font-size:12px;">
             <thead><tr style="background:#f0f2f5;">
-              <th style="padding:7px 12px;border-bottom:1px solid #e0e3e8;text-align:left;color:#555;width:180px;">과정코드</th>
+              <th style="padding:7px 12px;border-bottom:1px solid #e0e3e8;text-align:left;color:#555;width:180px;">상품코드</th>
               <th style="padding:7px 12px;border-bottom:1px solid #e0e3e8;text-align:left;color:#555;">오류 내용</th>
             </tr></thead>
             <tbody id="me-crs-batch-preview-tbody"></tbody>
@@ -2157,9 +2157,9 @@
       <table class="main-table" style="font-size:12px;">
         <thead><tr><th style="width:160px;text-align:left;padding:8px 12px;">오류 유형</th><th style="text-align:left;padding:8px 12px;">오류 설명</th></tr></thead>
         <tbody>
-          <tr><td style="padding:8px 12px;">과정코드 미입력</td><td style="padding:8px 12px;">과정코드를 입력하지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">존재하지 않는 과정코드</td><td style="padding:8px 12px;">입력한 과정코드가 시스템에 없는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">중복 등록</td><td style="padding:8px 12px;">이미 해당 필수교육에 등록된 과정코드인 경우</td></tr>
+          <tr><td style="padding:8px 12px;">상품코드 미입력</td><td style="padding:8px 12px;">상품코드를 입력하지 않은 경우</td></tr>
+          <tr><td style="padding:8px 12px;">존재하지 않는 상품코드</td><td style="padding:8px 12px;">입력한 상품코드가 시스템에 없는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">중복 등록</td><td style="padding:8px 12px;">이미 해당 필수교육에 등록된 상품코드인 경우</td></tr>
         </tbody>
       </table>
     </div>
@@ -3228,11 +3228,11 @@ function meCrsBatchPreview() {
   tbody.innerHTML = `
     <tr style="background:#fff8f8;">
       <td style="padding:7px 12px;color:#e53935;font-size:11px;">LEC999</td>
-      <td style="padding:7px 12px;font-size:11px;color:#555;">존재하지 않는 과정코드</td>
+      <td style="padding:7px 12px;font-size:11px;color:#555;">존재하지 않는 상품코드</td>
     </tr>
     <tr>
       <td style="padding:7px 12px;color:#e53935;font-size:11px;"></td>
-      <td style="padding:7px 12px;font-size:11px;color:#555;">과정코드 미입력 (4행)</td>
+      <td style="padding:7px 12px;font-size:11px;color:#555;">상품코드 미입력 (4행)</td>
     </tr>`;
   _meCrsBatchSetRegBtn(false);
   alert('파일에 오류가 발견되었습니다. 오류내용을 확인하시고 파일을 수정 후 다시 미리보기 해주세요.');
