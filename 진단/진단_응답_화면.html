@@ -362,53 +362,34 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .modal-btn{display:flex;gap:10px;justify-content:center;}
 
 /* ── Intro Section ── */
-#introSection{
-  width:100%;max-width:640px;
-}
+#introSection{width:100%;max-width:680px;}
 .intro-box{
-  background:var(--white);border-radius:12px;
-  width:100%;
-  box-shadow:0 4px 20px rgba(0,0,0,.10);
-  border:1px solid var(--border);
-  position:relative;overflow:hidden;
+  background:var(--white);border-radius:var(--r-lg);
+  width:100%;border:1px solid var(--border);
   display:flex;flex-direction:column;
 }
-.intro-head{
-  background:linear-gradient(135deg,#0f2d6b 0%,#1a4bbb 55%,#246CF9 100%);
+.intro-info-head{
+  background:var(--primary-light);
+  border-bottom:1px solid #c7d7fc;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
   padding:22px 28px 20px;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
-  flex-shrink:0;
 }
-.intro-head-left{display:flex;flex-direction:column;gap:6px;}
-.intro-cube-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
-  border-radius:4px;padding:3px 10px;
-  font-size:11px;font-weight:700;color:rgba(255,255,255,.9);letter-spacing:.05em;
-}
-.intro-cube-badge svg{width:12px;height:12px;}
-.intro-company{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;}
-.intro-head-close{
-  background:rgba(255,255,255,.15);border:none;cursor:pointer;
-  color:rgba(255,255,255,.8);width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  flex-shrink:0;transition:background .15s;
-}
-.intro-head-close:hover{background:rgba(255,255,255,.3);color:#fff;}
+.intro-diag-name-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.intro-diag-title{font-size:18px;font-weight:800;color:var(--text-900);letter-spacing:-.3px;margin-bottom:12px;}
+.intro-diag-meta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
 .intro-body{padding:22px 28px 0;overflow-y:auto;flex:1;}
-.intro-target-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
-.intro-target-chip{
-  display:inline-flex;align-items:center;gap:5px;
-  background:var(--primary-light);color:var(--primary);
-  border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;
+.intro-section-label{
+  font-size:11px;font-weight:700;color:var(--text-400);letter-spacing:.7px;
+  text-transform:uppercase;margin-bottom:10px;
 }
-.intro-target-chip svg{width:12px;height:12px;}
 .intro-welcome{
-  font-size:13px;color:var(--text-700);line-height:1.8;
-  margin-bottom:18px;
+  font-size:13px;color:var(--text-700);line-height:1.85;
+  margin-bottom:20px;
+  background:var(--bg);border-radius:var(--r-md);
+  padding:14px 16px;border-left:3px solid var(--primary);
 }
 .intro-welcome p+p{margin-top:6px;}
-.intro-tools{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.intro-tools{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
 .intro-tool-card{
   display:flex;align-items:flex-start;gap:12px;
   border:1px solid var(--border);border-radius:var(--r-md);
@@ -428,15 +409,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   background:var(--primary-light);border-radius:3px;padding:1px 7px;
 }
 .intro-contact{
-  font-size:12px;color:var(--text-400);padding:12px 0 20px;
+  font-size:12px;color:var(--text-400);padding:14px 0 20px;
   border-top:1px solid var(--border-light);
 }
 .intro-contact b{color:var(--text-700);}
 .intro-footer{
   padding:14px 28px;border-top:1px solid var(--border);
-  display:flex;justify-content:flex-end;align-items:center;
+  display:flex;justify-content:space-between;align-items:center;
   flex-shrink:0;
 }
+.intro-footer-note{font-size:12px;color:var(--text-400);}
 </style>
 </head>
 <body>
@@ -528,30 +510,41 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
       <!-- 인트로 섹션 -->
       <div id="introSection">
+        <button class="back-btn" onclick="location.href='진단_연수원.html'" style="margin-bottom:16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          목록으로
+        </button>
         <div class="intro-box">
-          <!-- 헤더 -->
-          <div class="intro-head">
-            <div class="intro-head-left">
-              <span class="intro-cube-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-                터닝포인트 CUBE®
+          <!-- 진단 소개 헤더 -->
+          <div class="intro-info-head">
+            <div class="intro-diag-name-row">
+              <span class="diag-type-chip">리더십역량</span>
+            </div>
+            <div class="intro-diag-title">CUBE® 리더십역량 진단</div>
+            <div class="intro-diag-meta-row">
+              <span class="diag-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                진단 대상: <b style="color:var(--text-700);font-weight:700;margin-left:2px;">홍길동</b>
               </span>
-              <div class="intro-company">ABC기업</div>
+              <span class="diag-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                진단 기간: <b style="color:var(--text-700);font-weight:700;margin-left:2px;">2026.05.01 ~ 2026.05.31</b>
+              </span>
+              <span class="diag-meta-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                총 문항: <b style="color:var(--text-700);font-weight:700;margin-left:2px;">54문항</b>
+              </span>
             </div>
           </div>
           <!-- 본문 -->
           <div class="intro-body">
-            <div class="intro-target-row">
-              <span class="intro-target-chip">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                홍길동 팀장
-              </span>
-            </div>
+            <div class="intro-section-label">진단 소개</div>
             <div class="intro-welcome">
               <p>휴넷 리더십 진단 - 터닝포인트 CUBE®에 참여하시게 된 것을 환영합니다.</p>
               <p>본 진단은 생각, 조직, 관계, 성과의 터닝포인트에서 리더로서 갖추어야 할 리더십을 균형있게 진단함을 목표로 합니다.</p>
               <p>참여자분들의 진솔한 응답은 리더의 발전과 성장에 큰 도움이 되므로, 많은 업무로 바쁘시더라도 적극적으로 참여해 주시길 부탁드리겠습니다. 아울러, 본 설문 참여자들의 응답의 익명성은 철저히 보장됨을 말씀드립니다.</p>
             </div>
+            <div class="intro-section-label">진단 구성</div>
             <div class="intro-tools">
               <div class="intro-tool-card">
                 <div class="intro-tool-num">1</div>
@@ -585,8 +578,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           </div>
           <!-- 푸터 -->
           <div class="intro-footer">
+            <span class="intro-footer-note">응답 도중 저장됩니다. 언제든 이어서 참여하실 수 있습니다.</span>
             <button class="btn btn-primary" onclick="closeIntro()">
-              다음
+              진단 시작하기
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
