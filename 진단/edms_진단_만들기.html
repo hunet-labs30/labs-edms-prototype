@@ -1058,80 +1058,78 @@ body {
       </div>
     </div><!-- /step-content-3 -->
 
+    <!-- ── 하단 버튼 바 ── -->
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 0 4px;border-top:1px solid var(--border);margin-top:8px;">
+      <button class="btn btn-gray" id="btnPrevBottom" onclick="prevStep()" style="display:none;">이전</button>
+      <button class="btn btn-gray" id="btnPreviewBottom" onclick="openDiagPreview()" style="display:none;">미리보기</button>
+      <button class="btn btn-primary" id="btnNextBottom" onclick="nextStep()">다음</button>
+    </div>
+
   </main>
 </div><!-- /layout -->
 
 <!-- ══ MODAL: 진단 상품 검색 ══ -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal-box">
+  <div class="modal-box" style="width:680px;">
     <div class="modal-header">
       <h3>진단 상품 검색</h3>
       <button class="modal-close" onclick="closeModal('productModal')">×</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-notice">CUBE 어드민에 등록된 진단 상품 목록입니다. 상품을 선택하면 해당 상품의 진단 유형·영역·세부영역 정보가 결과분석 설정에 자동으로 반영됩니다.</div>
+    <div class="modal-body" style="gap:10px;">
+      <div class="modal-notice">리더십진단 관리자 페이지에 등록된 진단 상품 목록입니다. 상품을 선택하면 해당 상품의 진단 유형·영역·세부영역 정보와 진단문항이 자동으로 반영됩니다. 해당 내용을 수정하려면 리더십진단 관리자 페이지에서 수정 가능합니다.</div>
       <div class="modal-search-row">
-        <input class="modal-input" placeholder="상품명 또는 코드 검색" id="productSearchInput">
+        <input class="modal-input" placeholder="상품명 검색" id="productSearchInput" onkeydown="if(event.key==='Enter')filterProducts()">
         <button class="btn btn-primary btn-sm" onclick="filterProducts()">검색</button>
       </div>
-      <div class="product-list" id="productList">
-        <div class="product-item" onclick="selectProduct(this,'리더십 역량 진단','유형 2종 · 영역 2종 · 문항 96개')">
-          <div class="product-item-name">리더십 역량 진단</div>
-          <div class="product-item-meta">유형 2종 · 영역 2종 · 문항 96개</div>
-        </div>
-        <div class="product-item" onclick="selectProduct(this,'비즈니스 역량 진단','유형 1종 · 영역 3종 · 문항 60개')">
-          <div class="product-item-name">비즈니스 역량 진단</div>
-          <div class="product-item-meta">유형 1종 · 영역 3종 · 문항 60개</div>
-        </div>
-        <div class="product-item" onclick="selectProduct(this,'핵심인재 종합 역량 진단','유형 3종 · 영역 4종 · 문항 120개')">
-          <div class="product-item-name">핵심인재 종합 역량 진단</div>
-          <div class="product-item-meta">유형 3종 · 영역 4종 · 문항 120개</div>
-        </div>
-        <div class="product-item" onclick="selectProduct(this,'신임 팀장 리더십 진단','유형 2종 · 영역 3종 · 문항 72개')">
-          <div class="product-item-name">신임 팀장 리더십 진단</div>
-          <div class="product-item-meta">유형 2종 · 영역 3종 · 문항 72개</div>
-        </div>
-        <div class="product-item" onclick="selectProduct(this,'조직문화 진단','유형 1종 · 영역 2종 · 문항 48개')">
-          <div class="product-item-name">조직문화 진단</div>
-          <div class="product-item-meta">유형 1종 · 영역 2종 · 문항 48개</div>
-        </div>
+      <div style="overflow-x:auto;">
+        <table class="ptable" style="font-size:12px;">
+          <thead>
+            <tr>
+              <th style="width:36px;"></th>
+              <th style="width:44px;">No.</th>
+              <th style="text-align:left;padding-left:12px;">진단상품명</th>
+              <th style="width:90px;">전체 문항수</th>
+              <th style="width:100px;">등록일</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
       </div>
+      <div class="table-footer" id="productPagination"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('productModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="confirmProduct()">선택</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmProduct()">저장</button>
     </div>
   </div>
 </div>
 
 <!-- ══ MODAL: 과정 설정 ══ -->
 <div class="modal-overlay" id="courseModal">
-  <div class="modal-box w-md">
+  <div class="modal-box" style="width:820px;max-height:88vh;">
     <div class="modal-header">
       <h3>과정 설정 — <span id="courseModalTitle"></span></h3>
       <button class="modal-close" onclick="closeModal('courseModal')">×</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-notice">세부 영역의 역량 진단 결과에 따라 추천할 과정을 설정합니다. 세부 유형에 맞는 과정을 검색하여 추가하세요.</div>
-
-      <!-- 과정 검색 -->
-      <div class="course-search-row">
-        <input class="modal-input" placeholder="과정명 검색" id="courseSearchInput">
-        <button class="btn btn-primary btn-sm" onclick="searchCourses()">검색</button>
+    <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;">
+      <!-- 좌: 과정 카탈로그 -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;">
+        <div style="position:relative;flex-shrink:0;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px;">🔍</span>
+          <input id="courseSearchInput" placeholder="과정명을 검색하세요."
+                 style="width:100%;height:36px;border:1px solid #dde1e7;border-radius:20px;padding:0 12px 0 34px;font-size:12px;font-family:inherit;outline:none;background:#f5f6f8;"
+                 oninput="searchCourses()">
+        </div>
+        <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="courseResultCount">0</strong>개</div>
+        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;flex:1;overflow-y:auto;min-height:220px;max-height:340px;background:#fff;"></div>
       </div>
-
-      <!-- 과정 후보 리스트 -->
-      <div class="course-candidate-list" id="courseCandidateList">
-        <div class="course-candidate-item" style="color:#aaa;justify-content:center;">과정명을 검색하세요.</div>
-      </div>
-
-      <!-- 선택된 과정 -->
-      <div class="selected-courses-label">
-        <span>선택된 과정</span>
-        <span id="selectedCourseCount" style="font-size:11px;color:#888;font-weight:400;">0개</span>
-      </div>
-      <div class="selected-course-list" id="selectedCourseList">
-        <div style="font-size:12px;color:#bbb;padding:6px 0;">추가된 과정이 없습니다.</div>
+      <!-- 우: 선택한 과정 -->
+      <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+        <div style="padding:10px 14px;border-bottom:1px solid #eceef1;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:700;color:#444;">선택한 과정 <span style="color:var(--primary);">(<span id="selectedCourseCount">0</span>)</span></span>
+          <button onclick="clearAllCourses()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;text-decoration:underline;">전체삭제</button>
+        </div>
+        <div id="selectedCourseList" style="flex:1;overflow-y:auto;padding:8px;min-height:220px;"></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1323,9 +1321,9 @@ function goStep(n) {
   document.getElementById('step-tab-' + currentStep).classList.add('active');
   document.getElementById('step-tab-' + currentStep).classList.remove('done');
 
-  document.getElementById('btnPrev').style.display = currentStep > 1 ? '' : 'none';
-  document.getElementById('btnPreview').style.display = currentStep === 3 ? '' : 'none';
-  document.getElementById('btnNext').textContent = currentStep === 3 ? '저장' : '다음';
+  ['btnPrev','btnPrevBottom'].forEach(id => document.getElementById(id).style.display = currentStep > 1 ? '' : 'none');
+  ['btnPreview','btnPreviewBottom'].forEach(id => document.getElementById(id).style.display = currentStep === 3 ? '' : 'none');
+  ['btnNext','btnNextBottom'].forEach(id => document.getElementById(id).textContent = currentStep === 3 ? '저장' : '다음');
 }
 
 function openDiagPreview() {
@@ -1351,25 +1349,96 @@ function toggleBlock(headerEl) {
 }
 
 /* ── PRODUCT MODAL ── */
-let selectedProductEl = null;
+const PRODUCT_DATA = [
+  {id:1, name:'[E1] 리더십 역량 진단_2026', questions:135, regDate:'2026-06-01'},
+  {id:2, name:'범용 진단 테스트입력용', questions:6, regDate:'2026-05-27'},
+  {id:3, name:'비즈니스 역량 진단', questions:60, regDate:'2026-03-10'},
+  {id:4, name:'핵심인재 종합 역량 진단', questions:120, regDate:'2026-01-15'},
+  {id:5, name:'신임 팀장 리더십 진단', questions:72, regDate:'2025-11-20'},
+  {id:6, name:'조직문화 진단', questions:48, regDate:'2025-09-05'},
+  {id:7, name:'전략적 사고 역량 진단', questions:84, regDate:'2025-07-18'},
+];
+let productFilteredData = [...PRODUCT_DATA];
+let productCurrentPage = 1;
+const PRODUCT_PAGE_SIZE = 5;
+let selectedProductId = null;
 let selectedProductName = '';
 let selectedProductMeta = '';
 
 function openProductModal() {
+  productFilteredData = [...PRODUCT_DATA];
+  productCurrentPage = 1;
+  selectedProductId = null;
+  document.getElementById('productSearchInput').value = '';
+  renderProductTable();
   openModal('productModal');
-  selectedProductEl = null;
 }
 
-function selectProduct(el, name, meta) {
-  document.querySelectorAll('#productList .product-item').forEach(i => i.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedProductEl = el;
+function filterProducts() {
+  const q = document.getElementById('productSearchInput').value.trim().toLowerCase();
+  productFilteredData = q ? PRODUCT_DATA.filter(p => p.name.toLowerCase().includes(q)) : [...PRODUCT_DATA];
+  productCurrentPage = 1;
+  renderProductTable();
+}
+
+function renderProductTable() {
+  const start = (productCurrentPage - 1) * PRODUCT_PAGE_SIZE;
+  const pageData = productFilteredData.slice(start, start + PRODUCT_PAGE_SIZE);
+  const tbody = document.getElementById('productTableBody');
+  if (!pageData.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px;">검색 결과가 없습니다.</td></tr>';
+  } else {
+    tbody.innerHTML = pageData.map((p, i) => {
+      const rowNum = start + i + 1;
+      const checked = selectedProductId === p.id ? 'checked' : '';
+      return `<tr style="cursor:pointer;" onclick="selectProductRow(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.questions})">
+        <td><input type="radio" name="productRadio" ${checked} onclick="event.stopPropagation();selectProductRow(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.questions})"></td>
+        <td>${rowNum}</td>
+        <td style="text-align:left;padding-left:12px;">${p.name}</td>
+        <td>${p.questions}개</td>
+        <td>${p.regDate}</td>
+      </tr>`;
+    }).join('');
+  }
+  renderProductPagination();
+}
+
+function selectProductRow(id, name, questions) {
+  selectedProductId = id;
   selectedProductName = name;
-  selectedProductMeta = meta;
+  selectedProductMeta = '문항 ' + questions + '개';
+  document.querySelectorAll('#productTableBody tr').forEach(tr => tr.style.background = '');
+  document.querySelectorAll('input[name="productRadio"]').forEach(r => r.checked = false);
+  const allData = productFilteredData;
+  const start = (productCurrentPage - 1) * PRODUCT_PAGE_SIZE;
+  allData.slice(start, start + PRODUCT_PAGE_SIZE).forEach((p, i) => {
+    if (p.id === id) {
+      const rows = document.querySelectorAll('#productTableBody tr');
+      if (rows[i]) { rows[i].style.background = '#f0f4ff'; rows[i].querySelector('input[type=radio]').checked = true; }
+    }
+  });
+}
+
+function renderProductPagination() {
+  const total = productFilteredData.length;
+  const totalPages = Math.ceil(total / PRODUCT_PAGE_SIZE) || 1;
+  const el = document.getElementById('productPagination');
+  let html = `<button class="pg-btn" onclick="goProductPage(1)">«</button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    html += `<button class="pg-btn${p === productCurrentPage ? ' active' : ''}" onclick="goProductPage(${p})">${p}</button>`;
+  }
+  html += `<button class="pg-btn" onclick="goProductPage(${totalPages})">»</button>`;
+  el.innerHTML = html;
+}
+
+function goProductPage(p) {
+  const totalPages = Math.ceil(productFilteredData.length / PRODUCT_PAGE_SIZE) || 1;
+  productCurrentPage = Math.max(1, Math.min(p, totalPages));
+  renderProductTable();
 }
 
 function confirmProduct() {
-  if (!selectedProductEl) { showToast('상품을 선택해주세요.'); return; }
+  if (!selectedProductId) { showToast('상품을 선택해주세요.'); return; }
   document.getElementById('productSelectArea').style.display = 'none';
   document.getElementById('productTagArea').style.display = '';
   document.getElementById('productTagName').textContent = selectedProductName;
@@ -1381,13 +1450,6 @@ function removeProduct() {
   document.getElementById('productSelectArea').style.display = '';
   document.getElementById('productTagArea').style.display = 'none';
   document.getElementById('inputProduct').value = '';
-}
-
-function filterProducts() {
-  const q = document.getElementById('productSearchInput').value.toLowerCase();
-  document.querySelectorAll('#productList .product-item').forEach(item => {
-    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
 }
 
 /* ── COURSE MODAL ── */
@@ -1404,50 +1466,73 @@ function openCourseModal(title, key) {
   currentCourseKey = key;
   document.getElementById('courseModalTitle').textContent = title;
   document.getElementById('courseSearchInput').value = '';
-  document.getElementById('courseCandidateList').innerHTML =
-    '<div class="course-candidate-item" style="color:#aaa;justify-content:center;">과정명을 검색하세요.</div>';
+  renderCourseCatalog(sampleCourses);
   renderSelectedCourses();
   openModal('courseModal');
 }
 
 function searchCourses() {
   const q = document.getElementById('courseSearchInput').value.trim().toLowerCase();
-  const selected = courseData[currentCourseKey] || [];
   const results = q ? sampleCourses.filter(c => c.toLowerCase().includes(q)) : sampleCourses;
+  renderCourseCatalog(results);
+}
+
+function renderCourseCatalog(list) {
+  const selected = courseData[currentCourseKey] || [];
+  document.getElementById('courseResultCount').textContent = list.length;
   const el = document.getElementById('courseCandidateList');
-  if (!results.length) {
-    el.innerHTML = '<div class="course-candidate-item" style="color:#aaa;justify-content:center;">검색 결과가 없습니다.</div>';
+  if (!list.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:#aaa;">검색 결과가 없습니다.</div>';
     return;
   }
-  el.innerHTML = results.map(c => {
-    const checked = selected.includes(c) ? 'checked' : '';
-    return `<label class="course-candidate-item">
-      <input type="checkbox" ${checked} onchange="toggleCourseItem('${c}',this.checked)">
-      <span>${c}</span>
-    </label>`;
+  el.innerHTML = list.map(c => {
+    const isAdded = selected.includes(c);
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:12px;">
+      <span style="flex:1;color:#333;">${c}</span>
+      <button onclick="addCourseItem('${c.replace(/'/g,"\\'")}')"
+              style="height:24px;padding:0 10px;font-size:11px;border-radius:3px;cursor:pointer;font-family:inherit;
+                     background:${isAdded?'#eef2ff':'var(--primary)'};color:${isAdded?'#888':'#fff'};
+                     border:1px solid ${isAdded?'#ccd3f0':'var(--primary)'};white-space:nowrap;"
+              ${isAdded?'disabled':''}>
+        ${isAdded?'추가됨':'+ 추가'}
+      </button>
+    </div>`;
   }).join('');
 }
 
-function toggleCourseItem(name, add) {
+function addCourseItem(name) {
   if (!courseData[currentCourseKey]) courseData[currentCourseKey] = [];
   const list = courseData[currentCourseKey];
-  if (add && !list.includes(name)) list.push(name);
-  if (!add) courseData[currentCourseKey] = list.filter(c => c !== name);
+  if (!list.includes(name)) { list.push(name); renderSelectedCourses(); searchCourses(); }
+}
+
+function removeCourseItem(name) {
+  if (courseData[currentCourseKey]) {
+    courseData[currentCourseKey] = courseData[currentCourseKey].filter(c => c !== name);
+  }
   renderSelectedCourses();
+  searchCourses();
+}
+
+function clearAllCourses() {
+  courseData[currentCourseKey] = [];
+  renderSelectedCourses();
+  searchCourses();
 }
 
 function renderSelectedCourses() {
   const list = courseData[currentCourseKey] || [];
+  document.getElementById('selectedCourseCount').textContent = list.length;
   const el = document.getElementById('selectedCourseList');
-  document.getElementById('selectedCourseCount').textContent = list.length + '개';
   if (!list.length) {
-    el.innerHTML = '<div style="font-size:12px;color:#bbb;padding:6px 0;">추가된 과정이 없습니다.</div>';
+    el.innerHTML = '<div style="font-size:12px;color:#bbb;padding:12px 4px;text-align:center;">추가된 과정이 없습니다.</div>';
     return;
   }
   el.innerHTML = list.map(c =>
-    `<div class="selected-course-item">
-      <span class="course-item-name">${c}</span>
-      <button class="course-item-del" onclick="toggleCourseItem('${c}',false);searchCourses();">×</button>
+    `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fff;border:1px solid #e2e6f0;border-radius:4px;margin-bottom:4px;font-size:12px;">
+      <span style="flex:1;color:#1a2e5c;word-break:keep-all;">${c}</span>
+      <button onclick="removeCourseItem('${c.replace(/'/g,"\\'")}');"
+              style="width:18px;height:18px;border-radius:50%;border:1px solid #ccc;background:#f5f5f5;color:#888;font-size:12px;cursor:pointer;line-height:1;flex-shrink:0;font-family:inherit;">×</button>
     </div>`
   ).join('');
 }
