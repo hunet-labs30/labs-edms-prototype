@@ -1685,13 +1685,25 @@
             style="height:28px;font-size:12px;">
         </div>
 
-        <!-- 교육 기간 -->
+        <!-- 필수 학습기간 -->
         <div style="display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center;">
-          <div class="reg-field-label">교육 기간<span class="reg-required">*</span></div>
+          <div class="reg-field-label">필수 학습기간<span class="reg-required">*</span></div>
           <div style="display:flex;align-items:center;gap:4px;">
             <input type="date" class="input" id="me-reg-from" style="height:28px;font-size:12px;flex:1;">
             <span style="color:#aaa;font-size:11px;flex-shrink:0;">~</span>
             <input type="date" class="input" id="me-reg-to" style="height:28px;font-size:12px;flex:1;">
+            <!-- ? 아이콘: 클릭 시 안내 레이어 표시 -->
+            <span style="position:relative;display:inline-block;flex-shrink:0;">
+              <button type="button"
+                onclick="(function(b){var t=document.getElementById('me-reg-period-tip');t.style.display=(t.style.display==='block'?'none':'block');})(this); event.stopPropagation();"
+                title="필수 학습기간 안내"
+                style="width:20px;height:20px;border-radius:50%;border:1px solid #c2c8d0;background:#fff;color:#666;font-size:11px;font-weight:700;cursor:pointer;line-height:1;padding:0;">?</button>
+              <div id="me-reg-period-tip"
+                onclick="this.style.display='none';event.stopPropagation();"
+                style="display:none;position:absolute;right:0;top:26px;width:280px;background:#fff;border:1px solid #d0d5dd;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);padding:10px 12px;font-size:11px;color:#444;line-height:1.6;z-index:100;cursor:pointer;">
+                해당 기간 동안 학습 시작을 진행한 과정의 경우 <strong>기간 종료 후에도 수료가 가능</strong>합니다.
+              </div>
+            </span>
           </div>
         </div>
 
