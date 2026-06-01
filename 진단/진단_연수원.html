@@ -295,8 +295,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <button class="tab-btn active" onclick="switchTab(this,'tab-diag')">
           진단하기<span class="tab-cnt" id="cnt-diag">0</span>
         </button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-result')">
-          결과보기<span class="tab-cnt" id="cnt-result">0</span>
+        <button class="tab-btn" onclick="switchTab(this,'tab-ended')">
+          진단종료<span class="tab-cnt" id="cnt-ended">0</span>
         </button>
       </div>
 
@@ -306,10 +306,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <div id="sentinel-diag"></div>
       </div>
 
-      <!-- TAB: 결과보기 -->
-      <div id="tab-result" class="tab-content">
-        <div class="diag-list" id="list-result"></div>
-        <div id="sentinel-result"></div>
+      <!-- TAB: 진단종료 -->
+      <div id="tab-ended" class="tab-content">
+        <div class="diag-list" id="list-ended"></div>
+        <div id="sentinel-ended"></div>
       </div>
 
       <div class="page-footer">© hunet All rights reserved.<a href="#">개인정보 처리방침</a></div>
@@ -328,20 +328,21 @@ function switchTab(btn, targetId) {
 
 /* ─── 데이터 ─── */
 // diagStatus: 진단 상태
-//   'waiting' — 진단 시작 전 (대기)           → 버튼: 진단하기
-//   'ongoing' — 종료일 이전, 진행 중           → 버튼: 이어하기
-//   'closed'  — 종료일 경과, 관리자 마감 전    → 버튼: 이어하기 (수정 가능)
-//   'done'    — 관리자 마감처리 완료           → 결과보기 탭, 버튼: 결과보기
+//   'waiting'     — 진단 시작 전 (대기)                 → 연수원 미노출
+//   'ongoing'     — 종료일 이전, 진행 중                 → 진단하기 탭
+//   'closed'      — 종료일 경과, 관리자 마감 전           → 진단하기 탭
+//   'adminClosed' — 관리자 마감처리 완료, 결과 집계 중    → 진단종료 탭 (버튼 없음)
+//   'done'        — 결과 확정 완료
+//       target='self'  → 진단종료 탭 (진단결과확인 버튼)
+//       target='other' → 진단종료 탭 (버튼 없음)
 // target: 'self'=본인 | 'other'=타인(이름 표시)
 // pct: 진행율 0~100 / questions: 총문항 / answered: 응답수
-// period: 진단 기간
 
 /* ─────────────────────────────────────────────────
-   진단하기 탭 데이터
-   diagStatus: 'waiting' | 'ongoing' | 'closed'
+   전체 진단 데이터
 ───────────────────────────────────────────────── */
 const DATA_DIAG = [
-  // ── 대기: 진단 시작 전 ──
+  // ── 대기: 진단 시작 전 (연수원 미노출) ──
   {
     id: 1,
     typeName: 'LS', typeLabel: '리더십스타일',
@@ -360,7 +361,7 @@ const DATA_DIAG = [
     questions: 60, answered: 0, pct: 0,
     diagStatus: 'waiting'
   },
-  // ── 진행 중: 종료일 이전, 응답 시작 전 (answered=0) → 진단하기 ──
+  // ── 진행 중: 응답 시작 전 ──
   {
     id: 13,
     typeName: 'LS', typeLabel: '리더십스타일',
@@ -370,7 +371,7 @@ const DATA_DIAG = [
     questions: 36, answered: 0, pct: 0,
     diagStatus: 'ongoing'
   },
-  // ── 진행 중: 종료일 이전, 응답 중 ──
+  // ── 진행 중: 응답 중 ──
   {
     id: 2,
     typeName: 'LC', typeLabel: '리더십역량',
@@ -408,17 +409,7 @@ const DATA_DIAG = [
     questions: 60, answered: 24, pct: 40,
     diagStatus: 'closed'
   },
-  // ── 관리자 마감 완료: TP 어드민에서 마감 처리, 확정 대기 중 → 배지 없음, 버튼: 진단완료(비활성) ──
-  {
-    id: 12,
-    typeName: 'LC', typeLabel: '리더십역량',
-    name: '2026년 1분기 리더십역량 진단',
-    target: 'self', targetName: '',
-    period: '2026.04.01 ~ 2026.04.30',
-    questions: 60, answered: 30, pct: 50,
-    diagStatus: 'adminClosed'
-  },
-  // ── 진행율 100%: 모든 문항 응답 완료, 관리자 마감 전 → 버튼: 진단완료(비활성) ──
+  // ── 진행율 100% (관리자 마감 전) → 진단하기 탭, 진단완료 비활성 ──
   {
     id: 5,
     typeName: 'BSA', typeLabel: '비즈니스상황',
@@ -428,7 +419,17 @@ const DATA_DIAG = [
     questions: 24, answered: 24, pct: 100,
     diagStatus: 'ongoing'
   },
-  // ── 완료(타인평가): 관리자 마감처리 완료, 결과보기 불가 → 진단하기 탭 잔류, 버튼: 진단완료(비활성) ──
+  // ── 관리자 마감완료, 결과 집계 중 → 진단종료 탭 ──
+  {
+    id: 12,
+    typeName: 'LC', typeLabel: '리더십역량',
+    name: '2026년 1분기 리더십역량 진단',
+    target: 'self', targetName: '',
+    period: '2026.04.01 ~ 2026.04.30',
+    questions: 60, answered: 30, pct: 50,
+    diagStatus: 'adminClosed'
+  },
+  // ── 완료(타인평가): 결과 열람 불가 → 진단종료 탭 ──
   {
     id: 8,
     typeName: 'LC', typeLabel: '리더십역량',
@@ -441,9 +442,8 @@ const DATA_DIAG = [
 ];
 
 /* ─────────────────────────────────────────────────
-   결과보기 탭 데이터
-   diagStatus: 'done' + target: 'self' 만 포함
-   ※ 타인평가(done+other)는 결과 열람 불가 → DATA_DIAG에서 진단완료(비활성)로 노출
+   결과 확정 데이터 (진단종료 탭 — 나의 진단만)
+   ※ 진단결과확인 + PDF 버튼 노출
    ※ respondentCount: 응답대상자 수 / responseRate: 응답율(%)
 ───────────────────────────────────────────────── */
 const DATA_RESULT = [
@@ -474,42 +474,21 @@ function progColor(pct) {
   return 'var(--border)';
 }
 
-
-/* ─── 버튼 렌더 ─── */
+/* ─── 버튼 렌더 (진단하기 탭 전용) ─── */
 function renderBtn(item) {
-  // ① 관리자 마감 완료 (TP 어드민 확정 대기) → 배지 없음, 버튼 비활성
-  if (item.diagStatus === 'adminClosed') {
+  // 진행율 100% → 진단완료 비활성
+  if (item.pct === 100) {
     return `<button class="btn-diag completed" disabled>진단완료</button>`;
   }
-  // ② 진행율 100% + 관리자 마감 전 → 진단완료 비활성
-  if (item.pct === 100 && item.diagStatus !== 'done') {
-    return `<button class="btn-diag completed" disabled>진단완료</button>`;
-  }
-  // ② 관리자 마감처리 완료 (done)
-  if (item.diagStatus === 'done') {
-    if (item.target === 'self') {
-      // 본인 진단 → 결과보기 (결과보기 탭에서 호출)
-      return `<button class="btn-diag result" onclick="location.href='../진단_결과_보기.html'">결과보기</button>`;
-    } else {
-      // 타인 진단 → 결과보기 불가, 진단완료 비활성 (진단하기 탭 잔류)
-      return `<button class="btn-diag completed" disabled>진단완료</button>`;
-    }
-  }
-  // ③ 응답 시작 전 (진행중/마감이지만 answered === 0) → 진단하기
+  // 응답 시작 전 → 진단하기
   if (item.answered === 0) {
     return `<button class="btn-diag start" onclick="location.href='진단_응답_화면.html'">진단하기</button>`;
   }
-  // ④ 일반 상태 매핑 (1건 이상 응답) → 이어하기
-  const MAP = {
-    ongoing: { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
-    closed:  { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' },
-  };
-  const cfg = MAP[item.diagStatus] || { cls: 'resume', label: '이어하기', href: '진단_응답_화면.html' };
-  const click = cfg.href ? `onclick="location.href='${cfg.href}'"` : '';
-  return `<button class="btn-diag ${cfg.cls}" ${click}>${cfg.label}</button>`;
+  // 1건 이상 응답 → 이어하기
+  return `<button class="btn-diag resume" onclick="location.href='진단_응답_화면.html'">이어하기</button>`;
 }
 
-/* ─── 카드 HTML ─── */
+/* ─── 진단하기 카드 ─── */
 function renderCard(item) {
   const targetBadge = item.target === 'self'
     ? `<span class="diag-target self">
@@ -556,7 +535,7 @@ function renderCard(item) {
   `;
 }
 
-/* ─── 결과보기 카드 ─── */
+/* ─── 진단종료 카드: 나의 진단(결과 확정) — 진단결과확인 버튼 노출 ─── */
 function renderResultCard(item) {
   const rateClass = item.responseRate === 100 ? 'full' : '';
   return `
@@ -566,6 +545,10 @@ function renderResultCard(item) {
           <span class="diag-name">${item.name}</span>
         </div>
         <div class="diag-meta">
+          <span class="diag-target self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            본인
+          </span>
           <span class="diag-period">📅 ${item.startDate} ~ ${item.endDate}</span>
         </div>
       </div>
@@ -597,11 +580,58 @@ function renderResultCard(item) {
     </div>`;
 }
 
+/* ─── 진단종료 카드: 타인진단 / 집계중 — 버튼 없음 ─── */
+function renderEndedCard(item) {
+  const targetBadge = item.target === 'self'
+    ? `<span class="diag-target self">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         본인
+       </span>`
+    : `<span class="diag-target other">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+         ${item.targetName}
+       </span>`;
+
+  const btnLabel = item.diagStatus === 'adminClosed' ? '결과 집계 중' : '진단완료';
+  const pctColor = progColor(item.pct);
+
+  return `
+    <div class="diag-card" style="opacity:.7;">
+      <div class="diag-info">
+        <div class="diag-top">
+          <span class="diag-name">${item.name}</span>
+        </div>
+        <div class="diag-meta">
+          ${targetBadge}
+          <span class="diag-period">📅 ${item.period}</span>
+          <span class="diag-meta-dot"></span>
+          <span class="diag-questions">총 ${item.questions}문항</span>
+          <span class="diag-meta-dot"></span>
+          <span class="diag-questions">${item.answered}/${item.questions} 응답</span>
+        </div>
+      </div>
+      <div class="diag-right">
+        <div class="diag-prog">
+          <span class="diag-prog-label">진행율</span>
+          <div class="diag-prog-bar-wrap">
+            <div class="diag-prog-bar">
+              <div class="diag-prog-fill" style="width:${item.pct}%;background:${pctColor};"></div>
+            </div>
+            <span class="diag-prog-pct ${item.pct===100?'done':''}">${item.pct}%</span>
+          </div>
+        </div>
+        <div class="diag-divider"></div>
+        <button class="btn-diag completed" disabled>${btnLabel}</button>
+      </div>
+    </div>
+  `;
+}
+
 /* ─────────────────────────────────────────────────
-   무한 스크롤
+   렌더 함수
 ───────────────────────────────────────────────── */
-const BATCH = 5; // 한 번에 보여줄 개수
-const visibleCount = { diag: BATCH, result: BATCH };
+const BATCH = 5;
+const visibleCount = { diag: BATCH };
 
 function renderDiagList(data, containerId, cntId) {
   const container = document.getElementById(containerId);
@@ -622,50 +652,57 @@ function renderDiagList(data, containerId, cntId) {
   container.innerHTML = slice.map(renderCard).join('');
 }
 
-function renderResultList(data, containerId, cntId) {
+/* 진단종료 탭: 나의 진단(결과카드) + 타인/집계중(종료카드) 혼합 렌더 */
+function renderEndedList(resultData, endedData, containerId, cntId) {
   const container = document.getElementById(containerId);
-  document.getElementById(cntId).textContent = data.length;
+  const total = resultData.length + endedData.length;
+  document.getElementById(cntId).textContent = total;
 
-  if (data.length === 0) {
+  if (total === 0) {
     container.innerHTML = `
       <div class="empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
           <rect x="9" y="3" width="6" height="4" rx="1"/>
         </svg>
-        <p>열람 가능한 결과가 없습니다.</p>
+        <p>종료된 진단이 없습니다.</p>
       </div>`;
     return;
   }
-  const slice = data.slice(0, visibleCount.result);
-  container.innerHTML = slice.map(renderResultCard).join('');
+  // 나의 진단(결과확인 가능) 먼저, 이후 타인/집계중
+  container.innerHTML =
+    resultData.map(renderResultCard).join('') +
+    endedData.map(renderEndedCard).join('');
 }
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  // 대기 상태(관리자가 아직 시작 버튼 미클릭)는 연수원 진단하기 탭에 미노출
-  const DATA_DIAG_VISIBLE = DATA_DIAG.filter(d => d.diagStatus !== 'waiting');
+  // 진단하기 탭: ongoing + closed (waiting/adminClosed/done 제외)
+  const DATA_DIAG_ACTIVE = DATA_DIAG.filter(d =>
+    d.diagStatus === 'ongoing' || d.diagStatus === 'closed'
+  );
 
-  renderDiagList(DATA_DIAG_VISIBLE, 'list-diag',   'cnt-diag');
-  renderResultList(DATA_RESULT,     'list-result', 'cnt-result');
+  // 진단종료 탭 — 버튼 없는 항목: adminClosed 또는 done+other
+  const DATA_DIAG_ENDED = DATA_DIAG.filter(d =>
+    d.diagStatus === 'adminClosed' ||
+    (d.diagStatus === 'done' && d.target === 'other')
+  );
 
-  // 진단하기 sentinel
+  renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
+  renderEndedList(DATA_RESULT, DATA_DIAG_ENDED, 'list-ended', 'cnt-ended');
+
+  // 진단하기 무한스크롤
   const obsDiag = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && visibleCount.diag < DATA_DIAG_VISIBLE.length) {
+    if (entries[0].isIntersecting && visibleCount.diag < DATA_DIAG_ACTIVE.length) {
       visibleCount.diag += BATCH;
-      renderDiagList(DATA_DIAG_VISIBLE, 'list-diag', 'cnt-diag');
+      renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
     }
   }, { rootMargin: '100px' });
   obsDiag.observe(document.getElementById('sentinel-diag'));
 
-  // 결과보기 sentinel
-  const obsResult = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && visibleCount.result < DATA_RESULT.length) {
-      visibleCount.result += BATCH;
-      renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
-    }
-  }, { rootMargin: '100px' });
-  obsResult.observe(document.getElementById('sentinel-result'));
+  // 진단종료 sentinel (데이터 적어 전체 렌더 유지)
+  new IntersectionObserver(() => {}, { rootMargin: '100px' })
+    .observe(document.getElementById('sentinel-ended'));
 });
 </script>
 </body>
