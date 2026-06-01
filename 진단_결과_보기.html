@@ -243,7 +243,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .cd-item-type{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:5px;}
 .cd-item-type.online{background:var(--blue-bg);color:var(--blue);}
 .cd-item-type.offline{background:var(--green-bg);color:var(--green);}
-.cd-item-type.blended{background:var(--purple-bg);color:var(--purple);}
+.cd-item-type.hybrid{background:var(--purple-bg);color:var(--purple);}
+.cd-item-type.micro{background:var(--orange-bg);color:var(--orange);}
 .cd-item-btn{flex-shrink:0;font-size:12px;font-weight:600;padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--white);color:var(--text-500);cursor:pointer;transition:all .15s;white-space:nowrap;}
 .cd-item-btn:hover{border-color:var(--primary);color:var(--primary);}
 .cd-tab-badge{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
@@ -1019,22 +1020,22 @@ function openReport() {
 const COURSES = [
   {grp:'성과관리', cmp:'문제해결',        name:'데이터 기반 문제해결 프레임워크',     type:'online',   tag:'weak'},
   {grp:'성과관리', cmp:'문제해결',        name:'비즈니스 문제해결 로직과 실전',       type:'offline',  tag:'weak'},
-  {grp:'성과관리', cmp:'문제해결',        name:'MECE 사고와 맥킨지식 문제해결',       type:'online',   tag:'weak'},
+  {grp:'성과관리', cmp:'문제해결',        name:'MECE 사고와 맥킨지식 문제해결',       type:'micro',    tag:'weak'},
   {grp:'성과관리', cmp:'전략적 의사결정', name:'리더를 위한 전략적 의사결정',         type:'online',   tag:'weak'},
-  {grp:'성과관리', cmp:'전략적 의사결정', name:'불확실한 상황에서의 의사결정 기술',   type:'online',   tag:'weak'},
-  {grp:'성과관리', cmp:'전략적 의사결정', name:'경영전략과 데이터 기반 의사결정',     type:'blended',  tag:'weak'},
+  {grp:'성과관리', cmp:'전략적 의사결정', name:'불확실한 상황에서의 의사결정 기술',   type:'micro',    tag:'weak'},
+  {grp:'성과관리', cmp:'전략적 의사결정', name:'경영전략과 데이터 기반 의사결정',     type:'hybrid',   tag:'weak'},
   {grp:'조직관리', cmp:'변화관리',        name:'변화 속에서 성과내는 리더의 방식',    type:'online',   tag:'strong'},
   {grp:'조직관리', cmp:'변화관리',        name:'조직 변화관리 실전 마스터클래스',     type:'offline',  tag:'strong'},
   {grp:'조직관리', cmp:'혁신활동',        name:'디자인씽킹으로 혁신하라',             type:'online',   tag:'strong'},
-  {grp:'조직관리', cmp:'혁신활동',        name:'애자일 리더십과 혁신문화 구축',       type:'online',   tag:'strong'},
-  {grp:'조직관리', cmp:'가치전파',        name:'비전 스토리텔링과 조직 정렬',         type:'online',   tag:'strong'},
+  {grp:'조직관리', cmp:'혁신활동',        name:'애자일 리더십과 혁신문화 구축',       type:'hybrid',   tag:'strong'},
+  {grp:'조직관리', cmp:'가치전파',        name:'비전 스토리텔링과 조직 정렬',         type:'micro',    tag:'strong'},
   {grp:'사람관리', cmp:'신뢰형성',        name:'심리적 안전감과 신뢰 조직 만들기',    type:'online',   tag:'strong'},
-  {grp:'사람관리', cmp:'의사소통',        name:'고성과 팀을 만드는 대화의 기술',      type:'blended',  tag:'strong'},
+  {grp:'사람관리', cmp:'의사소통',        name:'고성과 팀을 만드는 대화의 기술',      type:'hybrid',   tag:'strong'},
   {grp:'사람관리', cmp:'코칭',            name:'코칭리더십 심화과정',                  type:'offline',  tag:'strong'},
-  {grp:'사람관리', cmp:'팀원육성',        name:'팀원의 성장을 이끄는 육성 리더십',    type:'online',   tag:'strong'},
+  {grp:'사람관리', cmp:'팀원육성',        name:'팀원의 성장을 이끄는 육성 리더십',    type:'micro',    tag:'strong'},
 ];
 
-const TYPE_LABEL = {online:'온라인', offline:'오프라인', blended:'블렌디드'};
+const TYPE_LABEL = {online:'온라인', offline:'오프라인', hybrid:'하이브리드러닝', micro:'마이크로러닝'};
 const GROUP_META = {
   weak:   {label:'약점 역량 — 집중 보완 과정', cls:'weak'},
   strong: {label:'강점 역량 — 더욱 강화하는 과정', cls:'strong'},
