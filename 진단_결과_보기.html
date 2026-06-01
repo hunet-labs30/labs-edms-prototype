@@ -122,11 +122,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .sw-tag.weak{background:var(--red-bg);color:var(--red);}
 .sw-tag-score{font-size:11px;font-weight:700;opacity:0.75;padding-left:4px;border-left:1px solid currentColor;}
 
-/* 이중 바 */
-.bar-dual{display:flex;flex-direction:column;gap:5px;}
-.bar-dual-row{display:flex;align-items:center;gap:8px;}
-.bar-dual-lbl{font-size:10px;color:var(--text-400);width:26px;text-align:right;flex-shrink:0;}
-.bar-dual-num{font-size:11px;font-weight:700;min-width:24px;text-align:right;}
+/* 레벨 트랙 슬라이더 */
+.level-wrap{display:flex;align-items:center;gap:10px;padding:4px 0;}
+.scale-lbl-edge{font-size:11px;color:var(--text-400);flex-shrink:0;}
+.level-track{flex:1;position:relative;height:4px;background:var(--border);border-radius:2px;margin:22px 0 18px;}
+.level-fill{position:absolute;left:0;top:0;height:4px;background:var(--primary);border-radius:2px;}
+.level-dot-me{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--primary);z-index:2;}
+.level-dot-avg{position:absolute;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:#9CA3AF;z-index:1;}
+.level-lbl-me{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--primary);white-space:nowrap;}
+.level-lbl-avg{position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-500);white-space:nowrap;}
+.score-pair{display:flex;flex-direction:column;gap:4px;}
+.score-pair-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;}
+.score-pair-lbl{color:var(--text-400);flex-shrink:0;}
+.score-pair-val{font-weight:700;font-size:14px;}
 .score-bar-fill.avg{background:#D1D5DB;}
 /* GAP / 비교 배지 */
 .cmp-plus{display:inline-block;background:var(--blue-bg);color:var(--blue);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;}
@@ -501,66 +509,77 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               <thead>
                 <tr>
                   <th style="width:110px">역량구분</th>
-                  <th>점수 비교 (나 / 전사 평균)</th>
-                  <th style="width:70px">본인</th>
-                  <th style="width:70px">전사 평균</th>
-                  <th style="width:70px">비교</th>
+                  <th>역량 보유 수준</th>
+                  <th style="width:110px">종합평균점수</th>
+                  <th style="width:60px">비교</th>
                 </tr>
               </thead>
               <tbody>
+                <!-- 조직관리: 나 4.9(98%), 전사 4.1(82%) -->
                 <tr>
                   <td>조직관리</td>
                   <td>
-                    <div class="bar-dual">
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">나</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:98%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--primary)">4.9</span>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:98%"></div>
+                        <div class="level-dot-avg" style="left:82%"><span class="level-lbl-avg">전체 4.1</span></div>
+                        <div class="level-dot-me" style="left:98%"><span class="level-lbl-me">나 4.9</span></div>
                       </div>
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">전사</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:82%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--text-500)">4.1</span>
-                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td>4.9</td><td>4.1</td><td><span class="cmp-plus">+0.8</span></td>
+                  <td>
+                    <div class="score-pair">
+                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.9</b></div>
+                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div>
+                    </div>
+                  </td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
                 </tr>
+                <!-- 사람관리: 나 5.0(100%), 전사 4.2(84%) -->
                 <tr>
                   <td>사람관리</td>
                   <td>
-                    <div class="bar-dual">
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">나</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:100%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--primary)">5.0</span>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:100%"></div>
+                        <div class="level-dot-avg" style="left:84%"><span class="level-lbl-avg">전체 4.2</span></div>
+                        <div class="level-dot-me" style="left:100%"><span class="level-lbl-me">나 5.0</span></div>
                       </div>
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">전사</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:84%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--text-500)">4.2</span>
-                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td>5.0</td><td>4.2</td><td><span class="cmp-plus">+0.8</span></td>
+                  <td>
+                    <div class="score-pair">
+                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div>
+                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div>
+                    </div>
+                  </td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
                 </tr>
+                <!-- 성과관리: 나 3.5(70%), 전사 3.8(76%) -->
                 <tr>
                   <td>성과관리</td>
                   <td>
-                    <div class="bar-dual">
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">나</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill orange" style="width:70%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--orange)">3.5</span>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:70%"></div>
+                        <div class="level-dot-me" style="left:70%"><span class="level-lbl-me">나 3.5</span></div>
+                        <div class="level-dot-avg" style="left:76%"><span class="level-lbl-avg">전체 3.8</span></div>
                       </div>
-                      <div class="bar-dual-row">
-                        <span class="bar-dual-lbl">전사</span>
-                        <div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:76%"></div></div>
-                        <span class="bar-dual-num" style="color:var(--text-500)">3.8</span>
-                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td>3.5</td><td>3.8</td><td><span class="cmp-minus">-0.3</span></td>
+                  <td>
+                    <div class="score-pair">
+                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--orange)">3.5</b></div>
+                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.8</b></div>
+                    </div>
+                  </td>
+                  <td style="text-align:center"><span class="cmp-minus">-0.3</span></td>
                 </tr>
               </tbody>
             </table>
@@ -578,62 +597,163 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <table class="slider-table">
               <thead>
                 <tr>
-                  <th style="width:100px">역량구분</th>
-                  <th style="width:130px">역량명</th>
-                  <th>점수 비교 (나 / 전사 평균)</th>
-                  <th style="width:60px">본인</th>
-                  <th style="width:70px">전사 평균</th>
+                  <th style="width:90px">역량구분</th>
+                  <th style="width:120px">역량명</th>
+                  <th>역량 보유 수준</th>
+                  <th style="width:110px">종합평균점수</th>
                   <th style="width:60px">비교</th>
                 </tr>
               </thead>
               <tbody>
+                <!-- 조직관리 -->
                 <tr>
                   <td rowspan="3">조직관리</td>
-                  <td>변화관리</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:96%"></div></div><span class="bar-dual-num" style="color:var(--primary)">4.8</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:80%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.0</span></div></div></td>
-                  <td>4.8</td><td>4.0</td><td><span class="cmp-plus">+0.8</span></td>
+                  <td class="competency-name">변화관리</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:96%"></div>
+                        <div class="level-dot-avg" style="left:80%"><span class="level-lbl-avg">전체 4.0</span></div>
+                        <div class="level-dot-me" style="left:96%"><span class="level-lbl-me">나 4.8</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.0</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
                 </tr>
                 <tr>
-                  <td>혁신활동</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:98%"></div></div><span class="bar-dual-num" style="color:var(--primary)">4.9</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:84%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.2</span></div></div></td>
-                  <td>4.9</td><td>4.2</td><td><span class="cmp-plus">+0.7</span></td>
+                  <td class="competency-name">혁신활동</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:98%"></div>
+                        <div class="level-dot-avg" style="left:84%"><span class="level-lbl-avg">전체 4.2</span></div>
+                        <div class="level-dot-me" style="left:98%"><span class="level-lbl-me">나 4.9</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.9</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
-                  <td>가치전파</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:100%"></div></div><span class="bar-dual-num" style="color:var(--primary)">5.0</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:82%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.1</span></div></div></td>
-                  <td>5.0</td><td>4.1</td><td><span class="cmp-plus">+0.9</span></td>
+                  <td class="competency-name">가치전파</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:100%"></div>
+                        <div class="level-dot-avg" style="left:82%"><span class="level-lbl-avg">전체 4.1</span></div>
+                        <div class="level-dot-me" style="left:100%"><span class="level-lbl-me">나 5.0</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.9</span></td>
                 </tr>
+                <!-- 사람관리 -->
                 <tr>
                   <td rowspan="4">사람관리</td>
-                  <td>신뢰형성</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:100%"></div></div><span class="bar-dual-num" style="color:var(--primary)">5.0</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:86%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.3</span></div></div></td>
-                  <td>5.0</td><td>4.3</td><td><span class="cmp-plus">+0.7</span></td>
+                  <td class="competency-name">신뢰형성</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:100%"></div>
+                        <div class="level-dot-avg" style="left:86%"><span class="level-lbl-avg">전체 4.3</span></div>
+                        <div class="level-dot-me" style="left:100%"><span class="level-lbl-me">나 5.0</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.3</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
-                  <td>의사소통</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:96%"></div></div><span class="bar-dual-num" style="color:var(--primary)">4.8</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:82%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.1</span></div></div></td>
-                  <td>4.8</td><td>4.1</td><td><span class="cmp-plus">+0.7</span></td>
+                  <td class="competency-name">의사소통</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:96%"></div>
+                        <div class="level-dot-avg" style="left:82%"><span class="level-lbl-avg">전체 4.1</span></div>
+                        <div class="level-dot-me" style="left:96%"><span class="level-lbl-me">나 4.8</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
-                  <td>코칭</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:100%"></div></div><span class="bar-dual-num" style="color:var(--primary)">5.0</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:80%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.0</span></div></div></td>
-                  <td>5.0</td><td>4.0</td><td><span class="cmp-plus">+1.0</span></td>
+                  <td class="competency-name">코칭</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:100%"></div>
+                        <div class="level-dot-avg" style="left:80%"><span class="level-lbl-avg">전체 4.0</span></div>
+                        <div class="level-dot-me" style="left:100%"><span class="level-lbl-me">나 5.0</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.0</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+1.0</span></td>
                 </tr>
                 <tr>
-                  <td>팀원육성</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill green" style="width:96%"></div></div><span class="bar-dual-num" style="color:var(--primary)">4.8</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:84%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">4.2</span></div></div></td>
-                  <td>4.8</td><td>4.2</td><td><span class="cmp-plus">+0.6</span></td>
+                  <td class="competency-name">팀원육성</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:96%"></div>
+                        <div class="level-dot-avg" style="left:84%"><span class="level-lbl-avg">전체 4.2</span></div>
+                        <div class="level-dot-me" style="left:96%"><span class="level-lbl-me">나 4.8</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-plus">+0.6</span></td>
                 </tr>
+                <!-- 성과관리 -->
                 <tr>
                   <td rowspan="2">성과관리</td>
-                  <td>문제해결</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill orange" style="width:72%"></div></div><span class="bar-dual-num" style="color:var(--orange)">3.6</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:74%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">3.7</span></div></div></td>
-                  <td>3.6</td><td>3.7</td><td><span class="cmp-minus">-0.1</span></td>
+                  <td class="competency-name">문제해결</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:72%"></div>
+                        <div class="level-dot-me" style="left:72%"><span class="level-lbl-me">나 3.6</span></div>
+                        <div class="level-dot-avg" style="left:74%"><span class="level-lbl-avg">전체 3.7</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--orange)">3.6</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.7</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-minus">-0.1</span></td>
                 </tr>
                 <tr>
-                  <td>전략적 의사결정</td>
-                  <td><div class="bar-dual"><div class="bar-dual-row"><span class="bar-dual-lbl">나</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill red" style="width:68%"></div></div><span class="bar-dual-num" style="color:var(--red)">3.4</span></div><div class="bar-dual-row"><span class="bar-dual-lbl">전사</span><div class="score-bar-track" style="flex:1"><div class="score-bar-fill avg" style="width:78%"></div></div><span class="bar-dual-num" style="color:var(--text-500)">3.9</span></div></div></td>
-                  <td>3.4</td><td>3.9</td><td><span class="cmp-minus">-0.5</span></td>
+                  <td class="competency-name">전략적 의사결정</td>
+                  <td>
+                    <div class="level-wrap">
+                      <span class="scale-lbl-edge">0</span>
+                      <div class="level-track">
+                        <div class="level-fill" style="width:68%"></div>
+                        <div class="level-dot-me" style="left:68%"><span class="level-lbl-me">나 3.4</span></div>
+                        <div class="level-dot-avg" style="left:78%"><span class="level-lbl-avg">전체 3.9</span></div>
+                      </div>
+                      <span class="scale-lbl-edge">5.0</span>
+                    </div>
+                  </td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--red)">3.4</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.9</b></div></div></td>
+                  <td style="text-align:center"><span class="cmp-minus">-0.5</span></td>
                 </tr>
               </tbody>
             </table>
