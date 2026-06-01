@@ -2771,12 +2771,13 @@ function meRenderPersonal() {
   const tbody = document.getElementById('me-personal-tbody');
   if(!tbody) return;
   tbody.innerHTML = ME_PERSONAL.map(d=>{
-    // 탈퇴한 임직원: 이름 → "탈퇴한 임직원", 개인정보 컬럼 → "-", 개인 수료 상세 진입 비활성. 교육정보·수료여부는 유지
+    // 탈퇴한 임직원: 공통정책(5047746656) — 이름="탈퇴한 임직원", 아이디·사번·부서·직급·휴대번호 → "-",
+    // 회사는 정산 데이터 확인 위해 원본 노출(25.03.03 정책 보완), 개인 수료 상세 진입 비활성, 교육정보·수료여부 유지
     if(d.resigned){
       return `<tr style="color:#9ca3af;">
         <td>${d.no}</td>
         <td style="font-style:italic;">탈퇴한 임직원</td>
-        <td>-</td><td>-</td><td>-</td><td>-</td>
+        <td>-</td><td>-</td><td style="color:#666;">${d.company}</td><td>-</td>
         <td style="text-align:left;padding-left:8px;">${d.eduName}</td>
         <td style="text-align:left;padding-left:8px;">${d.courseName}</td>
         <td style="font-size:11px;">${d.period}</td>
@@ -2855,7 +2856,8 @@ function meRegRenderMembers(list) {
     tbody.innerHTML = data.map((m)=>{
       const i = ME_REG_MEMBERS.indexOf(m);
       const no = ME_REG_MEMBERS.indexOf(m) + 1;
-      // 탈퇴한 임직원: 이름 → "탈퇴한 임직원", 개인정보 컬럼 → "-" (체크박스·삭제는 유지)
+      // 탈퇴한 임직원: 공통정책(5047746656) — 이름="탈퇴한 임직원", 아이디·사번·부서 → "-",
+      // 회사는 정산 데이터 확인 위해 원본 노출(25.03.03), 체크박스·삭제 유지
       if(m.resigned){
         return `<tr style="border-bottom:1px solid #f5f5f5;color:#9ca3af;">
       <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="me-reg-m-chk" data-idx="${i}"></td>
@@ -2863,7 +2865,7 @@ function meRegRenderMembers(list) {
       <td style="padding:5px 6px;font-weight:600;font-style:italic;">탈퇴한 임직원</td>
       <td style="padding:5px 6px;font-size:11px;">-</td>
       <td style="text-align:center;padding:5px 6px;font-size:11px;">-</td>
-      <td style="text-align:center;padding:5px 6px;font-size:11px;">-</td>
+      <td style="text-align:center;padding:5px 6px;font-size:11px;color:#666;">${m.company||'-'}</td>
       <td style="padding:5px 6px;font-size:11px;">-</td>
       <td style="text-align:center;padding:5px 4px;white-space:nowrap;width:42px;"><button class="reg-delete-btn" onclick="meRegDelMember(${i})">삭제</button></td>
     </tr>`;
