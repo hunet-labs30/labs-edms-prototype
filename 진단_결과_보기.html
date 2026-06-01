@@ -90,24 +90,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .meta-divider{width:1px;height:32px;background:var(--border);}
 .respondent-count{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .rc-badge{display:inline-flex;align-items:center;gap:4px;background:var(--green-bg);color:var(--green);font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;}
-.rc-badge-warn{display:inline-flex;align-items:center;gap:4px;background:var(--orange-bg);color:var(--orange);font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;}
-
-
-/* ── Condition Not Met ── */
-.condition-card{background:var(--white);border:1px solid #fbbf24;border-radius:var(--r-lg);padding:40px 24px;text-align:center;margin-bottom:20px;}
-.condition-icon{font-size:48px;margin-bottom:12px;}
-.condition-title{font-size:16px;font-weight:700;color:#92400e;margin-bottom:8px;}
-.condition-desc{font-size:13px;color:var(--text-500);line-height:1.7;max-width:480px;margin:0 auto 20px;}
-.condition-checklist{display:inline-flex;flex-direction:column;gap:10px;text-align:left;background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r-md);padding:16px 20px;margin:0 auto 20px;}
-.check-item{display:flex;align-items:center;gap:10px;font-size:13px;}
-.check-item.done{color:var(--green);}
-.check-item.pending{color:#92400e;}
-
-/* ── Toggle Bar ── */
-.toggle-bar{display:flex;gap:10px;margin-bottom:20px;}
-.toggle-btn{padding:7px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text-500);transition:all .15s;font-family:inherit;}
-.toggle-btn:hover{border-color:var(--primary);color:var(--primary);}
-.toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 
 /* ── Result Sections ── */
 .result-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;}
@@ -275,16 +257,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         </div>
       </div>
 
-      <!-- Toggle (기획 프로토타입 전환용) -->
-      <div style="margin-bottom:16px">
-        <div style="font-size:12px;color:var(--text-400);margin-bottom:8px">⚙️ 기획 프로토타입 뷰 전환 (실제 서비스에서는 이 영역 미노출)</div>
-        <div class="toggle-bar">
-          <button class="toggle-btn active" onclick="showView('view-available', this)">결과 조건 충족 상태</button>
-          <button class="toggle-btn" onclick="showView('view-not-met', this)">결과 조건 미충족 상태</button>
-        </div>
-      </div>
-
-      <!-- ===== VIEW A: 조건 충족 — 리포트 열람 가능 ===== -->
+      <!-- ===== 진단 결과 ===== -->
       <div id="view-available">
 
         <!-- Meta Info -->
@@ -309,11 +282,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <div class="respondent-count">
               <span class="rc-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                본인 완료
+                본인
               </span>
               <span class="rc-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                타인 4명 완료
+                상사 1명
+              </span>
+              <span class="rc-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                동료 2명
+              </span>
+              <span class="rc-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                부하직원 4명
               </span>
             </div>
           </div>
@@ -337,22 +318,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               </thead>
               <tbody>
                 <tr>
-                  <td>공유역량</td>
-                  <td><span class="sw-link-red">비전 제시</span></td>
-                  <td><span class="sw-link-blue">전략적 사고</span></td>
-                  <td><span class="score-val">3.82</span></td>
+                  <td>조직관리</td>
+                  <td><span class="sw-link-red">변화관리</span>&nbsp;<span class="sw-link-red">혁신활동</span>&nbsp;<span class="sw-link-red">가치전파</span></td>
+                  <td>—</td>
+                  <td><span class="score-val">4.9</span></td>
                 </tr>
                 <tr>
-                  <td>조직역량</td>
-                  <td><span class="sw-link-red">팀워크 촉진</span></td>
-                  <td><span class="sw-link-blue">갈등 관리</span></td>
-                  <td><span class="score-val">3.65</span></td>
+                  <td>사람관리</td>
+                  <td><span class="sw-link-red">신뢰형성</span>&nbsp;<span class="sw-link-red">의사소통</span>&nbsp;<span class="sw-link-red">코칭</span>&nbsp;<span class="sw-link-red">팀원육성</span></td>
+                  <td>—</td>
+                  <td><span class="score-val">5.0</span></td>
                 </tr>
                 <tr>
-                  <td>사생역량</td>
-                  <td><span class="sw-link-red">자기 인식</span></td>
-                  <td><span class="sw-link-blue">감정 조절</span></td>
-                  <td><span class="score-val">3.54</span></td>
+                  <td>성과관리</td>
+                  <td>—</td>
+                  <td><span class="sw-link-blue">문제해결</span>&nbsp;<span class="sw-link-blue">전략적 의사결정</span></td>
+                  <td><span class="score-val">3.5</span></td>
                 </tr>
               </tbody>
             </table>
@@ -364,77 +345,94 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="rs-head">
             <span class="rs-head-dot"></span>
             <span class="rs-title">종합지수</span>
+            <span class="scale-hint" style="margin-left:auto">척도 0 ~ 5</span>
           </div>
           <div class="rs-body">
             <div class="bar-chart-wrap">
-              <!-- 공유역량 -->
+              <!-- 조직관리 -->
               <div class="bar-group">
                 <div class="bars">
                   <div class="bar-item">
-                    <div class="bar-val">3.82</div>
-                    <div class="bar-col bar-mine" style="height:114px"></div>
+                    <div class="bar-val">4.9</div>
+                    <div class="bar-col bar-mine" style="height:147px"></div>
                     <div class="bar-label">본인</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">4.21</div>
-                    <div class="bar-col bar-best" style="height:130px"></div>
-                    <div class="bar-label">우수자</div>
+                    <div class="bar-val">4.6</div>
+                    <div class="bar-col bar-best" style="height:138px"></div>
+                    <div class="bar-label">상사</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">4.05</div>
-                    <div class="bar-col bar-top" style="height:122px"></div>
-                    <div class="bar-label">상위</div>
+                    <div class="bar-val">4.4</div>
+                    <div class="bar-col bar-top" style="height:132px"></div>
+                    <div class="bar-label">동료</div>
+                  </div>
+                  <div class="bar-item">
+                    <div class="bar-val">4.7</div>
+                    <div class="bar-col" style="height:141px;background:#7C3AED;border-radius:3px 3px 0 0;"></div>
+                    <div class="bar-label">부하</div>
                   </div>
                 </div>
-                <div class="bar-group-title">공유역량</div>
+                <div class="bar-group-title">조직관리</div>
               </div>
-              <!-- 조직역량 -->
+              <!-- 사람관리 -->
               <div class="bar-group">
                 <div class="bars">
                   <div class="bar-item">
-                    <div class="bar-val">3.65</div>
-                    <div class="bar-col bar-mine" style="height:109px"></div>
+                    <div class="bar-val">5.0</div>
+                    <div class="bar-col bar-mine" style="height:150px"></div>
                     <div class="bar-label">본인</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">4.18</div>
-                    <div class="bar-col bar-best" style="height:128px"></div>
-                    <div class="bar-label">우수자</div>
+                    <div class="bar-val">4.8</div>
+                    <div class="bar-col bar-best" style="height:144px"></div>
+                    <div class="bar-label">상사</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">3.97</div>
-                    <div class="bar-col bar-top" style="height:120px"></div>
-                    <div class="bar-label">상위</div>
+                    <div class="bar-val">4.5</div>
+                    <div class="bar-col bar-top" style="height:135px"></div>
+                    <div class="bar-label">동료</div>
+                  </div>
+                  <div class="bar-item">
+                    <div class="bar-val">4.9</div>
+                    <div class="bar-col" style="height:147px;background:#7C3AED;border-radius:3px 3px 0 0;"></div>
+                    <div class="bar-label">부하</div>
                   </div>
                 </div>
-                <div class="bar-group-title">조직역량</div>
+                <div class="bar-group-title">사람관리</div>
               </div>
-              <!-- 사생역량 -->
+              <!-- 성과관리 -->
               <div class="bar-group">
                 <div class="bars">
                   <div class="bar-item">
-                    <div class="bar-val">3.54</div>
-                    <div class="bar-col bar-mine" style="height:106px"></div>
+                    <div class="bar-val">3.5</div>
+                    <div class="bar-col bar-mine" style="height:105px"></div>
                     <div class="bar-label">본인</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">4.30</div>
-                    <div class="bar-col bar-best" style="height:133px"></div>
-                    <div class="bar-label">우수자</div>
+                    <div class="bar-val">3.2</div>
+                    <div class="bar-col bar-best" style="height:96px"></div>
+                    <div class="bar-label">상사</div>
                   </div>
                   <div class="bar-item">
-                    <div class="bar-val">4.10</div>
-                    <div class="bar-col bar-top" style="height:125px"></div>
-                    <div class="bar-label">상위</div>
+                    <div class="bar-val">3.4</div>
+                    <div class="bar-col bar-top" style="height:102px"></div>
+                    <div class="bar-label">동료</div>
+                  </div>
+                  <div class="bar-item">
+                    <div class="bar-val">3.1</div>
+                    <div class="bar-col" style="height:93px;background:#7C3AED;border-radius:3px 3px 0 0;"></div>
+                    <div class="bar-label">부하</div>
                   </div>
                 </div>
-                <div class="bar-group-title">사생역량</div>
+                <div class="bar-group-title">성과관리</div>
               </div>
             </div>
             <div class="bar-legend">
               <div class="legend-item"><div class="legend-dot" style="background:#246CF9"></div>본인</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#16A34A"></div>우수자 평균</div>
-              <div class="legend-item"><div class="legend-dot" style="background:#F97316"></div>상위 30%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#16A34A"></div>상사</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#F97316"></div>동료</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#7C3AED"></div>부하직원</div>
             </div>
           </div>
         </div>
@@ -444,51 +442,35 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="rs-head">
             <span class="rs-head-dot"></span>
             <span class="rs-title">종합</span>
-            <span class="scale-hint" style="margin-left:auto">척도 1 ~ 5</span>
+            <span class="scale-hint" style="margin-left:auto">척도 0 ~ 5</span>
           </div>
           <div class="rs-body">
             <table class="slider-table">
               <thead>
                 <tr>
                   <th style="width:110px">역량구분</th>
-                  <th style="width:130px">역량명</th>
                   <th>점수</th>
-                  <th style="width:80px">종합평균</th>
+                  <th style="width:70px">본인</th>
+                  <th style="width:70px">상사</th>
+                  <th style="width:70px">동료</th>
+                  <th style="width:70px">부하직원</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td rowspan="1">공유역량</td>
-                  <td>공유역량 종합</td>
-                  <td>
-                    <div class="score-bar-wrap">
-                      <div class="score-bar-track"><div class="score-bar-fill" style="width:70%"></div></div>
-                      <span class="score-bar-num">3.82</span>
-                    </div>
-                  </td>
-                  <td>3.82</td>
+                  <td>조직관리</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:92%"></div></div><span class="score-bar-num">4.9</span></div></td>
+                  <td>4.9</td><td>4.6</td><td>4.4</td><td>4.7</td>
                 </tr>
                 <tr>
-                  <td rowspan="1">조직역량</td>
-                  <td>조직역량 종합</td>
-                  <td>
-                    <div class="score-bar-wrap">
-                      <div class="score-bar-track"><div class="score-bar-fill" style="width:66%"></div></div>
-                      <span class="score-bar-num">3.65</span>
-                    </div>
-                  </td>
-                  <td>3.65</td>
+                  <td>사람관리</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:96%"></div></div><span class="score-bar-num">5.0</span></div></td>
+                  <td>5.0</td><td>4.8</td><td>4.5</td><td>4.9</td>
                 </tr>
                 <tr>
-                  <td rowspan="1">사생역량</td>
-                  <td>사생역량 종합</td>
-                  <td>
-                    <div class="score-bar-wrap">
-                      <div class="score-bar-track"><div class="score-bar-fill orange" style="width:61%"></div></div>
-                      <span class="score-bar-num">3.54</span>
-                    </div>
-                  </td>
-                  <td>3.54</td>
+                  <td>성과관리</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill orange" style="width:64%"></div></div><span class="score-bar-num">3.5</span></div></td>
+                  <td>3.5</td><td>3.2</td><td>3.4</td><td>3.1</td>
                 </tr>
               </tbody>
             </table>
@@ -500,7 +482,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="rs-head">
             <span class="rs-head-dot"></span>
             <span class="rs-title">역량별 지수</span>
-            <span class="scale-hint" style="margin-left:auto">척도 1 ~ 5</span>
+            <span class="scale-hint" style="margin-left:auto">척도 0 ~ 5</span>
           </div>
           <div class="rs-body">
             <table class="slider-table">
@@ -509,48 +491,60 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                   <th style="width:110px">역량구분</th>
                   <th style="width:130px">역량명</th>
                   <th>점수</th>
-                  <th style="width:80px">본인점수</th>
-                  <th style="width:80px">역량점수</th>
+                  <th style="width:70px">본인</th>
+                  <th style="width:70px">상사</th>
+                  <th style="width:70px">동료</th>
+                  <th style="width:70px">부하직원</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td rowspan="3">공유역량</td>
-                  <td>비전 제시</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:86%"></div></div><span class="score-bar-num">4.30</span></div></td>
-                  <td>4.30</td><td>3.82</td>
+                  <td rowspan="3">조직관리</td>
+                  <td>변화관리</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:96%"></div></div><span class="score-bar-num">4.8</span></div></td>
+                  <td>4.8</td><td>4.7</td><td>4.5</td><td>4.9</td>
                 </tr>
                 <tr>
-                  <td>전략적 사고</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill" style="width:66%"></div></div><span class="score-bar-num">3.60</span></div></td>
-                  <td>3.60</td><td>3.82</td>
+                  <td>혁신활동</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:98%"></div></div><span class="score-bar-num">4.9</span></div></td>
+                  <td>4.9</td><td>4.6</td><td>4.4</td><td>4.8</td>
                 </tr>
                 <tr>
-                  <td>커뮤니케이션</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill" style="width:71%"></div></div><span class="score-bar-num">3.75</span></div></td>
-                  <td>3.75</td><td>3.82</td>
+                  <td>가치전파</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:100%"></div></div><span class="score-bar-num">5.0</span></div></td>
+                  <td>5.0</td><td>4.5</td><td>4.3</td><td>4.5</td>
                 </tr>
                 <tr>
-                  <td rowspan="2">조직역량</td>
-                  <td>팀워크 촉진</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:80%"></div></div><span class="score-bar-num">4.10</span></div></td>
-                  <td>4.10</td><td>3.65</td>
+                  <td rowspan="4">사람관리</td>
+                  <td>신뢰형성</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:100%"></div></div><span class="score-bar-num">5.0</span></div></td>
+                  <td>5.0</td><td>4.9</td><td>4.6</td><td>5.0</td>
                 </tr>
                 <tr>
-                  <td>갈등 관리</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill orange" style="width:55%"></div></div><span class="score-bar-num">3.20</span></div></td>
-                  <td>3.20</td><td>3.65</td>
+                  <td>의사소통</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:96%"></div></div><span class="score-bar-num">4.8</span></div></td>
+                  <td>4.8</td><td>4.7</td><td>4.5</td><td>4.9</td>
                 </tr>
                 <tr>
-                  <td rowspan="2">사생역량</td>
-                  <td>자기 인식</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:76%"></div></div><span class="score-bar-num">3.95</span></div></td>
-                  <td>3.95</td><td>3.54</td>
+                  <td>코칭</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:100%"></div></div><span class="score-bar-num">5.0</span></div></td>
+                  <td>5.0</td><td>4.8</td><td>4.4</td><td>4.9</td>
                 </tr>
                 <tr>
-                  <td>감정 조절</td>
-                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill red" style="width:47%"></div></div><span class="score-bar-num">3.12</span></div></td>
-                  <td>3.12</td><td>3.54</td>
+                  <td>팀원육성</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill green" style="width:96%"></div></div><span class="score-bar-num">4.8</span></div></td>
+                  <td>4.8</td><td>4.6</td><td>4.5</td><td>4.8</td>
+                </tr>
+                <tr>
+                  <td rowspan="2">성과관리</td>
+                  <td>문제해결</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill orange" style="width:68%"></div></div><span class="score-bar-num">3.6</span></div></td>
+                  <td>3.6</td><td>3.3</td><td>3.5</td><td>3.2</td>
+                </tr>
+                <tr>
+                  <td>전략적 의사결정</td>
+                  <td><div class="score-bar-wrap"><div class="score-bar-track"><div class="score-bar-fill red" style="width:60%"></div></div><span class="score-bar-num">3.4</span></div></td>
+                  <td>3.4</td><td>3.1</td><td>3.3</td><td>3.0</td>
                 </tr>
               </tbody>
             </table>
@@ -568,57 +562,67 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               <thead>
                 <tr>
                   <th style="width:100px">역량구분</th>
-                  <th style="width:130px">역량명</th>
-                  <th style="width:60px">나</th>
-                  <th style="width:60px">평균</th>
-                  <th style="width:60px">부하</th>
-                  <th style="width:60px">부부</th>
+                  <th style="width:140px">역량명</th>
+                  <th style="width:65px">본인</th>
+                  <th style="width:65px">상사</th>
+                  <th style="width:65px">동료</th>
+                  <th style="width:65px">부하직원</th>
                   <th style="width:70px">총합</th>
                   <th style="width:60px">GAP</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td rowspan="3" class="group-cell">공유역량</td>
-                  <td>비전 제시</td>
-                  <td>4.5</td><td>4.1</td><td>4.3</td><td>4.2</td><td>4.30</td>
+                  <td rowspan="3" class="group-cell">조직관리</td>
+                  <td>변화관리</td>
+                  <td>4.8</td><td>4.7</td><td>4.5</td><td>4.9</td><td>4.72</td>
+                  <td><span class="gap-badge">-0.07</span></td>
+                </tr>
+                <tr>
+                  <td>혁신활동</td>
+                  <td>4.9</td><td>4.6</td><td>4.4</td><td>4.8</td><td>4.67</td>
+                  <td><span class="gap-badge">-0.23</span></td>
+                </tr>
+                <tr>
+                  <td>가치전파</td>
+                  <td>5.0</td><td>4.5</td><td>4.3</td><td>4.5</td><td>4.57</td>
+                  <td><span class="gap-badge">-0.43</span></td>
+                </tr>
+                <tr>
+                  <td rowspan="4" class="group-cell">사람관리</td>
+                  <td>신뢰형성</td>
+                  <td>5.0</td><td>4.9</td><td>4.6</td><td>5.0</td><td>4.88</td>
+                  <td><span class="gap-badge">-0.13</span></td>
+                </tr>
+                <tr>
+                  <td>의사소통</td>
+                  <td>4.8</td><td>4.7</td><td>4.5</td><td>4.9</td><td>4.72</td>
+                  <td><span class="gap-badge">-0.07</span></td>
+                </tr>
+                <tr>
+                  <td>코칭</td>
+                  <td>5.0</td><td>4.8</td><td>4.4</td><td>4.9</td><td>4.77</td>
+                  <td><span class="gap-badge">-0.23</span></td>
+                </tr>
+                <tr>
+                  <td>팀원육성</td>
+                  <td>4.8</td><td>4.6</td><td>4.5</td><td>4.8</td><td>4.68</td>
+                  <td><span class="gap-badge">-0.13</span></td>
+                </tr>
+                <tr>
+                  <td rowspan="2" class="group-cell">성과관리</td>
+                  <td>문제해결</td>
+                  <td>3.6</td><td>3.3</td><td>3.5</td><td>3.2</td><td>3.40</td>
                   <td><span class="gap-badge pos">+0.20</span></td>
                 </tr>
                 <tr>
-                  <td>전략적 사고</td>
-                  <td>3.8</td><td>3.5</td><td>3.6</td><td>3.4</td><td>3.60</td>
-                  <td><span class="gap-badge">-0.20</span></td>
-                </tr>
-                <tr>
-                  <td>커뮤니케이션</td>
-                  <td>3.9</td><td>3.7</td><td>3.8</td><td>3.6</td><td>3.75</td>
-                  <td><span class="gap-badge">-0.15</span></td>
-                </tr>
-                <tr>
-                  <td rowspan="2" class="group-cell">조직역량</td>
-                  <td>팀워크 촉진</td>
-                  <td>4.2</td><td>4.0</td><td>4.1</td><td>4.1</td><td>4.10</td>
-                  <td><span class="gap-badge pos">+0.10</span></td>
-                </tr>
-                <tr>
-                  <td>갈등 관리</td>
-                  <td>3.5</td><td>3.1</td><td>3.2</td><td>3.0</td><td>3.20</td>
-                  <td><span class="gap-badge">-0.30</span></td>
-                </tr>
-                <tr>
-                  <td rowspan="2" class="group-cell">사생역량</td>
-                  <td>자기 인식</td>
-                  <td>4.1</td><td>3.8</td><td>3.9</td><td>4.0</td><td>3.95</td>
-                  <td><span class="gap-badge pos">+0.15</span></td>
-                </tr>
-                <tr>
-                  <td>감정 조절</td>
-                  <td>3.3</td><td>3.0</td><td>3.1</td><td>3.0</td><td>3.12</td>
-                  <td><span class="gap-badge">-0.18</span></td>
+                  <td>전략적 의사결정</td>
+                  <td>3.4</td><td>3.1</td><td>3.3</td><td>3.0</td><td>3.20</td>
+                  <td><span class="gap-badge pos">+0.20</span></td>
                 </tr>
               </tbody>
             </table>
-            <div style="margin-top:10px;font-size:11.5px;color:var(--text-400)">※ GAP = 본인점수 − 타인평균점수 / <span style="color:var(--red);font-weight:700">빨강</span> 음수(과대평가 가능성) &nbsp; <span style="color:var(--green);font-weight:700">초록</span> 양수(과소평가 가능성)</div>
+            <div style="margin-top:10px;font-size:11.5px;color:var(--text-400)">※ GAP = 본인점수 − 타인평균점수 &nbsp;|&nbsp; <span style="color:var(--red);font-weight:700">빨강</span> 음수(본인이 타인보다 높게 평가) &nbsp; <span style="color:var(--green);font-weight:700">초록</span> 양수(타인이 본인보다 높게 평가)</div>
           </div>
         </div>
 
@@ -626,7 +630,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <div class="result-section">
           <div class="rs-body">
             <div class="report-cta">
-              <div style="font-size:13px;color:var(--text-500);margin-bottom:14px">상세 리포트(강점·약점 해석, 개발 제언)를 확인하려면 개인 리포트를 열람하세요.</div>
+              <div style="font-size:13px;color:var(--text-500);margin-bottom:14px">강점·약점 해석 및 개발 제언이 포함된 개인 리포트를 열람하세요.</div>
               <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
                 <button class="btn btn-secondary-outline" onclick="openReport()">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -643,73 +647,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
       </div>
 
-      <!-- ===== VIEW B: 조건 미충족 ===== -->
-      <div id="view-not-met" style="display:none">
-
-        <!-- Meta Info (same) -->
-        <div class="meta-card">
-          <div class="meta-item">
-            <div class="meta-label">진단명</div>
-            <div class="meta-val">2024년 상반기 리더십 역량진단</div>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <div class="meta-label">진단기간</div>
-            <div class="meta-val">2024.04.01 ~ 2024.04.30</div>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <div class="meta-label">진단대상자</div>
-            <div class="meta-val">홍길동 (본인)</div>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <div class="meta-label">응답자 현황</div>
-            <div class="respondent-count">
-              <span class="rc-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                본인 완료
-              </span>
-              <span class="rc-badge-warn">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                타인 1명 완료 (2명 이상 필요)
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Condition Not Met Card -->
-        <div class="condition-card">
-          <div class="condition-icon">⏳</div>
-          <div class="condition-title">아직 결과 리포트를 열람할 수 없습니다</div>
-          <div class="condition-desc">
-            리포트 열람 조건이 충족되지 않았습니다.<br>
-            아래 조건을 모두 만족해야 결과를 확인할 수 있습니다.
-          </div>
-          <div class="condition-checklist">
-            <div class="check-item done">
-              <span>✅</span>
-              본인(자기진단) 응답 완료
-              <span style="font-size:12px;color:var(--text-400);margin-left:4px">완료</span>
-            </div>
-            <div class="check-item pending">
-              <span>⚠️</span>
-              타인 응답자 2명 이상 완료
-              <span style="font-size:12px;color:var(--orange);margin-left:4px;font-weight:700">현재 1명 완료 · 1명 더 필요</span>
-            </div>
-            <div class="check-item done">
-              <span>✅</span>
-              진단 마감 처리 완료
-              <span style="font-size:12px;color:var(--text-400);margin-left:4px">완료</span>
-            </div>
-          </div>
-          <div style="font-size:12.5px;color:var(--text-400);line-height:1.7">
-            진단 관련 문의는 담당 교육담당자에게 연락해 주세요.<br>
-            응답 현황 독려가 필요한 경우 교육담당자가 EDMS에서 발송할 수 있습니다.
-          </div>
-        </div>
-
-      </div>
 
       <!-- ===== 기획 스펙 노트 ===== -->
       <div class="spec-section">
@@ -725,13 +662,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li><b>조건 3:</b> 진단 마감 상태 'Y' — EDMS(교육담당자)에서 마감 처리 후 리포트 생성됨</li>
             <li>→ 조건 충족 시 '결과보기' 버튼 활성화, 미충족 시 '결과대기' 버튼 비활성</li>
           </ul>
-          <h4>② 조건 미충족 안내</h4>
-          <ul>
-            <li>열람 조건 3개 각각의 충족 여부를 체크리스트로 표시</li>
-            <li>타인 응답자 수: 실시간 카운트 표시 (현재 N명 / 필요 2명)</li>
-            <li>교육담당자에게 독려 요청 안내 문구 포함</li>
-          </ul>
-          <h4>③ 접근 권한</h4>
+          <h4>② 접근 권한</h4>
           <ul>
             <li>결과 리포트는 <b>진단대상자 본인</b>만 열람 가능</li>
             <li>응답자(타인 평가자)는 결과 열람 불가 (진단대상자가 아닌 경우)</li>
@@ -745,13 +676,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 </div>
 
 <script>
-function showView(viewId, btn) {
-  document.getElementById('view-available').style.display = 'none';
-  document.getElementById('view-not-met').style.display = 'none';
-  document.getElementById(viewId).style.display = 'block';
-  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
 function openReport() {
   window.open('진단_개인보고서.html', '_blank');
 }
