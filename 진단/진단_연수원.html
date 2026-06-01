@@ -113,7 +113,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 /* 왼쪽: 진단 정보 */
 .diag-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
 
-.diag-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.diag-top{display:flex;align-items:center;gap:8px;}
 
 /* 진단 유형 칩 */
 .diag-type-chip{
@@ -126,7 +126,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 }
 
 /* 진단명 */
-.diag-name{font-size:14.5px;font-weight:700;color:var(--text-900);letter-spacing:-.2px;}
+.diag-name{font-size:14px;font-weight:700;color:var(--text-900);letter-spacing:-.2px;}
 
 /* 진단대상자 배지 */
 .diag-target{
@@ -146,13 +146,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .diag-questions{font-size:12px;color:var(--text-400);}
 
 /* 오른쪽: 진행율 + 버튼 */
-.diag-right{display:flex;align-items:center;gap:20px;flex-shrink:0;}
+.diag-right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
 
 /* 진행율 */
-.diag-prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:80px;}
+.diag-prog{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:70px;}
 .diag-prog-label{font-size:11px;color:var(--text-400);}
-.diag-prog-bar-wrap{display:flex;align-items:center;gap:7px;}
-.diag-prog-bar{width:64px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.diag-prog-bar-wrap{display:flex;align-items:center;gap:6px;}
+.diag-prog-bar{width:48px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
 .diag-prog-fill{height:100%;border-radius:3px;transition:width .5s ease;}
 .diag-prog-pct{font-size:12px;font-weight:700;color:var(--text-700);min-width:28px;text-align:right;}
 .diag-prog-pct.done{color:var(--green);}
@@ -345,7 +345,7 @@ const DATA_DIAG = [
   {
     id: 1,
     typeName: 'LS', typeLabel: '리더십스타일',
-    name: 'CUBE® 리더십스타일 진단',
+    name: '2026년 상반기 리더십스타일 진단',
     target: 'self', targetName: '',
     period: '2026.05.01 ~ 2026.05.31',
     questions: 36, answered: 0, pct: 0,
@@ -354,7 +354,7 @@ const DATA_DIAG = [
   {
     id: 4,
     typeName: 'LC', typeLabel: '리더십역량',
-    name: 'CUBE® 리더십역량 진단',
+    name: '2026년 상반기 리더십역량 진단',
     target: 'other', targetName: '김철수',
     period: '2026.05.01 ~ 2026.05.31',
     questions: 60, answered: 0, pct: 0,
@@ -364,7 +364,7 @@ const DATA_DIAG = [
   {
     id: 13,
     typeName: 'LS', typeLabel: '리더십스타일',
-    name: 'CUBE® 리더십스타일 진단',
+    name: '2026년 상반기 리더십스타일 진단',
     target: 'self', targetName: '',
     period: '2026.05.01 ~ 2026.05.31',
     questions: 36, answered: 0, pct: 0,
@@ -374,7 +374,7 @@ const DATA_DIAG = [
   {
     id: 2,
     typeName: 'LC', typeLabel: '리더십역량',
-    name: 'CUBE® 리더십역량 진단',
+    name: '2026년 상반기 리더십역량 진단',
     target: 'self', targetName: '',
     period: '2026.05.01 ~ 2026.05.31',
     questions: 60, answered: 36, pct: 60,
@@ -383,7 +383,7 @@ const DATA_DIAG = [
   {
     id: 6,
     typeName: 'LS', typeLabel: '리더십스타일',
-    name: 'CUBE® 리더십스타일 진단',
+    name: '2026년 상반기 리더십스타일 진단',
     target: 'other', targetName: '박지민',
     period: '2026.05.01 ~ 2026.05.31',
     questions: 36, answered: 11, pct: 30,
@@ -393,7 +393,7 @@ const DATA_DIAG = [
   {
     id: 10,
     typeName: 'BSA', typeLabel: '비즈니스상황',
-    name: 'CUBE® 비즈니스상황 진단',
+    name: '2026년 1분기 비즈니스상황 진단',
     target: 'self', targetName: '',
     period: '2026.04.01 ~ 2026.04.30',
     questions: 24, answered: 10, pct: 42,
@@ -402,7 +402,7 @@ const DATA_DIAG = [
   {
     id: 11,
     typeName: 'LC', typeLabel: '리더십역량',
-    name: 'CUBE® 리더십역량 진단',
+    name: '2026년 1분기 리더십역량 진단',
     target: 'other', targetName: '이영후',
     period: '2026.04.01 ~ 2026.04.30',
     questions: 60, answered: 24, pct: 40,
@@ -412,7 +412,7 @@ const DATA_DIAG = [
   {
     id: 12,
     typeName: 'LC', typeLabel: '리더십역량',
-    name: 'CUBE® 리더십역량 진단',
+    name: '2026년 1분기 리더십역량 진단',
     target: 'self', targetName: '',
     period: '2026.04.01 ~ 2026.04.30',
     questions: 60, answered: 30, pct: 50,
@@ -422,7 +422,7 @@ const DATA_DIAG = [
   {
     id: 5,
     typeName: 'BSA', typeLabel: '비즈니스상황',
-    name: 'CUBE® 비즈니스상황 진단',
+    name: '2026년 1분기 비즈니스상황 진단',
     target: 'self', targetName: '',
     period: '2026.04.01 ~ 2026.04.30',
     questions: 24, answered: 24, pct: 100,
@@ -432,7 +432,7 @@ const DATA_DIAG = [
   {
     id: 8,
     typeName: 'LC', typeLabel: '리더십역량',
-    name: 'CUBE® 리더십역량 진단',
+    name: '2025년 하반기 리더십역량 진단',
     target: 'other', targetName: '김민준',
     period: '2025.10.01 ~ 2025.10.31',
     questions: 60, answered: 60, pct: 100,
@@ -450,7 +450,7 @@ const DATA_RESULT = [
   {
     id: 7,
     typeName: 'LS', typeLabel: '리더십스타일',
-    name: 'CUBE® 리더십스타일 진단',
+    name: '2025년 하반기 리더십스타일 진단',
     target: 'self',
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
     respondentCount: 15, responseRate: 80,
@@ -459,7 +459,7 @@ const DATA_RESULT = [
   {
     id: 9,
     typeName: 'BSA', typeLabel: '비즈니스상황',
-    name: 'CUBE® 비즈니스상황 진단',
+    name: '2025년 하반기 비즈니스상황 진단',
     target: 'self',
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
     respondentCount: 20, responseRate: 100,
@@ -529,9 +529,9 @@ function renderCard(item) {
       <div class="diag-info">
         <div class="diag-top">
           <span class="diag-name">${item.name}</span>
-          ${targetBadge}
         </div>
         <div class="diag-meta">
+          ${targetBadge}
           <span class="diag-period">📅 ${item.period}</span>
           <span class="diag-meta-dot"></span>
           <span class="diag-questions">총 ${item.questions}문항</span>
