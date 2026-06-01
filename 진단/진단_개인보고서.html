@@ -52,7 +52,7 @@ body {
 .report {
   max-width: 900px;
   margin: 0 auto;
-  padding: 32px 16px;
+  padding: 16px 16px 40px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -923,21 +923,64 @@ body {
   margin-top: 4px;
 }
 
+/* ====== REPORT NAV ====== */
+.report-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 44px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.report-nav::-webkit-scrollbar { display: none; }
+.report-nav a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-500);
+  text-decoration: none;
+  border-radius: var(--r-md);
+  white-space: nowrap;
+  transition: color .15s, background .15s;
+}
+.report-nav a:hover { color: var(--text-900); background: var(--bg); }
+.report-nav a.active { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+
 /* ====== PRINT / IFRAME ====== */
 @media print {
   body { background: white; }
+  .report-nav { display: none; }
   .report { padding: 0; max-width: 100%; }
   .page { break-inside: avoid; margin-bottom: 24px; box-shadow: none; border: 1px solid var(--border); }
 }
 </style>
 </head>
 <body>
+<nav class="report-nav" id="reportNav">
+  <a href="#cover" class="active">📄 커버</a>
+  <a href="#overview">📋 진단개요</a>
+  <a href="#summary">🎯 종합결과</a>
+  <a href="#competency">💎 역량상세</a>
+  <a href="#style">🌿 스타일</a>
+  <a href="#risk">🛡️ 위험행동</a>
+  <a href="#feedback">💬 피드백</a>
+</nav>
 <div class="report">
 
   <!-- ==========================================
        PAGE 0: COVER
        ========================================== -->
-  <div class="cover">
+  <div class="cover" id="cover">
     <div class="cover-top">
       <div class="cover-logo">
         <div class="logo-mark">🎯</div>
@@ -973,7 +1016,7 @@ body {
   <!-- ==========================================
        PAGE 1: 진단 개요
        ========================================== -->
-  <div class="page">
+  <div class="page" id="overview">
     <div class="page-header">
       <div class="section-icon">📋</div>
       <h2>진단 개요</h2>
@@ -1078,7 +1121,7 @@ body {
   <!-- ==========================================
        PAGE 2: 마이큐브 종합
        ========================================== -->
-  <div class="page">
+  <div class="page" id="summary">
     <div class="page-header">
       <div class="section-icon">🎯</div>
       <h2>마이큐브 종합 결과</h2>
@@ -1157,7 +1200,7 @@ body {
   <!-- ==========================================
        PAGE 3: 리더십 역량 상세
        ========================================== -->
-  <div class="page">
+  <div class="page" id="competency">
     <div class="page-header">
       <div class="section-icon">💎</div>
       <h2>리더십 역량 상세</h2>
@@ -1375,7 +1418,7 @@ body {
   <!-- ==========================================
        PAGE 4: 리더십 스타일 상세
        ========================================== -->
-  <div class="page">
+  <div class="page" id="style">
     <div class="page-header">
       <div class="section-icon">🌿</div>
       <h2>리더십 스타일 상세</h2>
@@ -1539,7 +1582,7 @@ body {
   <!-- ==========================================
        PAGE 5: 리더십 위험행동 상세
        ========================================== -->
-  <div class="page">
+  <div class="page" id="risk">
     <div class="page-header">
       <div class="section-icon">🛡️</div>
       <h2>리더십 위험행동 상세</h2>
@@ -1675,7 +1718,7 @@ body {
   <!-- ==========================================
        PAGE 6: 리더십 피드백 (정성)
        ========================================== -->
-  <div class="page">
+  <div class="page" id="feedback">
     <div class="page-header">
       <div class="section-icon">💬</div>
       <h2>리더십 피드백 (정성)</h2>
@@ -1729,5 +1772,37 @@ body {
   </div>
 
 </div>
+
+<script>
+(function() {
+  var nav = document.getElementById('reportNav');
+  // iframe 내부이면 nav 숨김
+  if (window.self !== window.top) {
+    nav.style.display = 'none';
+    return;
+  }
+  // 스크롤 기반 active 상태 추적
+  var sections = ['cover','overview','summary','competency','style','risk','feedback'];
+  var links = {};
+  sections.forEach(function(id) {
+    links[id] = nav.querySelector('a[href="#' + id + '"]');
+  });
+
+  function updateActive() {
+    var scrollY = window.scrollY + 60;
+    var current = sections[0];
+    sections.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.offsetTop <= scrollY) current = id;
+    });
+    sections.forEach(function(id) {
+      if (links[id]) links[id].classList.toggle('active', id === current);
+    });
+  }
+
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+})();
+</script>
 </body>
 </html>

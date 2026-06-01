@@ -96,7 +96,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .report-header-bar{background:var(--white);border:1px solid var(--border);border-bottom:none;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:12px 20px;display:flex;align-items:center;gap:12px;}
 .report-header-bar h3{font-size:14px;font-weight:700;color:var(--text-900);flex:1;}
 .report-iframe-wrap{background:var(--white);border:1px solid var(--border);border-radius:0 0 var(--r-lg) var(--r-lg);overflow:hidden;position:relative;}
-.report-iframe{width:100%;height:700px;border:none;display:block;background:#fafafa;}
+.report-iframe{width:100%;height:calc(100vh - 260px);min-height:640px;border:none;display:block;background:#fafafa;}
 .report-iframe-placeholder{width:100%;height:700px;background:linear-gradient(135deg,var(--border-light) 0%,var(--primary-light) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .report-placeholder-icon{font-size:56px;}
 .report-placeholder-title{font-size:16px;font-weight:700;color:var(--text-900);}
@@ -275,67 +275,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           </div>
         </div>
 
-        <!-- Report Card -->
+        <!-- Report Card (iframe embed) -->
         <div class="report-container">
-          <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;">
-
-            <!-- 미리보기 배너 -->
-            <div style="background:linear-gradient(135deg,#0f2d6b 0%,#1a4bbb 55%,#246CF9 100%);padding:40px 40px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
-              <div style="color:white;">
-                <div style="font-size:11px;font-weight:600;opacity:.65;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Turning Point CUBE®</div>
-                <div style="font-size:22px;font-weight:800;line-height:1.25;margin-bottom:6px;">리더십 진단 보고서<br><span style="font-size:15px;font-weight:500;opacity:.8;">개인 역량 리포트</span></div>
-                <div style="font-size:12px;opacity:.55;margin-top:8px;">홍길동 팀장 · ABC기업 · 2025.06.03 생성</div>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
-                <button class="btn" style="background:white;color:#1a4bbb;font-size:13px;padding:10px 20px;" onclick="openReport()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  새 창에서 보기
-                </button>
-                <button class="btn" style="background:rgba(255,255,255,.15);color:white;border:1.5px solid rgba(255,255,255,.4);font-size:13px;padding:10px 20px;" onclick="downloadReport()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  PDF로 저장
-                </button>
-              </div>
+          <div class="report-header-bar">
+            <h3>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              터닝포인트 CUBE® 개인 리포트
+            </h3>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:11px;color:var(--text-400);">홍길동 팀장 · 2025.06.03 생성</span>
+              <button class="btn btn-secondary-outline" style="padding:5px 12px;font-size:12px;" onclick="openReport()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                새 창에서 보기
+              </button>
+              <button class="btn btn-outline" style="padding:5px 12px;font-size:12px;" onclick="downloadReport()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PDF 저장
+              </button>
             </div>
-
-            <!-- 리포트 구성 안내 -->
-            <div style="padding:20px 24px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border-light);">
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);">
-                <span style="background:var(--blue-bg);color:var(--blue);padding:3px 10px;border-radius:10px;font-weight:600;">💎 리더십 역량</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);">
-                <span style="background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:10px;font-weight:600;">🌿 리더십 스타일</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);">
-                <span style="background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:10px;font-weight:600;">🛡️ 리더십 위험행동</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);">
-                <span style="background:var(--gray-bg);color:var(--gray);padding:3px 10px;border-radius:10px;font-weight:600;">💬 정성 피드백</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);">
-                <span style="background:var(--primary-light);color:var(--primary);padding:3px 10px;border-radius:10px;font-weight:600;">✨ AI 분석 15개 섹션</span>
-              </div>
-            </div>
-
-            <!-- 결과 요약 -->
-            <div style="padding:20px 24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--r-lg);">
-                <div style="font-size:11px;color:var(--text-500);margin-bottom:4px;">리더십 역량</div>
-                <div style="font-size:20px;font-weight:800;color:#1d4ed8;">탁월</div>
-                <div style="font-size:11px;color:var(--text-400);margin-top:2px;">상위 15%</div>
-              </div>
-              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--r-lg);">
-                <div style="font-size:11px;color:var(--text-500);margin-bottom:4px;">리더십 스타일</div>
-                <div style="font-size:20px;font-weight:800;color:#15803d;">효과적</div>
-                <div style="font-size:11px;color:var(--text-400);margin-top:2px;">균형 잡힌 활용</div>
-              </div>
-              <div style="text-align:center;padding:16px;background:var(--bg);border-radius:var(--r-lg);">
-                <div style="font-size:11px;color:var(--text-500);margin-bottom:4px;">리더십 위험행동</div>
-                <div style="font-size:20px;font-weight:800;color:#15803d;">양호 🟢</div>
-                <div style="font-size:11px;color:var(--text-400);margin-top:2px;">위험 행동 없음</div>
-              </div>
-            </div>
-
+          </div>
+          <div class="report-iframe-wrap">
+            <iframe class="report-iframe" src="진단_개인보고서.html" title="리더십 진단 개인 리포트"></iframe>
+            <div class="iframe-overlay-hint"></div>
           </div>
         </div>
 
