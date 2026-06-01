@@ -517,10 +517,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <div class="intro-box">
           <!-- 진단 소개 헤더 -->
           <div class="intro-info-head">
-            <div class="intro-diag-name-row">
-              <span class="diag-type-chip">리더십역량</span>
-            </div>
-            <div class="intro-diag-title">CUBE® 리더십역량 진단</div>
+            <div class="intro-diag-title">2026년 상반기 리더십역량 진단</div>
             <div class="intro-diag-meta-row">
               <span class="diag-meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -557,18 +554,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       </div>
 
       <!-- 돌아가기 -->
-      <button class="back-btn" style="display:none" onclick="location.href='진단_연수원.html'">
+      <button id="backBtn" class="back-btn" style="display:none" onclick="location.href='진단_연수원.html'">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
-        돌아가기
+        목록으로
       </button>
 
       <!-- 진단 헤더 -->
       <div class="diag-header" id="diagHeader" style="display:none">
         <div class="diag-header-top">
-          <span class="diag-type-chip">리더십역량</span>
-          <span class="diag-header-title" id="diagName">CUBE® 리더십역량 진단</span>
+          <span class="diag-header-title" id="diagName">2026년 상반기 리더십역량 진단</span>
         </div>
         <div class="diag-header-meta">
           <span class="diag-meta-item">
@@ -626,7 +622,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 <script>
 /* ===== 데이터 ===== */
 const DIAG_INFO = {
-  name: 'CUBE® 리더십역량 진단',
+  name: '2026년 상반기 리더십역량 진단',
   targetName: '홍길동',
   deadline: '2025-10-31',
   tabs: [
@@ -1018,7 +1014,7 @@ function renderSampleSection() {
 /* ── 인트로 닫기 ── */
 function closeIntro() {
   document.getElementById('introSection').style.display = 'none';
-  document.querySelector('.back-btn').style.display = '';
+  document.getElementById('backBtn').style.display = '';
   document.getElementById('diagHeader').style.display = '';
   document.getElementById('tabBar').style.display = '';
   document.getElementById('contentArea').style.display = '';
