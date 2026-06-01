@@ -185,6 +185,21 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .gap-badge{display:inline-block;background:var(--red-bg);color:var(--red);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;}
 .gap-badge.pos{background:var(--green-bg);color:var(--green);}
 
+/* 역량군 서머리 카드 */
+.group-summary{display:flex;gap:14px;margin-bottom:16px;}
+.group-sum-card{flex:1;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px 14px;min-width:0;}
+.group-sum-title{font-size:12px;font-weight:700;color:var(--text-500);margin-bottom:10px;}
+.group-sum-scores{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+.group-sum-me{font-size:26px;font-weight:800;letter-spacing:-.5px;}
+.group-sum-divider{font-size:13px;color:var(--border);font-weight:300;}
+.group-sum-avg{font-size:13px;color:var(--text-400);font-weight:600;}
+.group-sum-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:10px 0 16px;}
+.group-sum-fill{position:absolute;left:0;top:0;height:4px;background:var(--primary);border-radius:2px;}
+.group-sum-dot-me{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--primary);z-index:2;}
+.group-sum-dot-avg{position:absolute;top:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#9CA3AF;z-index:1;}
+.group-sum-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.group-sum-lbl{color:var(--text-400);}
+
 /* 보고서 보기 버튼 영역 */
 .report-cta{text-align:center;padding:24px 0 8px;border-top:1px solid var(--border);margin-top:8px;}
 .btn-primary{background:var(--primary);color:#fff;border:none;}
@@ -332,6 +347,64 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 부하직원 4명
               </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 역량군 서머리 카드 -->
+        <div class="group-summary">
+          <!-- 조직관리: 나 4.9, 전체 4.1, +0.8 -->
+          <div class="group-sum-card">
+            <div class="group-sum-title">조직관리</div>
+            <div class="group-sum-scores">
+              <span class="group-sum-me" style="color:var(--primary)">4.9</span>
+              <span class="group-sum-divider">/</span>
+              <span class="group-sum-avg">전체 4.1</span>
+            </div>
+            <div class="group-sum-track">
+              <div class="group-sum-fill" style="width:98%"></div>
+              <div class="group-sum-dot-avg" style="left:82%"></div>
+              <div class="group-sum-dot-me" style="left:98%"></div>
+            </div>
+            <div class="group-sum-footer">
+              <span class="group-sum-lbl">척도 0 ~ 5.0</span>
+              <span class="cmp-plus">+0.8</span>
+            </div>
+          </div>
+          <!-- 사람관리: 나 5.0, 전체 4.2, +0.8 -->
+          <div class="group-sum-card">
+            <div class="group-sum-title">사람관리</div>
+            <div class="group-sum-scores">
+              <span class="group-sum-me" style="color:var(--primary)">5.0</span>
+              <span class="group-sum-divider">/</span>
+              <span class="group-sum-avg">전체 4.2</span>
+            </div>
+            <div class="group-sum-track">
+              <div class="group-sum-fill" style="width:100%"></div>
+              <div class="group-sum-dot-avg" style="left:84%"></div>
+              <div class="group-sum-dot-me" style="left:100%"></div>
+            </div>
+            <div class="group-sum-footer">
+              <span class="group-sum-lbl">척도 0 ~ 5.0</span>
+              <span class="cmp-plus">+0.8</span>
+            </div>
+          </div>
+          <!-- 성과관리: 나 3.5, 전체 3.8, -0.3 -->
+          <div class="group-sum-card">
+            <div class="group-sum-title">성과관리</div>
+            <div class="group-sum-scores">
+              <span class="group-sum-me" style="color:var(--orange)">3.5</span>
+              <span class="group-sum-divider">/</span>
+              <span class="group-sum-avg">전체 3.8</span>
+            </div>
+            <div class="group-sum-track">
+              <div class="group-sum-fill" style="width:70%;background:var(--orange)"></div>
+              <div class="group-sum-dot-me" style="left:70%;border-color:var(--orange)"></div>
+              <div class="group-sum-dot-avg" style="left:76%"></div>
+            </div>
+            <div class="group-sum-footer">
+              <span class="group-sum-lbl">척도 0 ~ 5.0</span>
+              <span class="cmp-minus">-0.3</span>
             </div>
           </div>
         </div>
@@ -494,95 +567,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               <div class="legend-item"><div class="legend-dot" style="background:#7C3AED"></div>부하직원</div>
               <div class="legend-item"><div class="legend-dot" style="background:#D1D5DB"></div>전사 평균</div>
             </div>
-          </div>
-        </div>
-
-        <!-- ③ 종합 슬라이더 테이블 -->
-        <div class="result-section">
-          <div class="rs-head">
-            <span class="rs-head-dot"></span>
-            <span class="rs-title">종합</span>
-            <span class="scale-hint" style="margin-left:auto">척도 0 ~ 5</span>
-          </div>
-          <div class="rs-body">
-            <table class="slider-table">
-              <thead>
-                <tr>
-                  <th style="width:110px">역량구분</th>
-                  <th>역량 보유 수준</th>
-                  <th style="width:110px">종합평균점수</th>
-                  <th style="width:60px">비교</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- 조직관리: 나 4.9(98%), 전사 4.1(82%) -->
-                <tr>
-                  <td>조직관리</td>
-                  <td>
-                    <div class="level-wrap">
-                      <span class="scale-lbl-edge">0</span>
-                      <div class="level-track">
-                        <div class="level-fill" style="width:98%"></div>
-                        <div class="level-dot-avg" style="left:82%"><span class="level-lbl-avg">전체 4.1</span></div>
-                        <div class="level-dot-me" style="left:98%"><span class="level-lbl-me">나 4.9</span></div>
-                      </div>
-                      <span class="scale-lbl-edge">5.0</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="score-pair">
-                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.9</b></div>
-                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div>
-                    </div>
-                  </td>
-                  <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
-                </tr>
-                <!-- 사람관리: 나 5.0(100%), 전사 4.2(84%) -->
-                <tr>
-                  <td>사람관리</td>
-                  <td>
-                    <div class="level-wrap">
-                      <span class="scale-lbl-edge">0</span>
-                      <div class="level-track">
-                        <div class="level-fill" style="width:100%"></div>
-                        <div class="level-dot-avg" style="left:84%"><span class="level-lbl-avg">전체 4.2</span></div>
-                        <div class="level-dot-me" style="left:100%"><span class="level-lbl-me">나 5.0</span></div>
-                      </div>
-                      <span class="scale-lbl-edge">5.0</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="score-pair">
-                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div>
-                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div>
-                    </div>
-                  </td>
-                  <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
-                </tr>
-                <!-- 성과관리: 나 3.5(70%), 전사 3.8(76%) -->
-                <tr>
-                  <td>성과관리</td>
-                  <td>
-                    <div class="level-wrap">
-                      <span class="scale-lbl-edge">0</span>
-                      <div class="level-track">
-                        <div class="level-fill" style="width:70%"></div>
-                        <div class="level-dot-me" style="left:70%"><span class="level-lbl-me">나 3.5</span></div>
-                        <div class="level-dot-avg" style="left:76%"><span class="level-lbl-avg">전체 3.8</span></div>
-                      </div>
-                      <span class="scale-lbl-edge">5.0</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="score-pair">
-                      <div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--orange)">3.5</b></div>
-                      <div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.8</b></div>
-                    </div>
-                  </td>
-                  <td style="text-align:center"><span class="cmp-minus">-0.3</span></td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
 
