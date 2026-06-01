@@ -346,7 +346,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="page-desc">2024년 하반기 리더십 역량진단</div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <a class="btn btn-secondary-outline" href="진단_연수원.html">
+          <a class="btn btn-secondary-outline" href="진단/진단_연수원.html">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             목록으로
           </a>
@@ -1058,13 +1058,9 @@ function renderCourses(tab) {
   const list = tab === 'all' ? COURSES : COURSES.filter(c => c.tag === tab);
   const body = document.getElementById('courseBody');
   if (!list.length) { body.innerHTML = '<div style="text-align:center;padding:48px 0;color:var(--text-400);font-size:13px">해당 과정이 없습니다.</div>'; return; }
-  const groups = {};
-  list.forEach(c => { if (!groups[c.tag]) groups[c.tag] = []; groups[c.tag].push(c); });
   let html = `<div class="cd-count">총 ${list.length}개 과정</div>`;
-  ['weak','strong'].filter(t => groups[t]).forEach(tag => {
-    const m = GROUP_META[tag];
-    html += `<div class="cd-group"><div class="cd-group-label ${m.cls}">${m.label}</div>`;
-    groups[tag].forEach(c => {
+  if (tab === 'all') {
+    list.forEach(c => {
       html += `<div class="cd-item">
         <div class="cd-item-left">
           <div class="cd-item-cmp">${c.cmp}</div>
@@ -1074,8 +1070,25 @@ function renderCourses(tab) {
         <button class="cd-item-btn">상세보기</button>
       </div>`;
     });
-    html += '</div>';
-  });
+  } else {
+    const groups = {};
+    list.forEach(c => { if (!groups[c.tag]) groups[c.tag] = []; groups[c.tag].push(c); });
+    ['weak','strong'].filter(t => groups[t]).forEach(tag => {
+      const m = GROUP_META[tag];
+      html += `<div class="cd-group"><div class="cd-group-label ${m.cls}">${m.label}</div>`;
+      groups[tag].forEach(c => {
+        html += `<div class="cd-item">
+          <div class="cd-item-left">
+            <div class="cd-item-cmp">${c.cmp}</div>
+            <div class="cd-item-name">${c.name}</div>
+            <span class="cd-item-type ${c.type}">${TYPE_LABEL[c.type]}</span>
+          </div>
+          <button class="cd-item-btn">상세보기</button>
+        </div>`;
+      });
+      html += '</div>';
+    });
+  }
   body.innerHTML = html;
 }
 </script>

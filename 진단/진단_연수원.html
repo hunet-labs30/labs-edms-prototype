@@ -489,7 +489,7 @@ function renderBtn(item) {
   if (item.diagStatus === 'done') {
     if (item.target === 'self') {
       // 본인 진단 → 결과보기 (결과보기 탭에서 호출)
-      return `<button class="btn-diag result" onclick="location.href='진단_결과_보기.html'">결과보기</button>`;
+      return `<button class="btn-diag result" onclick="location.href='../진단_결과_보기.html'">결과보기</button>`;
     } else {
       // 타인 진단 → 결과보기 불가, 진단완료 비활성 (진단하기 탭 잔류)
       return `<button class="btn-diag completed" disabled>진단완료</button>`;
@@ -582,7 +582,7 @@ function renderResultCard(item) {
         </div>
         <div class="diag-divider"></div>
         <div class="result-btn-group">
-          <button class="btn-result-confirm" onclick="window.open('진단_개인보고서.html', '_blank')">진단결과확인</button>
+          <button class="btn-result-confirm" onclick="location.href='../진단_결과_보기.html'">진단결과확인</button>
           <button class="btn-pdf">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
