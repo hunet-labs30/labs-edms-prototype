@@ -117,9 +117,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .sw-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
 .sw-tag-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .sw-group-label{font-size:11px;font-weight:700;color:var(--text-400);min-width:52px;flex-shrink:0;}
-.sw-tag{display:inline-flex;align-items:center;padding:4px 12px;border-radius:10px;font-size:12px;font-weight:600;}
+.sw-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:10px;font-size:12px;font-weight:600;}
 .sw-tag.strong{background:var(--green-bg);color:var(--green);}
 .sw-tag.weak{background:var(--red-bg);color:var(--red);}
+.sw-tag-score{font-size:11px;font-weight:700;opacity:0.75;padding-left:4px;border-left:1px solid currentColor;}
 
 /* 이중 바 */
 .bar-dual{display:flex;flex-direction:column;gap:5px;}
@@ -344,16 +345,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="sw-card-body">
                   <div class="sw-tag-row">
                     <span class="sw-group-label">조직관리</span>
-                    <span class="sw-tag strong">변화관리</span>
-                    <span class="sw-tag strong">혁신활동</span>
-                    <span class="sw-tag strong">가치전파</span>
+                    <span class="sw-tag strong">변화관리<span class="sw-tag-score">4.7</span></span>
+                    <span class="sw-tag strong">혁신활동<span class="sw-tag-score">4.7</span></span>
+                    <span class="sw-tag strong">가치전파<span class="sw-tag-score">4.6</span></span>
                   </div>
                   <div class="sw-tag-row">
                     <span class="sw-group-label">사람관리</span>
-                    <span class="sw-tag strong">신뢰형성</span>
-                    <span class="sw-tag strong">의사소통</span>
-                    <span class="sw-tag strong">코칭</span>
-                    <span class="sw-tag strong">팀원육성</span>
+                    <span class="sw-tag strong">신뢰형성<span class="sw-tag-score">4.9</span></span>
+                    <span class="sw-tag strong">의사소통<span class="sw-tag-score">4.7</span></span>
+                    <span class="sw-tag strong">코칭<span class="sw-tag-score">4.8</span></span>
+                    <span class="sw-tag strong">팀원육성<span class="sw-tag-score">4.7</span></span>
                   </div>
                 </div>
               </div>
@@ -366,8 +367,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="sw-card-body">
                   <div class="sw-tag-row">
                     <span class="sw-group-label">성과관리</span>
-                    <span class="sw-tag weak">문제해결</span>
-                    <span class="sw-tag weak">전략적 의사결정</span>
+                    <span class="sw-tag weak">문제해결<span class="sw-tag-score">3.4</span></span>
+                    <span class="sw-tag weak">전략적 의사결정<span class="sw-tag-score">3.2</span></span>
                   </div>
                 </div>
               </div>
