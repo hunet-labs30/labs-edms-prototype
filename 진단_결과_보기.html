@@ -215,6 +215,41 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .btn-primary{background:var(--primary);color:#fff;border:none;}
 .btn-primary:hover{background:#1a5ce0;}
 
+/* ── 추천과정 드로어 ── */
+.course-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;opacity:0;pointer-events:none;transition:opacity .25s;}
+.course-overlay.open{opacity:1;pointer-events:all;}
+.course-drawer{position:fixed;top:0;right:0;height:100%;width:460px;max-width:95vw;background:var(--white);z-index:501;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.14);}
+.course-drawer.open{transform:translateX(0);}
+.cd-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-title{font-size:15px;font-weight:700;color:var(--text-900);}
+.cd-subtitle{font-size:11.5px;color:var(--text-400);margin-top:3px;}
+.cd-close{width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);flex-shrink:0;}
+.cd-close:hover{background:var(--bg);}
+.cd-tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-tab{padding:10px 14px;font-size:13px;font-weight:600;color:var(--text-400);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:5px;}
+.cd-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.cd-tab:hover:not(.active){color:var(--text-700);}
+.cd-body{flex:1;overflow-y:auto;padding:16px 20px 24px;}
+.cd-count{font-size:12px;color:var(--text-400);margin-bottom:14px;}
+.cd-group{margin-bottom:22px;}
+.cd-group-label{font-size:11px;font-weight:700;letter-spacing:.4px;padding:4px 10px;border-radius:var(--r-sm);margin-bottom:10px;display:inline-block;}
+.cd-group-label.weak{background:var(--red-bg);color:var(--red);}
+.cd-group-label.strong{background:var(--green-bg);color:var(--green);}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px;background:var(--white);transition:border-color .15s,box-shadow .15s;}
+.cd-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(36,108,249,.08);}
+.cd-item-left{flex:1;min-width:0;}
+.cd-item-cmp{font-size:10.5px;font-weight:700;color:var(--text-400);margin-bottom:3px;}
+.cd-item-name{font-size:13px;font-weight:600;color:var(--text-900);line-height:1.4;}
+.cd-item-type{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:5px;}
+.cd-item-type.online{background:var(--blue-bg);color:var(--blue);}
+.cd-item-type.offline{background:var(--green-bg);color:var(--green);}
+.cd-item-type.blended{background:var(--purple-bg);color:var(--purple);}
+.cd-item-btn{flex-shrink:0;font-size:12px;font-weight:600;padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--white);color:var(--text-500);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.cd-item-btn:hover{border-color:var(--primary);color:var(--primary);}
+.cd-tab-badge{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.cd-tab-badge.strong{background:var(--green-bg);color:var(--green);}
+.cd-tab-badge.weak{background:var(--red-bg);color:var(--red);}
+
 /* ── Spec Note ── */
 .spec-section{margin-top:32px;}
 .spec-title{font-size:14px;font-weight:700;color:#b45309;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
@@ -315,6 +350,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             목록으로
           </a>
+          <button class="btn btn-outline" onclick="openCourseDrawer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            추천 과정 보기
+          </button>
         </div>
       </div>
 
@@ -952,9 +991,92 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   </div>
 </div>
 
+<!-- 추천과정 드로어 -->
+<div class="course-overlay" id="courseOverlay" onclick="closeCourseDrawer()"></div>
+<div class="course-drawer" id="courseDrawer">
+  <div class="cd-head">
+    <div>
+      <div class="cd-title">추천 과정</div>
+      <div class="cd-subtitle">진단 결과 기반 큐레이션</div>
+    </div>
+    <button class="cd-close" onclick="closeCourseDrawer()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cd-tabs">
+    <div class="cd-tab active" onclick="switchCourseTab(this,'all')">전체</div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'strong')">강점 역량 <span class="cd-tab-badge strong">강화</span></div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'weak')">약점 역량 <span class="cd-tab-badge weak">보완</span></div>
+  </div>
+  <div class="cd-body" id="courseBody"></div>
+</div>
+
 <script>
 function openReport() {
   window.open('진단_개인보고서.html', '_blank');
+}
+
+const COURSES = [
+  {cmp:'문제해결',     name:'데이터 기반 문제해결 프레임워크',          type:'online',   tag:'weak'},
+  {cmp:'문제해결',     name:'비즈니스 문제해결 로직과 실전',             type:'offline',  tag:'weak'},
+  {cmp:'문제해결',     name:'MECE 사고와 맥킨지식 문제해결',             type:'online',   tag:'weak'},
+  {cmp:'전략적 의사결정', name:'리더를 위한 전략적 의사결정',            type:'online',   tag:'weak'},
+  {cmp:'전략적 의사결정', name:'불확실한 상황에서의 의사결정 기술',      type:'online',   tag:'weak'},
+  {cmp:'전략적 의사결정', name:'경영전략과 데이터 기반 의사결정',        type:'blended',  tag:'weak'},
+  {cmp:'변화관리',     name:'변화 속에서 성과내는 리더의 방식',          type:'online',   tag:'strong'},
+  {cmp:'변화관리',     name:'조직 변화관리 실전 마스터클래스',           type:'offline',  tag:'strong'},
+  {cmp:'혁신활동',     name:'디자인씽킹으로 혁신하라',                   type:'online',   tag:'strong'},
+  {cmp:'혁신활동',     name:'애자일 리더십과 혁신문화 구축',             type:'online',   tag:'strong'},
+  {cmp:'가치전파',     name:'비전 스토리텔링과 조직 정렬',               type:'online',   tag:'strong'},
+  {cmp:'신뢰형성',     name:'심리적 안전감과 신뢰 조직 만들기',          type:'online',   tag:'strong'},
+  {cmp:'의사소통',     name:'고성과 팀을 만드는 대화의 기술',            type:'blended',  tag:'strong'},
+  {cmp:'코칭',         name:'코칭리더십 심화과정',                       type:'offline',  tag:'strong'},
+  {cmp:'팀원육성',     name:'팀원의 성장을 이끄는 육성 리더십',          type:'online',   tag:'strong'},
+];
+
+const TYPE_LABEL = {online:'온라인', offline:'오프라인', blended:'블렌디드'};
+const GROUP_META = {
+  weak:   {label:'약점 역량 — 집중 보완 과정', cls:'weak'},
+  strong: {label:'강점 역량 — 더욱 강화하는 과정', cls:'strong'},
+};
+
+function openCourseDrawer() {
+  document.getElementById('courseOverlay').classList.add('open');
+  document.getElementById('courseDrawer').classList.add('open');
+  renderCourses('all');
+}
+function closeCourseDrawer() {
+  document.getElementById('courseOverlay').classList.remove('open');
+  document.getElementById('courseDrawer').classList.remove('open');
+}
+function switchCourseTab(el, tab) {
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCourses(tab);
+}
+function renderCourses(tab) {
+  const list = tab === 'all' ? COURSES : COURSES.filter(c => c.tag === tab);
+  const body = document.getElementById('courseBody');
+  if (!list.length) { body.innerHTML = '<div style="text-align:center;padding:48px 0;color:var(--text-400);font-size:13px">해당 과정이 없습니다.</div>'; return; }
+  const groups = {};
+  list.forEach(c => { if (!groups[c.tag]) groups[c.tag] = []; groups[c.tag].push(c); });
+  let html = `<div class="cd-count">총 ${list.length}개 과정</div>`;
+  ['weak','strong'].filter(t => groups[t]).forEach(tag => {
+    const m = GROUP_META[tag];
+    html += `<div class="cd-group"><div class="cd-group-label ${m.cls}">${m.label}</div>`;
+    groups[tag].forEach(c => {
+      html += `<div class="cd-item">
+        <div class="cd-item-left">
+          <div class="cd-item-cmp">${c.cmp}</div>
+          <div class="cd-item-name">${c.name}</div>
+          <span class="cd-item-type ${c.type}">${TYPE_LABEL[c.type]}</span>
+        </div>
+        <button class="cd-item-btn">상세보기</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
 }
 </script>
 
