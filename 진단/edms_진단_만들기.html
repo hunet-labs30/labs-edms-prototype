@@ -480,11 +480,7 @@ body {
         <div class="breadcrumb">진단 &gt; 역량진단 관리 &gt; 진단 만들기</div>
         <div class="page-header-title">진단 만들기</div>
       </div>
-      <div class="page-actions" id="pageActions">
-        <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">이전</button>
-        <button class="btn btn-gray" id="btnPreview" onclick="openDiagPreview()" style="display:none;">미리보기</button>
-        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음</button>
-      </div>
+      <div class="page-actions" id="pageActions"></div>
     </div>
 
     <!-- Step Wizard -->
@@ -1097,9 +1093,21 @@ body {
       </div>
       <div class="table-footer" id="productPagination"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray btn-sm" onclick="closeModal('productModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="confirmProduct()">저장</button>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="window.open('https://cube.hunet.co.kr','_blank')" style="white-space:nowrap;">+ 진단 상품 등록</button>
+        <select id="productPageSize" style="height:28px;padding:0 8px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;cursor:pointer;background:#fff;" onchange="changeProductPageSize()">
+          <option value="5">5개씩</option>
+          <option value="30">30개씩</option>
+          <option value="50">50개씩</option>
+          <option value="100">100개씩</option>
+          <option value="200">200개씩</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gray btn-sm" onclick="closeModal('productModal')">취소</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmProduct()">저장</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1113,15 +1121,34 @@ body {
     </div>
     <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;">
       <!-- 좌: 과정 카탈로그 -->
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;overflow:hidden;">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+        <!-- 분류 계단식 드롭다운 -->
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <select id="crsFilterCat1" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="crsFilterCatChange(1)"></select>
+          <select id="crsFilterCat2" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="crsFilterCatChange(2)"></select>
+          <select id="crsFilterCat3" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="searchCourses()"></select>
+        </div>
+        <!-- 검색 -->
         <div style="position:relative;flex-shrink:0;">
           <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px;">🔍</span>
           <input id="courseSearchInput" placeholder="과정명을 검색하세요."
                  style="width:100%;height:36px;border:1px solid #dde1e7;border-radius:20px;padding:0 12px 0 34px;font-size:12px;font-family:inherit;outline:none;background:#f5f6f8;"
                  oninput="searchCourses()">
         </div>
+        <!-- 필터 칩 -->
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+          <span style="font-size:14px;color:#999;">☰</span>
+          <span style="color:#e0e3e8;">|</span>
+          <select id="crsFilterType" style="height:28px;padding:0 8px;border:1px solid #dde1e7;border-radius:14px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="searchCourses()">
+            <option value="">유형</option>
+            <option value="온라인">온라인</option>
+            <option value="오프라인">오프라인</option>
+          </select>
+          <span style="font-size:12px;color:#555;border:1px solid #e0e3e8;border-radius:14px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;">교육비 ▾</span>
+          <span style="font-size:12px;color:#555;border:1px solid #e0e3e8;border-radius:14px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;">학습 시간 ▾</span>
+        </div>
         <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="courseResultCount">0</strong>개</div>
-        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;flex:1;overflow-y:auto;min-height:220px;max-height:340px;background:#fff;"></div>
+        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;flex:1;overflow-y:auto;min-height:180px;max-height:300px;background:#fff;"></div>
       </div>
       <!-- 우: 선택한 과정 -->
       <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
@@ -1321,9 +1348,9 @@ function goStep(n) {
   document.getElementById('step-tab-' + currentStep).classList.add('active');
   document.getElementById('step-tab-' + currentStep).classList.remove('done');
 
-  ['btnPrev','btnPrevBottom'].forEach(id => document.getElementById(id).style.display = currentStep > 1 ? '' : 'none');
-  ['btnPreview','btnPreviewBottom'].forEach(id => document.getElementById(id).style.display = currentStep === 3 ? '' : 'none');
-  ['btnNext','btnNextBottom'].forEach(id => document.getElementById(id).textContent = currentStep === 3 ? '저장' : '다음');
+  document.getElementById('btnPrevBottom').style.display = currentStep > 1 ? '' : 'none';
+  document.getElementById('btnPreviewBottom').style.display = currentStep === 3 ? '' : 'none';
+  document.getElementById('btnNextBottom').textContent = currentStep === 3 ? '저장' : '다음';
 }
 
 function openDiagPreview() {
@@ -1360,7 +1387,7 @@ const PRODUCT_DATA = [
 ];
 let productFilteredData = [...PRODUCT_DATA];
 let productCurrentPage = 1;
-const PRODUCT_PAGE_SIZE = 5;
+let productPageSize = 5;
 let selectedProductId = null;
 let selectedProductName = '';
 let selectedProductMeta = '';
@@ -1368,10 +1395,18 @@ let selectedProductMeta = '';
 function openProductModal() {
   productFilteredData = [...PRODUCT_DATA];
   productCurrentPage = 1;
+  productPageSize = 5;
   selectedProductId = null;
   document.getElementById('productSearchInput').value = '';
+  document.getElementById('productPageSize').value = '5';
   renderProductTable();
   openModal('productModal');
+}
+
+function changeProductPageSize() {
+  productPageSize = parseInt(document.getElementById('productPageSize').value);
+  productCurrentPage = 1;
+  renderProductTable();
 }
 
 function filterProducts() {
@@ -1382,8 +1417,8 @@ function filterProducts() {
 }
 
 function renderProductTable() {
-  const start = (productCurrentPage - 1) * PRODUCT_PAGE_SIZE;
-  const pageData = productFilteredData.slice(start, start + PRODUCT_PAGE_SIZE);
+  const start = (productCurrentPage - 1) * productPageSize;
+  const pageData = productFilteredData.slice(start, start + productPageSize);
   const tbody = document.getElementById('productTableBody');
   if (!pageData.length) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px;">검색 결과가 없습니다.</td></tr>';
@@ -1421,7 +1456,7 @@ function selectProductRow(id, name, questions) {
 
 function renderProductPagination() {
   const total = productFilteredData.length;
-  const totalPages = Math.ceil(total / PRODUCT_PAGE_SIZE) || 1;
+  const totalPages = Math.ceil(total / productPageSize) || 1;
   const el = document.getElementById('productPagination');
   let html = `<button class="pg-btn" onclick="goProductPage(1)">«</button>`;
   for (let p = 1; p <= totalPages; p++) {
@@ -1432,7 +1467,7 @@ function renderProductPagination() {
 }
 
 function goProductPage(p) {
-  const totalPages = Math.ceil(productFilteredData.length / PRODUCT_PAGE_SIZE) || 1;
+  const totalPages = Math.ceil(productFilteredData.length / productPageSize) || 1;
   productCurrentPage = Math.max(1, Math.min(p, totalPages));
   renderProductTable();
 }
@@ -1456,24 +1491,106 @@ function removeProduct() {
 let currentCourseKey = '';
 const courseData = {};
 
-const sampleCourses = [
-  '리더십 핵심 역량 강화 과정', '전략적 사고와 목표 관리', '구성원 코칭 및 동기부여',
-  '성과관리 실전 과정', '조직문화 변화관리 과정', '소통과 협업 리더십',
-  '비전 수립 및 공유 과정', '윤리경영 기초 과정', '혁신 리더십 과정', '팀장 리더십 집중 과정'
+const COURSE_CATS = {
+  '직무공통': {
+    '리더십':        ['사람관리','성과관리','코칭/멘토링'],
+    '커뮤니케이션':  ['보고/설득','협상/조정'],
+    '비즈니스스킬':  ['기획/문서','데이터분석'],
+  },
+  '법정의무교육': {
+    '안전보건':   ['산업안전보건','중대재해예방'],
+    '인권/윤리':  ['성희롱예방','직장내괴롭힘예방','장애인인식개선'],
+    '정보보호':   ['개인정보보호'],
+  },
+  '신입/직무전환': {
+    '온보딩':  ['회사이해','비즈니스매너'],
+    'OA실무':  ['엑셀','문서작성'],
+  },
+};
+const COURSE_CATALOG = [
+  {name:'VUCA 시대 빛나는 코칭 리더십',          type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'코칭/멘토링'},
+  {name:'사람을 움직이는 사람관리의 기술',        type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'하마터면 꼰대가 될 뻔했다',              type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'성과를 만드는 목표관리(OKR)',            type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'성과관리'},
+  {name:'설득의 보고서 작성법',                   type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'보고/설득'},
+  {name:'갈등을 줄이는 협상의 정석',              type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'협상/조정'},
+  {name:'실무자를 위한 데이터 분석 입문',         type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'데이터분석'},
+  {name:'기획서 한 장으로 끝내기',               type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'기획/문서'},
+  {name:'부서장 리더십',                          type:'오프라인',cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'개인정보보호 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'정보보호',     cat3:'개인정보보호'},
+  {name:'직장 내 괴롭힘 예방 교육',              type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'직장내괴롭힘예방'},
+  {name:'산업안전보건 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'안전보건',     cat3:'산업안전보건'},
+  {name:'성희롱 예방 교육',                       type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'성희롱예방'},
+  {name:'신입사원 비즈니스 매너',                 type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'비즈니스매너'},
+  {name:'한 눈에 보는 우리 회사 이해',            type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'회사이해'},
+  {name:'실무 엑셀 마스터 과정',                  type:'온라인',  cat1:'신입/직무전환', cat2:'OA실무',       cat3:'엑셀'},
 ];
 
 function openCourseModal(title, key) {
   currentCourseKey = key;
   document.getElementById('courseModalTitle').textContent = title;
   document.getElementById('courseSearchInput').value = '';
-  renderCourseCatalog(sampleCourses);
+  // init cat1 dropdown
+  const cat1El = document.getElementById('crsFilterCat1');
+  cat1El.innerHTML = '<option value="">대분류</option>' +
+    Object.keys(COURSE_CATS).map(k => `<option value="${k}">${k}</option>`).join('');
+  const cat2El = document.getElementById('crsFilterCat2');
+  cat2El.innerHTML = '<option value="">중분류</option>';
+  cat2El.style.display = 'none';
+  const cat3El = document.getElementById('crsFilterCat3');
+  cat3El.innerHTML = '<option value="">소분류</option>';
+  cat3El.style.display = 'none';
+  document.getElementById('crsFilterType').value = '';
+  searchCourses();
   renderSelectedCourses();
   openModal('courseModal');
 }
 
+function crsFilterCatChange(level) {
+  if (level === 1) {
+    const cat1 = document.getElementById('crsFilterCat1').value;
+    const cat2El = document.getElementById('crsFilterCat2');
+    const cat3El = document.getElementById('crsFilterCat3');
+    if (cat1 && COURSE_CATS[cat1]) {
+      cat2El.innerHTML = '<option value="">중분류</option>' +
+        Object.keys(COURSE_CATS[cat1]).map(k => `<option value="${k}">${k}</option>`).join('');
+      cat2El.style.display = '';
+    } else {
+      cat2El.innerHTML = '<option value="">중분류</option>';
+      cat2El.style.display = 'none';
+    }
+    cat3El.innerHTML = '<option value="">소분류</option>';
+    cat3El.style.display = 'none';
+  } else if (level === 2) {
+    const cat1 = document.getElementById('crsFilterCat1').value;
+    const cat2 = document.getElementById('crsFilterCat2').value;
+    const cat3El = document.getElementById('crsFilterCat3');
+    if (cat2 && COURSE_CATS[cat1] && COURSE_CATS[cat1][cat2]) {
+      cat3El.innerHTML = '<option value="">소분류</option>' +
+        COURSE_CATS[cat1][cat2].map(k => `<option value="${k}">${k}</option>`).join('');
+      cat3El.style.display = '';
+    } else {
+      cat3El.innerHTML = '<option value="">소분류</option>';
+      cat3El.style.display = 'none';
+    }
+  }
+  searchCourses();
+}
+
 function searchCourses() {
+  const cat1 = document.getElementById('crsFilterCat1').value;
+  const cat2 = document.getElementById('crsFilterCat2').value;
+  const cat3 = document.getElementById('crsFilterCat3').value;
+  const type = document.getElementById('crsFilterType').value;
   const q = document.getElementById('courseSearchInput').value.trim().toLowerCase();
-  const results = q ? sampleCourses.filter(c => c.toLowerCase().includes(q)) : sampleCourses;
+  const results = COURSE_CATALOG.filter(c => {
+    if (cat1 && c.cat1 !== cat1) return false;
+    if (cat2 && c.cat2 !== cat2) return false;
+    if (cat3 && c.cat3 !== cat3) return false;
+    if (type && c.type !== type) return false;
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
   renderCourseCatalog(results);
 }
 
@@ -1486,10 +1603,12 @@ function renderCourseCatalog(list) {
     return;
   }
   el.innerHTML = list.map(c => {
-    const isAdded = selected.includes(c);
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:12px;">
-      <span style="flex:1;color:#333;">${c}</span>
-      <button onclick="addCourseItem('${c.replace(/'/g,"\\'")}')"
+    const isAdded = selected.includes(c.name);
+    const badgeColor = c.type === '온라인' ? '#1a73e8' : '#7c3aed';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:12px;gap:8px;">
+      <span style="display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;background:${badgeColor};color:#fff;white-space:nowrap;flex-shrink:0;">${c.type}</span>
+      <span style="flex:1;color:#333;">${c.name}</span>
+      <button onclick="addCourseItem('${c.name.replace(/'/g,"\\'")}')"
               style="height:24px;padding:0 10px;font-size:11px;border-radius:3px;cursor:pointer;font-family:inherit;
                      background:${isAdded?'#eef2ff':'var(--primary)'};color:${isAdded?'#888':'#fff'};
                      border:1px solid ${isAdded?'#ccd3f0':'var(--primary)'};white-space:nowrap;"
