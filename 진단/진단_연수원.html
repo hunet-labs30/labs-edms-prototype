@@ -419,7 +419,7 @@ const DATA_DIAG = [
     questions: 24, answered: 24, pct: 100,
     diagStatus: 'ongoing'
   },
-  // ── 관리자 마감완료, 결과 집계 중 → 진단종료 탭 ──
+  // ── 기간 종료, 관리자 마감처리 전 (응답 수정 가능) → 진단하기 탭 ──
   {
     id: 12,
     typeName: 'LC', typeLabel: '리더십역량',
@@ -427,6 +427,16 @@ const DATA_DIAG = [
     target: 'self', targetName: '',
     period: '2026.04.01 ~ 2026.04.30',
     questions: 60, answered: 30, pct: 50,
+    diagStatus: 'closed'
+  },
+  // ── 관리자 마감완료, 결과 집계 중 → 진단종료 탭 ──
+  {
+    id: 14,
+    typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: '2025년 4분기 비즈니스상황 진단',
+    target: 'self', targetName: '',
+    period: '2025.12.01 ~ 2025.12.31',
+    questions: 24, answered: 24, pct: 100,
     diagStatus: 'adminClosed'
   },
   // ── 완료(타인평가): 결과 열람 불가 → 진단종료 탭 ──
