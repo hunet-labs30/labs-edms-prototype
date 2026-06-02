@@ -1992,13 +1992,12 @@
     <table class="main-table">
       <thead><tr>
         <th style="width:50px;">No</th>
-        <th style="text-align:left;padding-left:12px;">필수과정명</th>
-        <th style="width:112px;">상품코드</th>
+        <th style="text-align:left;padding-left:12px;">과정명</th>
         <th style="width:86px;">과정유형</th>
-        <th style="width:86px;">과정시간</th>
-        <th style="width:100px;">파트너명</th>
-        <th style="width:80px;">이수여부</th>
+        <th style="width:160px;">학습자 학습기간</th>
+        <th style="width:90px;">과정수료여부</th>
         <th style="width:96px;">수료일자</th>
+        <th style="width:90px;">교육이수여부</th>
       </tr></thead>
       <tbody id="me-ps-course-tbody"></tbody>
     </table>
@@ -2236,10 +2235,10 @@ const ME_DATA = [
       {no:8,name:'이강은',loginId:'leeke@hunet.co.kr',empno:'20250001',company:'동아ST',dept:'기획팀',email:'lee2@hunet.co.kr',phone:'010-7777-8888'}
     ],
     courseList:[
-      {no:1,name:'개인정보보호 교육',code:'LEC001',type:'온라인',partner:'휴넷',done:false,doneDate:''},
-      {no:2,name:'직장 내 괴롭힘 예방 교육',code:'LEC002',type:'온라인',partner:'휴넷',done:false,doneDate:''},
-      {no:3,name:'산업안전보건 교육(상반기)',code:'LEC003',type:'온라인',partner:'휴넷',done:false,doneDate:''},
-      {no:4,name:'성희롱 예방 교육',code:'LEC005',type:'온라인',partner:'휴넷',done:false,doneDate:''},
+      {no:1,name:'개인정보보호 교육',code:'LEC001',type:'온라인',partner:'휴넷',done:true,doneDate:'2026-05-20',studyPeriod:'2026-05-10 ~ 2026-05-20',courseStatus:'수료',eduDone:true},
+      {no:2,name:'직장 내 괴롭힘 예방 교육',code:'LEC002',type:'온라인',partner:'휴넷',done:false,doneDate:'',studyPeriod:'2026-07-01 ~ ',courseStatus:'학습중',eduDone:false},
+      {no:3,name:'산업안전보건 교육(상반기)',code:'LEC003',type:'온라인',partner:'휴넷',done:false,doneDate:'',studyPeriod:'-',courseStatus:'미수료',eduDone:false},
+      {no:4,name:'성희롱 예방 교육',code:'LEC005',type:'온라인',partner:'휴넷',done:false,doneDate:'',studyPeriod:'-',courseStatus:'미수료',eduDone:false},
       {no:5,name:'동아ST 부서장 리더십',code:'SZC07410',type:'오프라인',partner:'',done:false,doneDate:''},
       {no:6,name:'동아ST 2025 상반기 셀링모듈',code:'SZC07411',type:'오프라인',partner:'',done:false,doneDate:''},
       {no:7,name:'장애인 인식 개선 교육',code:'LEC006',type:'온라인',partner:'휴넷',done:false,doneDate:''},
@@ -2725,21 +2724,28 @@ function mePsRenderCourse(list) {
   const tbody = document.getElementById('me-ps-course-tbody');
   if (!tbody) return;
   if (!list || !list.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:16px;color:#aaa;">과정 정보가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#aaa;">과정 정보가 없습니다.</td></tr>';
     return;
   }
   // No 내림차순 (인덱스 역순)
   const reversed = [...list].reverse();
-  tbody.innerHTML = reversed.map((c, i) => `<tr>
-    <td style="text-align:center;">${list.length - i}</td>
-    <td style="text-align:left;padding-left:12px;">${c.name}</td>
-    <td style="text-align:center;">${c.code}</td>
-    <td style="text-align:center;">${c.type}</td>
-    <td style="text-align:center;">-</td>
-    <td style="text-align:center;">${c.partner||'-'}</td>
-    <td style="text-align:center;color:${c.done?'#1e7e50':'#e53935'};font-weight:600;">${c.done?'이수':'미이수'}</td>
-    <td style="text-align:center;font-size:11px;color:#555;">${c.doneDate||'-'}</td>
-  </tr>`).join('');
+  tbody.innerHTML = reversed.map((c, i) => {
+    // 과정수료여부 (myCanvas 관점): courseStatus 우선, 없으면 done 기반 기본값
+    const cs = c.courseStatus || (c.done ? '수료' : '미수료');
+    const csColor = cs==='수료' ? '#1e7e50' : (cs==='학습중' ? '#ea580c' : '#e53935');
+    // 교육이수여부 (필수교육 관점): eduDone 우선, 없으면 done 기반
+    const ed = (c.eduDone!==undefined ? c.eduDone : c.done) ? '이수' : '미이수';
+    const edColor = ed==='이수' ? '#1e7e50' : '#e53935';
+    return `<tr>
+      <td style="text-align:center;">${list.length - i}</td>
+      <td style="text-align:left;padding-left:12px;">${c.name}</td>
+      <td style="text-align:center;">${c.type}</td>
+      <td style="text-align:center;font-size:11px;color:#555;">${c.studyPeriod||'-'}</td>
+      <td style="text-align:center;color:${csColor};font-weight:600;">${cs}</td>
+      <td style="text-align:center;font-size:11px;color:#555;">${c.doneDate||'-'}</td>
+      <td style="text-align:center;color:${edColor};font-weight:600;">${ed}</td>
+    </tr>`;
+  }).join('');
 }
 function mePsSearchCourse() {
   const kw   = (document.getElementById('me-ps-course-kw')?.value || '').trim().toLowerCase();
