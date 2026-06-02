@@ -1716,28 +1716,24 @@
           </div>
         </div>
 
-        <!-- 상세모드 수료 현황 (3칸 풀너비, 평소 숨김) -->
+        <!-- 상세모드 수료 현황 요약 (2개 지표: 수료율 그래프 + 학습중 인원) -->
         <div id="me-reg-rate-summary" style="display:none;grid-column:1/-1;padding-top:12px;border-top:1px solid var(--border);">
           <div style="font-size:12px;font-weight:600;color:#444;margin-bottom:8px;">수료 현황 요약</div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <div style="background:#f0fdf4;border-radius:4px;padding:8px 20px;text-align:center;">
-              <div style="font-size:11px;color:#888;">수료</div>
-              <div style="font-size:20px;font-weight:800;color:#16a34a;" id="me-reg-done-cnt">-</div>
-            </div>
-            <div style="background:#fff7ed;border-radius:4px;padding:8px 20px;text-align:center;">
-              <div style="font-size:11px;color:#888;">학습 중</div>
-              <div style="font-size:20px;font-weight:800;color:#ea580c;" id="me-reg-ing-cnt">-</div>
-            </div>
-            <div style="background:#fef2f2;border-radius:4px;padding:8px 20px;text-align:center;">
-              <div style="font-size:11px;color:#888;">미수료</div>
-              <div style="font-size:20px;font-weight:800;color:#dc2626;" id="me-reg-fail-cnt">-</div>
-            </div>
-            <div class="mini-rate-bar" style="flex:1;min-width:180px;">
-              <span style="font-size:11px;color:#666;white-space:nowrap;">전체 수료율</span>
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <!-- ① 필수교육 수료율 (그래프 + % + 수료 N명) -->
+            <div class="mini-rate-bar" style="flex:1;min-width:260px;gap:8px;">
+              <span style="font-size:11px;color:#666;white-space:nowrap;font-weight:600;">필수교육 수료율</span>
               <div class="mini-bar" style="max-width:none;flex:1;">
                 <div class="mini-fill" id="me-reg-rate-fill" style="width:0%;background:var(--primary);"></div>
               </div>
-              <span style="font-size:12px;font-weight:700;" id="me-reg-rate-txt">0%</span>
+              <span style="font-size:13px;font-weight:800;" id="me-reg-rate-txt">0%</span>
+              <span style="font-size:11px;color:#888;white-space:nowrap;">(수료 <strong id="me-reg-done-cnt" style="color:#16a34a;">0</strong>명)</span>
+            </div>
+            <!-- ② 학습중 인원 N명 -->
+            <div style="background:#fff7ed;border-radius:4px;padding:8px 18px;display:flex;align-items:center;gap:8px;">
+              <span style="font-size:11px;color:#888;">학습중 인원</span>
+              <span style="font-size:18px;font-weight:800;color:#ea580c;" id="me-reg-ing-cnt">0</span>
+              <span style="font-size:11px;color:#888;">명</span>
             </div>
           </div>
         </div>
@@ -2588,15 +2584,14 @@ function meOpenDetail(id, fromTab) {
   // 사용여부
   document.querySelectorAll('[name="me-reg-use"]').forEach(r=>{ r.checked=(r.value===(d.use?'Y':'N')); });
 
-  // 수료 현황 요약 표시
+  // 수료 현황 요약 (2지표: 수료율 그래프 + 학습중 인원)
+  // 학습중 인원 = 일부 과정 진행 + 전체 수료 미완료. 진행 상태 없는 인원(미수료)은 별도 카운트하지 않음.
   const total = d.count;
   const done  = Math.round(total * d.rate / 100);
-  const fail  = Math.round(total * (1 - d.rate/100) * 0.4);
-  const ing   = total - done - fail;
+  const ing   = Math.max(0, Math.round((total - done) * 0.6)); // 진행 상태 샘플치(나머지 미진행은 카운트 비노출)
   document.getElementById('me-reg-rate-summary').style.display = 'block';
   document.getElementById('me-reg-done-cnt').textContent = done;
-  document.getElementById('me-reg-ing-cnt').textContent  = Math.max(0,ing);
-  document.getElementById('me-reg-fail-cnt').textContent = Math.max(0,fail);
+  document.getElementById('me-reg-ing-cnt').textContent  = ing;
   document.getElementById('me-reg-rate-fill').style.width = d.rate+'%';
   document.getElementById('me-reg-rate-fill').style.background = meRateColor(d.rate);
   document.getElementById('me-reg-rate-txt').textContent = d.rate+'%';
