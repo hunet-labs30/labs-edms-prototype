@@ -272,19 +272,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .btn-action.btn-enroll:hover{background:var(--primary-light);}
 .btn-chevron{font-size:13px;font-weight:700;line-height:1;}
 
-/* 수료완료 버튼 */
-.btn-complete{
-  display:inline-flex;align-items:center;
-  padding:8px 16px;
-  border-radius:6px;
-  font-size:13px;font-weight:600;
-  background:var(--green-bg);
-  color:var(--green);
-  border:1px solid var(--green);
-  white-space:nowrap;
-  letter-spacing:-.1px;
-  cursor:default;
-}
+/* (구) 수료완료 버튼 스타일 — 컨플 스펙에 따라 버튼 미노출로 변경됨 */
 
 /* 필수 학습기간 툴팁 */
 .tooltip-wrap{display:inline-flex;align-items:center;gap:5px;}
@@ -423,7 +411,7 @@ function rateColor(pct){
 /* ─── 버튼 렌더 ─── 상태 × 유형 분기
    ┌──────────────────────────────────────────────────────────────┐
    │ 공통 (모든 유형)                                              │
-   │  done           → 수료완료(비활성화)                          │
+   │  done           → 버튼 없음 (수료 상태)                       │
    │  expired        → 버튼 없음  (기간 종료 + 미수료)             │
    ├──────────────────────────────────────────────────────────────┤
    │ 일반 과정 (온라인 / 오프라인 / 하이브리드)                     │
@@ -435,9 +423,9 @@ function rateColor(pct){
    │  progress / fail→ 학습하기  → 콘텐츠창                       │
    └──────────────────────────────────────────────────────────────┘ */
 function actionBtn(status, courseName, type){
-  /* 수료완료 — 공통 */
+  /* 수료 — 버튼 없음 (공통, 컨플 스펙 반영) */
   if(status === 'done'){
-    return `<span class="btn-complete">수료완료</span>`;
+    return '';
   }
   /* 기간 종료 + 미수료 — 버튼 없음 (공통) */
   if(status === 'expired'){
