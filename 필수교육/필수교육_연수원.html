@@ -459,20 +459,18 @@ function actionBtn(status, courseName, type){
   return `<a href="#" class="btn-action btn-enroll" ${click}>수강신청 <span class="btn-chevron">›</span></a>`;
 }
 
-/* ─── 상태 배지 (필수교육 관점: 이수/학습중/미이수) ───
+/* ─── 상태 배지 (필수교육 관점: 이수/미이수 2상태) ───
    ※ 뱃지는 "필수교육 자체의 이수 여부"를 표현. (≠ myCanvas 과정 수료 여부)
    ※ 버튼은 별도로 과정 진행 상태(status)에 따라 분기 노출. */
 const SBADGE = {
-  done:     `<span class="sbadge done"><span class="dot"></span>이수</span>`,
-  progress: `<span class="sbadge progress"><span class="dot"></span>학습중</span>`,
-  fail:     `<span class="sbadge fail"><span class="dot"></span>미이수</span>`,
+  done: `<span class="sbadge done"><span class="dot"></span>이수</span>`,
+  fail: `<span class="sbadge fail"><span class="dot"></span>미이수</span>`,
 };
 /* 필수교육 이수 상태 산출 — 명시값 우선, 없으면 myCanvas status에서 매핑 */
 function getEduStatus(c){
   if(c.eduStatus) return c.eduStatus;
-  if(c.status === 'done')     return 'done';      // 이수
-  if(c.status === 'progress') return 'progress';  // 학습중
-  return 'fail';                                  // 미이수 (waiting/fail/expired 모두)
+  if(c.status === 'done') return 'done';   // 이수
+  return 'fail';                            // 미이수 (그 외 모두)
 }
 
 /* ─── 데이터 ─── */

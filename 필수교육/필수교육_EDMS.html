@@ -2290,14 +2290,14 @@ const ME_DATA = [
 ];
 const ME_PERSONAL = [
   {no:10,name:'홍길동',  loginId:'hong@hunet.co.kr', empno:'20240001',company:'동아ST',         dept:'인사팀',              eduName:'2025 개인정보보호 법정의무교육',          courseName:'개인정보보호 교육',           period:'2025-01-01 ~ 2026-04-17',done:'미이수'},
-  {no:9, name:'이수연',  loginId:'lee@hunet.co.kr',  empno:'20230002',company:'동아ST',         dept:'기획팀',              eduName:'2025 직장 내 괴롭힘 예방 교육',           courseName:'직장 내 괴롭힘 예방 교육',    period:'2025-01-01 ~ 2026-04-28',done:'학습중'},
-  {no:8, name:'김민준',  loginId:'kimm@hunet.co.kr',  empno:'20220010',company:'동아ST',         dept:'안전팀',              eduName:'2025 산업안전보건 교육_사무직_제조업',    courseName:'산업안전보건 교육(상반기)',   period:'2025-01-01 ~ 2026-05-31',done:'학습중'},
+  {no:9, name:'이수연',  loginId:'lee@hunet.co.kr',  empno:'20230002',company:'동아ST',         dept:'기획팀',              eduName:'2025 직장 내 괴롭힘 예방 교육',           courseName:'직장 내 괴롭힘 예방 교육',    period:'2025-01-01 ~ 2026-04-28',done:'미이수'},
+  {no:8, name:'김민준',  loginId:'kimm@hunet.co.kr',  empno:'20220010',company:'동아ST',         dept:'안전팀',              eduName:'2025 산업안전보건 교육_사무직_제조업',    courseName:'산업안전보건 교육(상반기)',   period:'2025-01-01 ~ 2026-05-31',done:'미이수'},
   {no:7, name:'박지현',  loginId:'parkjh@hunet.co.kr', empno:'20210020',company:'동아쏘시오홀딩스',dept:'HR팀',               eduName:'2025 성희롱 예방 교육',                  courseName:'성희롱 예방 교육',            period:'2025-01-01 ~ 2026-06-30',done:'미이수',resigned:true},
   {no:6, name:'최서연',  loginId:'choisy@hunet.co.kr', empno:'20200030',company:'동아ST',         dept:'교육팀',              eduName:'2025 장애인 인식 개선 교육',              courseName:'장애인 인식 개선 교육',       period:'2025-01-01 ~ 2026-07-31',done:'이수'},
   {no:5, name:'정유진',  loginId:'jungyj@hunet.co.kr', empno:'20190040',company:'동아쏘시오홀딩스',dept:'재무팀',             eduName:'2025 퇴직연금 가입자 교육',               courseName:'퇴직연금 교육',               period:'2025-01-01 ~ 2026-09-30',done:'이수'},
   {no:4, name:'강동원',  loginId:'kangdw@hunet.co.kr', empno:'20180050',company:'동아ST',         dept:'전략팀',              eduName:'2025 리더십 역량 강화 필수과정_과장급이상',courseName:'리더십 기초',                period:'2025-01-01 ~ 2026-10-31',done:'이수'},
   {no:3, name:'강동원',  loginId:'kangdw@hunet.co.kr', empno:'20180050',company:'동아ST',         dept:'전략팀',              eduName:'2025 리더십 역량 강화 필수과정_과장급이상',courseName:'코칭스킬 향상',               period:'2025-01-01 ~ 2026-10-31',done:'이수'},
-  {no:2, name:'강동원',  loginId:'kangdw@hunet.co.kr', empno:'20180050',company:'동아ST',         dept:'전략팀',              eduName:'2025 리더십 역량 강화 필수과정_과장급이상',courseName:'전략적 의사결정',             period:'2025-01-01 ~ 2026-10-31',done:'학습중'},
+  {no:2, name:'강동원',  loginId:'kangdw@hunet.co.kr', empno:'20180050',company:'동아ST',         dept:'전략팀',              eduName:'2025 리더십 역량 강화 필수과정_과장급이상',courseName:'전략적 의사결정',             period:'2025-01-01 ~ 2026-10-31',done:'미이수'},
   {no:1, name:'이강은',  loginId:'leeke@hunet.co.kr', empno:'20250001',company:'동아ST',         dept:'기획팀',              eduName:'2025 신입사원 온보딩 필수과정',           courseName:'회사 문화 이해',              period:'2025-03-01 ~ 2026-12-31',done:'이수'},
 ];
 
@@ -2788,7 +2788,7 @@ function meRenderPersonal() {
         <td style="text-align:left;padding-left:8px;">${d.eduName}</td>
         <td style="text-align:left;padding-left:8px;">${d.courseName}</td>
         <td style="font-size:11px;">${d.period}</td>
-        <td style="color:${d.done==='이수'?'#1e7e50':d.done==='학습중'?'#ea580c':'#e53935'};font-weight:600;">${d.done}</td>
+        <td style="color:${d.done==='이수'?'#1e7e50':'#e53935'};font-weight:600;">${d.done}</td>
       </tr>`;
     }
     return `<tr>
@@ -2798,7 +2798,7 @@ function meRenderPersonal() {
     <td style="color:var(--primary);cursor:pointer;" onclick="meOpenPersonFromPersonal('${d.empno}')">${d.eduName}</td>
     <td style="text-align:left;padding-left:8px;">${d.courseName}</td>
     <td style="font-size:11px;">${d.period}</td>
-    <td style="color:${d.done==='이수'?'#1e7e50':d.done==='학습중'?'#ea580c':'#e53935'};font-weight:600;">${d.done}</td>
+    <td style="color:${d.done==='이수'?'#1e7e50':'#e53935'};font-weight:600;">${d.done}</td>
   </tr>`;}).join('');
 }
 
