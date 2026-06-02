@@ -459,14 +459,21 @@ function actionBtn(status, courseName, type){
   return `<a href="#" class="btn-action btn-enroll" ${click}>수강신청 <span class="btn-chevron">›</span></a>`;
 }
 
-/* ─── 상태 배지 ─── */
+/* ─── 상태 배지 (필수교육 관점: 이수/학습중/미이수) ───
+   ※ 뱃지는 "필수교육 자체의 이수 여부"를 표현. (≠ myCanvas 과정 수료 여부)
+   ※ 버튼은 별도로 과정 진행 상태(status)에 따라 분기 노출. */
 const SBADGE = {
-  done:     `<span class="sbadge done"><span class="dot"></span>수료</span>`,
+  done:     `<span class="sbadge done"><span class="dot"></span>이수</span>`,
   progress: `<span class="sbadge progress"><span class="dot"></span>학습중</span>`,
-  fail:     `<span class="sbadge fail"><span class="dot"></span>미수료</span>`,
-  waiting:  `<span class="sbadge waiting"><span class="dot"></span>예정</span>`,
-  expired:  `<span class="sbadge fail"><span class="dot"></span>미수료</span>`,
+  fail:     `<span class="sbadge fail"><span class="dot"></span>미이수</span>`,
 };
+/* 필수교육 이수 상태 산출 — 명시값 우선, 없으면 myCanvas status에서 매핑 */
+function getEduStatus(c){
+  if(c.eduStatus) return c.eduStatus;
+  if(c.status === 'done')     return 'done';      // 이수
+  if(c.status === 'progress') return 'progress';  // 학습중
+  return 'fail';                                  // 미이수 (waiting/fail/expired 모두)
+}
 
 /* ─── 데이터 ─── */
 const progressGroups = [
@@ -527,7 +534,8 @@ const doneGroups = [
       { no:5, type:'online',   name:'리더십 기초과정 2024',                  period:'2024-01-01 ~ 2024-06-30', status:'done' },
       { no:4, type:'offline',  name:'신입사원 온보딩 교육',                   period:'2024-01-01 ~ 2024-03-31', status:'done' },
       { no:3, type:'micro',    name:'업무 생산성 향상 - 마이크로러닝',         period:'2024-01-01 ~ 2024-06-30', status:'done' },
-      { no:2, type:'online',   name:'글로벌 비즈니스 매너',                   period:'2024-01-01 ~ 2024-06-30', status:'expired' },
+      // 사용자 예시: 학습기간(2024-01-01~06-30) 내 수강신청은 했으나 학습은 기간 종료 후 시작 → myCanvas 학습중, 필수교육은 미이수
+      { no:2, type:'online',   name:'글로벌 비즈니스 매너',                   period:'2024-01-01 ~ 2024-06-30', status:'progress', eduStatus:'fail' },
       { no:1, type:'hybrid',   name:'외부 연수 - 혁신성장 아카데미',           period:'2024-01-01 ~ 2024-06-30', status:'done' },
     ]},
 ];
@@ -546,7 +554,8 @@ let filterTypes = ['online','offline','hybrid','micro'];
 /* ─── 통계 ─── */
 function calcStats(courses){
   const total = courses.length;
-  const done  = courses.filter(c=>c.status==='done').length;
+  // 수료(이수) 카운트는 필수교육 관점(eduStatus) 기준
+  const done  = courses.filter(c=>getEduStatus(c)==='done').length;
   const pct   = total>0 ? Math.round(done/total*100) : 0;
   return {total,done,pct};
 }
@@ -598,7 +607,7 @@ function buildCourseItem(c){
   <div class="p-course-item">
     <div class="p-ci-body">
       <div class="p-ci-top">
-        ${SBADGE[c.status]||SBADGE.waiting}
+        ${SBADGE[getEduStatus(c)]||SBADGE.fail}
         <span class="p-ci-name">${c.name}</span>
       </div>
       <div class="p-ci-footer">
