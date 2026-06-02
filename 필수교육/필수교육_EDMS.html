@@ -1393,7 +1393,7 @@
 .me-stat-card.c-green .sc-value{color:#1e7e50;}
 .me-stat-card.c-orange .sc-value{color:#d45f00;}
 
-/* 수료율 색상 헬퍼 */
+/* 이수율 색상 헬퍼 */
 .rate-high{color:#1e7e50;font-weight:700;}
 .rate-mid{color:#d45f00;font-weight:700;}
 .rate-low{color:#e53935;font-weight:700;}
@@ -1659,7 +1659,7 @@
 .reg-readonly .input,.reg-readonly select,.reg-readonly input[type=date]{background:#f8f9fc;pointer-events:none;color:#555;}
 .reg-readonly input[type=radio]{pointer-events:none;}
 .reg-view-val{font-size:12px;color:#333;padding:2px 0;}
-/* 수료율 미니 바 */
+/* 이수율 미니 바 */
 .mini-rate-bar{display:flex;align-items:center;gap:6px;margin-top:4px;}
 .mini-bar{flex:1;height:4px;background:#e8eaed;border-radius:2px;max-width:120px;}
 .mini-fill{height:100%;border-radius:2px;}
@@ -1716,18 +1716,18 @@
           </div>
         </div>
 
-        <!-- 상세모드 수료 현황 요약 (2개 지표: 수료율 그래프 + 학습중 인원) -->
+        <!-- 상세모드 이수 현황 요약 (2개 지표: 이수율 그래프 + 학습중 인원) -->
         <div id="me-reg-rate-summary" style="display:none;grid-column:1/-1;padding-top:12px;border-top:1px solid var(--border);">
-          <div style="font-size:12px;font-weight:600;color:#444;margin-bottom:8px;">수료 현황 요약</div>
+          <div style="font-size:12px;font-weight:600;color:#444;margin-bottom:8px;">이수 현황 요약</div>
           <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <!-- ① 필수교육 수료율 (그래프 + % + 수료 N명) -->
+            <!-- ① 필수교육 이수율 (그래프 + % + 이수 N명) -->
             <div class="mini-rate-bar" style="flex:1;min-width:260px;gap:8px;">
-              <span style="font-size:11px;color:#666;white-space:nowrap;font-weight:600;">필수교육 수료율</span>
+              <span style="font-size:11px;color:#666;white-space:nowrap;font-weight:600;">필수교육 이수율</span>
               <div class="mini-bar" style="max-width:none;flex:1;">
                 <div class="mini-fill" id="me-reg-rate-fill" style="width:0%;background:var(--primary);"></div>
               </div>
               <span style="font-size:13px;font-weight:800;" id="me-reg-rate-txt">0%</span>
-              <span style="font-size:11px;color:#888;white-space:nowrap;">(수료 <strong id="me-reg-done-cnt" style="color:#16a34a;">0</strong>명)</span>
+              <span style="font-size:11px;color:#888;white-space:nowrap;">(이수 <strong id="me-reg-done-cnt" style="color:#16a34a;">0</strong>명)</span>
             </div>
             <!-- ② 학습중 인원 N명 -->
             <div style="background:#fff7ed;border-radius:4px;padding:8px 18px;display:flex;align-items:center;gap:8px;">
@@ -2368,7 +2368,7 @@ function meRenderDashboard() {
       <div class="sc-sub">현재 진행 중인 교육 대상자 합계</div>
     </div>
     <div class="me-stat-card ${avgRate>=80?'c-green':avgRate>=50?'c-orange':'c-red'}">
-      <div class="sc-label">평균 수료율 (진행 중)</div>
+      <div class="sc-label">평균 이수율 (진행 중)</div>
       <div class="sc-value">${avgRate}<span>%</span></div>
       <div class="sc-sub">진행 중 교육 기준</div>
     </div>
@@ -2400,7 +2400,7 @@ function meRenderDashboard() {
         <div class="me-edu-card-meta">기간: ${d.from} ~ ${d.to} &nbsp;|&nbsp; 인원: ${d.count}명</div>
       </div>
       <div class="me-rate-wrap">
-        <div class="me-rate-txt"><span>수료율</span><span style="color:${rc};font-weight:700;">${d.rate}%</span></div>
+        <div class="me-rate-txt"><span>이수율</span><span style="color:${rc};font-weight:700;">${d.rate}%</span></div>
         <div class="me-prog-bar"><div class="me-prog-fill ${fc}" style="width:${d.rate}%"></div></div>
       </div>
       ${ddBadge}
@@ -2473,7 +2473,7 @@ function meRenderDashboard() {
   document.getElementById('me-dash-ended-list').innerHTML = recentEnded.length
     ? recentEnded.map(d=>`<div class="me-small-card" onclick="meOpenDetail('${d.id}','mandatory-edu')">
         <span class="me-small-card-name">${d.name}</span>
-        <span class="me-small-card-meta" style="color:${meRateColor(d.rate)};">${d.to} 종료 | 수료율 ${d.rate}%</span>
+        <span class="me-small-card-meta" style="color:${meRateColor(d.rate)};">${d.to} 종료 | 이수율 ${d.rate}%</span>
       </div>`).join('')
     : '<div style="text-align:center;padding:20px;color:#aaa;font-size:12px;">최근 3개월 내 종료된 필수교육이 없습니다.</div>';
 }
@@ -2583,7 +2583,7 @@ function meOpenDetail(id, fromTab) {
   // 사용여부
   document.querySelectorAll('[name="me-reg-use"]').forEach(r=>{ r.checked=(r.value===(d.use?'Y':'N')); });
 
-  // 수료 현황 요약 (2지표: 수료율 그래프 + 학습중 인원)
+  // 이수 현황 요약 (2지표: 이수율 그래프 + 학습중 인원)
   // 학습중 인원 = 일부 과정 진행 + 전체 수료 미완료. 진행 상태 없는 인원(미수료)은 별도 카운트하지 않음.
   const total = d.count;
   const done  = Math.round(total * d.rate / 100);
@@ -2604,7 +2604,7 @@ function meOpenDetail(id, fromTab) {
   meRegRenderMembers();
   meRegRenderCourses();
 
-  // 과정별 수료 현황 표시
+  // 과정별 이수 현황 표시
   const doneWrap = document.getElementById('me-reg-course-done-wrap');
   const doneList = document.getElementById('me-reg-course-done-list');
   if(doneWrap && d.courseList.length) {
