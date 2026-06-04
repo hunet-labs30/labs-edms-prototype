@@ -578,14 +578,8 @@
     <!-- ── 탭 2: 러닝메이커 매니저 ─── -->
     <section class="tab-panel" id="tab-lm" role="tabpanel" hidden>
 
-      <!-- 서브 탭 -->
-      <div class="lm-subnav">
-        <button class="lm-subbtn active" data-lm="lm-auth" onclick="switchLmScreen('lm-auth')">권한관리</button>
-        <button class="lm-subbtn" data-lm="lm-setting" onclick="switchLmScreen('lm-setting')">설정관리</button>
-      </div>
-
-      <!-- ── 서브 화면 1: 권한관리 ── -->
-      <div id="lm-auth" class="lm-screen active">
+      <!-- ── 권한관리 ── -->
+      <div id="lm-auth">
         <div class="card">
           <div class="search-row">
             <span class="label">검색조건</span>
@@ -647,56 +641,6 @@
               <button class="pg-btn">&#8250;</button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- ── 서브 화면 2: 설정관리 ── -->
-      <div id="lm-setting" class="lm-screen">
-        <div class="setting-card">
-          <div class="setting-card-header"><div class="setting-card-title">검수(운영)관리</div></div>
-          <table class="setting-table">
-            <tr>
-              <th>검수설정</th>
-              <td>
-                <div class="s-radio-group">
-                  <label class="s-radio-item"><input type="radio" name="lmInspection" value="use" checked><label>검수사용</label></label>
-                  <label class="s-radio-item"><input type="radio" name="lmInspection" value="none"><label>검수사용안함</label></label>
-                </div>
-                <div class="desc-list">
-                  <p>검수 설정 변경일 이후에 등록된 과정부터 적용됩니다.</p>
-                  <p>검수 사용 : 과정 제작 후 작업완료(검수요청) 버튼을 누르면 검수대기 상태로 변경되며, 관리자가 검수완료 상태로 변경하면 사용자 페이지에 노출됩니다.</p>
-                  <p>검수 미사용 : 제작자가 작업완료 버튼을 누르면 검수완료 상태로 변경되어, 사용자 페이지에 노출됩니다.</p>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="setting-card">
-          <div class="setting-card-header"><div class="setting-card-title">과정 제작 수 제한</div></div>
-          <table class="setting-table">
-            <tr>
-              <th>과정 제작 수 제한</th>
-              <td>
-                <div class="s-radio-group">
-                  <label class="s-radio-item"><input type="radio" name="lmLimitUse" value="use" id="lm-limit-use" checked onchange="lmToggleLimit(true)"><label for="lm-limit-use">사용</label></label>
-                  <label class="s-radio-item"><input type="radio" name="lmLimitUse" value="none" id="lm-limit-none" onchange="lmToggleLimit(false)"><label for="lm-limit-none">사용안함</label></label>
-                </div>
-              </td>
-            </tr>
-            <tr id="lm-limit-count-row">
-              <th>제한 수량</th>
-              <td>
-                <select class="select" style="width:100px;height:30px;font-size:12px;">
-                  <option>10개</option><option>20개</option><option>30개</option><option>50개</option><option>100개</option>
-                </select>
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="btn-area-center">
-          <button class="btn btn-primary" style="height:34px;padding:0 32px;font-size:13px;" onclick="openLmConfirm()">적용</button>
         </div>
       </div>
 
@@ -796,20 +740,6 @@
   </div>
 </div>
 
-<!-- LM: 설정 적용 확인 모달 -->
-<div class="modal-overlay" id="lm-confirm-modal">
-  <div class="modal modal-sm">
-    <div class="modal-header"><h3>설정 적용</h3><button class="modal-close" onclick="closeModal('lm-confirm-modal')">&times;</button></div>
-    <div class="modal-body">
-      <div class="confirm-msg">변경된 설정을 적용하시겠습니까?</div>
-      <div class="confirm-sub">검수 설정은 변경일 이후 등록된 과정부터 적용됩니다.</div>
-    </div>
-    <div class="modal-footer">
-      <button class="mbtn mbtn-gray" onclick="closeModal('lm-confirm-modal')">취소</button>
-      <button class="mbtn mbtn-blue" onclick="lmSaveSettings()">확인</button>
-    </div>
-  </div>
-</div>
 
 <div id="lm-toast"></div>
 
@@ -1073,17 +1003,6 @@ function submitDelete() {
   renderTable();
   alert('교육담당자 권한이 삭제되었습니다.');
 }
-
-// ── LM 서브탭 전환 ──
-function switchLmScreen(targetId) {
-  document.querySelectorAll('.lm-subbtn').forEach(b => b.classList.toggle('active', b.dataset.lm === targetId));
-  document.querySelectorAll('.lm-screen').forEach(s => s.classList.toggle('active', s.id === targetId));
-}
-
-// ── LM 설정관리 ──
-function lmToggleLimit(isUse) { document.getElementById('lm-limit-count-row').style.display = isUse ? '' : 'none'; }
-function openLmConfirm()  { openModal('lm-confirm-modal'); }
-function lmSaveSettings() { closeModal('lm-confirm-modal'); lmShowToast('설정이 저장되었습니다.'); }
 
 // ── LM 검색 ──
 function lmDoSearch() { lmShowToast('검색 결과를 조회합니다.'); }
