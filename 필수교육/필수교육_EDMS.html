@@ -1707,12 +1707,12 @@
           </div>
         </div>
 
-        <!-- 사용여부 -->
+        <!-- 노출여부 -->
         <div style="display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center;">
-          <div class="reg-field-label">사용여부<span class="reg-required">*</span></div>
+          <div class="reg-field-label">노출여부<span class="reg-required">*</span></div>
           <div style="display:flex;gap:16px;">
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="me-reg-use" value="Y" checked> 사용</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="me-reg-use" value="N"> 미사용</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="me-reg-use" value="Y" checked> 노출</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="radio" name="me-reg-use" value="N"> 미노출</label>
           </div>
         </div>
 
@@ -2182,10 +2182,10 @@
         </div>
       </div>
       <div style="display:grid;grid-template-columns:110px 1fr;gap:8px;align-items:center;">
-        <div style="font-size:12px;font-weight:600;color:#444;">사용여부</div>
+        <div style="font-size:12px;font-weight:600;color:#444;">노출여부</div>
         <div style="display:flex;gap:14px;">
-          <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="me-edit-use" value="Y" checked> 사용</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="me-edit-use" value="N"> 미사용</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="me-edit-use" value="Y" checked> 노출</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="me-edit-use" value="N"> 미노출</label>
         </div>
       </div>
     </div>
@@ -2521,7 +2521,7 @@ function meRenderListTable(data) {
       <td><button class="btn btn-reset" onclick="meOpenDetail('${d.id}','list')">수정</button></td>
       <td><button onclick="meToggleUse('${d.id}',this)"
         style="height:22px;padding:0 8px;font-size:11px;border-radius:3px;cursor:pointer;border:1px solid #ddd;
-        background:${d.use?'#fff':'#f5f5f5'};color:${d.use?'#333':'#999'};">${d.use?'사용':'미사용'}</button></td>
+        background:${d.use?'#fff':'#f5f5f5'};color:${d.use?'#333':'#999'};">${d.use?'노출':'미노출'}</button></td>
     </tr>`;
   }).join('');
 }
@@ -2559,7 +2559,7 @@ function meListSearchAll() {
 }
 function meToggleUse(id,btn) {
   const d=ME_DATA.find(x=>x.id===id); if(!d) return;
-  d.use=!d.use; btn.textContent=d.use?'사용':'미사용';
+  d.use=!d.use; btn.textContent=d.use?'노출':'미노출';
   btn.style.background=d.use?'#fff':'#f5f5f5'; btn.style.color=d.use?'#333':'#999';
 }
 
