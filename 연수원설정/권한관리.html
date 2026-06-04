@@ -318,6 +318,39 @@
     font-size: 12px; color: #1b5e20; line-height: 1.7;
     margin-top: 12px;
   }
+
+  /* ── LM 탭 전용 ── */
+  .lm-subnav { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  .lm-subbtn { height: 32px; padding: 0 18px; background: transparent; border: none; border-bottom: 2px solid transparent; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; margin-bottom: -1px; transition: color .15s, border-color .15s; font-family: inherit; }
+  .lm-subbtn:hover { color: var(--primary); }
+  .lm-subbtn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .lm-screen { display: none; flex-direction: column; gap: 16px; padding-top: 4px; }
+  .lm-screen.active { display: flex; }
+  .setting-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .setting-card-header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #f8f9fb; }
+  .setting-card-title { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+  .setting-table { width: 100%; border-collapse: collapse; }
+  .setting-table tr { border-bottom: 1px solid var(--border); }
+  .setting-table tr:last-child { border-bottom: none; }
+  .setting-table th { background: #f8f9fb; width: 180px; font-size: 12px; font-weight: 600; color: #444; padding: 12px 20px; text-align: left; vertical-align: top; border-right: 1px solid var(--border); white-space: nowrap; }
+  .setting-table td { padding: 12px 20px; vertical-align: top; font-size: 12px; }
+  .s-radio-group { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .s-radio-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .s-radio-item input[type=radio] { accent-color: var(--primary); cursor: pointer; }
+  .s-radio-item label { font-size: 12px; color: #444; cursor: pointer; }
+  .desc-list p { font-size: 11px; color: #666; line-height: 1.8; padding-left: 10px; position: relative; margin-top: 2px; }
+  .desc-list p::before { content: '*'; position: absolute; left: 0; color: #888; }
+  .r-group { display: flex; align-items: center; gap: 14px; }
+  .r-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .r-item input[type=radio] { accent-color: var(--primary); width: 13px; height: 13px; cursor: pointer; }
+  .r-item label { font-size: 12px; color: #333; cursor: pointer; }
+  .modal-lg { width: 820px; max-width: 96vw; }
+  .modal-lg .modal-body { padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: calc(85vh - 120px); }
+  .popup-search-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .popup-list-area { flex: 1; overflow-y: auto; padding: 12px 20px 0; }
+  .btn-area-center { display: flex; justify-content: center; gap: 8px; padding: 20px 0 4px; }
+  #lm-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a2e; color: #fff; font-size: 13px; padding: 12px 24px; border-radius: 6px; opacity: 0; transition: all .3s; pointer-events: none; z-index: 9999; }
+  #lm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -542,13 +575,243 @@
       </div>
     </section>
 
-    <!-- ── 탭 2: 러닝메이커 매니저 (별도 프로토타입 iframe 임베드) ─── -->
+    <!-- ── 탭 2: 러닝메이커 매니저 ─── -->
     <section class="tab-panel" id="tab-lm" role="tabpanel" hidden>
-      <iframe class="tab-iframe" src="러닝메이커_매니저_권한관리.html" title="러닝메이커 매니저 권한 관리"></iframe>
+
+      <!-- 서브 탭 -->
+      <div class="lm-subnav">
+        <button class="lm-subbtn active" data-lm="lm-auth" onclick="switchLmScreen('lm-auth')">권한관리</button>
+        <button class="lm-subbtn" data-lm="lm-setting" onclick="switchLmScreen('lm-setting')">설정관리</button>
+      </div>
+
+      <!-- ── 서브 화면 1: 권한관리 ── -->
+      <div id="lm-auth" class="lm-screen active">
+        <div class="card">
+          <div class="search-row">
+            <span class="label">검색조건</span>
+            <div class="r-group">
+              <label class="r-item"><input type="radio" name="lmSearch" value="name" checked><label>이름</label></label>
+              <label class="r-item"><input type="radio" name="lmSearch" value="id"><label>아이디</label></label>
+              <label class="r-item"><input type="radio" name="lmSearch" value="dept"><label>부서</label></label>
+              <label class="r-item"><input type="radio" name="lmSearch" value="grade"><label>직급</label></label>
+            </div>
+            <input class="input" id="lm-search-kw" type="text" placeholder="검색어를 입력해주세요." style="width:200px;">
+            <button class="btn btn-primary" onclick="lmDoSearch()">검색</button>
+            <button class="btn btn-reset" onclick="lmDoReset()">초기화</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="result-header">
+            <div class="result-count">검색결과 <strong id="lm-auth-count">10</strong>건</div>
+            <div class="result-right">
+              <button class="btn btn-dark" onclick="openLmPopup()">+ 매니저 권한 등록</button>
+              <div class="page-size-wrap" style="margin-left:0;">
+                페이지당
+                <select class="select" style="height:26px;font-size:12px;">
+                  <option>20개</option><option>50개</option><option>100개</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:50px;">번호</th>
+                <th style="width:90px;">이름</th>
+                <th>아이디</th>
+                <th style="width:160px;">부서</th>
+                <th style="width:80px;">직급</th>
+                <th style="width:70px;">관리</th>
+              </tr>
+            </thead>
+            <tbody id="lm-auth-tbody">
+              <tr><td>1</td><td>강*현</td><td style="text-align:left;padding-left:10px;">kang.hyun@hunet.co.kr</td><td>HRD기획팀</td><td>선임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>2</td><td>도*연</td><td style="text-align:left;padding-left:10px;">do.yeon@hunet.co.kr</td><td>인재개발팀</td><td>책임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>3</td><td>류*진</td><td style="text-align:left;padding-left:10px;">ryu.jin@hunet.co.kr</td><td>L&amp;D테크본부</td><td>수석</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>4</td><td>민*서</td><td style="text-align:left;padding-left:10px;">min.seo@hunet.co.kr</td><td>교육콘텐츠팀</td><td>주임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>5</td><td>백*호</td><td style="text-align:left;padding-left:10px;">baek.ho@hunet.co.kr</td><td>LABS플랫폼팀</td><td>수석</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>6</td><td>서*란</td><td style="text-align:left;padding-left:10px;">seo.ran@hunet.co.kr</td><td>디지털혁신팀</td><td>책임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>7</td><td>엄*태</td><td style="text-align:left;padding-left:10px;">eom.tae@hunet.co.kr</td><td>HRD기획팀</td><td>선임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>8</td><td>조*아</td><td style="text-align:left;padding-left:10px;">jo.ah@hunet.co.kr</td><td>-</td><td>-</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>9</td><td>천*민</td><td style="text-align:left;padding-left:10px;">cheon.min@hunet.co.kr</td><td>인재개발팀</td><td>주임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+              <tr><td>10</td><td>하*준</td><td style="text-align:left;padding-left:10px;">ha.jun@hunet.co.kr</td><td>교육콘텐츠팀</td><td>책임</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <div></div>
+            <div class="pagination" id="lm-pagination">
+              <button class="pg-btn" disabled>&#8249;</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn">&#8250;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 서브 화면 2: 설정관리 ── -->
+      <div id="lm-setting" class="lm-screen">
+        <div class="setting-card">
+          <div class="setting-card-header"><div class="setting-card-title">검수(운영)관리</div></div>
+          <table class="setting-table">
+            <tr>
+              <th>검수설정</th>
+              <td>
+                <div class="s-radio-group">
+                  <label class="s-radio-item"><input type="radio" name="lmInspection" value="use" checked><label>검수사용</label></label>
+                  <label class="s-radio-item"><input type="radio" name="lmInspection" value="none"><label>검수사용안함</label></label>
+                </div>
+                <div class="desc-list">
+                  <p>검수 설정 변경일 이후에 등록된 과정부터 적용됩니다.</p>
+                  <p>검수 사용 : 과정 제작 후 작업완료(검수요청) 버튼을 누르면 검수대기 상태로 변경되며, 관리자가 검수완료 상태로 변경하면 사용자 페이지에 노출됩니다.</p>
+                  <p>검수 미사용 : 제작자가 작업완료 버튼을 누르면 검수완료 상태로 변경되어, 사용자 페이지에 노출됩니다.</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-card-header"><div class="setting-card-title">과정 제작 수 제한</div></div>
+          <table class="setting-table">
+            <tr>
+              <th>과정 제작 수 제한</th>
+              <td>
+                <div class="s-radio-group">
+                  <label class="s-radio-item"><input type="radio" name="lmLimitUse" value="use" id="lm-limit-use" checked onchange="lmToggleLimit(true)"><label for="lm-limit-use">사용</label></label>
+                  <label class="s-radio-item"><input type="radio" name="lmLimitUse" value="none" id="lm-limit-none" onchange="lmToggleLimit(false)"><label for="lm-limit-none">사용안함</label></label>
+                </div>
+              </td>
+            </tr>
+            <tr id="lm-limit-count-row">
+              <th>제한 수량</th>
+              <td>
+                <select class="select" style="width:100px;height:30px;font-size:12px;">
+                  <option>10개</option><option>20개</option><option>30개</option><option>50개</option><option>100개</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="btn-area-center">
+          <button class="btn btn-primary" style="height:34px;padding:0 32px;font-size:13px;" onclick="openLmConfirm()">적용</button>
+        </div>
+      </div>
+
     </section>
 
   </main>
 </div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- LM: 매니저 권한 등록 팝업               -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="lm-popup">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3>매니저 권한 등록</h3>
+      <button class="modal-close" onclick="closeLmPopup()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="popup-search-row">
+        <span class="label">검색조건</span>
+        <div class="r-group">
+          <label class="r-item"><input type="radio" name="lmPopSearch" value="name" checked><label>이름</label></label>
+          <label class="r-item"><input type="radio" name="lmPopSearch" value="id"><label>아이디</label></label>
+          <label class="r-item"><input type="radio" name="lmPopSearch" value="sabun"><label>사번</label></label>
+        </div>
+        <input class="input" type="text" style="width:180px;" placeholder="검색어를 입력해주세요.">
+        <button class="btn btn-primary">검색</button>
+      </div>
+      <div class="popup-list-area">
+        <div class="result-header" style="margin-bottom:6px;">
+          <div class="result-count">검색결과 <strong id="lm-pop-count">8</strong>건</div>
+        </div>
+        <table class="main-table">
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" id="lm-chk-all" onchange="lmToggleAll(this)"></th>
+              <th style="width:80px;">이름</th>
+              <th>아이디</th>
+              <th style="width:150px;">부서/팀</th>
+              <th style="width:70px;">직급</th>
+              <th style="width:56px;">선택</th>
+            </tr>
+          </thead>
+          <tbody id="lm-pop-tbody">
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>홍*동</td><td style="text-align:left;padding-left:10px;">hong.dong@hunet.co.kr</td><td>인재개발팀</td><td>선임</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>오*진</td><td style="text-align:left;padding-left:10px;">oh.jin@hunet.co.kr</td><td>HRD기획팀</td><td>책임</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>나*희</td><td style="text-align:left;padding-left:10px;">na.hee@hunet.co.kr</td><td>L&amp;D테크본부</td><td>수석</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>강*준</td><td style="text-align:left;padding-left:10px;">kang.jun@hunet.co.kr</td><td>LABS플랫폼팀</td><td>선임</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>윤*서</td><td style="text-align:left;padding-left:10px;">yoon.seo@hunet.co.kr</td><td>교육콘텐츠팀</td><td>주임</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>임*철</td><td style="text-align:left;padding-left:10px;">im.chul@hunet.co.kr</td><td>디지털혁신팀</td><td>책임</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>서*아</td><td style="text-align:left;padding-left:10px;">seo.ah@hunet.co.kr</td><td>-</td><td>-</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="lm-pop-chk"></td><td>문*현</td><td style="text-align:left;padding-left:10px;">moon.hyun@hunet.co.kr</td><td>HRD기획팀</td><td>수석</td><td><button class="btn-sm btn-sm-outline" onclick="lmSelectOne(this)">선택</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeLmPopup()">닫기</button>
+      <button class="mbtn mbtn-dark" onclick="lmSelectChecked()">등록완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- LM: 개별 선택 확인 모달 -->
+<div class="modal-overlay" id="lm-select-one-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>매니저 권한 등록</h3><button class="modal-close" onclick="closeModal('lm-select-one-modal')">&times;</button></div>
+    <div class="modal-body"><div class="confirm-msg" id="lm-select-one-body"></div></div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="lmCancelSelectOne()">취소</button>
+      <button class="mbtn mbtn-blue" onclick="lmConfirmSelectOne()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- LM: 일괄 등록 확인 모달 -->
+<div class="modal-overlay" id="lm-batch-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>매니저 권한 등록</h3><button class="modal-close" onclick="closeModal('lm-batch-modal')">&times;</button></div>
+    <div class="modal-body"><div class="confirm-msg" id="lm-batch-body"></div></div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="lmCloseBatch()">취소</button>
+      <button class="mbtn mbtn-blue" onclick="lmConfirmBatch()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- LM: 삭제 확인 모달 -->
+<div class="modal-overlay" id="lm-delete-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>매니저 권한 삭제</h3><button class="modal-close" onclick="closeModal('lm-delete-modal')">&times;</button></div>
+    <div class="modal-body"><div class="confirm-msg">해당 매니저의 권한을 삭제하시겠습니까?</div></div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('lm-delete-modal')">취소</button>
+      <button class="mbtn mbtn-red" onclick="lmConfirmDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- LM: 설정 적용 확인 모달 -->
+<div class="modal-overlay" id="lm-confirm-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header"><h3>설정 적용</h3><button class="modal-close" onclick="closeModal('lm-confirm-modal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="confirm-msg">변경된 설정을 적용하시겠습니까?</div>
+      <div class="confirm-sub">검수 설정은 변경일 이후 등록된 과정부터 적용됩니다.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('lm-confirm-modal')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="lmSaveSettings()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="lm-toast"></div>
 
 <!-- ══════════════════════════════════════ -->
 <!-- 계정 안내 메일 재발송 확인 모달          -->
@@ -809,6 +1072,111 @@ function submitDelete() {
   if ((currentPage - 1) * pageSize >= filteredData.length && currentPage > 1) currentPage--;
   renderTable();
   alert('교육담당자 권한이 삭제되었습니다.');
+}
+
+// ── LM 서브탭 전환 ──
+function switchLmScreen(targetId) {
+  document.querySelectorAll('.lm-subbtn').forEach(b => b.classList.toggle('active', b.dataset.lm === targetId));
+  document.querySelectorAll('.lm-screen').forEach(s => s.classList.toggle('active', s.id === targetId));
+}
+
+// ── LM 설정관리 ──
+function lmToggleLimit(isUse) { document.getElementById('lm-limit-count-row').style.display = isUse ? '' : 'none'; }
+function openLmConfirm()  { openModal('lm-confirm-modal'); }
+function lmSaveSettings() { closeModal('lm-confirm-modal'); lmShowToast('설정이 저장되었습니다.'); }
+
+// ── LM 검색 ──
+function lmDoSearch() { lmShowToast('검색 결과를 조회합니다.'); }
+function lmDoReset()  { document.getElementById('lm-search-kw').value = ''; lmShowToast('초기화되었습니다.'); }
+
+// ── LM 팝업 ──
+function openLmPopup()  { openModal('lm-popup'); }
+function closeLmPopup() { closeModal('lm-popup'); }
+
+function lmToggleAll(master) {
+  document.querySelectorAll('.lm-pop-chk').forEach(c => { c.checked = master.checked; });
+}
+
+function lmUpdateAuthCount() {
+  document.getElementById('lm-auth-count').textContent = document.querySelectorAll('#lm-auth-tbody tr').length;
+}
+function lmUpdatePopCount() {
+  document.getElementById('lm-pop-count').textContent = document.querySelectorAll('#lm-pop-tbody tr').length;
+}
+function lmReNumber() {
+  document.querySelectorAll('#lm-auth-tbody tr').forEach((r, i) => { r.cells[0].textContent = i + 1; });
+  lmUpdateAuthCount();
+}
+function lmAddManagerRow(name, id, dept, grade) {
+  const tbody = document.getElementById('lm-auth-tbody');
+  const no = tbody.rows.length + 1;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${no}</td><td>${name}</td><td style="text-align:left;padding-left:10px;">${id}</td><td>${dept}</td><td>${grade}</td><td><button class="btn-sm btn-sm-red" onclick="openLmDeleteModal(this)">삭제</button></td>`;
+  tbody.appendChild(tr);
+  lmUpdateAuthCount();
+}
+
+// ── LM 개별 선택 ──
+let lmPendingSelectBtn = null;
+function lmSelectOne(btn) {
+  lmPendingSelectBtn = btn;
+  const cells = btn.closest('tr').querySelectorAll('td');
+  document.getElementById('lm-select-one-body').innerHTML = `<strong>${cells[1].textContent}</strong> 님을 매니저로 등록하시겠습니까?`;
+  openModal('lm-select-one-modal');
+}
+function lmCancelSelectOne() { closeModal('lm-select-one-modal'); lmPendingSelectBtn = null; }
+function lmConfirmSelectOne() {
+  if (lmPendingSelectBtn) {
+    const row = lmPendingSelectBtn.closest('tr');
+    const cells = row.querySelectorAll('td');
+    lmAddManagerRow(cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent);
+    row.remove();
+    lmUpdatePopCount();
+    lmShowToast(cells[1].textContent + ' 님을 매니저로 등록했습니다.');
+  }
+  closeModal('lm-select-one-modal');
+  lmPendingSelectBtn = null;
+}
+
+// ── LM 일괄 등록 ──
+let lmPendingBatchRows = [];
+function lmSelectChecked() {
+  const rows = [...document.querySelectorAll('#lm-pop-tbody tr')].filter(r => r.querySelector('.lm-pop-chk')?.checked);
+  if (!rows.length) { lmShowToast('선택된 임직원이 없습니다.'); return; }
+  lmPendingBatchRows = rows;
+  document.getElementById('lm-batch-body').innerHTML = `선택한 <strong>${rows.length}명</strong>을 매니저로 등록하시겠습니까?`;
+  openModal('lm-batch-modal');
+}
+function lmCloseBatch() { closeModal('lm-batch-modal'); lmPendingBatchRows = []; }
+function lmConfirmBatch() {
+  lmPendingBatchRows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    lmAddManagerRow(cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent);
+    row.remove();
+  });
+  const cnt = lmPendingBatchRows.length;
+  lmCloseBatch();
+  lmUpdatePopCount();
+  closeLmPopup();
+  lmShowToast(cnt + '명을 매니저로 등록했습니다.');
+}
+
+// ── LM 삭제 ──
+let lmPendingDeleteRow = null;
+function openLmDeleteModal(btn) { lmPendingDeleteRow = btn.closest('tr'); openModal('lm-delete-modal'); }
+function lmConfirmDelete() {
+  if (lmPendingDeleteRow) { lmPendingDeleteRow.remove(); lmReNumber(); }
+  closeModal('lm-delete-modal');
+  lmPendingDeleteRow = null;
+  lmShowToast('매니저 권한이 삭제되었습니다.');
+}
+
+// ── LM 토스트 ──
+function lmShowToast(msg) {
+  const t = document.getElementById('lm-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 // ── 초기 렌더 ──
