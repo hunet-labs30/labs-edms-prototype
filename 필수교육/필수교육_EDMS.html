@@ -1438,8 +1438,8 @@
 
 <div class="page-section" id="page-mandatory-edu">
   <div class="page-header-row">
-    <div class="page-header-title">필수교육 현황</div>
-    <div class="breadcrumb">부가서비스 &gt; 필수교육 현황</div>
+    <div class="page-header-title">필수교육 관리</div>
+    <div class="breadcrumb">부가서비스 &gt; 필수교육 관리</div>
   </div>
   <div class="me-tab-bar">
     <button class="me-tab-btn active" onclick="meSwitchMainTab('dashboard',this)">대시보드</button>
@@ -1668,7 +1668,7 @@
 <div class="page-section" id="page-me-register">
   <div class="page-header-row">
     <div id="me-reg-page-title" class="page-header-title">필수교육 등록</div>
-    <div class="breadcrumb" id="me-reg-breadcrumb">부가서비스 &gt; 필수교육 현황 &gt; 등록</div>
+    <div class="breadcrumb" id="me-reg-breadcrumb">부가서비스 &gt; 필수교육 관리 &gt; 등록</div>
   </div>
 
   <div class="reg-wrap">
@@ -1877,8 +1877,8 @@
 <!-- ══════════════════ PAGE: 필수교육 상세/수정 ══════════════════ -->
 <div class="page-section" id="page-me-detail">
   <div class="page-header-row">
-    <div class="page-header-title">필수교육 현황</div>
-    <div class="breadcrumb" id="me-det-breadcrumb">부가서비스 &gt; 필수교육 현황 &gt; 상세</div>
+    <div class="page-header-title">필수교육 관리</div>
+    <div class="breadcrumb" id="me-det-breadcrumb">부가서비스 &gt; 필수교육 관리 &gt; 상세</div>
   </div>
 
   <!-- 기본 정보 -->
@@ -1959,8 +1959,8 @@
 <!-- ══════════════════ PAGE: 개인 수료 상세 ══════════════════ -->
 <div class="page-section" id="page-me-person">
   <div class="page-header-row">
-    <div class="page-header-title">필수교육 현황</div>
-    <div class="breadcrumb" id="me-ps-breadcrumb">부가서비스 &gt; 필수교육 현황 &gt; 개인별 현황 &gt; 상세</div>
+    <div class="page-header-title">개인 이수 상세</div>
+    <div class="breadcrumb" id="me-ps-breadcrumb">부가서비스 &gt; 필수교육 관리 &gt; 개인별 현황 &gt; 상세</div>
   </div>
 
   <div class="card" style="padding:0;">
@@ -2571,7 +2571,7 @@ function meOpenDetail(id, fromTab) {
   // 페이지 타이틀/브레드크럼
   document.getElementById('me-reg-page-title').textContent = '필수교육 상세';
   document.getElementById('me-reg-breadcrumb').textContent =
-    `부가서비스 > 필수교육 현황 > ${fromTab==='list'?'목록 > ':'대시보드 > '}상세`;
+    `부가서비스 > 필수교육 관리 > ${fromTab==='list'?'목록 > ':'대시보드 > '}상세`;
 
   // 기본정보 채우기
   const nameEl = document.getElementById('me-reg-name');
@@ -2772,11 +2772,11 @@ function meOpenPersonFromPersonal(empno) {
   if(!row) return;
   const edu = ME_DATA.find(d=>d.name===row.eduName) || ME_DATA[0];
   meCurrentItem = edu;
-  // fromPage를 'mandatory-edu'로 설정해 뒤로가기 시 필수교육 현황(개인별 현황 탭)으로 복귀
+  // fromPage를 'mandatory-edu'로 설정해 뒤로가기 시 필수교육 관리(개인별 현황 탭)으로 복귀
   mePrevPage = 'mandatory-edu';
   window._mePrevTab = 'personal';
   meOpenPersonPage(empno);
-  document.getElementById('me-ps-breadcrumb').textContent = '부가서비스 > 필수교육 현황 > 개인별 현황 > 상세';
+  document.getElementById('me-ps-breadcrumb').textContent = '부가서비스 > 필수교육 관리 > 개인별 현황 > 상세';
 }
 
 // ═══ 개인별 현황 ═══
@@ -3253,7 +3253,7 @@ function meCrsBatchRegist() {
 
 function meOpenRegView() {
   document.getElementById('me-reg-page-title').textContent = '필수교육 등록';
-  document.getElementById('me-reg-breadcrumb').textContent = '부가서비스 > 필수교육 현황 > 등록';
+  document.getElementById('me-reg-breadcrumb').textContent = '부가서비스 > 필수교육 관리 > 등록';
   const nameEl=document.getElementById('me-reg-name'), fromEl=document.getElementById('me-reg-from'), toEl=document.getElementById('me-reg-to');
   if(nameEl) nameEl.value=''; if(fromEl) fromEl.value=''; if(toEl) toEl.value='';
   document.querySelectorAll('[name="me-reg-use"]').forEach((r,i)=>{ r.checked=(i===0); });
