@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BB30-3180 러닝메이커 매니저 설정 프로토타입 v3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 13px; background: #f4f5f7; color: #222; }
+
+  /* ── GNB ── */
+  .gnb { background: #1e2a3a; color: #fff; display: flex; align-items: center; height: 48px; padding: 0 20px; gap: 16px; }
+  .gnb .logo { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: #fff; white-space: nowrap; }
+  .gnb .site-name { font-size: 12px; color: #8fa4bc; margin-left: 4px; }
+  .gnb-right { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 12px; color: #cdd6e0; }
+  .gnb-right button { border: none; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+  .btn-logout { background: #344860; color: #cdd6e0; }
+  .btn-lang   { background: #1e2a3a; border: 1px solid #4a6076 !important; color: #cdd6e0; }
+
+  /* ── 레이아웃 ── */
+  .layout { display: flex; height: calc(100vh - 48px); }
+
+  /* ── LNB ── */
+  .lnb { width: 160px; background: #1e2a3a; flex-shrink: 0; overflow-y: auto; }
+  .lnb-menu { list-style: none; }
+  .lnb-menu > li > .lnb-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 18px; color: #b0c0d0; font-size: 13px; cursor: pointer;
+    border-left: 3px solid transparent; transition: background .15s;
+  }
+  .lnb-menu > li > .lnb-item:hover { background: #263545; color: #fff; }
+  .lnb-menu > li > .lnb-item.active { background: #263545; color: #fff; border-left-color: #4a90d9; }
+  .lnb-sub { list-style: none; background: #16202d; }
+  .lnb-sub li a { display: block; padding: 9px 18px 9px 28px; color: #8fa4bc; font-size: 12px; text-decoration: none; cursor: pointer; }
+  .lnb-sub li a:hover { color: #fff; }
+  .lnb-sub li a.active { color: #4a90d9; font-weight: 600; }
+  .arrow { font-size: 10px; }
+
+  /* ── 콘텐츠 ── */
+  .content { flex: 1; overflow-y: auto; padding: 24px; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  .breadcrumb { font-size: 11px; color: #888; margin-bottom: 14px; text-align: right; }
+  .breadcrumb span { color: #555; }
+  .page-title { font-size: 20px; font-weight: 700; color: #1a2533; margin-bottom: 20px; }
+
+  /* ── 공통 버튼 ── */
+  .btn-primary   { height: 32px; background: #1a5fa8; color: #fff; border: none; border-radius: 4px; padding: 0 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn-primary:hover { background: #1550a0; }
+  .btn-secondary { height: 32px; background: #fff; color: #444; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 14px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .btn-secondary:hover { background: #f4f5f7; }
+  .btn-danger    { height: 26px; background: #fff; color: #c0392b; border: 1px solid #e0b0aa; border-radius: 3px; padding: 0 10px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .btn-danger:hover { background: #fff0ee; }
+  .btn-select    { height: 26px; background: #fff; color: #1a5fa8; border: 1px solid #a0bfe0; border-radius: 3px; padding: 0 10px; font-size: 11px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+  .btn-select:hover { background: #edf3fc; }
+  .btn-search    { height: 32px; background: #1a5fa8; color: #fff; border: none; border-radius: 4px; padding: 0 18px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .btn-search:hover { background: #1550a0; }
+  .btn-all-view  { height: 32px; background: #fff; color: #444; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 14px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .btn-all-view:hover { background: #f4f5f7; }
+  .btn-save      { height: 36px; background: #1a5fa8; color: #fff; border: none; border-radius: 4px; padding: 0 32px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-save:hover { background: #1550a0; }
+
+  /* ── 설정 화면 ── */
+  .setting-card { background: #fff; border: 1px solid #dde2e8; border-radius: 6px; margin-bottom: 16px; overflow: hidden; }
+  .setting-card-header { padding: 14px 20px; border-bottom: 1px solid #eaedf0; background: #f8fafc; }
+  .setting-card-title  { font-size: 14px; font-weight: 700; color: #1a2533; }
+  .setting-table { width: 100%; border-collapse: collapse; }
+  .setting-table tr { border-bottom: 1px solid #eaedf0; }
+  .setting-table tr:last-child { border-bottom: none; }
+  .setting-table th { background: #f4f6f9; width: 200px; font-size: 12px; font-weight: 600; color: #444; padding: 14px 20px; text-align: left; vertical-align: top; border-right: 1px solid #eaedf0; white-space: nowrap; }
+  .setting-table td { padding: 14px 20px; vertical-align: top; font-size: 12px; }
+  .radio-group { display: flex; align-items: center; gap: 20px; margin-bottom: 10px; }
+  .radio-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .radio-item input[type=radio] { accent-color: #1a5fa8; width: 15px; height: 15px; cursor: pointer; }
+  .radio-item label { font-size: 12px; color: #333; cursor: pointer; }
+  .desc-list p { font-size: 11px; color: #666; line-height: 1.8; padding-left: 10px; position: relative; }
+  .desc-list p::before { content: '*'; position: absolute; left: 0; color: #888; }
+  .form-select { height: 32px; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 24px 0 10px; font-size: 12px; color: #222; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 8px center; appearance: none; cursor: pointer; }
+  .btn-area { display: flex; justify-content: center; gap: 8px; padding: 24px 0 8px; }
+
+  /* ── 권한관리 화면 ── */
+  .auth-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .auth-search-area { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .auth-search-label { font-size: 12px; color: #555; font-weight: 600; white-space: nowrap; }
+  .search-input { height: 32px; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 10px; font-size: 12px; color: #222; }
+  .search-input:focus { outline: none; border-color: #4a90d9; }
+  .auth-right { display: flex; align-items: center; gap: 8px; }
+  .per-page-select { height: 30px; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 22px 0 8px; font-size: 12px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 6px center; appearance: none; cursor: pointer; }
+
+  /* ── 라디오 (팝업/검색공통) ── */
+  .r-group { display: flex; align-items: center; gap: 14px; }
+  .r-item  { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .r-item input[type=radio] { accent-color: #e03030; width: 14px; height: 14px; cursor: pointer; }
+  .r-item label { font-size: 12px; color: #333; cursor: pointer; }
+
+  /* ── 테이블 공통 ── */
+  .table-wrap { background: #fff; border: 1px solid #dde2e8; border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f2f5f8; font-size: 12px; font-weight: 600; color: #444; padding: 10px; text-align: center; border-bottom: 1px solid #dde2e8; border-right: 1px solid #eaedf0; white-space: nowrap; }
+  thead th:last-child { border-right: none; }
+  tbody td { font-size: 12px; color: #333; padding: 10px; text-align: center; border-bottom: 1px solid #eaedf0; border-right: 1px solid #eaedf0; }
+  tbody td:last-child { border-right: none; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #f8fafc; }
+
+  /* ── 검색결과 건수 표시 ── */
+  .list-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .result-count { font-size: 12px; color: #555; }
+  .result-count strong { color: #1a5fa8; font-weight: 700; }
+
+  /* ── 페이지네이션 ── */
+  .pagination { display: flex; justify-content: center; gap: 4px; margin-top: 16px; }
+  .page-btn { width: 28px; height: 28px; border: 1px solid #dde2e8; background: #fff; color: #555; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .page-btn.active { background: #1a5fa8; color: #fff; border-color: #1a5fa8; font-weight: 700; }
+  .page-btn:hover:not(.active) { background: #f4f5f7; }
+
+  /* ── 팝업 ── */
+  .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 800; align-items: center; justify-content: center; }
+  .popup-overlay.open { display: flex; }
+  .popup-box { background: #fff; border-radius: 6px; width: 800px; max-height: 680px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,.2); }
+  .popup-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid #eaedf0; background: #f8fafc; flex-shrink: 0; }
+  .popup-title { font-size: 15px; font-weight: 700; color: #1a2533; }
+  .popup-close { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0 4px; }
+  .popup-close:hover { color: #333; }
+  .popup-search { padding: 14px 20px; border-bottom: 1px solid #eaedf0; flex-shrink: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* 팝업 내 목록 영역만 스크롤 */
+  .popup-body { flex: 1; overflow-y: auto; padding: 14px 20px 0; }
+  .popup-body .table-wrap { margin-bottom: 0; }
+  .popup-footer { padding: 12px 20px; border-top: 1px solid #eaedf0; background: #f8fafc; display: flex; justify-content: center; gap: 8px; flex-shrink: 0; }
+
+  /* ── 확인 모달 ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 900; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 8px; width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,.2); overflow: hidden; }
+  .modal-header { padding: 16px 20px; border-bottom: 1px solid #eaedf0; font-size: 14px; font-weight: 700; color: #1a2533; }
+  .modal-body { padding: 20px; font-size: 13px; color: #444; line-height: 1.7; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid #eaedf0; }
+  .modal-btn-confirm { height: 32px; background: #1a5fa8; color: #fff; border: none; border-radius: 4px; padding: 0 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .modal-btn-cancel  { height: 32px; background: #fff; color: #555; border: 1px solid #cdd2d9; border-radius: 4px; padding: 0 16px; font-size: 12px; cursor: pointer; }
+
+  /* ── 토스트 ── */
+  #toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a2533; color: #fff; font-size: 13px; padding: 12px 24px; border-radius: 6px; opacity: 0; transition: all .3s; pointer-events: none; z-index: 999; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  input[type=checkbox] { accent-color: #1a5fa8; width: 14px; height: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<div class="gnb">
+  <span class="logo">LABS New EDMS</span>
+  <span class="site-name">365연수원(40)</span>
+  <div class="gnb-right">
+    <span>조아라 님</span>
+    <button class="btn-logout">로그아웃</button>
+    <button class="btn-lang">한국어 ∨</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- LNB -->
+  <nav class="lnb">
+    <ul class="lnb-menu">
+      <li><div class="lnb-item">LABS Studio</div></li>
+      <li><div class="lnb-item">임직원 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">수강신청 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">학습 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">결과 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">교육비용 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">사외교육 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">러닝메이커 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">커넥트 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">게시글 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">부가서비스 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">수강신청 설정 <span class="arrow">›</span></div></li>
+      <li><div class="lnb-item">연수원 설정 <span class="arrow">›</span></div></li>
+      <li>
+        <div class="lnb-item active">러닝메이커 매니저 <span class="arrow">∨</span></div>
+        <ul class="lnb-sub">
+          <li><a id="tab-setting" onclick="showScreen('setting')">설정관리</a></li>
+          <li><a id="tab-auth" class="active" onclick="showScreen('auth')">권한관리</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="content">
+
+    <!-- ══ 설정관리 화면 ══ -->
+    <div id="screen-setting" class="screen">
+      <div class="breadcrumb">홈 &gt; 러닝메이커 매니저 &gt; <span>설정관리</span></div>
+      <div class="page-title">검수관리</div>
+
+      <div class="setting-card">
+        <div class="setting-card-header"><div class="setting-card-title">검수(운영)관리</div></div>
+        <table class="setting-table">
+          <tr>
+            <th>검수설정</th>
+            <td>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="inspection" value="use" id="inspect_use" checked><label for="inspect_use">검수사용</label></label>
+                <label class="radio-item"><input type="radio" name="inspection" value="none" id="inspect_none"><label for="inspect_none">검수사용안함</label></label>
+              </div>
+              <div class="desc-list">
+                <p>검수 설정 변경일 이후에 등록된 과정부터 적용 됩니다.</p>
+                <p>검수 사용 : 과정 제작 후 작업완료(검수요청) 버튼을 누르면 검수대기 상태로 변경 되며, 관리자가 검수완료 상태로 변경하면 사용자 페이지에 노출 됩니다.</p>
+                <p>검수 미사용 : 제작자가 작업완료 버튼을 누르면 검수완료 상태로 변경되어, 사용자 페이지에 노출 됩니다.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="setting-card">
+        <div class="setting-card-header"><div class="setting-card-title">과정 제작 수 제한</div></div>
+        <table class="setting-table">
+          <tr>
+            <th>과정 제작 수 제한</th>
+            <td>
+              <div class="radio-group">
+                <label class="radio-item"><input type="radio" name="limitUse" value="use" id="limit_use" checked onchange="toggleLimit(true)"><label for="limit_use">사용</label></label>
+                <label class="radio-item"><input type="radio" name="limitUse" value="none" id="limit_none" onchange="toggleLimit(false)"><label for="limit_none">사용안함</label></label>
+              </div>
+            </td>
+          </tr>
+          <tr id="limit-count-row">
+            <th>제한 수량</th>
+            <td>
+              <select class="form-select" id="limitSelect" style="width:100px;">
+                <option>10개</option><option>20개</option><option>30개</option><option>50개</option><option>100개</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="btn-area">
+        <button class="btn-save" onclick="openConfirm()">적용</button>
+      </div>
+    </div>
+
+    <!-- ══ 권한관리 화면 ══ -->
+    <div id="screen-auth" class="screen active">
+      <div class="breadcrumb">홈 &gt; 러닝메이커 매니저 &gt; <span>권한관리</span></div>
+      <div class="page-title">매니저 권한 관리</div>
+
+      <!-- 검색 영역 -->
+      <div class="auth-toolbar" style="margin-bottom:12px;">
+        <div class="auth-search-area">
+          <span class="auth-search-label">검색조건</span>
+          <div class="r-group">
+            <label class="r-item"><input type="radio" name="authSearch" value="name" checked><label>이름</label></label>
+            <label class="r-item"><input type="radio" name="authSearch" value="id"><label>아이디</label></label>
+            <label class="r-item"><input type="radio" name="authSearch" value="dept"><label>부서</label></label>
+            <label class="r-item"><input type="radio" name="authSearch" value="grade"><label>직급</label></label>
+          </div>
+          <input class="search-input" type="text" style="width:200px;">
+          <button class="btn-search">검색</button>
+        </div>
+        <div class="auth-right">
+          <button class="btn-primary" onclick="openPopup()">매니저 권한 등록</button>
+          <select class="per-page-select">
+            <option>20개</option><option>50개</option><option>100개</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 검색결과 건수 -->
+      <div class="list-meta">
+        <span class="result-count">검색결과 <strong id="authCount">10</strong>건</span>
+      </div>
+
+      <div class="table-wrap">
+        <table id="authTable">
+          <thead>
+            <tr>
+              <th style="width:56px;">번호</th>
+              <th style="width:100px;">이름</th>
+              <th style="width:220px;">아이디</th>
+              <th style="width:180px;">부서</th>
+              <th style="width:90px;">직급</th>
+              <th style="width:72px;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="authTbody">
+            <tr><td>1</td><td>강*현</td><td>kang.hyun@hunet.co.kr</td><td>HRD기획팀</td><td>선임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>2</td><td>도*연</td><td>do.yeon@hunet.co.kr</td><td>인재개발팀</td><td>책임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>3</td><td>류*진</td><td>ryu.jin@hunet.co.kr</td><td>L&amp;D테크본부</td><td>수석</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>4</td><td>민*서</td><td>min.seo@hunet.co.kr</td><td>교육콘텐츠팀</td><td>주임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>5</td><td>백*호</td><td>baek.ho@hunet.co.kr</td><td>LABS플랫폼팀</td><td>수석</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>6</td><td>서*란</td><td>seo.ran@hunet.co.kr</td><td>디지털혁신팀</td><td>책임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>7</td><td>엄*태</td><td>eom.tae@hunet.co.kr</td><td>HRD기획팀</td><td>선임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>8</td><td>조*아</td><td>jo.ah@hunet.co.kr</td><td></td><td></td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>9</td><td>천*민</td><td>cheon.min@hunet.co.kr</td><td>인재개발팀</td><td>주임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+            <tr><td>10</td><td>하*준</td><td>ha.jun@hunet.co.kr</td><td>교육콘텐츠팀</td><td>책임</td><td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <button class="page-btn">«</button>
+        <button class="page-btn">‹</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">›</button>
+        <button class="page-btn">»</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ 매니저 권한 등록 팝업 ══ -->
+<div class="popup-overlay" id="authPopup">
+  <div class="popup-box">
+    <div class="popup-header">
+      <span class="popup-title">매니저 권한 등록</span>
+      <button class="popup-close" onclick="closePopup()">✕</button>
+    </div>
+
+    <!-- 팝업 검색 : 이름/아이디/사번만 -->
+    <div class="popup-search">
+      <span class="auth-search-label">검색조건</span>
+      <div class="r-group">
+        <label class="r-item"><input type="radio" name="popSearch" value="name" checked><label>이름</label></label>
+        <label class="r-item"><input type="radio" name="popSearch" value="id"><label>아이디</label></label>
+        <label class="r-item"><input type="radio" name="popSearch" value="sabun"><label>사번</label></label>
+      </div>
+      <input class="search-input" type="text" style="width:180px;">
+      <button class="btn-search">검색</button>
+    </div>
+
+    <!-- 팝업 목록 (고정 높이 + 내부 스크롤) -->
+    <div class="popup-body">
+      <div style="margin-bottom:8px;">
+        <span class="result-count" style="font-size:12px; color:#555;">검색결과 <strong id="popCount">8</strong>건</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" id="popCheckAll" onchange="toggleAllPop(this)"></th>
+              <th style="width:90px;">이름</th>
+              <th style="width:140px;">아이디</th>
+              <th>부서/팀</th>
+              <th style="width:80px;">직급</th>
+              <th style="width:60px;">선택</th>
+            </tr>
+          </thead>
+          <tbody id="popTbody">
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>홍*동</td><td>hong.dong@hunet.co.kr</td><td>인재개발팀</td><td>선임</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>오*진</td><td>oh.jin@hunet.co.kr</td><td>HRD기획팀</td><td>책임</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>나*희</td><td>na.hee@hunet.co.kr</td><td>L&amp;D테크본부</td><td>수석</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>강*준</td><td>kang.jun@hunet.co.kr</td><td>LABS플랫폼팀</td><td>선임</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>윤*서</td><td>yoon.seo@hunet.co.kr</td><td>교육콘텐츠팀</td><td>주임</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>임*철</td><td>im.chul@hunet.co.kr</td><td>디지털혁신팀</td><td>책임</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>서*아</td><td>seo.ah@hunet.co.kr</td><td></td><td></td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+            <tr><td><input type="checkbox" class="pop-chk"></td><td>문*현</td><td>moon.hyun@hunet.co.kr</td><td>HRD기획팀</td><td>수석</td><td><button class="btn-select" onclick="selectOne(this)">선택</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="popup-footer">
+      <button class="btn-primary" onclick="selectChecked()">등록완료</button>
+      <button class="btn-secondary" onclick="closePopup()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 확인 모달 : 개별 선택 -->
+<div class="modal-overlay" id="selectOneModal">
+  <div class="modal-box">
+    <div class="modal-header">매니저 권한 등록</div>
+    <div class="modal-body" id="selectOneBody"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="cancelSelectOne()">취소</button>
+      <button class="modal-btn-confirm" onclick="confirmSelectOne()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 확인 모달 : 일괄 등록완료 -->
+<div class="modal-overlay" id="batchModal">
+  <div class="modal-box">
+    <div class="modal-header">매니저 권한 등록</div>
+    <div class="modal-body" id="batchBody"></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="closeBatch()">취소</button>
+      <button class="modal-btn-confirm" onclick="confirmBatch()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 확인 모달 : 삭제 -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-header">매니저 권한 삭제</div>
+    <div class="modal-body">해당 매니저의 권한을 삭제하시겠습니까?</div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="closeDeleteModal()">취소</button>
+      <button class="modal-btn-confirm" onclick="confirmDelete()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 확인 모달 : 설정 적용 -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-header">설정 적용</div>
+    <div class="modal-body">변경된 설정을 적용하시겠습니까?<br><span style="font-size:11px; color:#888;">검수 설정은 변경일 이후 등록된 과정부터 적용됩니다.</span></div>
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" onclick="closeConfirm()">취소</button>
+      <button class="modal-btn-confirm" onclick="saveSettings()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  /* ──── 화면 전환 ──── */
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('.lnb-sub li a').forEach(a => a.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  /* ──── 설정 화면 ──── */
+  function toggleLimit(isUse) {
+    document.getElementById('limit-count-row').style.display = isUse ? '' : 'none';
+  }
+  function openConfirm()  { document.getElementById('confirmModal').classList.add('open'); }
+  function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+  function saveSettings() { closeConfirm(); showToast('설정이 저장되었습니다.'); }
+
+  /* ──── 검색결과 건수 갱신 ──── */
+  function updateAuthCount() {
+    document.getElementById('authCount').textContent = document.querySelectorAll('#authTbody tr').length;
+  }
+  function updatePopCount() {
+    document.getElementById('popCount').textContent = document.querySelectorAll('#popTbody tr').length;
+  }
+
+  /* ──── 권한 목록 번호 재정렬 ──── */
+  function reNumberAuth() {
+    document.querySelectorAll('#authTbody tr').forEach((r, i) => { r.cells[0].textContent = i + 1; });
+    updateAuthCount();
+  }
+  function resetAuthList() { showToast('전체 목록을 조회합니다.'); }
+
+  /* ──── 삭제 ──── */
+  let pendingDeleteRow = null;
+  function deleteAuth(btn) {
+    pendingDeleteRow = btn.closest('tr');
+    document.getElementById('deleteModal').classList.add('open');
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    pendingDeleteRow = null;
+  }
+  function confirmDelete() {
+    if (pendingDeleteRow) { pendingDeleteRow.remove(); reNumberAuth(); }
+    closeDeleteModal();
+    showToast('매니저 권한이 삭제되었습니다.');
+  }
+
+  /* ──── 팝업 열기/닫기 ──── */
+  function openPopup()  { document.getElementById('authPopup').classList.add('open'); }
+  function closePopup() { document.getElementById('authPopup').classList.remove('open'); }
+
+  function toggleAllPop(master) {
+    document.querySelectorAll('.pop-chk').forEach(c => { c.checked = master.checked; });
+  }
+
+  /* ──── 개별 선택 버튼 → 확인 모달 ──── */
+  let pendingSelectBtn = null;
+  function selectOne(btn) {
+    pendingSelectBtn = btn;
+    const cells = btn.closest('tr').querySelectorAll('td');
+    const name = cells[1].textContent;
+    document.getElementById('selectOneBody').innerHTML =
+      `<strong>${name}</strong> 님을 매니저로 등록하시겠습니까?`;
+    document.getElementById('selectOneModal').classList.add('open');
+  }
+  function cancelSelectOne() {
+    document.getElementById('selectOneModal').classList.remove('open');
+    pendingSelectBtn = null;
+  }
+  function confirmSelectOne() {
+    if (pendingSelectBtn) {
+      const row   = pendingSelectBtn.closest('tr');
+      const cells = row.querySelectorAll('td');
+      addManagerRow(cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent);
+      row.remove();
+      updatePopCount();
+      showToast(cells[1].textContent + ' 님을 매니저로 등록했습니다.');
+    }
+    document.getElementById('selectOneModal').classList.remove('open');
+    pendingSelectBtn = null;
+  }
+
+  /* ──── 등록완료(일괄) → 확인 모달 ──── */
+  let pendingBatchRows = [];
+  function selectChecked() {
+    const rows = [...document.querySelectorAll('#popTbody tr')].filter(r => r.querySelector('.pop-chk')?.checked);
+    if (rows.length === 0) { showToast('선택된 임직원이 없습니다.'); return; }
+    pendingBatchRows = rows;
+    document.getElementById('batchBody').innerHTML =
+      `선택한 <strong>${rows.length}명</strong>을 매니저로 등록하시겠습니까?`;
+    document.getElementById('batchModal').classList.add('open');
+  }
+  function closeBatch() {
+    document.getElementById('batchModal').classList.remove('open');
+    pendingBatchRows = [];
+  }
+  function confirmBatch() {
+    pendingBatchRows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      addManagerRow(cells[1].textContent, cells[2].textContent, cells[3].textContent, cells[4].textContent);
+      row.remove();
+    });
+    const cnt = pendingBatchRows.length;
+    closeBatch();
+    updatePopCount();
+    closePopup();
+    showToast(cnt + '명을 매니저로 등록했습니다.');
+  }
+
+  /* ──── 공통: 매니저 목록에 행 추가 ──── */
+  function addManagerRow(name, id, dept, grade) {
+    const tbody = document.getElementById('authTbody');
+    const no    = tbody.rows.length + 1;
+    const tr    = document.createElement('tr');
+    tr.innerHTML = `<td>${no}</td><td>${name}</td><td>${id}</td><td>${dept}</td><td>${grade}</td>
+      <td><button class="btn-danger" onclick="deleteAuth(this)">삭제</button></td>`;
+    tbody.appendChild(tr);
+    updateAuthCount();
+  }
+
+  /* ──── 토스트 ──── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>
