@@ -594,6 +594,7 @@ body {
 .bottom-nav { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
 
 </style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -1686,6 +1687,37 @@ function openBulkUploadModal() {
 }
 
 function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+
+  /* ── Sheet 1: 업로드 템플릿 ── */
+  const s1 = [
+    ['유형코드', '세부유형코드', '과정명', '과정ID'],
+    ['LC', 'LC_01', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
+    ['LC', 'LC_01', '사람을 움직이는 사람관리의 기술', 'C002'],
+    ['OC', 'OC_01', '직장 내 괴롭힘 예방 교육', 'C003'],
+  ];
+  const ws1 = XLSX.utils.aoa_to_sheet(s1);
+  ws1['!cols'] = [{wch:14},{wch:16},{wch:36},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws1, '업로드_템플릿');
+
+  /* ── Sheet 2: 코드표 ── */
+  const q = selectedQuestionnaire || QUESTIONNAIRES[0];
+  const s2 = [['유형코드', '유형명', '세부유형코드', '세부유형명']];
+  q.types.forEach(type => {
+    type.subs.forEach((sub, idx) => {
+      s2.push([
+        type.id,
+        type.name,
+        `${type.id}_${String(idx + 1).padStart(2, '0')}`,
+        sub.name,
+      ]);
+    });
+  });
+  const ws2 = XLSX.utils.aoa_to_sheet(s2);
+  ws2['!cols'] = [{wch:12},{wch:18},{wch:14},{wch:24}];
+  XLSX.utils.book_append_sheet(wb, ws2, '코드표');
+
+  XLSX.writeFile(wb, '추천과정_업로드_템플릿.xlsx');
   showToast('템플릿이 다운로드됩니다.');
 }
 
