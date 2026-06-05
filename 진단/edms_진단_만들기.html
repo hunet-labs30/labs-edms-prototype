@@ -591,7 +591,16 @@ body {
 .step-content.active { display: flex; flex-direction: column; gap: 14px; }
 
 /* 하단 네비 */
-.bottom-nav { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
+.bottom-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
+.bottom-nav-left { display: flex; align-items: center; gap: 6px; }
+.bottom-nav-right { display: flex; align-items: center; gap: 8px; }
+.btn-draft {
+  background: #fff; border: 1px solid #ccc; color: #555;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-draft:hover { border-color: var(--primary); color: var(--primary); }
+.draft-saved { font-size: 11px; color: #888; display: none; }
+.draft-saved.show { display: inline; }
 
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -895,9 +904,16 @@ body {
     </div>
 
     <div class="bottom-nav">
-      <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">← 이전</button>
-      <button class="btn btn-gray" id="btnPreview" onclick="previewDiagnosis()" style="display:none;">미리보기</button>
-      <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음 →</button>
+      <div class="bottom-nav-left">
+        <button class="btn btn-draft" onclick="saveDraft()">💾 임시저장</button>
+        <span class="draft-saved" id="draftSavedMsg">✓ 저장됨</span>
+      </div>
+      <div class="bottom-nav-right">
+        <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">← 이전</button>
+        <button class="btn btn-gray" id="btnPreview" onclick="previewDiagnosis()" style="display:none;">미리보기</button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음 →</button>
+        <button class="btn btn-primary" id="btnCreate" onclick="createDiagnosis()" style="display:none;">✓ 진단 생성</button>
+      </div>
     </div>
   </main>
 </div>
@@ -1781,22 +1797,42 @@ function showToast(msg) {
 }
 
 function updateBottomButtons() {
-  const btnPrev = document.getElementById('btnPrev');
-  const btnNext = document.getElementById('btnNext');
+  const btnPrev    = document.getElementById('btnPrev');
+  const btnNext    = document.getElementById('btnNext');
   const btnPreview = document.getElementById('btnPreview');
+  const btnCreate  = document.getElementById('btnCreate');
   if (currentStep === 1) {
-    btnPrev.style.display = 'none';
-    btnNext.style.display = 'block';
+    btnPrev.style.display    = 'none';
+    btnNext.style.display    = 'block';
     btnPreview.style.display = 'none';
+    btnCreate.style.display  = 'none';
   } else if (currentStep === 4) {
-    btnPrev.style.display = 'block';
-    btnNext.style.display = 'none';
+    btnPrev.style.display    = 'block';
+    btnNext.style.display    = 'none';
     btnPreview.style.display = 'block';
+    btnCreate.style.display  = 'block';
   } else {
-    btnPrev.style.display = 'block';
-    btnNext.style.display = 'block';
+    btnPrev.style.display    = 'block';
+    btnNext.style.display    = 'block';
     btnPreview.style.display = 'none';
+    btnCreate.style.display  = 'none';
   }
+}
+
+function saveDraft() {
+  // 실제 구현 시 서버 저장 API 호출
+  const msg = document.getElementById('draftSavedMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2500);
+  showToast('임시저장 되었습니다.');
+}
+
+function createDiagnosis() {
+  if (!selectedDiagnosticId) { showToast('진단지를 선택해주세요.'); return; }
+  const diagName = document.getElementById('diagNameInput')?.value?.trim();
+  if (!diagName) { showToast('진단명을 입력해주세요. (STEP 4 섹션 A)'); return; }
+  showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
+  setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
 }
 
 function nextStep() {
