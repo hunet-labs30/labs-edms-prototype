@@ -605,19 +605,87 @@ body {
 #toast { display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px; font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25); white-space: nowrap; }
 
 .step-content { display: none; }
-.step-content.active { display: flex; flex-direction: column; gap: 14px; }
+.step-content.active { display: flex; }
 
-/* 하단 네비 */
-.bottom-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
-.bottom-nav-left { display: flex; align-items: center; gap: 6px; }
-.bottom-nav-right { display: flex; align-items: center; gap: 8px; }
+/* ── WIZARD LAYOUT ── */
+.main { flex: 1; overflow: hidden; padding: 0 !important; display: flex; flex-direction: column; }
+.wiz-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* 왼쪽 단계 패널 */
+.wiz-aside {
+  width: 220px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.wiz-aside-head { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+.wiz-aside-head .wiz-aside-title { font-size: 14px; font-weight: 800; color: #1a1a2e; }
+.wiz-aside-head .wiz-aside-sub { font-size: 11px; color: #999; margin-top: 3px; }
+.wiz-step-list { padding: 8px 10px; flex: 1; }
+.wiz-step-connector { width: 1.5px; height: 16px; background: #e0e3e8; margin: 0 auto 0 20px; }
+.wiz-step-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 8px; border-radius: 8px; cursor: pointer;
+  transition: background .12s;
+}
+.wiz-step-item:hover { background: #f5f6f8; }
+.wiz-step-item.is-active { background: #eef2ff; }
+.wiz-step-badge {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  background: #e0e3e8; color: #999; margin-top: 1px;
+  transition: background .2s, color .2s;
+}
+.wiz-step-item.is-active .wiz-step-badge { background: var(--primary); color: #fff; }
+.wiz-step-item.is-done .wiz-step-badge { background: #1a7a4a; color: #fff; font-size: 14px; }
+.wiz-step-meta { flex: 1; }
+.wiz-step-title { font-size: 12px; font-weight: 700; color: #bbb; line-height: 1.3; }
+.wiz-step-item.is-active .wiz-step-title { color: var(--primary); }
+.wiz-step-item.is-done .wiz-step-title { color: #333; }
+.wiz-step-desc { font-size: 11px; color: #ccc; margin-top: 3px; line-height: 1.4; }
+.wiz-step-item.is-active .wiz-step-desc { color: #7aaaf7; }
+.wiz-step-item.is-done .wiz-step-desc { color: #999; }
+.wiz-aside-foot { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+/* 오른쪽 콘텐츠 영역 */
+.wiz-content { flex: 1; min-width: 0; overflow-y: auto; background: var(--bg); padding: 20px; }
+
+/* 스텝 카드 */
+.wiz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-direction: column; overflow: hidden;
+  min-height: calc(100vh - 130px);
+}
+.wiz-card-head {
+  padding: 22px 28px 18px; background: #fafbfc;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.wiz-step-tag {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  background: #e8f0fe; padding: 3px 10px; border-radius: 12px;
+  margin-bottom: 10px;
+}
+.wiz-card-head h2 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; letter-spacing: -.3px; }
+.wiz-card-head p { font-size: 13px; color: #888; margin: 0; line-height: 1.65; }
+.wiz-card-body { flex: 1; }
+.wiz-card-body.padded { padding: 24px 28px; }
+.wiz-card-foot {
+  flex-shrink: 0; padding: 14px 28px;
+  border-top: 1px solid var(--border); background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wiz-card-foot .foot-left { display: flex; align-items: center; gap: 8px; }
+.wiz-card-foot .foot-right { display: flex; align-items: center; gap: 8px; }
+
+/* 임시저장 */
 .btn-draft {
   background: #fff; border: 1px solid #ccc; color: #555;
-  display: inline-flex; align-items: center; gap: 5px;
+  display: inline-flex; align-items: center; gap: 5px; width: 100%; justify-content: center;
 }
 .btn-draft:hover { border-color: var(--primary); color: var(--primary); }
-.draft-saved { font-size: 11px; color: #888; display: none; }
-.draft-saved.show { display: inline; }
+.draft-saved { font-size: 11px; color: #888; display: none; text-align: center; }
+.draft-saved.show { display: block; }
 
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -752,143 +820,183 @@ body {
   </nav>
 
   <main class="main">
-    <div class="page-header-row">
-      <div class="page-title-area">
-        <div class="breadcrumb">진단 &gt; 역량진단 관리 &gt; 진단 만들기</div>
-        <div class="page-header-title">진단 만들기</div>
-      </div>
-    </div>
+    <div class="wiz-layout">
 
-    <div class="step-wizard">
-      <div class="step-item active" id="step-tab-1" onclick="goToStep(1)">
-        <div class="step-num">1</div>
-        <div class="step-info">
-          <div class="step-sub">STEP 1</div>
-          <div class="step-label">진단지 선택</div>
+      <!-- ── 왼쪽 단계 패널 ── -->
+      <aside class="wiz-aside">
+        <div class="wiz-aside-head">
+          <div class="wiz-aside-title">진단 만들기</div>
+          <div class="wiz-aside-sub">4단계로 쉽게 설정하세요</div>
         </div>
-      </div>
-      <div class="step-item" id="step-tab-2" onclick="goToStep(2)">
-        <div class="step-num">2</div>
-        <div class="step-info">
-          <div class="step-sub">STEP 2</div>
-          <div class="step-label">답변 대상자 유형</div>
-        </div>
-      </div>
-      <div class="step-item" id="step-tab-3" onclick="goToStep(3)">
-        <div class="step-num">3</div>
-        <div class="step-info">
-          <div class="step-sub">STEP 3</div>
-          <div class="step-label">추천과정 설정</div>
-        </div>
-      </div>
-      <div class="step-item" id="step-tab-4" onclick="goToStep(4)">
-        <div class="step-num">4</div>
-        <div class="step-info">
-          <div class="step-sub">STEP 4</div>
-          <div class="step-label">진단 실행 설정</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 1 -->
-    <div class="step-content active" id="step-content-1">
-      <div class="info-box">
-        <span class="info-icon">💡</span>
-        <div>진단 플랫폼에서 생성된 진단지를 선택합니다. 진단지가 없는 경우 진단 플랫폼에서 먼저 생성해주세요.</div>
-      </div>
-
-      <div class="step1-panel-wrap">
-        <!-- 왼쪽 패널 -->
-        <div class="step1-left">
-          <div class="step1-search-row">
-            <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="진단지 검색...">
-            <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
+        <div class="wiz-step-list">
+          <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
+            <div class="wiz-step-badge">1</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단지 선택</div>
+              <div class="wiz-step-desc">어떤 역량을 진단할지 선택</div>
+            </div>
           </div>
-          <div class="step1-card-list" id="step1CardList">
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
+            <div class="wiz-step-badge">2</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">응답자 유형</div>
+              <div class="wiz-step-desc">누가 응답하는지 설정</div>
+            </div>
           </div>
-          <div class="step1-link-btn">
-            <a href="#">진단 플랫폼에서 새 진단지 만들기 →</a>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">추천과정 설정</div>
+              <div class="wiz-step-desc">결과 기반 과정 연결 (선택)</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
+            <div class="wiz-step-badge">4</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단 기본 설정</div>
+              <div class="wiz-step-desc">이름·기간·대상자 입력</div>
+            </div>
           </div>
         </div>
-
-        <!-- 오른쪽 패널 -->
-        <div class="step1-right">
-          <div id="step1PreviewEmpty" class="preview-empty">
-            <div class="preview-empty-icon">📋</div>
-            <div>왼쪽에서 진단지를 선택하면<br>상세 내용을 확인할 수 있습니다</div>
-          </div>
-          <div id="step1PreviewContent" class="preview-content" style="display:none;">
-            <div class="preview-title" id="previewQuestionnaireName"></div>
-            <div class="preview-stats" id="previewStats"></div>
-            <div id="previewTree"></div>
-          </div>
+        <div class="wiz-aside-foot">
+          <button class="btn btn-draft" onclick="saveDraft()">💾 임시저장</button>
+          <span class="draft-saved" id="draftSavedMsg">✓ 저장됨</span>
         </div>
-      </div>
-    </div>
+      </aside>
 
-    <!-- STEP 2 -->
-    <div class="step-content" id="step-content-2">
-      <div class="info-box">
-        <span class="info-icon">💡</span>
-        <div>각 진단 유형별로 응답에 참여할 대상자 유형을 설정합니다. 설정된 유형별로 STEP 4에서 대상자를 등록합니다.</div>
-      </div>
+      <!-- ── 오른쪽 콘텐츠 ── -->
+      <div class="wiz-content">
 
-      <div class="respondent-cards" id="respondentCardsContainer">
-      </div>
-    </div>
-
-    <!-- STEP 3 -->
-    <div class="step-content" id="step-content-3">
-      <div class="info-box">
-        <span class="info-icon">💡</span>
-        <div>세부유형(영역)별 진단 결과 기반 추천과정을 설정합니다.</div>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;">
-        <button class="btn btn-gray btn-sm" onclick="openBulkUploadModal()">📥 일괄 업로드</button>
-        <button class="btn btn-gray btn-sm" onclick="downloadTemplate()">📤 템플릿 다운로드</button>
-      </div>
-
-      <div class="tree-container" id="courseTreeContainer">
-      </div>
-    </div>
-
-    <!-- STEP 4 -->
-    <div class="step-content" id="step-content-4">
-      <div class="step4-section">
-        <div class="step4-section-header">섹션 A. 기본 설정</div>
-        <table class="form-table" style="width:100%;">
-          <tr>
-            <th class="form-th">진단명 <span class="req">*</span></th>
-            <td class="form-td">
-              <input class="form-input w-lg" id="diagNameInput" placeholder="진단명을 입력하세요">
-            </td>
-          </tr>
-          <tr>
-            <th class="form-th">진단 기간 <span class="req">*</span></th>
-            <td class="form-td">
-              <div class="inline-row">
-                <input class="form-input w-date" id="diagStartDate" type="date">
-                <input class="form-input" id="diagStartTime" type="time" style="width:100px;">
-                <span style="font-size:12px;color:#888;">~</span>
-                <input class="form-input w-date" id="diagEndDate" type="date">
-                <input class="form-input" id="diagEndTime" type="time" style="width:100px;">
+        <!-- STEP 1: 진단지 선택 -->
+        <div class="step-content active wiz-card" id="step-content-1">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 1 / 4</span>
+            <h2>어떤 역량을 진단할까요?</h2>
+            <p>진단 플랫폼에서 생성된 진단지를 선택하세요.<br>진단지가 없다면 먼저 진단 플랫폼에서 만들어주세요.</p>
+          </div>
+          <div class="wiz-card-body">
+            <div class="step1-panel-wrap">
+              <div class="step1-left">
+                <div class="step1-search-row">
+                  <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="진단지 검색...">
+                  <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
+                </div>
+                <div class="step1-card-list" id="step1CardList"></div>
+                <div class="step1-link-btn">
+                  <a href="#">진단 플랫폼에서 새 진단지 만들기 →</a>
+                </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <th class="form-th">문항 노출 방식</th>
-            <td class="form-td">
-              <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="diagDisplay" value="all" checked> 모든 문항 한 페이지</label>
-                <label class="radio-label"><input type="radio" name="diagDisplay" value="one"> 하나씩 노출</label>
+              <div class="step1-right">
+                <div id="step1PreviewEmpty" class="preview-empty">
+                  <div class="preview-empty-icon">📋</div>
+                  <div>왼쪽에서 진단지를 선택하면<br>문항을 미리 확인할 수 있어요</div>
+                </div>
+                <div id="step1PreviewContent" class="preview-content" style="display:none;">
+                  <div class="preview-title" id="previewQuestionnaireName"></div>
+                  <div class="preview-stats" id="previewStats"></div>
+                  <div id="previewTree"></div>
+                </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <th class="form-th" style="vertical-align:top;padding-top:13px;">진단 소개 및 설명</th>
-            <td class="form-td">
-              <textarea class="form-textarea" id="diagDescription">휴넷 역량 진단
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"></div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 응답자 유형 -->
+        <div class="step-content wiz-card" id="step-content-2">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 2 / 4</span>
+            <h2>누가 응답하나요?</h2>
+            <p>각 진단 유형별로 응답에 참여할 대상을 선택하세요.<br>선택한 유형별로 STEP 4에서 대상자를 등록합니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div class="respondent-cards" id="respondentCardsContainer"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 추천과정 설정 -->
+        <div class="step-content wiz-card" id="step-content-3">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 3 / 4 · 선택사항</span>
+            <h2>추천 과정을 연결할까요?</h2>
+            <p>진단 결과의 강점·약점에 따라 학습자에게 자동 추천할 과정을 설정합니다.<br>지금 설정하지 않아도 나중에 추가할 수 있어요.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+              <button class="btn btn-gray btn-sm" onclick="openBulkUploadModal()">📥 일괄 업로드</button>
+              <button class="btn btn-gray btn-sm" onclick="downloadTemplate()">📤 템플릿 다운로드</button>
+            </div>
+            <div class="tree-container" id="courseTreeContainer"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-gray btn-lg" onclick="nextStep()">건너뛰기</button>
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: 진단 기본 설정 -->
+        <div class="step-content wiz-card" id="step-content-4">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 4 / 4 · 마지막 단계</span>
+            <h2>거의 다 왔어요! 기본 정보를 입력해주세요</h2>
+            <p>진단 이름과 진행 기간을 설정하면 진단 생성이 완료됩니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div class="step4-section">
+              <div class="step4-section-header">섹션 A. 기본 설정</div>
+              <table class="form-table" style="width:100%;">
+                <tr>
+                  <th class="form-th">진단명 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <input class="form-input w-lg" id="diagNameInput" placeholder="진단명을 입력하세요">
+                  </td>
+                </tr>
+                <tr>
+                  <th class="form-th">진단 기간 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <div class="inline-row">
+                      <input class="form-input w-date" id="diagStartDate" type="date">
+                      <input class="form-input" id="diagStartTime" type="time" style="width:100px;">
+                      <span style="font-size:12px;color:#888;">~</span>
+                      <input class="form-input w-date" id="diagEndDate" type="date">
+                      <input class="form-input" id="diagEndTime" type="time" style="width:100px;">
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="form-th">문항 노출 방식</th>
+                  <td class="form-td">
+                    <div class="radio-group">
+                      <label class="radio-label"><input type="radio" name="diagDisplay" value="all" checked> 모든 문항 한 페이지</label>
+                      <label class="radio-label"><input type="radio" name="diagDisplay" value="one"> 하나씩 노출</label>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="form-th" style="vertical-align:top;padding-top:13px;">진단 소개 및 설명</th>
+                  <td class="form-td">
+                    <textarea class="form-textarea" id="diagDescription">휴넷 역량 진단
 
 안녕하세요.
 설문에 참여해 주셔서 감사합니다.
@@ -901,37 +1009,33 @@ body {
 [제출] 버튼을 눌러 설문을 완료한 후에는 응답 내용을 수정하실 수 없으니 주의 바랍니다.
 
 감사합니다.</textarea>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="step4-section">
-        <div class="step4-section-header">섹션 B. 대상자 설정</div>
-        <div style="display:flex;flex-direction:column;overflow:hidden;">
-          <div class="tab-group" id="step4TabGroup">
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="step4-section">
+              <div class="step4-section-header">섹션 B. 대상자 설정</div>
+              <div style="display:flex;flex-direction:column;overflow:hidden;">
+                <div class="tab-group" id="step4TabGroup"></div>
+                <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
+                  <div id="step4TabPanes"></div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
-            <div id="step4TabPanes">
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+              <button class="btn btn-gray" onclick="previewDiagnosis()">미리보기</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()">✓ 진단 생성</button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="bottom-nav">
-      <div class="bottom-nav-left">
-        <button class="btn btn-draft" onclick="saveDraft()">💾 임시저장</button>
-        <span class="draft-saved" id="draftSavedMsg">✓ 저장됨</span>
-      </div>
-      <div class="bottom-nav-right">
-        <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">← 이전</button>
-        <button class="btn btn-gray" id="btnPreview" onclick="previewDiagnosis()" style="display:none;">미리보기</button>
-        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음 →</button>
-        <button class="btn btn-primary" id="btnCreate" onclick="createDiagnosis()" style="display:none;">✓ 진단 생성</button>
-      </div>
-    </div>
+      </div><!-- /wiz-content -->
+    </div><!-- /wiz-layout -->
   </main>
 </div>
 
@@ -1885,17 +1989,23 @@ function goToStep(step) {
   if (step < 1 || step > 4) return;
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById(`step-content-${step}`).classList.add('active');
-  document.querySelectorAll('.step-item').forEach((el, idx) => {
-    if (idx + 1 < step) {
-      el.classList.remove('active');
-      el.classList.add('done');
-    } else if (idx + 1 === step) {
-      el.classList.add('active');
-      el.classList.remove('done');
+
+  // wiz-aside step item 상태 업데이트
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`wiz-step-${i}`);
+    if (!el) continue;
+    el.classList.remove('is-active', 'is-done');
+    const badge = el.querySelector('.wiz-step-badge');
+    if (i < step) {
+      el.classList.add('is-done');
+      badge.textContent = '✓';
+    } else if (i === step) {
+      el.classList.add('is-active');
+      badge.textContent = i;
     } else {
-      el.classList.remove('active', 'done');
+      badge.textContent = i;
     }
-  });
+  }
 
   currentStep = step;
   if (step === 1) renderStep1();
