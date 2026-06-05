@@ -422,6 +422,54 @@ body {
   color: #aaa;
 }
 
+/* ── STEP 1 오른쪽: 문항 미리보기 ── */
+.preview-sub-block { margin-bottom: 6px; }
+.preview-sub-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; background: #f4f6fb; border-radius: 4px;
+  margin-bottom: 0; cursor: pointer; user-select: none;
+}
+.preview-sub-header:hover { background: #eef1f9; }
+.preview-sub-toggle { font-size: 9px; color: #888; transition: transform .15s; }
+.preview-sub-block.open .preview-sub-toggle { transform: rotate(90deg); }
+.preview-sub-name { font-size: 12px; font-weight: 700; color: #1a2e5c; flex: 1; }
+.preview-sub-scale {
+  font-size: 10px; color: #6b7280; background: #fff;
+  border: 1px solid #d1d5db; padding: 1px 6px; border-radius: 3px;
+}
+.preview-q-list { display: none; padding: 8px 0 4px; }
+.preview-sub-block.open .preview-q-list { display: block; }
+
+/* 응답 화면과 동일한 문항 카드 */
+.prev-q-card {
+  background: #fff; border-radius: 6px; padding: 16px 18px;
+  margin-bottom: 8px; border: 1.5px solid var(--border);
+}
+.prev-q-label {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--primary); margin-bottom: 8px; letter-spacing: .2px;
+}
+.prev-q-text { font-size: 13px; line-height: 1.8; color: #111827; margin-bottom: 14px; }
+.prev-likert {
+  display: flex; border-top: 1px solid #f3f4f6;
+  padding-top: 12px; gap: 4px;
+}
+.prev-likert-opt { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.prev-likert-opt input[type=radio] { display: none; }
+.prev-likert-opt label {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; width: 100%;
+}
+.prev-likert-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid var(--border); background: #fff; flex-shrink: 0; transition: all .15s;
+}
+.prev-likert-opt label:hover .prev-likert-circle { border-color: var(--primary); background: #e8f0fe; }
+.prev-likert-opt input[type=radio]:checked + label .prev-likert-circle {
+  background: var(--primary); border-color: var(--primary);
+}
+.prev-likert-lbl { font-size: 10px; color: #6b7280; text-align: center; line-height: 1.4; word-break: keep-all; }
+
 /* ── STEP 2: 응답자 유형 카드 ── */
 .respondent-cards { display: flex; flex-direction: column; gap: 12px; }
 .respondent-card {
@@ -1004,12 +1052,18 @@ const QUESTIONNAIRES = [
         name: '리더십역량',
         qCount: 30,
         subs: [
-          { name: '비전 및 목표 설정', qCount: 5 },
-          { name: '구성원 육성 및 동기부여', qCount: 5 },
-          { name: '성과 창출 및 관리', qCount: 5 },
-          { name: '갈등 관리', qCount: 5 },
-          { name: '의사결정 능력', qCount: 5 },
-          { name: '전략적 사고', qCount: 5 },
+          { name: '비전 및 목표 설정', qCount: 5, scale: '5점 척도',
+            questions: ['나는 팀의 장기적인 비전과 방향을 명확히 제시한다.','나는 팀원들이 조직 목표를 자신의 업무와 연결할 수 있도록 돕는다.','나는 현실적이면서도 도전적인 목표를 설정한다.','나는 목표 달성 현황을 주기적으로 점검하고 피드백을 제공한다.','나는 변화하는 환경에 맞게 목표를 유연하게 조정한다.'] },
+          { name: '구성원 육성 및 동기부여', qCount: 5, scale: '5점 척도',
+            questions: ['나는 팀원의 강점과 개발 영역을 파악하고 있다.','나는 팀원들에게 성장 기회를 적극적으로 제공한다.','나는 팀원이 좋은 성과를 냈을 때 즉시 인정하고 칭찬한다.','나는 각 팀원의 동기부여 요인을 파악하여 맞춤 지원을 제공한다.','나는 팀원들의 커리어 목표와 회사 목표를 연결할 수 있도록 지원한다.'] },
+          { name: '성과 창출 및 관리', qCount: 5, scale: '5점 척도',
+            questions: ['나는 팀의 성과를 측정할 수 있는 명확한 기준을 수립한다.','나는 업무 우선순위를 효과적으로 설정하여 팀의 성과를 극대화한다.','나는 성과 창출에 방해가 되는 장애물을 신속하게 제거한다.','나는 팀원들의 역할과 책임을 명확히 구분하여 관리한다.','나는 성과 결과에 대해 팀원들과 함께 검토하고 개선 방향을 논의한다.'] },
+          { name: '갈등 관리', qCount: 5, scale: '5점 척도',
+            questions: ['나는 팀 내 갈등 상황을 조기에 파악하고 개입한다.','나는 갈등의 원인을 객관적으로 분석하여 해결책을 모색한다.','나는 팀원들이 의견 차이를 건설적으로 표현하도록 독려한다.','나는 갈등 해결 과정에서 모든 관련자의 입장을 공정하게 고려한다.','나는 갈등 해결 후 팀 분위기 회복을 위해 적극적으로 노력한다.'] },
+          { name: '의사결정 능력', qCount: 5, scale: '5점 척도',
+            questions: ['나는 충분한 정보를 수집한 후 의사결정을 내린다.','나는 불확실한 상황에서도 신속하고 합리적인 결정을 내린다.','나는 의사결정 시 팀원들의 의견을 적극적으로 반영한다.','나는 결정 사항의 장단점을 명확히 설명할 수 있다.','나는 결정 결과에 대한 책임을 기꺼이 진다.'] },
+          { name: '전략적 사고', qCount: 5, scale: '5점 척도',
+            questions: ['나는 단기 목표와 장기 전략을 연계하여 사고한다.','나는 외부 환경 변화가 팀 업무에 미치는 영향을 선제적으로 분석한다.','나는 다양한 가능성과 시나리오를 검토하여 전략을 수립한다.','나는 경쟁 환경을 고려하여 차별화된 방향을 제시한다.','나는 전략적 우선순위에 따라 자원을 효과적으로 배분한다.'] },
         ]
       },
       {
@@ -1017,11 +1071,16 @@ const QUESTIONNAIRES = [
         name: '조직문화역량',
         qCount: 20,
         subs: [
-          { name: '윤리경영 및 책임의식', qCount: 4 },
-          { name: '변화관리 및 혁신', qCount: 4 },
-          { name: '소통 및 협력', qCount: 4 },
-          { name: '다양성 존중', qCount: 4 },
-          { name: '팀워크', qCount: 4 },
+          { name: '윤리경영 및 책임의식', qCount: 4, scale: '5점 척도',
+            questions: ['나는 업무 수행 시 윤리적 기준을 최우선으로 고려한다.','나는 팀원들에게 윤리적 행동의 모범을 보인다.','나는 비윤리적 상황을 인지했을 때 즉시 시정 조치를 취한다.','나는 성과 달성보다 올바른 방식을 더 중요하게 생각한다.'] },
+          { name: '변화관리 및 혁신', qCount: 4, scale: '5점 척도',
+            questions: ['나는 변화의 필요성을 팀원들에게 적극적으로 설명한다.','나는 새로운 아이디어와 시도를 팀 내에서 환영하는 분위기를 만든다.','나는 변화에 저항하는 팀원들을 이해하고 설득하는 방법을 안다.','나는 변화 과정에서 발생하는 불안을 최소화하기 위해 노력한다.'] },
+          { name: '소통 및 협력', qCount: 4, scale: '5점 척도',
+            questions: ['나는 팀원들과 정기적으로 소통하며 정보를 공유한다.','나는 타 부서와의 협력을 적극적으로 도모한다.','나는 팀원들의 의견을 경청하고 존중한다.','나는 불필요한 소통 장벽을 제거하기 위해 노력한다.'] },
+          { name: '다양성 존중', qCount: 4, scale: '5점 척도',
+            questions: ['나는 팀원들의 다양한 배경과 관점을 존중한다.','나는 다양한 의견이 더 나은 결과를 만든다고 믿는다.','나는 특정 팀원이 소외되지 않도록 포용적인 환경을 조성한다.','나는 편견 없이 모든 팀원을 공정하게 대우한다.'] },
+          { name: '팀워크', qCount: 4, scale: '5점 척도',
+            questions: ['나는 팀 공동 목표를 개인 목표보다 우선시한다.','나는 팀원이 어려움을 겪을 때 자발적으로 도움을 제공한다.','나는 팀의 성공을 함께 축하하고 공을 나눈다.','나는 팀 내 신뢰를 쌓기 위해 지속적으로 노력한다.'] },
         ]
       }
     ]
@@ -1040,9 +1099,12 @@ const QUESTIONNAIRES = [
         name: '비즈니스스킬',
         qCount: 24,
         subs: [
-          { name: '프레젠테이션 능력', qCount: 8 },
-          { name: '문서작성 능력', qCount: 8 },
-          { name: '협상 능력', qCount: 8 },
+          { name: '프레젠테이션 능력', qCount: 8, scale: '5점 척도',
+            questions: ['나는 발표 목적과 청중에 맞게 내용을 구성한다.','나는 핵심 메시지를 명확하고 간결하게 전달한다.','나는 시각 자료를 효과적으로 활용하여 이해를 돕는다.','나는 청중의 반응을 살피며 발표 방식을 조율한다.','나는 질의응답 상황에서 침착하고 논리적으로 답변한다.','나는 발표 전 충분한 준비와 연습을 한다.','나는 데이터와 근거를 바탕으로 주장을 뒷받침한다.','나는 발표 후 피드백을 반영하여 개선한다.'] },
+          { name: '문서작성 능력', qCount: 8, scale: '5점 척도',
+            questions: ['나는 문서의 목적에 맞는 구조와 형식을 선택한다.','나는 핵심 내용을 빠짐없이 포함하면서 간결하게 작성한다.','나는 독자의 이해 수준을 고려하여 용어를 선택한다.','나는 데이터와 사실에 근거한 내용을 작성한다.','나는 오탈자 없이 정확한 문서를 작성한다.','나는 문서 작성 후 검토 및 수정 과정을 거친다.','나는 시각적으로 보기 좋은 레이아웃을 구성한다.','나는 기한 내에 문서를 완성한다.'] },
+          { name: '협상 능력', qCount: 8, scale: '5점 척도',
+            questions: ['나는 협상 전 상대방의 입장과 관심사를 충분히 파악한다.','나는 협상에서 원하는 결과와 양보 가능한 범위를 사전에 설정한다.','나는 감정을 통제하며 이성적으로 협상에 임한다.','나는 윈-윈 해결책을 찾기 위해 창의적 대안을 제시한다.','나는 협상 결과를 명확하게 문서화한다.','나는 협상 과정에서 관계 유지를 중요하게 생각한다.','나는 협상 중 예상치 못한 변수에 유연하게 대응한다.','나는 협상 후 합의 사항을 성실히 이행한다.'] },
         ]
       },
       {
@@ -1050,9 +1112,12 @@ const QUESTIONNAIRES = [
         name: '직무역량',
         qCount: 24,
         subs: [
-          { name: '전문지식 활용', qCount: 8 },
-          { name: '문제해결력', qCount: 8 },
-          { name: '창의적 사고', qCount: 8 },
+          { name: '전문지식 활용', qCount: 8, scale: '5점 척도',
+            questions: ['나는 직무 관련 최신 트렌드와 지식을 지속적으로 학습한다.','나는 보유한 전문지식을 업무에 실질적으로 적용한다.','나는 전문지식을 팀원들과 공유하여 조직 역량을 높인다.','나는 직무 관련 자격증 취득이나 교육에 적극 참여한다.','나는 업무 중 발생하는 전문적 문제를 스스로 해결한다.','나는 타 분야 전문가와 협업할 때 시너지를 만든다.','나는 새로운 기술이나 방법론 도입에 긍정적이다.','나는 전문지식을 쉽게 설명할 수 있는 커뮤니케이션 능력을 갖추고 있다.'] },
+          { name: '문제해결력', qCount: 8, scale: '5점 척도',
+            questions: ['나는 문제의 근본 원인을 체계적으로 분석한다.','나는 다양한 해결책을 도출하고 최선의 방안을 선택한다.','나는 복잡한 문제를 작은 단위로 분리하여 접근한다.','나는 과거 경험을 활용하여 유사 문제를 효율적으로 해결한다.','나는 문제 해결 과정에서 관련자들과 적극적으로 협력한다.','나는 해결책 실행 후 효과를 검증하고 보완한다.','나는 데이터와 논리를 바탕으로 문제를 해결한다.','나는 불확실한 상황에서도 최선의 결정을 내린다.'] },
+          { name: '창의적 사고', qCount: 8, scale: '5점 척도',
+            questions: ['나는 기존의 방식에 의문을 제기하고 새로운 접근법을 시도한다.','나는 다양한 분야에서 아이디어를 수집하여 업무에 적용한다.','나는 팀 내 창의적 아이디어 제안을 장려한다.','나는 실패를 두려워하지 않고 새로운 시도를 지속한다.','나는 기존 프로세스를 개선하는 아이디어를 정기적으로 제안한다.','나는 연관 없어 보이는 개념들을 연결하여 새로운 해결책을 만든다.','나는 브레인스토밍 세션을 효과적으로 진행한다.','나는 창의적 아이디어를 실제로 실행 가능한 계획으로 구체화한다.'] },
         ]
       },
       {
@@ -1060,9 +1125,12 @@ const QUESTIONNAIRES = [
         name: 'IT활용역량',
         qCount: 24,
         subs: [
-          { name: '디지털 리터러시', qCount: 8 },
-          { name: '데이터 분석', qCount: 8 },
-          { name: 'AI 활용 능력', qCount: 8 },
+          { name: '디지털 리터러시', qCount: 8, scale: '5점 척도',
+            questions: ['나는 업무에 필요한 디지털 도구를 능숙하게 활용한다.','나는 새로운 디지털 기술을 빠르게 습득한다.','나는 디지털 정보의 신뢰성을 평가하는 능력을 갖추고 있다.','나는 사이버 보안의 중요성을 이해하고 실천한다.','나는 협업 도구를 통해 원격 업무를 효과적으로 수행한다.','나는 디지털 전환이 업무에 미치는 영향을 이해한다.','나는 디지털 도구를 통해 업무 효율성을 높인다.','나는 팀원들의 디지털 역량 향상을 지원한다.'] },
+          { name: '데이터 분석', qCount: 8, scale: '5점 척도',
+            questions: ['나는 업무 의사결정을 위해 데이터를 적극적으로 활용한다.','나는 데이터에서 의미 있는 패턴과 인사이트를 도출한다.','나는 스프레드시트나 분석 도구를 능숙하게 사용한다.','나는 데이터 시각화를 통해 복잡한 정보를 이해하기 쉽게 전달한다.','나는 데이터의 품질과 정확성을 검증한다.','나는 분석 결과를 바탕으로 실행 가능한 제안을 한다.','나는 데이터 기반의 성과 지표를 설정하고 관리한다.','나는 데이터 보안과 개인정보 보호 규정을 준수한다.'] },
+          { name: 'AI 활용 능력', qCount: 8, scale: '5점 척도',
+            questions: ['나는 업무에 AI 도구를 활용하여 생산성을 높인다.','나는 AI의 한계와 적절한 활용 범위를 이해한다.','나는 AI 결과물을 비판적으로 검토하고 활용한다.','나는 AI 기술 트렌드를 지속적으로 학습한다.','나는 AI를 활용한 새로운 업무 방식을 팀에 제안한다.','나는 AI 윤리와 책임 있는 사용 원칙을 준수한다.','나는 AI 도구를 통해 반복적인 업무를 자동화한다.','나는 AI 활용 역량 강화를 위해 지속적으로 교육받는다.'] },
         ]
       }
     ]
@@ -1081,10 +1149,14 @@ const QUESTIONNAIRES = [
         name: '조직문화',
         qCount: 28,
         subs: [
-          { name: '심리적 안전감', qCount: 7 },
-          { name: '협업 문화', qCount: 7 },
-          { name: '성과 지향성', qCount: 7 },
-          { name: '학습 조직화', qCount: 7 },
+          { name: '심리적 안전감', qCount: 7, scale: '5점 척도',
+            questions: ['우리 팀에서는 실수를 해도 불이익이 없다고 느낀다.','팀원들이 문제를 제기할 때 수용적인 반응을 보인다.','나는 팀 내에서 불편한 의견도 자유롭게 표현할 수 있다.','팀원들은 서로의 약점을 공격적으로 이용하지 않는다.','우리 팀에서는 도움을 요청하는 것이 자연스럽다.','실패한 경험을 팀 학습의 기회로 활용한다.','팀원들은 서로의 아이디어를 존중하며 발전시킨다.'] },
+          { name: '협업 문화', qCount: 7, scale: '5점 척도',
+            questions: ['우리 팀은 공동 목표를 위해 협력하는 문화가 있다.','팀원들은 자신의 업무 범위를 넘어 서로 돕는다.','부서 간 협업이 원활하게 이루어진다.','팀 내 정보 공유가 적극적으로 이루어진다.','협업 과정에서 발생하는 갈등을 건설적으로 해결한다.','팀 성과는 개인이 아닌 모두의 것으로 인정받는다.','협업 도구와 프로세스가 잘 갖추어져 있다.'] },
+          { name: '성과 지향성', qCount: 7, scale: '5점 척도',
+            questions: ['우리 조직은 명확한 성과 기준과 목표를 가지고 있다.','성과에 대한 공정한 평가와 보상이 이루어진다.','높은 성과를 위한 도전적인 목표를 추구한다.','성과 달성을 위한 필요 자원이 충분히 제공된다.','성과 창출에 방해가 되는 장애물이 신속히 제거된다.','우수한 성과자는 조직 내에서 인정받는다.','성과 목표는 구성원의 의견을 반영하여 설정된다.'] },
+          { name: '학습 조직화', qCount: 7, scale: '5점 척도',
+            questions: ['조직은 구성원의 지속적인 학습을 적극 지원한다.','우리 조직은 실패에서 배우는 문화를 가지고 있다.','새로운 지식과 아이디어가 조직 내에서 빠르게 공유된다.','구성원들은 자기 주도적으로 학습하고 성장한다.','조직은 변화하는 환경에 맞게 지속적으로 혁신한다.','학습 결과가 실제 업무 개선으로 이어진다.','지식 관리 시스템이 효과적으로 운영된다.'] },
         ]
       }
     ]
@@ -1126,11 +1198,8 @@ function renderStep1() {
     card.className = 'diag-card';
     if (q.id === 1) card.classList.add('selected'); // 기본 선택: id=1
 
-    const tagsHtml = q.tags.map(tag => `<span class="diag-tag">${tag}</span>`).join('');
-
     card.innerHTML = `
       <div class="diag-card-title">
-        ${tagsHtml}
         <span>${q.name}</span>
       </div>
       <div class="diag-card-meta">유형 ${q.typeCount}개 · 세부유형 ${q.subCount}개 · ${q.qCount}문항</div>
@@ -1179,25 +1248,48 @@ function renderPreview(questionnaire) {
 
   // 트리 구조
   const treeHtml = questionnaire.types.map((type, typeIdx) => {
-    const subsHtml = type.subs.map(sub => `
-      <div class="tree-sub-row">
-        <span class="tree-sub-dot"></span>
-        <span class="tree-sub-name">${sub.name}</span>
-        <span class="tree-sub-qcnt">(${sub.qCount}문항)</span>
-      </div>
-    `).join('');
+    const subsHtml = type.subs.map((sub, subIdx) => {
+      const blockId = `prev-sub-${typeIdx}-${subIdx}`;
+      let prevQCount = 0;
+      type.subs.slice(0, subIdx).forEach(s => prevQCount += s.qCount);
+      const LIKERT = ['매우 그렇다','그렇다','보통이다','그렇지 않다','전혀 그렇지 않다'];
+      const qCardsHtml = (sub.questions || []).map((q, qi) => {
+        const qKey = `prev_${typeIdx}_${subIdx}_${qi}`;
+        return `
+          <div class="prev-q-card">
+            <div class="prev-q-text">${q}</div>
+            <div class="prev-likert">
+              ${LIKERT.map((lbl, vi) => `
+                <div class="prev-likert-opt">
+                  <input type="radio" name="${qKey}" id="${qKey}_${vi}" value="${vi+1}">
+                  <label for="${qKey}_${vi}">
+                    <div class="prev-likert-circle"></div>
+                    <span class="prev-likert-lbl">${lbl}</span>
+                  </label>
+                </div>`).join('')}
+            </div>
+          </div>`;
+      }).join('');
+      return `
+        <div class="preview-sub-block open" id="${blockId}">
+          <div class="preview-sub-header" onclick="togglePreviewSub('${blockId}')">
+            <span class="preview-sub-toggle">▶</span>
+            <span class="preview-sub-name">${sub.name}</span>
+            <span class="preview-sub-scale">${sub.scale || '5점 척도'}</span>
+            <span class="tree-sub-qcnt">${sub.qCount}문항</span>
+          </div>
+          <div class="preview-q-list">${qCardsHtml}</div>
+        </div>`;
+    }).join('');
 
     return `
       <div class="tree-type open">
         <div class="tree-type-header" onclick="toggleTreeTypeNode(this)">
           <span class="tree-type-toggle">▼</span>
-          <span class="diag-tag">${type.id}</span>
           <span class="tree-type-name">${type.name}</span>
           <span class="tree-type-qcnt">· ${type.qCount}문항</span>
         </div>
-        <div class="tree-subs">
-          ${subsHtml}
-        </div>
+        <div class="tree-subs">${subsHtml}</div>
       </div>
     `;
   }).join('');
@@ -1208,6 +1300,11 @@ function renderPreview(questionnaire) {
 function toggleTreeTypeNode(header) {
   const node = header.closest('.tree-type');
   node.classList.toggle('open');
+}
+
+function togglePreviewSub(blockId) {
+  const block = document.getElementById(blockId);
+  if (block) block.classList.toggle('open');
 }
 
 function searchQuestionnaires() {
