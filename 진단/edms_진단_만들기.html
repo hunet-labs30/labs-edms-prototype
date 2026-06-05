@@ -1929,26 +1929,7 @@ function showToast(msg) {
 }
 
 function updateBottomButtons() {
-  const btnPrev    = document.getElementById('btnPrev');
-  const btnNext    = document.getElementById('btnNext');
-  const btnPreview = document.getElementById('btnPreview');
-  const btnCreate  = document.getElementById('btnCreate');
-  if (currentStep === 1) {
-    btnPrev.style.display    = 'none';
-    btnNext.style.display    = 'block';
-    btnPreview.style.display = 'none';
-    btnCreate.style.display  = 'none';
-  } else if (currentStep === 4) {
-    btnPrev.style.display    = 'block';
-    btnNext.style.display    = 'none';
-    btnPreview.style.display = 'block';
-    btnCreate.style.display  = 'block';
-  } else {
-    btnPrev.style.display    = 'block';
-    btnNext.style.display    = 'block';
-    btnPreview.style.display = 'none';
-    btnCreate.style.display  = 'none';
-  }
+  // 버튼이 각 카드 foot으로 이동됨 — 별도 업데이트 불필요
 }
 
 function saveDraft() {
