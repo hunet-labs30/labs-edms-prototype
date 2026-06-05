@@ -321,17 +321,16 @@ body {
   border-radius: 4px;
 }
 
-/* 제목 인라인 편집 */
-.preview-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .preview-title {
-  font-size: 16px; font-weight: 700; color: #1a1a2e;
-  outline: none; border-radius: 4px; padding: 2px 6px; cursor: text;
-  border: 1.5px solid transparent; transition: border-color .15s, background .15s;
-  flex: 1;
+  font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px;
 }
-.preview-title:hover { background: #f5f8ff; border-color: #c5d8f7; }
-.preview-title:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 2px #e8f0fe; }
-.preview-edit-hint { font-size: 11px; color: #aaa; white-space: nowrap; }
+/* 질문 텍스트 인라인 편집 */
+.prev-q-text[contenteditable="true"] {
+  outline: none; border-radius: 4px; padding: 4px 6px; cursor: text;
+  border: 1.5px solid transparent; transition: border-color .15s, background .15s;
+}
+.prev-q-text[contenteditable="true"]:hover { background: #f5f8ff; border-color: #c5d8f7; }
+.prev-q-text[contenteditable="true"]:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 2px #e8f0fe; }
 
 /* 질문 카드 삭제 버튼 */
 .prev-q-card { position: relative; }
@@ -816,10 +815,7 @@ body {
             <div>왼쪽에서 진단지를 선택하면<br>상세 내용을 확인할 수 있습니다</div>
           </div>
           <div id="step1PreviewContent" class="preview-content" style="display:none;">
-            <div class="preview-title-row">
-              <div class="preview-title" id="previewQuestionnaireName"></div>
-              <span class="preview-edit-hint">✏️ 클릭하여 수정</span>
-            </div>
+            <div class="preview-title" id="previewQuestionnaireName"></div>
             <div class="preview-stats" id="previewStats"></div>
             <div id="previewTree"></div>
           </div>
@@ -1293,11 +1289,8 @@ function renderPreview(questionnaire) {
   empty.style.display = 'none';
   content.style.display = 'block';
 
-  // 제목 (contenteditable 인라인 편집)
-  const titleEl = document.getElementById('previewQuestionnaireName');
-  titleEl.textContent = questionnaire.name;
-  titleEl.contentEditable = 'true';
-  titleEl.spellcheck = false;
+  // 제목
+  document.getElementById('previewQuestionnaireName').textContent = questionnaire.name;
 
   // 통계 칩
   const statsHtml = `
@@ -1319,7 +1312,7 @@ function renderPreview(questionnaire) {
         return `
           <div class="prev-q-card">
             <button class="prev-q-del" onclick="deletePreviewQuestion(this)" title="문항 삭제">×</button>
-            <div class="prev-q-text">${q}</div>
+            <div class="prev-q-text" contenteditable="true" spellcheck="false">${q}</div>
             <div class="prev-likert">
               ${LIKERT.map((lbl, vi) => `
                 <div class="prev-likert-opt">
