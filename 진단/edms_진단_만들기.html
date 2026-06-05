@@ -324,13 +324,16 @@ body {
 .preview-title {
   font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px;
 }
-/* 질문 텍스트 인라인 편집 */
-.prev-q-text[contenteditable="true"] {
-  outline: none; border-radius: 4px; padding: 4px 6px; cursor: text;
-  border: 1.5px solid transparent; transition: border-color .15s, background .15s;
+/* 질문 텍스트 필드 */
+.prev-q-input {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 10px; font-size: 13px; font-family: inherit; color: #111827;
+  line-height: 1.6; resize: none; outline: none; background: #fafbfc;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  overflow: hidden;
 }
-.prev-q-text[contenteditable="true"]:hover { background: #f5f8ff; border-color: #c5d8f7; }
-.prev-q-text[contenteditable="true"]:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 2px #e8f0fe; }
+.prev-q-input:hover { border-color: #a8c0f0; background: #fff; }
+.prev-q-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px #e8f0fe; }
 
 /* 질문 카드 삭제 버튼 */
 .prev-q-card { position: relative; }
@@ -1312,7 +1315,7 @@ function renderPreview(questionnaire) {
         return `
           <div class="prev-q-card">
             <button class="prev-q-del" onclick="deletePreviewQuestion(this)" title="문항 삭제">×</button>
-            <div class="prev-q-text" contenteditable="true" spellcheck="false">${q}</div>
+            <textarea class="prev-q-input" rows="2" oninput="autoResize(this)">${q}</textarea>
             <div class="prev-likert">
               ${LIKERT.map((lbl, vi) => `
                 <div class="prev-likert-opt">
@@ -1367,6 +1370,11 @@ function deletePreviewQuestion(btn) {
   card.style.transition = 'opacity .15s';
   card.style.opacity = '0';
   setTimeout(() => card.remove(), 150);
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
 }
 
 function searchQuestionnaires() {
