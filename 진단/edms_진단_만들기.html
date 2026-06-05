@@ -502,8 +502,16 @@ body {
 .tree-header:hover { background: #f5f8ff; }
 .tree-toggle { font-size: 9px; color: #555; transition: transform 0.2s; }
 .tree-node.open > .tree-header .tree-toggle { transform: rotate(90deg); }
-.tree-badge { display: inline-flex; padding: 2px 8px; background: #1a73e8; color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.tree-badge { display: none; }
 .tree-label { font-size: 13px; font-weight: 700; color: #1a2e5c; flex: 1; }
+/* 역량군 강점/약점 점수 설정 */
+.score-setting { display: flex; align-items: center; gap: 5px; margin-left: 12px; font-size: 11px; flex-shrink: 0; }
+.score-lbl { font-weight: 700; font-size: 11px; white-space: nowrap; }
+.score-lbl.strong { color: #1a7a4a; }
+.score-lbl.weak { color: #c0392b; }
+.score-input { width: 50px; height: 26px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-size: 12px; font-family: inherit; outline: none; }
+.score-input:focus { border-color: var(--primary); }
+.score-unit { font-size: 11px; color: #777; white-space: nowrap; }
 .tree-body { display: none; max-height: 0; overflow: hidden; }
 .tree-node.open > .tree-body { display: block; max-height: none; }
 .tree-sub-header {
@@ -902,7 +910,7 @@ body {
     </div>
     <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;">
       <!-- 좌: 과정 카탈로그 -->
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;min-height:0;">
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
           <select id="crsFilterCat1" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="crsFilterCatChange(1)"></select>
           <select id="crsFilterCat2" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="crsFilterCatChange(2)"></select>
@@ -922,7 +930,7 @@ body {
           </select>
         </div>
         <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="courseResultCount">0</strong>개</div>
-        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;flex:1;overflow-y:auto;min-height:180px;max-height:300px;background:#fff;"></div>
+        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;overflow-y:auto;height:260px;background:#fff;"></div>
       </div>
       <!-- 우: 선택한 과정 -->
       <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
@@ -957,9 +965,23 @@ body {
       </div>
 
       <div class="modal-notice" style="margin-top:12px;">
-        <strong>주의사항:</strong><br>
-        • 템플릿 형식에 맞게 작성해주세요.<br>
-        • 세부유형명과 과정명은 정확하게 입력해주세요.
+        <strong>엑셀 컬럼 구성 (A~D열)</strong><br>
+        <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;">
+          <thead>
+            <tr style="background:#e8f0fe;">
+              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">열</th>
+              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">항목</th>
+              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">예시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:4px 8px;border:1px solid #dde;">A</td><td style="padding:4px 8px;border:1px solid #dde;">유형명</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">리더십역량</td></tr>
+            <tr><td style="padding:4px 8px;border:1px solid #dde;">B</td><td style="padding:4px 8px;border:1px solid #dde;">세부유형명</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">비전 및 목표 설정</td></tr>
+            <tr><td style="padding:4px 8px;border:1px solid #dde;">C</td><td style="padding:4px 8px;border:1px solid #dde;">과정명</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">VUCA 시대 빛나는 코칭 리더십</td></tr>
+            <tr><td style="padding:4px 8px;border:1px solid #dde;">D</td><td style="padding:4px 8px;border:1px solid #dde;">과정유형</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">온라인 / 오프라인</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;color:#888;">• 유형명·세부유형명은 진단지와 정확히 일치해야 합니다.<br>• 동일 세부유형에 과정이 여러 개면 행을 추가하세요.</div>
       </div>
 
       <div style="margin-top:8px;">
@@ -1393,8 +1415,15 @@ function generateCourseTree() {
     typeNode.innerHTML = `
       <div class="tree-header" onclick="toggleTreeNode(this)">
         <span class="tree-toggle">▶</span>
-        <span class="tree-badge">${type.id}</span>
         <span class="tree-label">${type.name}</span>
+        <div class="score-setting" onclick="event.stopPropagation()">
+          <span class="score-lbl strong">강점</span>
+          <input type="number" class="score-input" id="score-strong-${type.id}" value="70" min="0" max="100" title="강점 기준 점수">
+          <span class="score-unit">점 이상</span>
+          <span class="score-lbl weak" style="margin-left:8px;">약점</span>
+          <input type="number" class="score-input" id="score-weak-${type.id}" value="50" min="0" max="100" title="약점 기준 점수">
+          <span class="score-unit">점 미만</span>
+        </div>
       </div>
       <div class="tree-body">
         ${type.subs.map((sub, sidx) => {
