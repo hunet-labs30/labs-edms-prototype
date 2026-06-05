@@ -542,6 +542,29 @@ body {
 .score-input { width: 50px; height: 26px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-size: 12px; font-family: inherit; outline: none; }
 .score-input:focus { border-color: var(--primary); }
 .score-unit { font-size: 11px; color: #777; white-space: nowrap; }
+
+/* ── STEP 3: 점수 설정 카드 ── */
+.score-type-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+.score-type-card:hover { border-color: #a8c0f0; }
+.score-type-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.score-type-name { font-size: 16px; font-weight: 800; color: #1a1a2e; }
+.score-type-qcnt { font-size: 12px; color: #888; background: #f0f2f5; padding: 2px 8px; border-radius: 10px; }
+.score-inputs-wrap { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; }
+.score-group { display: flex; flex-direction: column; gap: 6px; }
+.score-group-label { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+.score-group-label.strong { color: #1a7a4a; }
+.score-group-label.weak { color: #c0392b; }
+.score-group-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+.strong .dot { background: #1a7a4a; }
+.weak .dot { background: #c0392b; }
+.score-num-input { width: 80px; height: 40px; border: 1.5px solid var(--border); border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; outline: none; color: #1a1a2e; font-family: inherit; }
+.score-num-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #e8f0fe; }
+.score-num-unit { font-size: 12px; color: #888; margin-top: 4px; }
+.score-zone-bar { height: 8px; border-radius: 4px; margin-top: 16px; background: linear-gradient(to right, #fde8e8 0%, #fde8e8 var(--weak-pct,30%), #f0f2f5 var(--weak-pct,30%), #f0f2f5 var(--strong-pct,70%), #e6f7ee var(--strong-pct,70%), #e6f7ee 100%); }
+.score-zone-labels { display: flex; justify-content: space-between; font-size: 10px; margin-top: 4px; }
+.score-zone-labels .z-weak { color: #c0392b; }
+.score-zone-labels .z-mid { color: #888; text-align: center; }
+.score-zone-labels .z-strong { color: #1a7a4a; }
 .tree-body { display: none; max-height: 0; overflow: hidden; }
 .tree-node.open > .tree-body { display: block; max-height: none; }
 .tree-sub-header {
@@ -839,7 +862,7 @@ body {
       <aside class="wiz-aside">
         <div class="wiz-aside-head">
           <div class="wiz-aside-title">진단 만들기</div>
-          <div class="wiz-aside-sub">4단계로 쉽게 설정하세요</div>
+          <div class="wiz-aside-sub">6단계로 쉽게 설정하세요</div>
         </div>
         <div class="wiz-step-list">
           <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
@@ -861,16 +884,32 @@ body {
           <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
             <div class="wiz-step-badge">3</div>
             <div class="wiz-step-meta">
-              <div class="wiz-step-title">추천과정 설정</div>
-              <div class="wiz-step-desc">결과 기반 과정 연결 (선택)</div>
+              <div class="wiz-step-title">역량 점수 설정</div>
+              <div class="wiz-step-desc">강점/약점 기준 점수</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
           <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
             <div class="wiz-step-badge">4</div>
             <div class="wiz-step-meta">
+              <div class="wiz-step-title">추천 과정 연결</div>
+              <div class="wiz-step-desc">결과 기반 과정 설정 (선택)</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-5" onclick="goToStep(5)">
+            <div class="wiz-step-badge">5</div>
+            <div class="wiz-step-meta">
               <div class="wiz-step-title">진단 기본 설정</div>
-              <div class="wiz-step-desc">이름·기간·대상자 입력</div>
+              <div class="wiz-step-desc">이름·기간·설명 입력</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
+            <div class="wiz-step-badge">6</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">대상자 & 응답자</div>
+              <div class="wiz-step-desc">진단 참여자 등록</div>
             </div>
           </div>
         </div>
@@ -886,7 +925,7 @@ body {
         <!-- STEP 1: 진단지 선택 -->
         <div class="step-content active wiz-card" id="step-content-1">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 1 / 4</span>
+            <span class="wiz-step-tag">STEP 1 / 6</span>
             <h2>어떤 역량을 진단할까요?</h2>
             <p>진단 플랫폼에서 생성된 진단지를 선택하세요.<br>진단지가 없다면 먼저 진단 플랫폼에서 만들어주세요.</p>
           </div>
@@ -926,7 +965,7 @@ body {
         <!-- STEP 2: 응답자 유형 -->
         <div class="step-content wiz-card" id="step-content-2">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 2 / 4</span>
+            <span class="wiz-step-tag">STEP 2 / 6</span>
             <h2>누가 응답하나요?</h2>
             <p>각 진단 유형별로 응답에 참여할 대상을 선택하세요.<br>선택한 유형별로 STEP 4에서 대상자를 등록합니다.</p>
           </div>
@@ -943,12 +982,26 @@ body {
           </div>
         </div>
 
-        <!-- STEP 3: 추천과정 설정 -->
+        <!-- STEP 3: 역량 점수 설정 -->
         <div class="step-content wiz-card" id="step-content-3">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 3 / 4 · 선택사항</span>
+            <span class="wiz-step-tag">STEP 3 / 6</span>
+            <h2>역량 점수 기준을 설정해주세요</h2>
+            <p>진단 리포트에서 강점과 약점을 구분할 점수 기준을 역량군별로 설정합니다.<br>나중에 변경할 수 있으니 기본값 그대로 사용해도 됩니다.</p>
+          </div>
+          <div class="wiz-card-body padded" id="scoreSettingsContainer"></div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 4: 추천과정 연결 -->
+        <div class="step-content wiz-card" id="step-content-4">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 4 / 6 · 선택사항</span>
             <h2>추천 과정을 연결할까요?</h2>
-            <p>진단 결과의 강점·약점에 따라 학습자에게 자동 추천할 과정을 설정합니다.<br>지금 설정하지 않아도 나중에 추가할 수 있어요.</p>
+            <p>세부역량별로 강점·약점 결과에 따라 학습자에게 자동 추천할 과정을 설정합니다.<br>지금 설정하지 않아도 나중에 추가할 수 있어요.</p>
           </div>
           <div class="wiz-card-body padded">
             <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
@@ -968,16 +1021,15 @@ body {
           </div>
         </div>
 
-        <!-- STEP 4: 진단 기본 설정 -->
-        <div class="step-content wiz-card" id="step-content-4">
+        <!-- STEP 5: 진단 기본 설정 -->
+        <div class="step-content wiz-card" id="step-content-5">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 4 / 4 · 마지막 단계</span>
-            <h2>거의 다 왔어요! 기본 정보를 입력해주세요</h2>
-            <p>진단 이름과 진행 기간을 설정하면 진단 생성이 완료됩니다.</p>
+            <span class="wiz-step-tag">STEP 5 / 6</span>
+            <h2>진단 기본 정보를 입력해주세요</h2>
+            <p>진단 이름과 진행 기간, 문항 노출 방식을 설정합니다.</p>
           </div>
           <div class="wiz-card-body padded">
             <div class="step4-section">
-              <div class="step4-section-header">섹션 A. 기본 설정</div>
               <table class="form-table" style="width:100%;">
                 <tr>
                   <th class="form-th">진단명 <span class="req">*</span></th>
@@ -1026,8 +1078,22 @@ body {
                 </tr>
               </table>
             </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 6: 대상자 & 응답자 설정 -->
+        <div class="step-content wiz-card" id="step-content-6">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 6 / 6 · 마지막 단계</span>
+            <h2>진단 대상자와 응답자를 설정해주세요</h2>
+            <p>진단을 받을 대상자와 각 유형별 응답자를 등록합니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
             <div class="step4-section">
-              <div class="step4-section-header">섹션 B. 대상자 설정</div>
               <div style="display:flex;flex-direction:column;overflow:hidden;">
                 <div class="tab-group" id="step4TabGroup"></div>
                 <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
@@ -1563,6 +1629,53 @@ function updateRespondentSetting(checkbox) {
   }
 }
 
+function generateScoreSettings() {
+  if (!selectedQuestionnaire) return;
+  const container = document.getElementById('scoreSettingsContainer');
+  container.innerHTML = '';
+  selectedQuestionnaire.types.forEach(type => {
+    const div = document.createElement('div');
+    div.className = 'score-type-card';
+    div.innerHTML = `
+      <div class="score-type-head">
+        <span class="score-type-name">${type.name}</span>
+        <span class="score-type-qcnt">${type.qCount}문항</span>
+      </div>
+      <div class="score-inputs-wrap">
+        <div class="score-group">
+          <div class="score-group-label strong"><span class="dot"></span> 강점 기준</div>
+          <input type="number" class="score-num-input" id="score-strong-${type.id}" value="70" min="0" max="100">
+          <div class="score-num-unit">이 점수 이상이면 강점</div>
+        </div>
+        <div class="score-group">
+          <div class="score-group-label weak"><span class="dot"></span> 약점 기준</div>
+          <input type="number" class="score-num-input" id="score-weak-${type.id}" value="50" min="0" max="100">
+          <div class="score-num-unit">이 점수 미만이면 약점</div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:11px;color:#aaa;margin-bottom:6px;">점수 구간 미리보기</div>
+          <div class="score-zone-bar" id="zone-bar-${type.id}" style="--weak-pct:50%;--strong-pct:70%;"></div>
+          <div class="score-zone-labels">
+            <span class="z-weak">약점</span>
+            <span class="z-mid">보통</span>
+            <span class="z-strong">강점</span>
+          </div>
+        </div>
+      </div>
+    `;
+    // zone bar 업데이트
+    const updateZone = () => {
+      const w = +document.getElementById('score-weak-' + type.id).value;
+      const s = +document.getElementById('score-strong-' + type.id).value;
+      const bar = document.getElementById('zone-bar-' + type.id);
+      if (bar) bar.style.cssText = bar.style.cssText.replace(/--weak-pct:[^;]+/, '--weak-pct:' + w + '%').replace(/--strong-pct:[^;]+/, '--strong-pct:' + s + '%');
+    };
+    div.querySelector('#score-weak-' + type.id).addEventListener('input', updateZone);
+    div.querySelector('#score-strong-' + type.id).addEventListener('input', updateZone);
+    container.appendChild(div);
+  });
+}
+
 function generateCourseTree() {
   if (!selectedQuestionnaire) return;
   const container = document.getElementById('courseTreeContainer');
@@ -1576,14 +1689,6 @@ function generateCourseTree() {
       <div class="tree-header" onclick="toggleTreeNode(this)">
         <span class="tree-toggle">▶</span>
         <span class="tree-label">${type.name}</span>
-        <div class="score-setting" onclick="event.stopPropagation()">
-          <span class="score-lbl strong">강점</span>
-          <input type="number" class="score-input" id="score-strong-${type.id}" value="70" min="0" max="100" title="강점 기준 점수">
-          <span class="score-unit">점 이상</span>
-          <span class="score-lbl weak" style="margin-left:8px;">약점</span>
-          <input type="number" class="score-input" id="score-weak-${type.id}" value="50" min="0" max="100" title="약점 기준 점수">
-          <span class="score-unit">점 미만</span>
-        </div>
       </div>
       <div class="tree-body">
         ${type.subs.map((sub, sidx) => {
@@ -1962,7 +2067,7 @@ function nextStep() {
     showToast('진단지를 선택해주세요.');
     return;
   }
-  if (currentStep < 4) {
+  if (currentStep < 6) {
     currentStep++;
     goToStep(currentStep);
   }
@@ -1976,12 +2081,12 @@ function prevStep() {
 }
 
 function goToStep(step) {
-  if (step < 1 || step > 4) return;
+  if (step < 1 || step > 6) return;
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById(`step-content-${step}`).classList.add('active');
 
   // wiz-aside step item 상태 업데이트
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= 6; i++) {
     const el = document.getElementById(`wiz-step-${i}`);
     if (!el) continue;
     el.classList.remove('is-active', 'is-done');
@@ -2000,8 +2105,9 @@ function goToStep(step) {
   currentStep = step;
   if (step === 1) renderStep1();
   if (step === 2) generateRespondentCards();
-  if (step === 3) generateCourseTree();
-  if (step === 4) generateStep4Tabs();
+  if (step === 3) generateScoreSettings();
+  if (step === 4) generateCourseTree();
+  if (step === 6) generateStep4Tabs();
   updateBottomButtons();
   const wc = document.querySelector('.wiz-content');
   if (wc) wc.scrollTop = 0;
