@@ -1994,7 +1994,8 @@ function goToStep(step) {
   if (step === 3) generateCourseTree();
   if (step === 4) generateStep4Tabs();
   updateBottomButtons();
-  window.scrollTo(0, 0);
+  const wc = document.querySelector('.wiz-content');
+  if (wc) wc.scrollTop = 0;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
