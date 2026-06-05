@@ -1777,8 +1777,11 @@ function goToStep(step) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (history.scrollRestoration) history.scrollRestoration = 'manual';
   renderStep1();
   updateBottomButtons();
+  const mainEl = document.querySelector('.main');
+  if (mainEl) mainEl.scrollTop = 0;
 });
 </script>
 
