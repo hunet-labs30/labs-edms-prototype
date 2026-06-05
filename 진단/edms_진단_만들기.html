@@ -67,7 +67,6 @@ body {
 .page-title-area { display: flex; flex-direction: column; gap: 4px; }
 .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
 .breadcrumb { font-size: 11px; color: #999; }
-.page-actions { display: flex; gap: 8px; align-items: center; }
 
 /* ── BUTTONS ── */
 .btn { height: 32px; padding: 0 18px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s; }
@@ -132,158 +131,144 @@ body {
 .form-input { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; }
 .form-input:focus { border-color: var(--primary); }
 .form-input.w-lg { width: 420px; }
-.form-input.w-md { width: 280px; }
-.form-input.w-sm { width: 140px; }
 .form-input.w-date { width: 140px; }
-.form-textarea { width: 100%; max-width: 640px; height: 80px; border: 1px solid #ccc; border-radius: 3px; padding: 8px 10px; font-size: 12px; font-family: inherit; outline: none; resize: vertical; }
+.form-textarea { width: 100%; max-width: 100%; height: 120px; border: 1px solid #ccc; border-radius: 3px; padding: 8px 10px; font-size: 12px; font-family: inherit; outline: none; resize: vertical; }
 .form-textarea:focus { border-color: var(--primary); }
 .form-select { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 8px; font-size: 12px; background: #fff; cursor: pointer; font-family: inherit; outline: none; }
 .form-select:focus { border-color: var(--primary); }
 .inline-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .radio-group { display: flex; gap: 18px; align-items: center; }
 .radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
-.hint { font-size: 11px; color: #888; margin-top: 4px; }
-.search-btn { height: 30px; padding: 0 14px; background: #f0f2f5; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; color: #444; cursor: pointer; font-family: inherit; white-space: nowrap; }
-.search-btn:hover { background: #e4e6ea; }
 
-/* 상품 선택 상태 */
-.product-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 5px 12px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px;
-}
-.product-tag-name { font-size: 12px; font-weight: 700; color: #1a5cc8; }
-.product-tag-meta { font-size: 11px; color: #7a9cc8; }
-.product-tag-del { background: none; border: none; color: #aaa; cursor: pointer; font-size: 15px; line-height: 1; }
-.product-tag-del:hover { color: #c00; }
-
-/* ── 응답자 등록 모달 탭 ── */
-.resp-right-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
-.resp-right-tab { padding: 9px 14px; font-size: 12px; color: #555; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
-.resp-right-tab:hover { color: var(--primary); background: #f5f8ff; }
-.resp-right-tab.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
-
-/* ── STEP 2: 결과분석 트리 ── */
-.analysis-info-bar {
+/* 안내 박스 */
+.info-box {
   display: flex; align-items: center; gap: 10px;
   padding: 11px 16px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 6px;
-  font-size: 12px; color: #1a5cc8;
+  font-size: 12px; color: #1a5cc8; line-height: 1.5;
 }
-.analysis-info-icon { font-size: 16px; }
+.info-icon { font-size: 16px; flex-shrink: 0; }
 
-.analysis-tree { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+/* ── STEP 1: 진단지 선택 테이블 ── */
+.diagnostic-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.diagnostic-table th { background: #f0f2f5; border: 1px solid var(--border); padding: 9px 12px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+.diagnostic-table td { border: 1px solid #e8eaed; padding: 9px 12px; text-align: center; color: #333; cursor: pointer; }
+.diagnostic-table tbody tr:hover td { background: #f5f8ff; }
+.diagnostic-table .name-col { text-align: left; padding-left: 16px; }
 
-/* 진단 유형 */
-.type-block { border-bottom: 1px solid var(--border); }
-.type-block:last-child { border-bottom: none; }
-.type-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; background: #f4f6fb; cursor: pointer; user-select: none;
+/* 진단지 선택 미리보기 */
+.diagnostic-preview {
+  background: #f8f9fb; border: 1px solid #e0e3e8; border-radius: 6px;
+  padding: 14px 16px; display: none;
 }
-.type-header:hover { background: #ecf0fa; }
-.type-toggle { font-size: 9px; color: #1a5cc8; transition: transform 0.2s; }
-.type-block.open > .type-header .type-toggle { transform: rotate(90deg); }
-.type-tag { display: inline-flex; padding: 2px 9px; background: #1a73e8; color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.type-name { font-size: 13px; font-weight: 700; color: #1a2e5c; flex: 1; }
-.respondent-wrap { display: flex; align-items: center; gap: 6px; }
-.respondent-label { font-size: 11px; color: #888; white-space: nowrap; }
-.respondent-radio { display: flex; gap: 12px; }
-.respondent-radio label { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #444; cursor: pointer; white-space: nowrap; }
+.diagnostic-preview.show { display: block; }
+.preview-title { font-size: 13px; font-weight: 700; color: #1a2e5c; margin-bottom: 8px; }
+.preview-row { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; }
+.preview-row:last-child { margin-bottom: 0; }
+.preview-label { color: #555; font-weight: 600; min-width: 100px; }
+.preview-value { color: #333; flex: 1; }
+.preview-items { display: flex; flex-wrap: wrap; gap: 4px; }
+.preview-item { display: inline-block; padding: 2px 8px; background: #e8f0fe; color: #1a5cc8; border-radius: 3px; font-size: 11px; }
 
-.type-body { display: none; }
-.type-block.open > .type-body { display: block; }
-
-/* 진단 영역 */
-.area-block { border-top: 1px solid #eef0f4; }
-.area-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px 10px 32px; cursor: pointer; background: #fff;
+/* ── STEP 2: 응답자 유형 카드 ── */
+.respondent-cards { display: flex; flex-direction: column; gap: 12px; }
+.respondent-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
 }
-.area-header:hover { background: #fafbfd; }
-.area-toggle { font-size: 9px; color: #888; transition: transform 0.2s; }
-.area-block.open > .area-header .area-toggle { transform: rotate(90deg); }
-.area-tag { display: inline-flex; padding: 1px 7px; background: #e8f0fe; color: #1a5cc8; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.area-name { font-size: 12px; font-weight: 700; color: #333; flex: 1; }
-.score-inputs { display: flex; align-items: center; gap: 14px; margin-left: auto; }
-.score-group { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
-.lbl-strong { font-size: 11px; font-weight: 700; color: #1a7a4a; }
-.lbl-weak { font-size: 11px; font-weight: 700; color: #c0392b; }
-.score-input { width: 54px; height: 26px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-size: 12px; font-family: inherit; outline: none; }
-.score-input:focus { border-color: var(--primary); }
-.score-unit { font-size: 11px; color: #777; }
-
-.area-body { display: none; }
-.area-block.open > .area-body { display: block; }
-
-/* 세부 영역 */
-.sub-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 16px 8px 60px; border-top: 1px solid #f3f4f6;
+.card-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  background: #f8f9fb; border-bottom: 1px solid var(--border);
 }
-.sub-row:hover { background: #fafbfc; }
-.sub-dot { width: 5px; height: 5px; border-radius: 50%; background: #bbb; flex-shrink: 0; }
-.sub-name { font-size: 12px; color: #444; flex: 1; }
-.course-badges { display: flex; gap: 5px; align-items: center; }
-.course-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.badge-strong { background: #e6f7ee; color: #1a7a4a; }
-.badge-weak { background: #fde8e8; color: #c0392b; }
-.course-set-btn { height: 24px; padding: 0 10px; font-size: 11px; background: #fff; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #555; font-family: inherit; white-space: nowrap; }
-.course-set-btn:hover { border-color: var(--primary); color: var(--primary); }
-.course-set-btn.has-data { border-color: #aed6c0; color: #1a7a4a; background: #f0faf4; }
+.card-badge { display: inline-flex; padding: 3px 10px; background: var(--primary); color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.card-title { flex: 1; font-size: 13px; font-weight: 700; color: #1a2e5c; }
+.card-count { font-size: 11px; color: #888; }
+.card-body { padding: 12px 16px; }
+.checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; }
+.checkbox-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #444; cursor: pointer; }
 
-/* ── STEP 3: 대상자 ── */
-.type-tabs { display: flex; gap: 0; border-bottom: 2px solid #e0e3e8; }
-.type-tab { padding: 9px 22px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-.type-tab:hover { color: var(--primary); }
-.type-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-.type-tab-pane { display: none; padding-top: 16px; }
-.type-tab-pane.active { display: block; }
+/* ── STEP 3: 트리 구조 ── */
+.tree-container { background: #fff; border: 1px solid var(--border); border-radius: 6px; }
+.tree-node { border-bottom: 1px solid #f0f2f5; }
+.tree-node:last-child { border-bottom: none; }
+.tree-header {
+  display: flex; align-items: center; gap: 10px; padding: 11px 16px;
+  background: #fafbfc; cursor: pointer; user-select: none;
+}
+.tree-header:hover { background: #f5f8ff; }
+.tree-toggle { font-size: 9px; color: #555; transition: transform 0.2s; }
+.tree-node.open > .tree-header .tree-toggle { transform: rotate(90deg); }
+.tree-badge { display: inline-flex; padding: 2px 8px; background: #1a73e8; color: #fff; border-radius: 3px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.tree-label { font-size: 13px; font-weight: 700; color: #1a2e5c; flex: 1; }
+.tree-body { display: none; max-height: 0; overflow: hidden; }
+.tree-node.open > .tree-body { display: block; max-height: none; }
+.tree-sub-header {
+  display: flex; align-items: center; gap: 10px; padding: 9px 16px 9px 40px;
+  background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6;
+}
+.tree-sub-header:hover { background: #fafbfc; }
+.tree-sub-label { font-size: 12px; font-weight: 600; color: #333; flex: 1; }
+.tree-sub-btn { height: 24px; padding: 0 10px; font-size: 11px; background: #fff; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #555; font-family: inherit; white-space: nowrap; }
+.tree-sub-btn:hover { border-color: var(--primary); color: var(--primary); }
+.tree-sub-courses { display: flex; gap: 4px; flex-wrap: wrap; }
+.course-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #e6f7ee; color: #1a7a4a; border-radius: 3px; font-size: 11px; font-weight: 600; }
 
-.participant-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.participant-toolbar .spacer { flex: 1; }
-.participant-count { font-size: 12px; color: #666; }
-.participant-count strong { color: var(--primary); }
-.ptable { width: 100%; border-collapse: collapse; font-size: 12px; }
-.ptable th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
-.ptable td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; }
-.ptable tbody tr:hover td { background: #f5f8ff; }
-.del-btn { background: none; border: none; color: #bbb; cursor: pointer; font-size: 16px; line-height: 1; }
-.del-btn:hover { color: #c00; }
-.empty-row td { color: #aaa; padding: 24px 8px; }
+/* ── STEP 4: 섹션 ── */
+.step4-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.step4-section-header {
+  padding: 13px 20px; background: #f8f9fb; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; color: #1a1a2e;
+}
+
+/* 탭 구조 */
+.tab-group { display: flex; border-bottom: 2px solid #e0e3e8; flex-shrink: 0; overflow-x: auto; background: #fff; }
+.tab { padding: 9px 18px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+.tab:hover { color: var(--primary); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* 테이블 */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 10px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+.data-table td { border: 1px solid #e8eaed; padding: 7px 10px; text-align: center; color: #333; }
+.data-table tbody tr:hover td { background: #f5f8ff; }
+.data-table .name-col { text-align: left; padding-left: 12px; }
+
+.toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
+.toolbar .spacer { flex: 1; }
 
 /* ── MODALS ── */
 .modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-box { background: #fff; border-radius: 6px; width: 560px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
-.modal-box.w-md { width: 640px; }
+.modal-box.w-lg { width: 680px; }
+.modal-box.w-xl { width: 800px; }
 .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
 .modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; }
 .modal-close:hover { color: #333; }
 .modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
 .modal-footer { padding: 13px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
-.modal-search-row { display: flex; gap: 6px; }
-.modal-input { flex: 1; height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; font-family: inherit; outline: none; }
+.modal-input { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; font-family: inherit; outline: none; flex: 1; }
 .modal-input:focus { border-color: var(--primary); }
 .modal-notice { font-size: 11px; color: #888; background: #f8f9fb; border: 1px solid #eee; border-radius: 4px; padding: 8px 12px; line-height: 1.7; }
 
-/* 상품 목록 */
-.product-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
-.product-item { padding: 10px 14px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.15s; }
-.product-item:hover, .product-item.selected { border-color: var(--primary); background: #f0f4ff; }
-.product-item-name { font-size: 13px; font-weight: 700; color: #1a2e5c; }
-.product-item-meta { font-size: 11px; color: #888; margin-top: 2px; }
+/* 검색 행 */
+.search-row { display: flex; gap: 6px; }
 
-/* 과정 설정 모달 */
-.course-section-label { font-size: 12px; font-weight: 700; color: #555; padding-bottom: 6px; border-bottom: 1px solid #eee; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-.course-dot-strong { width: 8px; height: 8px; border-radius: 50%; background: #1a7a4a; flex-shrink: 0; }
-.course-dot-weak { width: 8px; height: 8px; border-radius: 50%; background: #c0392b; flex-shrink: 0; }
-.course-list { display: flex; flex-direction: column; gap: 5px; min-height: 36px; margin-bottom: 8px; }
-.course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f8f9fb; border-radius: 4px; font-size: 12px; }
+/* 과정 목록 */
+.course-list-items { display: flex; flex-direction: column; gap: 0; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
+.course-item { padding: 8px 12px; border-bottom: 1px solid #f0f2f5; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; background: #fff; }
+.course-item:last-child { border-bottom: none; }
+.course-item:hover { background: #f5f8ff; }
+.course-item input[type=checkbox] { flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
 .course-item-name { flex: 1; }
-.course-item-del { background: none; border: none; color: #bbb; cursor: pointer; font-size: 14px; }
-.course-item-del:hover { color: #c00; }
-.empty-course { font-size: 12px; color: #bbb; padding: 8px 0; }
-.add-course-row { display: flex; gap: 6px; }
+
+.selected-courses-label { font-size: 12px; font-weight: 700; color: #555; margin: 12px 0 6px; }
+.selected-course-items { display: flex; flex-direction: column; gap: 4px; min-height: 32px; }
+.selected-course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px; font-size: 12px; }
+.selected-course-item .course-name { flex: 1; color: #1a2e5c; }
+.selected-course-item .del-btn { background: none; border: none; color: #bbb; cursor: pointer; font-size: 14px; padding: 0; }
+.selected-course-item .del-btn:hover { color: #c00; }
 
 /* TOAST */
 #toast { display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px; font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25); white-space: nowrap; }
@@ -291,54 +276,9 @@ body {
 .step-content { display: none; }
 .step-content.active { display: flex; flex-direction: column; gap: 14px; }
 
-/* ── 과정 설정 모달 (새 디자인) ── */
-.course-search-row { display: flex; gap: 6px; margin-bottom: 10px; }
-.course-candidate-list { border: 1px solid var(--border); border-radius: 4px; max-height: 200px; overflow-y: auto; }
-.course-candidate-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid #f0f2f5; font-size: 12px; cursor: pointer; }
-.course-candidate-item:last-child { border-bottom: none; }
-.course-candidate-item:hover { background: #f5f8ff; }
-.course-candidate-item input[type=checkbox] { flex-shrink: 0; }
-.selected-courses-label { font-size: 12px; font-weight: 700; color: #555; margin: 12px 0 6px; display: flex; align-items: center; justify-content: space-between; }
-.selected-course-list { display: flex; flex-direction: column; gap: 4px; min-height: 32px; }
-.selected-course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px; font-size: 12px; }
-.selected-course-item .course-item-name { flex: 1; color: #1a2e5c; }
+/* 하단 네비 */
+.bottom-nav { display: flex; justify-content: flex-end; gap: 8px; padding: 16px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
 
-/* ── 대상자 설정 (Step3) ── */
-.page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
-.table-footer { display: flex; align-items: center; justify-content: center; margin-top: 10px; gap: 4px; }
-.pg-btn { height: 28px; min-width: 28px; padding: 0 6px; border: 1px solid #dde1e7; border-radius: 3px; background: #fff; font-size: 12px; cursor: pointer; color: #555; font-family: inherit; }
-.pg-btn:hover { background: #f0f4ff; border-color: var(--primary); color: var(--primary); }
-.pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
-.resp-count-link { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; }
-
-/* ── 응답자 등록 모달 ── */
-.resp-modal-box { background: #fff; border-radius: 6px; width: 1100px; max-width: 96vw; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
-.resp-modal-inner { display: flex; flex: 1; overflow: hidden; }
-.resp-left-panel { width: 300px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-.resp-target-info { padding: 14px 16px; border-bottom: 1px solid var(--border); background: #f8f9fb; }
-.resp-target-name { font-size: 14px; font-weight: 700; color: #1a2e5c; margin-bottom: 2px; }
-.resp-target-meta { font-size: 11px; color: #888; }
-.resp-section-title { font-size: 11px; font-weight: 700; color: #888; padding: 10px 16px 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.resp-type-list { display: flex; flex-direction: column; }
-.resp-type-item { padding: 9px 16px; font-size: 12px; color: #444; cursor: pointer; border-left: 3px solid transparent; }
-.resp-type-item:hover { background: #f5f8ff; }
-.resp-type-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 700; background: #f0f4ff; }
-.resp-member-list { display: flex; flex-direction: column; border-top: 1px solid var(--border); flex: 1; overflow-y: auto; }
-.resp-member-item { padding: 8px 16px; font-size: 12px; color: #444; cursor: pointer; border-left: 3px solid transparent; display: flex; align-items: center; gap: 6px; }
-.resp-member-item:hover { background: #f5f8ff; }
-.resp-member-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 700; background: #f0f4ff; }
-.resp-right-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.resp-right-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 700; color: #1a2e5c; flex-shrink: 0; }
-.resp-search-row { display: flex; gap: 6px; padding: 12px 16px; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
-.resp-right-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-.resp-count-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; font-size: 12px; color: #555; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
-.resp-table-wrap { overflow-x: auto; }
-.resp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.resp-table th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
-.resp-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; }
-.resp-table tbody tr:hover td { background: #f5f8ff; }
-.resp-divider { padding: 10px 16px; font-size: 12px; font-weight: 700; color: #555; background: #f8f9fb; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.resp-registered-wrap { overflow-x: auto; flex: 1; }
 </style>
 </head>
 <body>
@@ -353,7 +293,6 @@ body {
 </header>
 
 <div class="layout">
-  <!-- SIDEBAR -->
   <nav class="sidebar">
     <a class="nav-flat" href="#">LABS Studio</a>
     <div class="nav-group">
@@ -437,7 +376,6 @@ body {
         <a class="nav-item" href="#">게시글 관리</a>
       </div>
     </div>
-    <!-- 부가서비스 — ACTIVE -->
     <div class="nav-group open">
       <div class="nav-group-header" onclick="toggleNav(this)">
         <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
@@ -445,7 +383,7 @@ body {
       <div class="nav-sub">
         <a class="nav-item" href="#">결재 관리</a>
         <a class="nav-item" href="#">학점 관리</a>
-        <a class="nav-item active" href="edms_역량진단_관리.html">역량진단 관리</a>
+        <a class="nav-item active" href="#">역량진단 관리</a>
         <a class="nav-item" href="#">IDP 관리</a>
         <a class="nav-item" href="#">필수교육 관리</a>
         <a class="nav-item" href="#">레벨/마일리지 관리</a>
@@ -472,83 +410,158 @@ body {
     </div>
   </nav>
 
-  <!-- MAIN -->
   <main class="main">
-    <!-- Page Header -->
     <div class="page-header-row">
       <div class="page-title-area">
         <div class="breadcrumb">진단 &gt; 역량진단 관리 &gt; 진단 만들기</div>
         <div class="page-header-title">진단 만들기</div>
       </div>
-      <div class="page-actions" id="pageActions"></div>
     </div>
 
-    <!-- Step Wizard -->
     <div class="step-wizard">
-      <div class="step-item active" id="step-tab-1">
+      <div class="step-item active" id="step-tab-1" onclick="goToStep(1)">
         <div class="step-num">1</div>
         <div class="step-info">
           <div class="step-sub">STEP 1</div>
-          <div class="step-label">기본 정보</div>
+          <div class="step-label">진단지 선택</div>
         </div>
       </div>
-      <div class="step-item" id="step-tab-2">
+      <div class="step-item" id="step-tab-2" onclick="goToStep(2)">
         <div class="step-num">2</div>
         <div class="step-info">
           <div class="step-sub">STEP 2</div>
-          <div class="step-label">결과분석 설정</div>
+          <div class="step-label">답변 대상자 유형</div>
         </div>
       </div>
-      <div class="step-item" id="step-tab-3">
+      <div class="step-item" id="step-tab-3" onclick="goToStep(3)">
         <div class="step-num">3</div>
         <div class="step-info">
           <div class="step-sub">STEP 3</div>
-          <div class="step-label">대상자 설정</div>
+          <div class="step-label">추천과정 설정</div>
+        </div>
+      </div>
+      <div class="step-item" id="step-tab-4" onclick="goToStep(4)">
+        <div class="step-num">4</div>
+        <div class="step-info">
+          <div class="step-sub">STEP 4</div>
+          <div class="step-label">진단 실행 설정</div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         STEP 1: 기본 정보
-    ══════════════════════════════════ -->
+    <!-- STEP 1 -->
     <div class="step-content active" id="step-content-1">
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <div>진단 플랫폼에서 생성된 진단지를 선택합니다. 진단지가 없는 경우 진단 플랫폼에서 먼저 생성해주세요.</div>
+      </div>
+
       <div class="form-section">
-        <div class="form-section-header"><span class="section-icon">📋</span> 기본 정보</div>
-        <table class="form-table">
+        <div class="form-section-header">진단지 목록</div>
+        <table class="diagnostic-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"></th>
+              <th class="name-col">진단지명</th>
+              <th>유형 수</th>
+              <th>세부유형 수</th>
+              <th>문항 수</th>
+              <th style="width:100px;">등록일</th>
+            </tr>
+          </thead>
+          <tbody id="diagTableBody">
+            <tr onclick="selectDiagnostic(1, this)">
+              <td><input type="radio" name="diagSelected" value="1"></td>
+              <td class="name-col">리더십역량진단 v2.0</td>
+              <td>2개</td>
+              <td>6개</td>
+              <td>50개</td>
+              <td>2025-03-15</td>
+            </tr>
+            <tr onclick="selectDiagnostic(2, this)">
+              <td><input type="radio" name="diagSelected" value="2"></td>
+              <td class="name-col">비즈니스역량진단 v1.5</td>
+              <td>3개</td>
+              <td>9개</td>
+              <td>72개</td>
+              <td>2025-01-20</td>
+            </tr>
+            <tr onclick="selectDiagnostic(3, this)">
+              <td><input type="radio" name="diagSelected" value="3"></td>
+              <td class="name-col">조직문화진단 2026</td>
+              <td>1개</td>
+              <td>4개</td>
+              <td>28개</td>
+              <td>2025-11-01</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="diagnostic-preview" id="diagPreview">
+        <div class="preview-title">선택된 진단지</div>
+        <div class="preview-row">
+          <div class="preview-label">진단지명:</div>
+          <div class="preview-value" id="previewDiagName"></div>
+        </div>
+        <div class="preview-row">
+          <div class="preview-label">유형:</div>
+          <div class="preview-items" id="previewDiagTypes"></div>
+        </div>
+        <div class="preview-row">
+          <div class="preview-label">세부유형:</div>
+          <div class="preview-items" id="previewDiagSubtypes"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step-content" id="step-content-2">
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <div>각 진단 유형별로 응답에 참여할 대상자 유형을 설정합니다. 설정된 유형별로 STEP 4에서 대상자를 등록합니다.</div>
+      </div>
+
+      <div class="respondent-cards" id="respondentCardsContainer">
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step-content" id="step-content-3">
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <div>세부유형(영역)별 진단 결과 기반 추천과정을 설정합니다.</div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;">
+        <button class="btn btn-gray btn-sm" onclick="openBulkUploadModal()">📥 일괄 업로드</button>
+        <button class="btn btn-gray btn-sm" onclick="downloadTemplate()">📤 템플릿 다운로드</button>
+      </div>
+
+      <div class="tree-container" id="courseTreeContainer">
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step-content" id="step-content-4">
+      <div class="step4-section">
+        <div class="step4-section-header">섹션 A. 기본 설정</div>
+        <table class="form-table" style="width:100%;">
           <tr>
             <th class="form-th">진단명 <span class="req">*</span></th>
             <td class="form-td">
-              <input class="form-input w-lg" placeholder="진단명을 입력하세요" id="inputDiagName">
-            </td>
-          </tr>
-          <tr>
-            <th class="form-th">진단 상품 선택 <span class="req">*</span></th>
-            <td class="form-td">
-              <div class="inline-row" id="productSelectArea">
-                <input class="form-input w-lg" placeholder="상품을 선택하세요" id="inputProduct" readonly>
-                <button class="search-btn" onclick="openProductModal()">검색</button>
-              </div>
-              <div id="productTagArea" style="display:none;">
-                <div class="inline-row">
-                  <div class="product-tag">
-                    <span class="product-tag-name" id="productTagName"></span>
-                    <span class="product-tag-meta" id="productTagMeta"></span>
-                    <button class="product-tag-del" onclick="removeProduct()">×</button>
-                  </div>
-                  <span class="hint" style="color:#1a7a4a;">✓ 진단 유형 및 영역 정보가 결과분석 설정에 반영됩니다.</span>
-                </div>
-              </div>
+              <input class="form-input w-lg" id="diagNameInput" placeholder="진단명을 입력하세요">
             </td>
           </tr>
           <tr>
             <th class="form-th">진단 기간 <span class="req">*</span></th>
             <td class="form-td">
               <div class="inline-row">
-                <input class="form-input w-date" type="date" id="dateStart">
-                <input class="form-input" type="time" id="timeStart" style="width:100px;">
+                <input class="form-input w-date" id="diagStartDate" type="date">
+                <input class="form-input" id="diagStartTime" type="time" style="width:100px;">
                 <span style="font-size:12px;color:#888;">~</span>
-                <input class="form-input w-date" type="date" id="dateEnd">
-                <input class="form-input" type="time" id="timeEnd" style="width:100px;">
+                <input class="form-input w-date" id="diagEndDate" type="date">
+                <input class="form-input" id="diagEndTime" type="time" style="width:100px;">
               </div>
             </td>
           </tr>
@@ -556,23 +569,23 @@ body {
             <th class="form-th">문항 노출 방식</th>
             <td class="form-td">
               <div class="radio-group">
-                <label class="radio-label"><input type="radio" name="displayType" value="all" checked> 모든 진단 문항을 한 페이지에 노출</label>
-                <label class="radio-label" style="color:#bbb;cursor:not-allowed;"><input type="radio" name="displayType" value="one" disabled> 하나의 진단 문항을 한 페이지에 노출</label>
+                <label class="radio-label"><input type="radio" name="diagDisplay" value="all" checked> 모든 문항 한 페이지</label>
+                <label class="radio-label"><input type="radio" name="diagDisplay" value="one"> 하나씩 노출</label>
               </div>
             </td>
           </tr>
           <tr>
-            <th class="form-th">진단 소개 및 설명</th>
+            <th class="form-th" style="vertical-align:top;padding-top:13px;">진단 소개 및 설명</th>
             <td class="form-td">
-              <textarea class="form-textarea" style="height:200px;max-width:100%;">휴넷 역량 진단
+              <textarea class="form-textarea" id="diagDescription">휴넷 역량 진단
 
 안녕하세요.
 설문에 참여해 주셔서 감사합니다.
 
-진단은 15분 정도 소요됩니다.  많은 업무로 바쁘시더라도 개인의 발전과 성장 기회 마련을 위해, 진솔한 응답을 부탁드립니다.
+진단은 15분 정도 소요됩니다. 많은 업무로 바쁘시더라도 개인의 발전과 성장 기회 마련을 위해, 진솔한 응답을 부탁드립니다.
 
 ※ 주의 사항
-이번 진단은 %{assessmentStartDt}%부터 %{assessmentEndDt}%까지 진행됩니다.
+이번 진단은 진행 중입니다.
 선택하신 보기는 자동으로 저장되며, 설문지 맨 하단의 [제출] 버튼을 누르기 전까지 언제든지 수정할 수 있습니다.
 [제출] 버튼을 눌러 설문을 완료한 후에는 응답 내용을 수정하실 수 없으니 주의 바랍니다.
 
@@ -581,1556 +594,579 @@ body {
           </tr>
         </table>
       </div>
-    </div>
 
-    <!-- ══════════════════════════════════
-         STEP 2: 결과분석 설정
-    ══════════════════════════════════ -->
-    <div class="step-content" id="step-content-2">
-      <div class="analysis-info-bar">
-        <span class="analysis-info-icon">💡</span>
-        <div>
-          <strong>진단 영역별 강점/약점 기준 점수</strong>와 <strong>세부 영역별 추천 과정</strong>을 설정합니다.<br>
-          진단 유형별 응답자 구분(본인/구성원/동료/상사)을 먼저 확인하고 필요 시 변경하세요.
+      <div class="step4-section">
+        <div class="step4-section-header">섹션 B. 대상자 설정</div>
+        <div style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="tab-group" id="step4TabGroup">
+          </div>
+
+          <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
+            <div id="step4TabPanes">
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="analysis-tree" id="analysisTree">
-        <!-- 진단 유형 1: 본인 진단 -->
-        <div class="type-block open">
-          <div class="type-header" onclick="toggleBlock(this)">
-            <span class="type-toggle">▶</span>
-            <span class="type-tag">유형</span>
-            <span class="type-name">리더십 역량 진단 — 본인 진단</span>
-            <div class="respondent-wrap">
-              <span class="respondent-label">응답자:</span>
-              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">본인</span>
-            </div>
-          </div>
-          <div class="type-body">
-            <!-- 영역 1-1 -->
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">리더십 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">비전 및 목표 설정</span>
-                  <div class="course-badges" id="cb-1-1-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','1-1-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">구성원 육성 및 동기부여</span>
-                  <div class="course-badges" id="cb-1-1-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','1-1-2')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">성과 창출 및 관리</span>
-                  <div class="course-badges" id="cb-1-1-3"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','1-1-3')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-            <!-- 영역 1-2 -->
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">조직문화 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">윤리경영 및 책임의식</span>
-                  <div class="course-badges" id="cb-1-2-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','1-2-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">변화관리 및 혁신</span>
-                  <div class="course-badges" id="cb-1-2-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('변화관리 및 혁신','1-2-2')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">소통 및 협력</span>
-                  <div class="course-badges" id="cb-1-2-3"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','1-2-3')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 진단 유형 2: 구성원 진단 -->
-        <div class="type-block">
-          <div class="type-header" onclick="toggleBlock(this)">
-            <span class="type-toggle">▶</span>
-            <span class="type-tag">유형</span>
-            <span class="type-name">리더십 역량 진단 — 구성원 진단</span>
-            <div class="respondent-wrap">
-              <span class="respondent-label">응답자:</span>
-              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">구성원</span>
-            </div>
-          </div>
-          <div class="type-body">
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">리더십 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">비전 및 목표 설정</span>
-                  <div class="course-badges" id="cb-2-1-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','2-1-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">구성원 육성 및 동기부여</span>
-                  <div class="course-badges" id="cb-2-1-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','2-1-2')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">성과 창출 및 관리</span>
-                  <div class="course-badges" id="cb-2-1-3"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','2-1-3')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">조직문화 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">윤리경영 및 책임의식</span>
-                  <div class="course-badges" id="cb-2-2-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','2-2-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">소통 및 협력</span>
-                  <div class="course-badges" id="cb-2-2-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','2-2-2')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        <!-- 진단 유형 3: 상사 진단 -->
-        <div class="type-block">
-          <div class="type-header" onclick="toggleBlock(this)">
-            <span class="type-toggle">▶</span>
-            <span class="type-tag">유형</span>
-            <span class="type-name">리더십 역량 진단 — 상사 진단</span>
-            <div class="respondent-wrap">
-              <span class="respondent-label">응답자:</span>
-              <span style="font-size:12px;font-weight:700;color:#1a5cc8;background:#e8f0fe;padding:2px 10px;border-radius:3px;">상사</span>
-            </div>
-          </div>
-          <div class="type-body">
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">리더십 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">비전 및 목표 설정</span>
-                  <div class="course-badges" id="cb-3-1-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('비전 및 목표 설정','3-1-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">구성원 육성 및 동기부여</span>
-                  <div class="course-badges" id="cb-3-1-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('구성원 육성 및 동기부여','3-1-2')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">성과 창출 및 관리</span>
-                  <div class="course-badges" id="cb-3-1-3"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('성과 창출 및 관리','3-1-3')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-            <div class="area-block open">
-              <div class="area-header" onclick="toggleBlock(this)">
-                <span class="area-toggle">▶</span>
-                <span class="area-tag">영역</span>
-                <span class="area-name">조직문화 역량</span>
-                <div class="score-inputs">
-                  <div class="score-group">
-                    <span class="lbl-strong">강점</span>
-                    <input class="score-input" type="number" placeholder="70" value="70">
-                    <span class="score-unit">점 이상</span>
-                  </div>
-                  <div class="score-group">
-                    <span class="lbl-weak">약점</span>
-                    <input class="score-input" type="number" placeholder="50" value="50">
-                    <span class="score-unit">점 미만</span>
-                  </div>
-                </div>
-              </div>
-              <div class="area-body">
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">윤리경영 및 책임의식</span>
-                  <div class="course-badges" id="cb-3-2-1"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('윤리경영 및 책임의식','3-2-1')">과정 설정</button>
-                </div>
-                <div class="sub-row">
-                  <span class="sub-dot"></span>
-                  <span class="sub-name">소통 및 협력</span>
-                  <div class="course-badges" id="cb-3-2-2"></div>
-                  <button class="course-set-btn" onclick="openCourseModal('소통 및 협력','3-2-2')">과정 설정</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        </div>
-      </div><!-- /analysis-tree -->
-    </div><!-- /step-content-2 -->
-
-    <!-- ══════════════════════════════════
-         STEP 3: 대상자 설정
-    ══════════════════════════════════ -->
-    <div class="step-content" id="step-content-3">
-      <div class="form-section">
-        <div class="form-section-header"><span class="section-icon">👥</span> 대상자 선정
-          <span style="font-size:11px;color:#888;font-weight:400;margin-left:8px;">진단 대상자(진단 받는 사람)와 응답자(진단 하는 사람)을 설정합니다.</span>
-        </div>
-        <div style="padding:16px 20px;">
-          <div class="type-tabs" id="typeTabs">
-            <div class="type-tab active" onclick="switchTab(0)">리더십 역량 진단 본인 진단</div>
-            <div class="type-tab" onclick="switchTab(1)">리더십 역량 진단 구성원 진단</div>
-            <div class="type-tab" onclick="switchTab(2)">리더십 역량 진단 상사 진단</div>
-          </div>
-
-          <!-- 탭 0: 본인 진단 -->
-          <div class="type-tab-pane active" id="tab-pane-0">
-            <div class="participant-toolbar" style="margin-top:14px;">
-              <div class="page-size-wrap">
-                <select class="form-select" style="height:28px;font-size:12px;">
-                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
-                </select>
-              </div>
-              <div class="spacer"></div>
-              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
-              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
-              <button class="btn btn-primary btn-sm" onclick="meOpenMemberSingleModal()">+ 대상 추가</button>
-            </div>
-            <table class="ptable">
-              <thead>
-                <tr>
-                  <th style="width:36px;"><input type="checkbox"></th>
-                  <th style="width:36px;">No</th>
-                  <th>이름</th>
-                  <th>아이디</th>
-                  <th>사번</th>
-                  <th>회사</th>
-                  <th>부서/팀</th>
-                  <th>직급</th>
-                  <th>휴대번호</th>
-                  <th>응답자<br>(본인진단)</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-0">
-                <tr>
-                  <td><input type="checkbox"></td><td>1</td>
-                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
-                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
-                  <td style="color:#555;">홍*동</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>2</td>
-                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
-                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
-                  <td style="color:#555;">김*수</td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>3</td>
-                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
-                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
-                  <td style="color:#555;">이*희</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="table-footer">
-              <button class="pg-btn">«</button>
-              <button class="pg-btn active">1</button>
-              <button class="pg-btn">2</button>
-              <button class="pg-btn">»</button>
-            </div>
-          </div>
-
-          <!-- 탭 1: 구성원 진단 -->
-          <div class="type-tab-pane" id="tab-pane-1">
-            <div class="participant-toolbar" style="margin-top:14px;">
-              <div class="page-size-wrap">
-                <select class="form-select" style="height:28px;font-size:12px;">
-                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
-                </select>
-              </div>
-              <div class="spacer"></div>
-              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
-              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
-              <button class="btn btn-primary btn-sm" onclick="meOpenMemberSingleModal()">+ 대상 추가</button>
-            </div>
-            <table class="ptable">
-              <thead>
-                <tr>
-                  <th style="width:36px;"><input type="checkbox"></th>
-                  <th style="width:36px;">No</th>
-                  <th>이름</th>
-                  <th>아이디</th>
-                  <th>사번</th>
-                  <th>회사</th>
-                  <th>부서/팀</th>
-                  <th>직급</th>
-                  <th>휴대번호</th>
-                  <th>응답자<br>(구성원진단)</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-1">
-                <tr>
-                  <td><input type="checkbox"></td><td>1</td>
-                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
-                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍*동','구성원진단',1)">설정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>2</td>
-                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
-                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
-                  <td><a class="resp-count-link" onclick="openRespondentModal('김*수','구성원진단',1)">3명</a></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>3</td>
-                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
-                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이*희','구성원진단',1)">설정</button></td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="table-footer">
-              <button class="pg-btn">«</button>
-              <button class="pg-btn active">1</button>
-              <button class="pg-btn">»</button>
-            </div>
-          </div>
-
-          <!-- 탭 2: 상사 진단 -->
-          <div class="type-tab-pane" id="tab-pane-2">
-            <div class="participant-toolbar" style="margin-top:14px;">
-              <div class="page-size-wrap">
-                <select class="form-select" style="height:28px;font-size:12px;">
-                  <option>20개씩보기</option><option>50개씩보기</option><option>100개씩보기</option>
-                </select>
-              </div>
-              <div class="spacer"></div>
-              <button class="btn btn-gray btn-sm" onclick="showToast('엑셀 다운로드됩니다.')">📥 엑셀 다운로드</button>
-              <button class="btn btn-gray btn-sm" onclick="showToast('선택 항목을 삭제합니다.')">삭제</button>
-              <button class="btn btn-primary btn-sm" onclick="meOpenMemberSingleModal()">+ 대상 추가</button>
-            </div>
-            <table class="ptable">
-              <thead>
-                <tr>
-                  <th style="width:36px;"><input type="checkbox"></th>
-                  <th style="width:36px;">No</th>
-                  <th>이름</th>
-                  <th>아이디</th>
-                  <th>사번</th>
-                  <th>회사</th>
-                  <th>부서/팀</th>
-                  <th>직급</th>
-                  <th>휴대번호</th>
-                  <th>응답자<br>(상사진단)</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-2">
-                <tr>
-                  <td><input type="checkbox"></td><td>1</td>
-                  <td>홍*동</td><td>ho**@company.com</td><td>20230101</td>
-                  <td>휴넷</td><td>인재개발팀</td><td>팀장</td><td>010-****-5678</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('홍*동','상사진단',2)">설정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>2</td>
-                  <td>김*수</td><td>ki**@company.com</td><td>20210505</td>
-                  <td>휴넷</td><td>전략기획팀</td><td>팀장</td><td>010-****-6789</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('김*수','상사진단',2)">설정</button></td>
-                </tr>
-                <tr>
-                  <td><input type="checkbox"></td><td>3</td>
-                  <td>이*희</td><td>le**@company.com</td><td>20190812</td>
-                  <td>휴넷</td><td>마케팅팀</td><td>팀장</td><td>010-****-7890</td>
-                  <td><button class="btn btn-outline btn-xs" onclick="openRespondentModal('이*희','상사진단',2)">설정</button></td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="table-footer">
-              <button class="pg-btn">«</button>
-              <button class="pg-btn active">1</button>
-              <button class="pg-btn">»</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div><!-- /step-content-3 -->
-
-    <!-- ── 하단 버튼 바 ── -->
-    <div style="display:flex;justify-content:flex-end;gap:8px;padding:16px 0 4px;border-top:1px solid var(--border);margin-top:8px;">
-      <button class="btn btn-gray" id="btnPrevBottom" onclick="prevStep()" style="display:none;">이전</button>
-      <button class="btn btn-gray" id="btnPreviewBottom" onclick="openDiagPreview()" style="display:none;">미리보기</button>
-      <button class="btn btn-primary" id="btnNextBottom" onclick="nextStep()">다음</button>
     </div>
 
+    <div class="bottom-nav">
+      <button class="btn btn-gray" id="btnPrev" onclick="prevStep()" style="display:none;">← 이전</button>
+      <button class="btn btn-gray" id="btnPreview" onclick="previewDiagnosis()" style="display:none;">미리보기</button>
+      <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음 →</button>
+    </div>
   </main>
-</div><!-- /layout -->
-
-<!-- ══ MODAL: 진단 상품 검색 ══ -->
-<div class="modal-overlay" id="productModal">
-  <div class="modal-box" style="width:680px;">
-    <div class="modal-header">
-      <h3>진단 상품 검색</h3>
-      <button class="modal-close" onclick="closeModal('productModal')">×</button>
-    </div>
-    <div class="modal-body" style="gap:10px;">
-      <div class="modal-notice">리더십진단 관리자 페이지에 등록된 진단 상품 목록입니다. 상품을 선택하면 해당 상품의 진단 유형·영역·세부영역 정보와 진단문항이 자동으로 반영됩니다. 해당 내용을 수정하려면 리더십진단 관리자 페이지에서 수정 가능합니다.</div>
-      <div class="modal-search-row">
-        <input class="modal-input" placeholder="상품명 검색" id="productSearchInput" onkeydown="if(event.key==='Enter')filterProducts()">
-        <button class="btn btn-primary btn-sm" onclick="filterProducts()">검색</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="ptable" style="font-size:12px;">
-          <thead>
-            <tr>
-              <th style="width:36px;"></th>
-              <th style="width:44px;">No.</th>
-              <th style="text-align:left;padding-left:12px;">진단상품명</th>
-              <th style="width:90px;">전체 문항수</th>
-              <th style="width:100px;">등록일</th>
-            </tr>
-          </thead>
-          <tbody id="productTableBody"></tbody>
-        </table>
-      </div>
-      <div class="table-footer" id="productPagination"></div>
-    </div>
-    <div class="modal-footer" style="justify-content:space-between;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button class="btn btn-outline btn-sm" onclick="window.open('https://cube.hunet.co.kr','_blank')" style="white-space:nowrap;">+ 진단 상품 등록</button>
-        <select id="productPageSize" style="height:28px;padding:0 8px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;cursor:pointer;background:#fff;" onchange="changeProductPageSize()">
-          <option value="5">5개씩</option>
-          <option value="30">30개씩</option>
-          <option value="50">50개씩</option>
-          <option value="100">100개씩</option>
-          <option value="200">200개씩</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn btn-gray btn-sm" onclick="closeModal('productModal')">취소</button>
-        <button class="btn btn-primary btn-sm" onclick="confirmProduct()">저장</button>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- ══ MODAL: 과정 설정 ══ -->
+<!-- Course Setting Modal -->
 <div class="modal-overlay" id="courseModal">
-  <div class="modal-box" style="width:820px;max-height:88vh;">
+  <div class="modal-box w-lg">
     <div class="modal-header">
-      <h3>과정 설정 — <span id="courseModalTitle"></span></h3>
+      <h3>과정 설정 — <span id="courseModalSubtypeName"></span></h3>
       <button class="modal-close" onclick="closeModal('courseModal')">×</button>
     </div>
-    <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;">
-      <!-- 좌: 과정 카탈로그 -->
-      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;overflow:hidden;">
-        <!-- 분류 계단식 드롭다운 -->
-        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-          <select id="crsFilterCat1" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="crsFilterCatChange(1)"></select>
-          <select id="crsFilterCat2" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="crsFilterCatChange(2)"></select>
-          <select id="crsFilterCat3" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="searchCourses()"></select>
-        </div>
-        <!-- 검색 -->
-        <div style="position:relative;flex-shrink:0;">
-          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px;">🔍</span>
-          <input id="courseSearchInput" placeholder="과정명을 검색하세요."
-                 style="width:100%;height:36px;border:1px solid #dde1e7;border-radius:20px;padding:0 12px 0 34px;font-size:12px;font-family:inherit;outline:none;background:#f5f6f8;"
-                 oninput="searchCourses()">
-        </div>
-        <!-- 필터 칩 -->
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
-          <span style="font-size:14px;color:#999;">☰</span>
-          <span style="color:#e0e3e8;">|</span>
-          <select id="crsFilterType" style="height:28px;padding:0 8px;border:1px solid #dde1e7;border-radius:14px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="searchCourses()">
-            <option value="">유형</option>
-            <option value="온라인">온라인</option>
-            <option value="오프라인">오프라인</option>
-          </select>
-          <span style="font-size:12px;color:#555;border:1px solid #e0e3e8;border-radius:14px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;">교육비 ▾</span>
-          <span style="font-size:12px;color:#555;border:1px solid #e0e3e8;border-radius:14px;padding:4px 10px;background:#fff;cursor:pointer;white-space:nowrap;">학습 시간 ▾</span>
-        </div>
-        <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="courseResultCount">0</strong>개</div>
-        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;flex:1;overflow-y:auto;min-height:180px;max-height:300px;background:#fff;"></div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input class="modal-input" id="courseSearchInput" placeholder="과정명 검색">
+        <button class="btn btn-primary btn-sm" onclick="searchCourses()">검색</button>
       </div>
-      <!-- 우: 선택한 과정 -->
-      <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
-        <div style="padding:10px 14px;border-bottom:1px solid #eceef1;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-          <span style="font-size:12px;font-weight:700;color:#444;">선택한 과정 <span style="color:var(--primary);">(<span id="selectedCourseCount">0</span>)</span></span>
-          <button onclick="clearAllCourses()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;text-decoration:underline;">전체삭제</button>
+
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden;">
+        <label style="font-size:12px;font-weight:700;color:#555;">검색 결과</label>
+        <div class="course-list-items" id="courseListItems">
+          <div class="course-item" onclick="toggleCourseSelect(this, 'C001', '리더십의 새로운 패러다임')">
+            <input type="checkbox" data-course-id="C001" data-course-name="리더십의 새로운 패러다임">
+            <span class="course-item-name">리더십의 새로운 패러다임</span>
+          </div>
+          <div class="course-item" onclick="toggleCourseSelect(this, 'C002', '비전 수립과 전략적 사고')">
+            <input type="checkbox" data-course-id="C002" data-course-name="비전 수립과 전략적 사고">
+            <span class="course-item-name">비전 수립과 전략적 사고</span>
+          </div>
+          <div class="course-item" onclick="toggleCourseSelect(this, 'C003', '효과적인 커뮤니케이션')">
+            <input type="checkbox" data-course-id="C003" data-course-name="효과적인 커뮤니케이션">
+            <span class="course-item-name">효과적인 커뮤니케이션</span>
+          </div>
+          <div class="course-item" onclick="toggleCourseSelect(this, 'C004', '변화관리와 혁신')">
+            <input type="checkbox" data-course-id="C004" data-course-name="변화관리와 혁신">
+            <span class="course-item-name">변화관리와 혁신</span>
+          </div>
+          <div class="course-item" onclick="toggleCourseSelect(this, 'C005', '팀 리더십 개발')">
+            <input type="checkbox" data-course-id="C005" data-course-name="팀 리더십 개발">
+            <span class="course-item-name">팀 리더십 개발</span>
+          </div>
         </div>
-        <div id="selectedCourseList" style="flex:1;overflow-y:auto;padding:8px;min-height:220px;"></div>
+      </div>
+
+      <div style="flex-shrink:0;display:flex;flex-direction:column;gap:6px;">
+        <div class="selected-courses-label">선택된 과정 (<span id="selectedCourseCount">0</span>개)</div>
+        <div class="selected-course-items" id="selectedCourseItems"></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('courseModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="saveCourse()">저장</button>
+      <button class="btn btn-primary btn-sm" onclick="saveCourseSelection()">저장</button>
     </div>
   </div>
 </div>
 
-<!-- ══ MODAL: 진단 응답자 등록 ══ -->
-<div class="modal-overlay" id="respondentModal">
-  <div class="resp-modal-box" style="width:1060px;">
+<!-- Bulk Upload Modal -->
+<div class="modal-overlay" id="bulkUploadModal">
+  <div class="modal-box">
     <div class="modal-header">
-      <h3>진단 응답자 등록</h3>
-      <button class="modal-close" onclick="closeModal('respondentModal')">×</button>
+      <h3>일괄 업로드</h3>
+      <button class="modal-close" onclick="closeModal('bulkUploadModal')">×</button>
     </div>
-    <!-- 3-panel body -->
-    <div style="display:flex;flex:1;overflow:hidden;height:630px;">
-
-      <!-- ① 왼쪽 사이드바 178px -->
-      <div style="width:178px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:#fafbfc;">
-        <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:#f0f4ff;flex-shrink:0;">
-          <div id="mk-person-name" style="font-size:13px;font-weight:700;color:#1a2e5c;margin-bottom:2px;">홍*동</div>
-          <div id="mk-person-meta" style="font-size:11px;color:#888;">팀장 · 인재개발팀</div>
-        </div>
-        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;flex-shrink:0;">진단 유형 선택</div>
-        <div id="mk-type-list" style="flex-shrink:0;">
-          <div class="mk-type-item" data-type="구성원진단" onclick="mkRespSelectType(this)"
-               style="padding:8px 14px 8px 16px;font-size:12px;color:#444;cursor:pointer;border-left:3px solid transparent;">구성원 진단</div>
-          <div class="mk-type-item" data-type="상사진단" onclick="mkRespSelectType(this)"
-               style="padding:8px 14px 8px 16px;font-size:12px;color:#444;cursor:pointer;border-left:3px solid transparent;">상사 진단</div>
-        </div>
-        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;border-top:1px solid var(--border);margin-top:4px;flex-shrink:0;">진단 대상자 선택</div>
-        <div id="mk-member-list" style="flex:1;overflow-y:auto;"></div>
+    <div class="modal-body">
+      <div style="border:2px dashed #c5d8f7;border-radius:6px;padding:24px;text-align:center;background:#f0f4ff;">
+        <div style="font-size:32px;margin-bottom:8px;">📤</div>
+        <div style="font-size:13px;font-weight:700;color:#1a5cc8;margin-bottom:4px;">파일을 드래그하거나 클릭하여 업로드</div>
+        <div style="font-size:11px;color:#888;">Excel 파일 (.xlsx) 형식</div>
+        <input type="file" id="bulkUploadFile" style="display:none;" accept=".xlsx">
+        <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="document.getElementById('bulkUploadFile').click()">파일 선택</button>
       </div>
 
-      <!-- ② 중앙 패널 -->
-      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);">
-        <div id="mk-center-title" style="padding:9px 14px;font-size:12px;font-weight:700;color:#1a2e5c;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
-          구성원진단 응답자 설정 — 홍*동
-        </div>
-        <!-- 탭 row -->
-        <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 8px;background:#fff;">
-          <span class="mk-resp-tab" data-tab="개별"      onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid var(--primary);color:var(--primary);font-weight:700;">개별</span>
-          <span class="mk-resp-tab" data-tab="부서별"    onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">부서별</span>
-          <span class="mk-resp-tab" data-tab="직급별"    onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직급별</span>
-          <span class="mk-resp-tab" data-tab="직책별"    onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직책별</span>
-          <span class="mk-resp-tab" data-tab="직무별"    onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직무별</span>
-          <span class="mk-resp-tab" data-tab="직군별"    onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직군별</span>
-          <span class="mk-resp-tab" data-tab="대상구분별" onclick="mkRespSelectTab(this)"
-                style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">대상구분별</span>
-        </div>
-        <!-- 검색 row -->
-        <div id="mk-search-row" style="display:flex;gap:6px;padding:7px 12px;border-bottom:1px solid #f0f2f5;flex-shrink:0;">
-          <select id="mk-search-company" style="width:90px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff;">
-            <option value="">회사 전체</option><option>동아ST</option><option>동아쏘시오홀딩스</option><option>휴넷</option>
-          </select>
-          <select id="mk-search-type" style="width:68px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px;font-family:inherit;background:#fff;">
-            <option value="name">이름</option><option value="empno">사번</option><option value="dept">부서</option>
-          </select>
-          <input id="mk-search-keyword" placeholder="검색어를 입력하세요."
-                 style="flex:1;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 8px;font-size:12px;font-family:inherit;outline:none;"
-                 onkeydown="if(event.key==='Enter')mkRespSearch()">
-          <button onclick="mkRespSearch()"
-                  style="height:28px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">검색</button>
-          <button onclick="mkRespSearchAll()"
-                  style="height:28px;padding:0 10px;background:#f0f2f5;color:#444;border:1px solid #ccc;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">전체검색</button>
-        </div>
-
-        <!-- 개별 패널 -->
-        <div id="mk-panel-single" style="display:flex;flex:1;overflow:hidden;flex-direction:column;">
-          <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-            <span id="mk-pool-info">총 0명</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span>선택: <strong id="mk-sel-count" style="color:var(--primary);">0</strong>명</span>
-              <button onclick="mkRespAddChecked()"
-                      style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
-            </div>
-          </div>
-          <div style="flex:1;overflow-y:auto;">
-            <table style="width:100%;border-collapse:collapse;font-size:12px;">
-              <thead>
-                <tr style="background:#f0f2f5;">
-                  <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;">
-                    <input type="checkbox" id="mk-pool-chk-all" onchange="mkRespToggleAllPool(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
-                  </th>
-                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">이름</th>
-                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">아이디</th>
-                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">사번</th>
-                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">회사명</th>
-                  <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">부서명</th>
-                  <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
-                </tr>
-              </thead>
-              <tbody id="mk-pool-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 분류별 패널 (split) -->
-        <div id="mk-panel-split" style="display:none;flex:1;overflow:hidden;flex-direction:row;">
-          <div id="mk-split-left" style="width:180px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;background:#fafafa;"></div>
-          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-            <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-              <span id="mk-split-info">항목을 선택하세요.</span>
-              <button onclick="mkRespAddSplitChecked()"
-                      style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
-            </div>
-            <div style="flex:1;overflow-y:auto;">
-              <table style="width:100%;border-collapse:collapse;font-size:12px;">
-                <thead>
-                  <tr style="background:#f0f2f5;">
-                    <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;">
-                      <input type="checkbox" id="mk-split-chk-all" onchange="mkRespToggleAllSplit(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
-                    </th>
-                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">이름</th>
-                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">아이디</th>
-                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">사번</th>
-                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">회사명</th>
-                    <th style="padding:6px 8px;border:1px solid var(--border);text-align:center;">부서명</th>
-                    <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
-                  </tr>
-                </thead>
-                <tbody id="mk-split-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+      <div class="modal-notice" style="margin-top:12px;">
+        <strong>주의사항:</strong><br>
+        • 템플릿 형식에 맞게 작성해주세요.<br>
+        • 세부유형명과 과정명은 정확하게 입력해주세요.
       </div>
 
-      <!-- ③ 오른쪽 패널 260px (등록된 응답자) -->
-      <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;background:#fffef5;overflow:hidden;">
-        <div style="padding:9px 12px;border-bottom:1px solid #e8d88a;font-size:12px;font-weight:700;color:#7a6a00;background:#fff8c5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-          <span>등록된 응답자 <strong id="mk-reg-count" style="color:var(--primary);">0</strong>명</span>
-          <button onclick="mkRespDelSelected()"
-                  style="height:22px;padding:0 8px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">삭제</button>
-        </div>
-        <div style="flex:1;overflow-y:auto;">
-          <table style="width:100%;border-collapse:collapse;font-size:11px;">
-            <thead>
-              <tr style="background:#fff3c0;">
-                <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;text-align:center;">
-                  <input type="checkbox" id="mk-reg-chk-all" onchange="mkRespToggleAllReg(this.checked)" style="cursor:pointer;accent-color:var(--primary);">
-                </th>
-                <th style="padding:5px 6px;border:1px solid #e8d88a;text-align:center;white-space:nowrap;">이름</th>
-                <th style="padding:5px 6px;border:1px solid #e8d88a;text-align:center;white-space:nowrap;">부서</th>
-                <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;"></th>
-              </tr>
-            </thead>
-            <tbody id="mk-reg-tbody">
-              <tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div style="margin-top:8px;">
+        <button class="btn btn-outline btn-sm" onclick="downloadTemplate()">📥 템플릿 다운로드</button>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('respondentModal')">취소</button>
-      <button class="btn btn-primary" onclick="mkRespSave()">저장</button>
+      <button class="btn btn-gray btn-sm" onclick="closeModal('bulkUploadModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="uploadBulkFile()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Target Modal -->
+<div class="modal-overlay" id="addTargetModal">
+  <div class="modal-box w-xl">
+    <div class="modal-header">
+      <h3>대상자 추가</h3>
+      <button class="modal-close" onclick="closeModal('addTargetModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input class="modal-input" id="targetSearchInput" placeholder="이름 또는 사번으로 검색">
+        <button class="btn btn-primary btn-sm" onclick="searchTargets()">검색</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)"></th>
+            <th style="width:40px;">No</th>
+            <th class="name-col">이름</th>
+            <th style="width:100px;">사번</th>
+            <th style="width:120px;">부서/팀</th>
+            <th style="width:80px;">직급</th>
+          </tr>
+        </thead>
+        <tbody id="targetTableBody">
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>1</td>
+            <td class="name-col">홍길동</td>
+            <td>20230101</td>
+            <td>인재개발팀</td>
+            <td>팀장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>2</td>
+            <td class="name-col">김대리</td>
+            <td>20210505</td>
+            <td>전략기획팀</td>
+            <td>대리</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>3</td>
+            <td class="name-col">이사원</td>
+            <td>20190812</td>
+            <td>마케팅팀</td>
+            <td>사원</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('addTargetModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="addSelectedTargets()">추가</button>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
-<script src="../공통/emp-register-popup.js"></script>
 <script>
-/* ── NAV ── */
-function toggleNav(el) {
-  el.closest('.nav-group').classList.toggle('open');
-}
-
-/* ── STEP ── */
 let currentStep = 1;
-
-function goStep(n) {
-  document.getElementById('step-content-' + currentStep).classList.remove('active');
-  document.getElementById('step-tab-' + currentStep).classList.remove('active');
-  if (currentStep < n) document.getElementById('step-tab-' + currentStep).classList.add('done');
-
-  currentStep = n;
-  document.getElementById('step-content-' + currentStep).classList.add('active');
-  document.getElementById('step-tab-' + currentStep).classList.add('active');
-  document.getElementById('step-tab-' + currentStep).classList.remove('done');
-
-  document.getElementById('btnPrevBottom').style.display = currentStep > 1 ? '' : 'none';
-  document.getElementById('btnPreviewBottom').style.display = currentStep === 3 ? '' : 'none';
-  document.getElementById('btnNextBottom').textContent = currentStep === 3 ? '저장' : '다음';
-}
-
-function openDiagPreview() {
-  window.open('진단_응답_화면.html', '_blank');
-}
-
-function nextStep() {
-  if (currentStep === 3) {
-    showToast('진단이 저장되었습니다. (대기 상태)');
-    setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1200);
-    return;
+const DIAGNOSTIC_DATA = {
+  1: {
+    name: '리더십역량진단 v2.0',
+    types: [
+      { id: 'LC', name: '리더십역량(LC)', questions: 30, subtypes: ['비전 및 목표 설정', '구성원 육성 및 동기부여', '성과 창출 및 관리'] },
+      { id: 'OC', name: '조직문화역량(OC)', questions: 20, subtypes: ['윤리경영 및 책임의식', '변화관리 및 혁신', '소통 및 협력'] }
+    ]
+  },
+  2: {
+    name: '비즈니스역량진단 v1.5',
+    types: [
+      { id: 'BIZ', name: '비즈니스역량(BIZ)', questions: 45, subtypes: ['전략적 사고', '문제해결', '의사결정'] },
+      { id: 'MGT', name: '관리역량(MGT)', questions: 18, subtypes: ['자원관리', '성과관리', '인재육성'] },
+      { id: 'INV', name: '혁신역량(INV)', questions: 9, subtypes: ['창의성', '변화민첩성', '실행력'] }
+    ]
+  },
+  3: {
+    name: '조직문화진단 2026',
+    types: [
+      { id: 'ORG', name: '조직문화(ORG)', questions: 28, subtypes: ['신뢰', '개방성', '소통', '혁신'] }
+    ]
   }
-  if (currentStep < 3) goStep(currentStep + 1);
+};
+
+let selectedDiagnosticId = null;
+let respondentSettings = {};
+let courseSettings = {};
+let currentCourseSettingKey = null;
+
+function toggleNav(el) {
+  const group = el.parentElement;
+  group.classList.toggle('open');
 }
 
-function prevStep() {
-  if (currentStep > 1) goStep(currentStep - 1);
+function selectDiagnostic(id, rowEl) {
+  document.querySelectorAll('#diagTableBody tr').forEach(tr => tr.style.background = '');
+  rowEl.style.background = '#f0f4ff';
+  document.querySelector(`input[name="diagSelected"][value="${id}"]`).checked = true;
+  selectedDiagnosticId = id;
+
+  const data = DIAGNOSTIC_DATA[id];
+  document.getElementById('previewDiagName').textContent = data.name;
+  let typesHTML = data.types.map(t => `<span class="preview-item">${t.name} (${t.questions}문항)</span>`).join('');
+  document.getElementById('previewDiagTypes').innerHTML = typesHTML;
+  let subtypesHTML = data.types.flatMap(t => t.subtypes).map(st => `<span class="preview-item">${st}</span>`).join('');
+  document.getElementById('previewDiagSubtypes').innerHTML = subtypesHTML;
+  document.getElementById('diagPreview').classList.add('show');
 }
 
-/* ── TOGGLE TREE BLOCK ── */
-function toggleBlock(headerEl) {
-  headerEl.closest('.type-block, .area-block').classList.toggle('open');
-}
+function generateRespondentCards() {
+  if (!selectedDiagnosticId) return;
+  const data = DIAGNOSTIC_DATA[selectedDiagnosticId];
+  const container = document.getElementById('respondentCardsContainer');
+  container.innerHTML = '';
+  respondentSettings = {};
 
-/* ── PRODUCT MODAL ── */
-const PRODUCT_DATA = [
-  {id:1, name:'[E1] 리더십 역량 진단_2026', questions:135, regDate:'2026-06-01'},
-  {id:2, name:'범용 진단 테스트입력용', questions:6, regDate:'2026-05-27'},
-  {id:3, name:'비즈니스 역량 진단', questions:60, regDate:'2026-03-10'},
-  {id:4, name:'핵심인재 종합 역량 진단', questions:120, regDate:'2026-01-15'},
-  {id:5, name:'신임 팀장 리더십 진단', questions:72, regDate:'2025-11-20'},
-  {id:6, name:'조직문화 진단', questions:48, regDate:'2025-09-05'},
-  {id:7, name:'전략적 사고 역량 진단', questions:84, regDate:'2025-07-18'},
-];
-let productFilteredData = [...PRODUCT_DATA];
-let productCurrentPage = 1;
-let productPageSize = 5;
-let selectedProductId = null;
-let selectedProductName = '';
-let selectedProductMeta = '';
-
-function openProductModal() {
-  productFilteredData = [...PRODUCT_DATA];
-  productCurrentPage = 1;
-  productPageSize = 5;
-  selectedProductId = null;
-  document.getElementById('productSearchInput').value = '';
-  document.getElementById('productPageSize').value = '5';
-  renderProductTable();
-  openModal('productModal');
-}
-
-function changeProductPageSize() {
-  productPageSize = parseInt(document.getElementById('productPageSize').value);
-  productCurrentPage = 1;
-  renderProductTable();
-}
-
-function filterProducts() {
-  const q = document.getElementById('productSearchInput').value.trim().toLowerCase();
-  productFilteredData = q ? PRODUCT_DATA.filter(p => p.name.toLowerCase().includes(q)) : [...PRODUCT_DATA];
-  productCurrentPage = 1;
-  renderProductTable();
-}
-
-function renderProductTable() {
-  const start = (productCurrentPage - 1) * productPageSize;
-  const pageData = productFilteredData.slice(start, start + productPageSize);
-  const tbody = document.getElementById('productTableBody');
-  if (!pageData.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px;">검색 결과가 없습니다.</td></tr>';
-  } else {
-    tbody.innerHTML = pageData.map((p, i) => {
-      const rowNum = start + i + 1;
-      const checked = selectedProductId === p.id ? 'checked' : '';
-      return `<tr style="cursor:pointer;" onclick="selectProductRow(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.questions})">
-        <td><input type="radio" name="productRadio" ${checked} onclick="event.stopPropagation();selectProductRow(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.questions})"></td>
-        <td>${rowNum}</td>
-        <td style="text-align:left;padding-left:12px;">${p.name}</td>
-        <td>${p.questions}개</td>
-        <td>${p.regDate}</td>
-      </tr>`;
-    }).join('');
-  }
-  renderProductPagination();
-}
-
-function selectProductRow(id, name, questions) {
-  selectedProductId = id;
-  selectedProductName = name;
-  selectedProductMeta = '문항 ' + questions + '개';
-  document.querySelectorAll('#productTableBody tr').forEach(tr => tr.style.background = '');
-  document.querySelectorAll('input[name="productRadio"]').forEach(r => r.checked = false);
-  const allData = productFilteredData;
-  const start = (productCurrentPage - 1) * PRODUCT_PAGE_SIZE;
-  allData.slice(start, start + PRODUCT_PAGE_SIZE).forEach((p, i) => {
-    if (p.id === id) {
-      const rows = document.querySelectorAll('#productTableBody tr');
-      if (rows[i]) { rows[i].style.background = '#f0f4ff'; rows[i].querySelector('input[type=radio]').checked = true; }
+  data.types.forEach((type, idx) => {
+    const key = `${type.id}`;
+    respondentSettings[key] = { '본인용': true, '상사용': false, '동료용': false, '구성원용': false };
+    if (idx === 0) {
+      respondentSettings[key]['본인용'] = true;
+      respondentSettings[key]['구성원용'] = true;
+    } else {
+      respondentSettings[key]['본인용'] = true;
     }
+
+    const card = document.createElement('div');
+    card.className = 'respondent-card';
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="card-badge">${type.id}</span>
+        <span class="card-title">${type.name}</span>
+        <span class="card-count">${type.questions}문항</span>
+      </div>
+      <div class="card-body">
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" data-type="${key}" data-option="본인용" ${respondentSettings[key]['본인용'] ? 'checked' : ''} onchange="updateRespondentSetting(this)">
+            ☑본인용
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" data-type="${key}" data-option="상사용" ${respondentSettings[key]['상사용'] ? 'checked' : ''} onchange="updateRespondentSetting(this)">
+            ☐상사용
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" data-type="${key}" data-option="동료용" ${respondentSettings[key]['동료용'] ? 'checked' : ''} onchange="updateRespondentSetting(this)">
+            ☑동료용
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" data-type="${key}" data-option="구성원용" ${respondentSettings[key]['구성원용'] ? 'checked' : ''} onchange="updateRespondentSetting(this)">
+            ☐구성원용
+          </label>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
   });
 }
 
-function renderProductPagination() {
-  const total = productFilteredData.length;
-  const totalPages = Math.ceil(total / productPageSize) || 1;
-  const el = document.getElementById('productPagination');
-  let html = `<button class="pg-btn" onclick="goProductPage(1)">«</button>`;
-  for (let p = 1; p <= totalPages; p++) {
-    html += `<button class="pg-btn${p === productCurrentPage ? ' active' : ''}" onclick="goProductPage(${p})">${p}</button>`;
+function updateRespondentSetting(checkbox) {
+  const type = checkbox.dataset.type;
+  const option = checkbox.dataset.option;
+  if (respondentSettings[type]) {
+    respondentSettings[type][option] = checkbox.checked;
   }
-  html += `<button class="pg-btn" onclick="goProductPage(${totalPages})">»</button>`;
-  el.innerHTML = html;
 }
 
-function goProductPage(p) {
-  const totalPages = Math.ceil(productFilteredData.length / productPageSize) || 1;
-  productCurrentPage = Math.max(1, Math.min(p, totalPages));
-  renderProductTable();
+function generateCourseTree() {
+  if (!selectedDiagnosticId) return;
+  const data = DIAGNOSTIC_DATA[selectedDiagnosticId];
+  const container = document.getElementById('courseTreeContainer');
+  container.innerHTML = '';
+  courseSettings = {};
+
+  data.types.forEach(type => {
+    const typeNode = document.createElement('div');
+    typeNode.className = 'tree-node open';
+    typeNode.innerHTML = `
+      <div class="tree-header" onclick="toggleTreeNode(this)">
+        <span class="tree-toggle">▶</span>
+        <span class="tree-badge">${type.id}</span>
+        <span class="tree-label">${type.name}</span>
+      </div>
+      <div class="tree-body">
+        ${type.subtypes.map((subtype, sidx) => {
+          const key = `${type.id}-${sidx}`;
+          courseSettings[key] = [];
+          return `
+            <div class="tree-sub-header" onclick="openCourseSettingModal('${subtype}', '${key}')">
+              <span class="tree-sub-label">${subtype}</span>
+              <button class="tree-sub-btn" onclick="event.stopPropagation(); openCourseSettingModal('${subtype}', '${key}')">과정 설정</button>
+              <div class="tree-sub-courses" id="courses-${key}"></div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    container.appendChild(typeNode);
+  });
 }
 
-function confirmProduct() {
-  if (!selectedProductId) { showToast('상품을 선택해주세요.'); return; }
-  document.getElementById('productSelectArea').style.display = 'none';
-  document.getElementById('productTagArea').style.display = '';
-  document.getElementById('productTagName').textContent = selectedProductName;
-  document.getElementById('productTagMeta').textContent = selectedProductMeta;
-  closeModal('productModal');
+function toggleTreeNode(headerEl) {
+  const node = headerEl.parentElement;
+  node.classList.toggle('open');
 }
 
-function removeProduct() {
-  document.getElementById('productSelectArea').style.display = '';
-  document.getElementById('productTagArea').style.display = 'none';
-  document.getElementById('inputProduct').value = '';
-}
-
-/* ── COURSE MODAL ── */
-let currentCourseKey = '';
-const courseData = {};
-
-const COURSE_CATS = {
-  '직무공통': {
-    '리더십':        ['사람관리','성과관리','코칭/멘토링'],
-    '커뮤니케이션':  ['보고/설득','협상/조정'],
-    '비즈니스스킬':  ['기획/문서','데이터분석'],
-  },
-  '법정의무교육': {
-    '안전보건':   ['산업안전보건','중대재해예방'],
-    '인권/윤리':  ['성희롱예방','직장내괴롭힘예방','장애인인식개선'],
-    '정보보호':   ['개인정보보호'],
-  },
-  '신입/직무전환': {
-    '온보딩':  ['회사이해','비즈니스매너'],
-    'OA실무':  ['엑셀','문서작성'],
-  },
-};
-const COURSE_CATALOG = [
-  {name:'VUCA 시대 빛나는 코칭 리더십',          type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'코칭/멘토링'},
-  {name:'사람을 움직이는 사람관리의 기술',        type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
-  {name:'하마터면 꼰대가 될 뻔했다',              type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
-  {name:'성과를 만드는 목표관리(OKR)',            type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'성과관리'},
-  {name:'설득의 보고서 작성법',                   type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'보고/설득'},
-  {name:'갈등을 줄이는 협상의 정석',              type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'협상/조정'},
-  {name:'실무자를 위한 데이터 분석 입문',         type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'데이터분석'},
-  {name:'기획서 한 장으로 끝내기',               type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'기획/문서'},
-  {name:'부서장 리더십',                          type:'오프라인',cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
-  {name:'개인정보보호 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'정보보호',     cat3:'개인정보보호'},
-  {name:'직장 내 괴롭힘 예방 교육',              type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'직장내괴롭힘예방'},
-  {name:'산업안전보건 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'안전보건',     cat3:'산업안전보건'},
-  {name:'성희롱 예방 교육',                       type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'성희롱예방'},
-  {name:'신입사원 비즈니스 매너',                 type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'비즈니스매너'},
-  {name:'한 눈에 보는 우리 회사 이해',            type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'회사이해'},
-  {name:'실무 엑셀 마스터 과정',                  type:'온라인',  cat1:'신입/직무전환', cat2:'OA실무',       cat3:'엑셀'},
-];
-
-function openCourseModal(title, key) {
-  currentCourseKey = key;
-  document.getElementById('courseModalTitle').textContent = title;
+function openCourseSettingModal(subtypeName, key) {
+  currentCourseSettingKey = key;
+  document.getElementById('courseModalSubtypeName').textContent = subtypeName;
   document.getElementById('courseSearchInput').value = '';
-  // init cat1 dropdown
-  const cat1El = document.getElementById('crsFilterCat1');
-  cat1El.innerHTML = '<option value="">대분류</option>' +
-    Object.keys(COURSE_CATS).map(k => `<option value="${k}">${k}</option>`).join('');
-  const cat2El = document.getElementById('crsFilterCat2');
-  cat2El.innerHTML = '<option value="">중분류</option>';
-  cat2El.style.display = 'none';
-  const cat3El = document.getElementById('crsFilterCat3');
-  cat3El.innerHTML = '<option value="">소분류</option>';
-  cat3El.style.display = 'none';
-  document.getElementById('crsFilterType').value = '';
-  searchCourses();
-  renderSelectedCourses();
+  document.querySelectorAll('.course-list-items .course-item input[type=checkbox]').forEach(cb => {
+    cb.checked = courseSettings[key] && courseSettings[key].some(c => c.id === cb.dataset.courseId);
+  });
+  updateSelectedCoursesList();
   openModal('courseModal');
 }
 
-function crsFilterCatChange(level) {
-  if (level === 1) {
-    const cat1 = document.getElementById('crsFilterCat1').value;
-    const cat2El = document.getElementById('crsFilterCat2');
-    const cat3El = document.getElementById('crsFilterCat3');
-    if (cat1 && COURSE_CATS[cat1]) {
-      cat2El.innerHTML = '<option value="">중분류</option>' +
-        Object.keys(COURSE_CATS[cat1]).map(k => `<option value="${k}">${k}</option>`).join('');
-      cat2El.style.display = '';
-    } else {
-      cat2El.innerHTML = '<option value="">중분류</option>';
-      cat2El.style.display = 'none';
-    }
-    cat3El.innerHTML = '<option value="">소분류</option>';
-    cat3El.style.display = 'none';
-  } else if (level === 2) {
-    const cat1 = document.getElementById('crsFilterCat1').value;
-    const cat2 = document.getElementById('crsFilterCat2').value;
-    const cat3El = document.getElementById('crsFilterCat3');
-    if (cat2 && COURSE_CATS[cat1] && COURSE_CATS[cat1][cat2]) {
-      cat3El.innerHTML = '<option value="">소분류</option>' +
-        COURSE_CATS[cat1][cat2].map(k => `<option value="${k}">${k}</option>`).join('');
-      cat3El.style.display = '';
-    } else {
-      cat3El.innerHTML = '<option value="">소분류</option>';
-      cat3El.style.display = 'none';
-    }
+function toggleCourseSelect(rowEl, courseId, courseName) {
+  const checkbox = rowEl.querySelector('input[type=checkbox]');
+  checkbox.checked = !checkbox.checked;
+  updateSelectedCoursesList();
+}
+
+function updateSelectedCoursesList() {
+  const selected = Array.from(document.querySelectorAll('.course-list-items .course-item input[type=checkbox]:checked')).map(cb => ({
+    id: cb.dataset.courseId,
+    name: cb.dataset.courseName
+  }));
+  const container = document.getElementById('selectedCourseItems');
+  container.innerHTML = selected.map(course => `
+    <div class="selected-course-item">
+      <span class="course-name">${course.name}</span>
+      <button class="del-btn" onclick="removeCourse('${course.id}')">×</button>
+    </div>
+  `).join('');
+  document.getElementById('selectedCourseCount').textContent = selected.length;
+}
+
+function removeCourse(courseId) {
+  const checkbox = document.querySelector(`.course-list-items input[data-course-id="${courseId}"]`);
+  if (checkbox) {
+    checkbox.checked = false;
+    updateSelectedCoursesList();
   }
-  searchCourses();
 }
 
-function searchCourses() {
-  const cat1 = document.getElementById('crsFilterCat1').value;
-  const cat2 = document.getElementById('crsFilterCat2').value;
-  const cat3 = document.getElementById('crsFilterCat3').value;
-  const type = document.getElementById('crsFilterType').value;
-  const q = document.getElementById('courseSearchInput').value.trim().toLowerCase();
-  const results = COURSE_CATALOG.filter(c => {
-    if (cat1 && c.cat1 !== cat1) return false;
-    if (cat2 && c.cat2 !== cat2) return false;
-    if (cat3 && c.cat3 !== cat3) return false;
-    if (type && c.type !== type) return false;
-    if (q && !c.name.toLowerCase().includes(q)) return false;
-    return true;
-  });
-  renderCourseCatalog(results);
-}
-
-function renderCourseCatalog(list) {
-  const selected = courseData[currentCourseKey] || [];
-  document.getElementById('courseResultCount').textContent = list.length;
-  const el = document.getElementById('courseCandidateList');
-  if (!list.length) {
-    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:#aaa;">검색 결과가 없습니다.</div>';
-    return;
+function saveCourseSelection() {
+  const selected = Array.from(document.querySelectorAll('.course-list-items .course-item input[type=checkbox]:checked')).map(cb => ({
+    id: cb.dataset.courseId,
+    name: cb.dataset.courseName
+  }));
+  courseSettings[currentCourseSettingKey] = selected;
+  const coursesDiv = document.getElementById(`courses-${currentCourseSettingKey}`);
+  if (coursesDiv) {
+    coursesDiv.innerHTML = selected.map(c => `<span class="course-pill">${c.name}</span>`).join('');
   }
-  el.innerHTML = list.map(c => {
-    const isAdded = selected.includes(c.name);
-    const badgeColor = c.type === '온라인' ? '#1a73e8' : '#7c3aed';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:12px;gap:8px;">
-      <span style="display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;background:${badgeColor};color:#fff;white-space:nowrap;flex-shrink:0;">${c.type}</span>
-      <span style="flex:1;color:#333;">${c.name}</span>
-      <button onclick="addCourseItem('${c.name.replace(/'/g,"\\'")}')"
-              style="height:24px;padding:0 10px;font-size:11px;border-radius:3px;cursor:pointer;font-family:inherit;
-                     background:${isAdded?'#eef2ff':'var(--primary)'};color:${isAdded?'#888':'#fff'};
-                     border:1px solid ${isAdded?'#ccd3f0':'var(--primary)'};white-space:nowrap;"
-              ${isAdded?'disabled':''}>
-        ${isAdded?'추가됨':'+ 추가'}
-      </button>
-    </div>`;
-  }).join('');
-}
-
-function addCourseItem(name) {
-  if (!courseData[currentCourseKey]) courseData[currentCourseKey] = [];
-  const list = courseData[currentCourseKey];
-  if (!list.includes(name)) { list.push(name); renderSelectedCourses(); searchCourses(); }
-}
-
-function removeCourseItem(name) {
-  if (courseData[currentCourseKey]) {
-    courseData[currentCourseKey] = courseData[currentCourseKey].filter(c => c !== name);
-  }
-  renderSelectedCourses();
-  searchCourses();
-}
-
-function clearAllCourses() {
-  courseData[currentCourseKey] = [];
-  renderSelectedCourses();
-  searchCourses();
-}
-
-function renderSelectedCourses() {
-  const list = courseData[currentCourseKey] || [];
-  document.getElementById('selectedCourseCount').textContent = list.length;
-  const el = document.getElementById('selectedCourseList');
-  if (!list.length) {
-    el.innerHTML = '<div style="font-size:12px;color:#bbb;padding:12px 4px;text-align:center;">추가된 과정이 없습니다.</div>';
-    return;
-  }
-  el.innerHTML = list.map(c =>
-    `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fff;border:1px solid #e2e6f0;border-radius:4px;margin-bottom:4px;font-size:12px;">
-      <span style="flex:1;color:#1a2e5c;word-break:keep-all;">${c}</span>
-      <button onclick="removeCourseItem('${c.replace(/'/g,"\\'")}');"
-              style="width:18px;height:18px;border-radius:50%;border:1px solid #ccc;background:#f5f5f5;color:#888;font-size:12px;cursor:pointer;line-height:1;flex-shrink:0;font-family:inherit;">×</button>
-    </div>`
-  ).join('');
-}
-
-function saveCourse() {
-  const list = courseData[currentCourseKey] || [];
-  const badgeEl = document.getElementById('cb-' + currentCourseKey);
-  if (badgeEl) {
-    badgeEl.innerHTML = list.length
-      ? `<span class="course-badge badge-strong">과정 ${list.length}개</span>`
-      : '';
-    const btn = badgeEl.nextElementSibling;
-    if (btn) btn.classList.toggle('has-data', list.length > 0);
-  }
-  showToast('과정 설정이 저장되었습니다.');
   closeModal('courseModal');
 }
 
-/* ── PARTICIPANT ── */
-let currentTabIdx = 0;
+function generateStep4Tabs() {
+  if (!selectedDiagnosticId) return;
+  const data = DIAGNOSTIC_DATA[selectedDiagnosticId];
+  const tabGroup = document.getElementById('step4TabGroup');
+  const tabPanesContainer = document.getElementById('step4TabPanes');
+  tabGroup.innerHTML = '';
+  tabPanesContainer.innerHTML = '';
 
-function switchTab(idx) {
-  document.querySelectorAll('.type-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
-  document.querySelectorAll('.type-tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
-  currentTabIdx = idx;
-}
-
-function openAddParticipant() {
-  meOpenMemberSingleModal();
-}
-
-function maskName(n) {
-  if (!n || n.length <= 1) return n;
-  return n[0] + '*'.repeat(Math.max(1, n.length - 2)) + n[n.length - 1];
-}
-function maskId(email) {
-  const at = email.indexOf('@');
-  if (at < 0) return email;
-  return email.slice(0, 2) + '**' + email.slice(at);
-}
-function maskPhone(phone) {
-  return phone.replace(/(\d{3})-(\d{4})-(\d{4})/, '$1-****-$3');
-}
-
-function _diagOnRegister(members) {
-  let added = 0;
-  members.forEach(m => {
-    const mName  = maskName(m.name);
-    const mId    = m.loginId ? maskId(m.loginId) : '-';
-    const mPhone = maskPhone('010-0000-0000');
-    [0, 1, 2].forEach(tabIdx => {
-      const tbody = document.getElementById('tbody-' + tabIdx);
-      const exists = [...tbody.querySelectorAll('tr')].some(r => r.cells[4] && r.cells[4].textContent === m.empno);
-      if (exists) return;
-      const rowCount = tbody.querySelectorAll('tr').length + 1;
-      let respondentCell = '';
-      if (tabIdx === 0) respondentCell = `<span style="color:#555;">${mName}</span>`;
-      else if (tabIdx === 1) respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${mName}','구성원진단',1)">설정</button>`;
-      else respondentCell = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${mName}','상사진단',2)">설정</button>`;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td><input type="checkbox"></td><td>${rowCount}</td><td>${mName}</td><td>${mId}</td><td>${m.empno}</td><td>${m.company||'휴넷'}</td><td>${m.dept||''}</td><td></td><td>${mPhone}</td><td>${respondentCell}</td>`;
-      tbody.appendChild(tr);
-      added++;
-    });
-  });
-  if (added) showToast('대상자가 추가되었습니다. (3개 유형에 모두 반영)');
-}
-
-function delRow(btn, tabIdx) {
-  const tr = btn.closest('tr');
-  const empNo = tr.cells[4].textContent;
-  [0, 1, 2].forEach(i => {
-    const tbody = document.getElementById('tbody-' + i);
-    tbody.querySelectorAll('tr').forEach(r => {
-      if (r.cells[4] && r.cells[4].textContent === empNo) r.remove();
-    });
-    tbody.querySelectorAll('tr').forEach((r, idx) => r.cells[1].textContent = idx + 1);
-  });
-}
-
-/* ══ MK: 진단 응답자 등록 모달 (3-패널) ══ */
-const MK_RESPONDENTS = {};   // "tabIdx:rowIdx" → [{empno,name,loginId,company,dept}, ...]
-
-const MK_DIAG_TARGETS = [
-  {name:'홍*동', meta:'팀장 · 인재개발팀', rowIdx:0},
-  {name:'김*수', meta:'팀장 · 전략기획팀', rowIdx:1},
-  {name:'이*희', meta:'팀장 · 마케팅팀',   rowIdx:2},
-];
-
-let _mkTabIdx  = 1;   // 1=구성원진단, 2=상사진단
-let _mkRowIdx  = 0;   // 현재 선택된 대상자 인덱스
-let _mkTempList = [];
-let _mkFilteredPool = [];
-let _mkSplitItems = [];
-let _mkSplitSelIdx = -1;
-let _mkSplitMembers = [];
-
-function _mkKey() { return _mkTabIdx + ':' + _mkRowIdx; }
-
-function openRespondentModal(targetName, diagType, tabIdx) {
-  _mkTabIdx  = tabIdx;
-  _mkRowIdx  = MK_DIAG_TARGETS.findIndex(t => t.name === targetName);
-  if (_mkRowIdx < 0) _mkRowIdx = 0;
-  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
-  _mkInitModal();
-  openModal('respondentModal');
-}
-
-function _mkInitModal() {
-  const target = MK_DIAG_TARGETS[_mkRowIdx];
-  document.getElementById('mk-person-name').textContent = target.name;
-  document.getElementById('mk-person-meta').textContent = target.meta;
-
-  // 진단유형 active 표시
-  document.querySelectorAll('.mk-type-item').forEach(el => {
-    const active = (_mkTabIdx === 1 ? '구성원진단' : '상사진단') === el.dataset.type;
-    el.style.borderLeftColor = active ? 'var(--primary)' : 'transparent';
-    el.style.color = active ? 'var(--primary)' : '#444';
-    el.style.fontWeight = active ? '700' : 'normal';
-    el.style.background = active ? '#f0f4ff' : '';
-  });
-
-  // center title
-  const typeLabel = _mkTabIdx === 1 ? '구성원진단' : '상사진단';
-  document.getElementById('mk-center-title').textContent = typeLabel + ' 응답자 설정 — ' + target.name;
-
-  // 탭 초기화 (개별)
-  document.querySelectorAll('.mk-resp-tab').forEach(t => {
-    const first = t.dataset.tab === '개별';
-    t.style.borderBottom = first ? '2px solid var(--primary)' : '2px solid transparent';
-    t.style.color = first ? 'var(--primary)' : '#888';
-    t.style.fontWeight = first ? '700' : 'normal';
-  });
-  document.getElementById('mk-panel-single').style.display = 'flex';
-  document.getElementById('mk-panel-split').style.display  = 'none';
-  document.getElementById('mk-search-row').style.display   = 'flex';
-
-  // 검색 초기화
-  document.getElementById('mk-search-keyword').value = '';
-  document.getElementById('mk-search-company').value = '';
-  document.getElementById('mk-search-type').value    = 'name';
-
-  _mkRenderMemberList();
-  _mkFilterPool(ME_SAMPLE_MEMBERS);
-  _mkRenderPool();
-  _mkRenderReg();
-}
-
-function _mkRenderMemberList() {
-  const el = document.getElementById('mk-member-list');
-  el.innerHTML = MK_DIAG_TARGETS.map((t, i) => {
-    const active = i === _mkRowIdx;
-    const cnt = (MK_RESPONDENTS[_mkTabIdx + ':' + i] || []).length;
-    return `<div onclick="mkRespSelectMember(${i})" style="padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid ${active?'var(--primary)':'transparent'};color:${active?'var(--primary)':'#444'};font-weight:${active?'700':'normal'};background:${active?'#f0f4ff':''};display:flex;align-items:center;gap:5px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:${active?'var(--primary)':'#ddd'};flex-shrink:0;"></span>
-      <span>${t.name}</span>
-      ${cnt>0?`<span style="margin-left:auto;font-size:10px;color:var(--primary);font-weight:700;">${cnt}명</span>`:''}
-    </div>`;
-  }).join('');
-}
-
-function mkRespSelectMember(rowIdx) {
-  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 임시 저장
-  _mkRowIdx  = rowIdx;
-  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
-  const target = MK_DIAG_TARGETS[_mkRowIdx];
-  document.getElementById('mk-person-name').textContent = target.name;
-  document.getElementById('mk-person-meta').textContent = target.meta;
-  const typeLabel = _mkTabIdx === 1 ? '구성원진단' : '상사진단';
-  document.getElementById('mk-center-title').textContent = typeLabel + ' 응답자 설정 — ' + target.name;
-  _mkRenderMemberList();
-  _mkFilterPool(ME_SAMPLE_MEMBERS);
-  _mkRenderPool();
-  _mkRenderReg();
-}
-
-function mkRespSelectType(el) {
-  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 임시 저장
-  const type = el.dataset.type;
-  _mkTabIdx = type === '구성원진단' ? 1 : 2;
-  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
-  document.querySelectorAll('.mk-type-item').forEach(e => {
-    const active = e.dataset.type === type;
-    e.style.borderLeftColor = active ? 'var(--primary)' : 'transparent';
-    e.style.color = active ? 'var(--primary)' : '#444';
-    e.style.fontWeight = active ? '700' : 'normal';
-    e.style.background = active ? '#f0f4ff' : '';
-  });
-  const target = MK_DIAG_TARGETS[_mkRowIdx];
-  document.getElementById('mk-center-title').textContent = type + ' 응답자 설정 — ' + target.name;
-  _mkRenderMemberList();
-  _mkFilterPool(ME_SAMPLE_MEMBERS);
-  _mkRenderPool();
-  _mkRenderReg();
-}
-
-function _mkFilterPool(members) {
-  const company = document.getElementById('mk-search-company').value;
-  const type    = document.getElementById('mk-search-type').value;
-  const kw      = document.getElementById('mk-search-keyword').value.trim().toLowerCase();
-  _mkFilteredPool = members.filter(m => {
-    if (company && m.company !== company) return false;
-    if (kw) {
-      const val = type === 'empno' ? m.empno : (type === 'dept' ? m.dept : m.name);
-      if (!(val||'').toLowerCase().includes(kw)) return false;
-    }
-    return true;
-  });
-}
-
-function mkRespSearch() { _mkFilterPool(ME_SAMPLE_MEMBERS); _mkRenderPool(); }
-function mkRespSearchAll() {
-  document.getElementById('mk-search-keyword').value = '';
-  document.getElementById('mk-search-company').value = '';
-  _mkFilterPool(ME_SAMPLE_MEMBERS); _mkRenderPool();
-}
-
-function _mkRenderPool() {
-  const tbody = document.getElementById('mk-pool-tbody');
-  document.getElementById('mk-pool-info').textContent = '총 ' + _mkFilteredPool.length + '명';
-  document.getElementById('mk-sel-count').textContent = '0';
-  document.getElementById('mk-pool-chk-all').checked = false;
-  if (!_mkFilteredPool.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;">검색 결과가 없습니다.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = _mkFilteredPool.map((m, i) => {
-    const isReg = _mkTempList.some(r => r.empno === m.empno);
-    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
-      <td style="text-align:center;padding:5px 4px;">${isReg
-        ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
-        : `<input type="checkbox" class="mk-pool-chk" data-idx="${i}" onchange="mkRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}
-      </td>
-      <td style="padding:5px 8px;"><strong>${_mbr_maskN(m.name)}</strong></td>
-      <td style="padding:5px 8px;font-size:11px;color:#666;">${_mbr_maskL(m.loginId||'')}</td>
-      <td style="padding:5px 8px;">${m.empno}</td>
-      <td style="padding:5px 8px;">${m.company||''}</td>
-      <td style="padding:5px 8px;">${m.dept||''}</td>
-      <td style="text-align:center;padding:5px 4px;">${isReg
-        ? ''
-        : `<button onclick="mkRespAddOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function mkRespOnPoolCheck() {
-  const cnt = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
-  document.getElementById('mk-sel-count').textContent = cnt;
-  const all = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk');
-  document.getElementById('mk-pool-chk-all').checked = all.length > 0 && cnt === all.length;
-}
-function mkRespToggleAllPool(checked) {
-  document.querySelectorAll('#mk-pool-tbody .mk-pool-chk').forEach(c => c.checked = checked);
-  document.getElementById('mk-sel-count').textContent =
-    document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
-}
-
-function mkRespAddOne(idx) {
-  const m = _mkFilteredPool[idx];
-  if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
-  _mkTempList.push(m);
-  _mkRenderPool();
-  _mkRenderReg();
-}
-
-function mkRespAddChecked() {
-  const checked = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked');
-  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
-  let added = 0;
-  checked.forEach(cb => {
-    const m = _mkFilteredPool[+cb.dataset.idx];
-    if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
-  });
-  _mkRenderPool();
-  _mkRenderReg();
-  showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
-}
-
-function _mkRenderReg() {
-  const tbody = document.getElementById('mk-reg-tbody');
-  document.getElementById('mk-reg-count').textContent = _mkTempList.length;
-  document.getElementById('mk-reg-chk-all').checked = false;
-  if (!_mkTempList.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = _mkTempList.map((m, i) =>
-    `<tr>
-      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;">
-        <input type="checkbox" class="mk-reg-chk" style="cursor:pointer;accent-color:var(--primary);">
-      </td>
-      <td style="padding:4px 6px;border:1px solid #e8d88a;"><strong>${_mbr_maskN(m.name)}</strong></td>
-      <td style="padding:4px 6px;border:1px solid #e8d88a;color:#666;font-size:11px;">${m.dept||''}</td>
-      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;">
-        <button onclick="mkRespDelOne(${i})" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:14px;line-height:1;">×</button>
-      </td>
-    </tr>`
-  ).join('');
-}
-
-function mkRespDelOne(idx) {
-  _mkTempList.splice(idx, 1);
-  _mkRenderPool();
-  _mkRenderReg();
-}
-function mkRespToggleAllReg(checked) {
-  document.querySelectorAll('#mk-reg-tbody .mk-reg-chk').forEach(c => c.checked = checked);
-}
-function mkRespDelSelected() {
-  const indices = [...document.querySelectorAll('#mk-reg-tbody .mk-reg-chk:checked')]
-    .map(cb => [...document.querySelectorAll('#mk-reg-tbody tr')].indexOf(cb.closest('tr')))
-    .sort((a, b) => b - a);
-  if (!indices.length) { showToast('삭제할 응답자를 선택하세요.'); return; }
-  indices.forEach(i => _mkTempList.splice(i, 1));
-  _mkRenderPool();
-  _mkRenderReg();
-}
-
-/* ── 탭 전환 ── */
-function mkRespSelectTab(el) {
-  document.querySelectorAll('.mk-resp-tab').forEach(t => {
-    t.style.borderBottom = '2px solid transparent';
-    t.style.color = '#888';
-    t.style.fontWeight = 'normal';
-  });
-  el.style.borderBottom = '2px solid var(--primary)';
-  el.style.color = 'var(--primary)';
-  el.style.fontWeight = '700';
-  const tab = el.dataset.tab;
-  const single = document.getElementById('mk-panel-single');
-  const split  = document.getElementById('mk-panel-split');
-  const srow   = document.getElementById('mk-search-row');
-  if (tab === '개별') {
-    single.style.display = 'flex'; split.style.display = 'none'; srow.style.display = 'flex';
-  } else {
-    single.style.display = 'none'; split.style.display = 'flex'; srow.style.display = 'none';
-    _mkLoadSplit(tab);
-  }
-}
-
-/* ── 분류별 split ── */
-function _mkFlattenDept(nodes, depth) {
-  const res = [];
-  (nodes||[]).forEach(n => {
-    res.push({label:'　'.repeat(depth||0) + n.name, members: n.members||[]});
-    if (n.children && n.children.length) res.push(..._mkFlattenDept(n.children, (depth||0)+1));
-  });
-  return res;
-}
-
-function _mkLoadSplit(tab) {
-  _mkSplitSelIdx = -1; _mkSplitMembers = [];
-  if      (tab==='부서별')    _mkSplitItems = _mkFlattenDept(MBR_DEPT_TREE, 0);
-  else if (tab==='직급별')    _mkSplitItems = MBR_DATA.grade.map(g=>({label:g.label,members:g.members}));
-  else if (tab==='직책별')    _mkSplitItems = MBR_DATA.position.map(g=>({label:g.label,members:g.members}));
-  else if (tab==='직무별')    _mkSplitItems = MBR_DATA.job.map(g=>({label:g.label,members:g.members}));
-  else if (tab==='직군별')    _mkSplitItems = MBR_DATA.jobgroup.map(g=>({label:g.label,members:g.members}));
-  else if (tab==='대상구분별') _mkSplitItems = MBR_TARGET_TYPES.map(t=>({label:t.typeName,members:t.divs.flatMap(d=>d.members)}));
-  _mkRenderSplitLeft();
-  _mkRenderSplitRight([]);
-  document.getElementById('mk-split-info').textContent = '항목을 선택하세요.';
-}
-
-function _mkRenderSplitLeft() {
-  document.getElementById('mk-split-left').innerHTML = _mkSplitItems.map((item, i) =>
-    `<div onclick="mkRespSelectSplitItem(${i})" style="padding:7px 10px;font-size:12px;cursor:pointer;border-left:3px solid ${i===_mkSplitSelIdx?'var(--primary)':'transparent'};color:${i===_mkSplitSelIdx?'var(--primary)':'#333'};background:${i===_mkSplitSelIdx?'#f0f4ff':''};border-bottom:1px solid #eee;word-break:keep-all;">${item.label}</div>`
-  ).join('');
-}
-
-function mkRespSelectSplitItem(idx) {
-  _mkSplitSelIdx = idx;
-  _mkSplitMembers = _mkSplitItems[idx].members || [];
-  _mkRenderSplitLeft();
-  _mkRenderSplitRight(_mkSplitMembers);
-  document.getElementById('mk-split-info').textContent =
-    _mkSplitItems[idx].label.trim() + ' — ' + _mkSplitMembers.length + '명';
-}
-
-function _mkRenderSplitRight(members) {
-  const tbody = document.getElementById('mk-split-tbody');
-  document.getElementById('mk-split-chk-all').checked = false;
-  if (!members.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">항목을 선택하세요.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = members.map((m, i) => {
-    const isReg = _mkTempList.some(r => r.empno === m.empno);
-    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
-      <td style="text-align:center;padding:5px 4px;">${isReg
-        ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
-        : `<input type="checkbox" class="mk-split-chk" data-idx="${i}" style="cursor:pointer;accent-color:var(--primary);">`}
-      </td>
-      <td style="padding:5px 8px;"><strong>${_mbr_maskN(m.name)}</strong></td>
-      <td style="padding:5px 8px;font-size:11px;color:#666;">${_mbr_maskL(m.loginId||'')}</td>
-      <td style="padding:5px 8px;">${m.empno}</td>
-      <td style="padding:5px 8px;">${m.company||''}</td>
-      <td style="padding:5px 8px;">${m.dept||''}</td>
-      <td style="text-align:center;padding:5px 4px;">${isReg
-        ? ''
-        : `<button onclick="mkRespAddSplitOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function mkRespToggleAllSplit(checked) {
-  document.querySelectorAll('#mk-split-tbody .mk-split-chk').forEach(c => c.checked = checked);
-}
-function mkRespAddSplitOne(idx) {
-  const m = _mkSplitMembers[idx];
-  if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
-  _mkTempList.push(m); _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
-}
-function mkRespAddSplitChecked() {
-  const checked = document.querySelectorAll('#mk-split-tbody .mk-split-chk:checked');
-  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
-  let added = 0;
-  checked.forEach(cb => {
-    const m = _mkSplitMembers[+cb.dataset.idx];
-    if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
-  });
-  _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
-  showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
-}
-
-/* ── 저장 ── */
-function mkRespSave() {
-  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];  // 현재 편집 확정 저장
-  // 테이블 셀 업데이트
-  MK_DIAG_TARGETS.forEach((target, rowIdx) => {
-    [1, 2].forEach(tabIdx => {
-      const list = MK_RESPONDENTS[tabIdx + ':' + rowIdx] || [];
-      const tbody = document.getElementById('tbody-' + tabIdx);
-      if (!tbody) return;
-      const rows = tbody.querySelectorAll('tr');
-      if (!rows[rowIdx]) return;
-      const lastCell = rows[rowIdx].cells[rows[rowIdx].cells.length - 1];
-      const diagTypeStr = tabIdx === 1 ? '구성원진단' : '상사진단';
-      if (list.length > 0) {
-        lastCell.innerHTML = `<a class="resp-count-link" onclick="openRespondentModal('${target.name}','${diagTypeStr}',${tabIdx})">${list.length}명</a>`;
-      } else {
-        lastCell.innerHTML = `<button class="btn btn-outline btn-xs" onclick="openRespondentModal('${target.name}','${diagTypeStr}',${tabIdx})">설정</button>`;
+  const tabs = [];
+  data.types.forEach(type => {
+    Object.keys(respondentSettings[type.id] || {}).forEach(option => {
+      if (respondentSettings[type.id][option]) {
+        tabs.push({ type: type.name, option, id: `${type.id}-${option}` });
       }
     });
   });
-  showToast('응답자 설정이 저장되었습니다.');
-  closeModal('respondentModal');
+
+  tabs.forEach((tab, idx) => {
+    const tabEl = document.createElement('div');
+    tabEl.className = `tab ${idx === 0 ? 'active' : ''}`;
+    tabEl.textContent = `${tab.type} - ${tab.option}`;
+    tabEl.onclick = () => switchStep4Tab(idx);
+    tabGroup.appendChild(tabEl);
+
+    const paneEl = document.createElement('div');
+    paneEl.className = `tab-pane ${idx === 0 ? 'active' : ''}`;
+    paneEl.innerHTML = `
+      <div class="toolbar">
+        <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">0</strong>명 등록됨</div>
+        <div class="spacer"></div>
+        <button class="btn btn-gray btn-sm" onclick="exportTargetExcel(${idx})">📥 엑셀 다운로드</button>
+        <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">+ 대상 추가</button>
+      </div>
+      <div style="overflow-x:auto;flex:1;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" onclick="toggleTabTableSelect(${idx}, this)"></th>
+              <th style="width:40px;">No</th>
+              <th class="name-col">이름</th>
+              <th style="width:100px;">사번</th>
+              <th style="width:120px;">부서/팀</th>
+              <th style="width:80px;">직급</th>
+              <th style="width:100px;">응답자</th>
+            </tr>
+          </thead>
+          <tbody id="targets-${idx}">
+            <tr>
+              <td colspan="7" style="text-align:center;padding:20px;color:#aaa;">등록된 대상자가 없습니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    tabPanesContainer.appendChild(paneEl);
+  });
 }
 
-/* ── MODAL HELPERS ── */
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function switchStep4Tab(idx) {
+  document.querySelectorAll('#step4TabGroup .tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('#step4TabPanes .tab-pane').forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+}
 
-/* ── TOAST ── */
+function searchCourses() {
+  showToast('과정 검색됩니다.');
+}
+
+function openBulkUploadModal() {
+  openModal('bulkUploadModal');
+}
+
+function downloadTemplate() {
+  showToast('템플릿이 다운로드됩니다.');
+}
+
+function uploadBulkFile() {
+  showToast('파일이 업로드되었습니다.');
+  closeModal('bulkUploadModal');
+}
+
+function openAddTargetModal(tabIdx) {
+  openModal('addTargetModal');
+}
+
+function searchTargets() {
+  showToast('대상자를 검색합니다.');
+}
+
+function toggleSelectAll(checkbox) {
+  document.querySelectorAll('.target-check').forEach(cb => {
+    cb.checked = checkbox.checked;
+  });
+}
+
+function toggleTabTableSelect(tabIdx, checkbox) {
+  document.querySelectorAll(`#targets-${tabIdx} input[type=checkbox]`).forEach(cb => {
+    cb.checked = checkbox.checked;
+  });
+}
+
+function addSelectedTargets() {
+  showToast('대상자가 추가되었습니다.');
+  closeModal('addTargetModal');
+}
+
+function deleteSelectedTargets(tabIdx) {
+  showToast('선택된 대상자가 삭제되었습니다.');
+}
+
+function exportTargetExcel(tabIdx) {
+  showToast('엑셀 파일이 다운로드됩니다.');
+}
+
+function previewDiagnosis() {
+  showToast('미리보기 페이지로 이동합니다.');
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('open');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('open');
+}
+
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.style.display = 'none', 2200);
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2000);
 }
 
-/* ── 인원 등록 공통 모듈 초기화 ── */
-window._maskN = maskName;
-window._maskL = (id) => maskId(id);
+function updateBottomButtons() {
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnPreview = document.getElementById('btnPreview');
+  if (currentStep === 1) {
+    btnPrev.style.display = 'none';
+    btnNext.style.display = 'block';
+    btnPreview.style.display = 'none';
+  } else if (currentStep === 4) {
+    btnPrev.style.display = 'block';
+    btnNext.style.display = 'none';
+    btnPreview.style.display = 'block';
+  } else {
+    btnPrev.style.display = 'block';
+    btnNext.style.display = 'block';
+    btnPreview.style.display = 'none';
+  }
+}
+
+function nextStep() {
+  if (currentStep === 1 && !selectedDiagnosticId) {
+    showToast('진단지를 선택해주세요.');
+    return;
+  }
+  if (currentStep < 4) {
+    currentStep++;
+    goToStep(currentStep);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    currentStep--;
+    goToStep(currentStep);
+  }
+}
+
+function goToStep(step) {
+  if (step < 1 || step > 4) return;
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.getElementById(`step-content-${step}`).classList.add('active');
+  document.querySelectorAll('.step-item').forEach((el, idx) => {
+    if (idx + 1 < step) {
+      el.classList.remove('active');
+      el.classList.add('done');
+    } else if (idx + 1 === step) {
+      el.classList.add('active');
+      el.classList.remove('done');
+    } else {
+      el.classList.remove('active', 'done');
+    }
+  });
+
+  currentStep = step;
+  if (step === 2) generateRespondentCards();
+  if (step === 3) generateCourseTree();
+  if (step === 4) generateStep4Tabs();
+  updateBottomButtons();
+  window.scrollTo(0, 0);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (typeof meMbrInit === 'function') {
-    meMbrInit({
-      getRegistered: () => {
-        const tbody = document.getElementById('tbody-0');
-        if (!tbody) return [];
-        return [...tbody.querySelectorAll('tr')].map(r => ({ empno: r.cells[4]?.textContent?.trim() })).filter(m => m.empno);
-      },
-      onRegister: _diagOnRegister,
-      getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
-    });
-  }
+  updateBottomButtons();
 });
 </script>
+
 </body>
 </html>
