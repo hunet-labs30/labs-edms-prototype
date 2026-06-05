@@ -286,6 +286,31 @@ body {
   text-decoration: underline;
 }
 
+/* 진단지 없는 빈 상태 */
+.step1-no-data {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; text-align: center; padding: 60px 32px; gap: 18px;
+  background: #fff;
+}
+.step1-no-data-icon { font-size: 72px; opacity: 0.18; line-height: 1; }
+.step1-no-data h3 { font-size: 18px; font-weight: 800; color: #1a1a2e; margin: 0; }
+.step1-no-data p { font-size: 13px; color: #888; line-height: 1.7; margin: 0; }
+.step1-no-data .btn-create {
+  margin-top: 4px; padding: 12px 24px; font-size: 14px;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .15s, transform .1s;
+}
+.step1-no-data .btn-create:hover { background: #1557b0; transform: translateY(-1px); }
+/* 프로토타입 전용 토글 */
+.proto-toggle {
+  font-size: 11px; color: #aaa; background: #f5f6f8; border: 1px solid #e0e3e8;
+  border-radius: 4px; padding: 3px 8px; cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+.proto-toggle:hover { color: var(--primary); border-color: var(--primary); }
+
 /* 오른쪽 패널: 빈 상태 */
 .preview-empty {
   flex: 1;
@@ -924,35 +949,56 @@ body {
 
         <!-- STEP 1: 진단지 선택 -->
         <div class="step-content active wiz-card" id="step-content-1">
-          <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 1 / 6</span>
-            <h2>어떤 역량을 진단할까요?</h2>
-            <p>진단 플랫폼에서 생성된 진단지를 선택하세요.<br>진단지가 없다면 먼저 진단 플랫폼에서 만들어주세요.</p>
+          <div class="wiz-card-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div>
+              <span class="wiz-step-tag">STEP 1 / 6</span>
+              <h2>어떤 역량을 진단할까요?</h2>
+              <p>진단 플랫폼에서 생성된 진단지를 선택하세요.<br>진단지가 없다면 먼저 진단 플랫폼에서 만들어주세요.</p>
+            </div>
+            <button class="proto-toggle" onclick="toggleStep1State()" id="step1ToggleBtn" title="프로토타입 전용">📋 빈 상태 보기</button>
           </div>
           <div class="wiz-card-body">
-            <div class="step1-panel-wrap">
-              <div class="step1-left">
-                <div class="step1-search-row">
-                  <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="진단지 검색...">
-                  <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
-                </div>
-                <div class="step1-card-list" id="step1CardList"></div>
-                <div class="step1-link-btn">
-                  <a href="#">진단 플랫폼에서 새 진단지 만들기 →</a>
-                </div>
+
+            <!-- ▸ 빈 상태 뷰 -->
+            <div id="step1EmptyView" style="display:none;flex:1;">
+              <div class="step1-no-data">
+                <div class="step1-no-data-icon">📋</div>
+                <h3>아직 등록된 진단지가 없어요</h3>
+                <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
+                <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
+                  ✚ 진단 플랫폼에서 진단지 만들기
+                </button>
+                <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
               </div>
-              <div class="step1-right">
-                <div id="step1PreviewEmpty" class="preview-empty">
-                  <div class="preview-empty-icon">📋</div>
-                  <div>왼쪽에서 진단지를 선택하면<br>문항을 미리 확인할 수 있어요</div>
+            </div>
+
+            <!-- ▸ 데이터 있는 뷰 -->
+            <div id="step1DataView" style="display:flex;flex:1;">
+              <div class="step1-panel-wrap" style="flex:1;">
+                <div class="step1-left">
+                  <div class="step1-search-row">
+                    <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="진단지 검색...">
+                    <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
+                  </div>
+                  <div class="step1-card-list" id="step1CardList"></div>
+                  <div class="step1-link-btn">
+                    <a href="#">진단 플랫폼에서 새 진단지 만들기 →</a>
+                  </div>
                 </div>
-                <div id="step1PreviewContent" class="preview-content" style="display:none;">
-                  <div class="preview-title" id="previewQuestionnaireName"></div>
-                  <div class="preview-stats" id="previewStats"></div>
-                  <div id="previewTree"></div>
+                <div class="step1-right">
+                  <div id="step1PreviewEmpty" class="preview-empty">
+                    <div class="preview-empty-icon">📋</div>
+                    <div>왼쪽에서 진단지를 선택하면<br>문항을 미리 확인할 수 있어요</div>
+                  </div>
+                  <div id="step1PreviewContent" class="preview-content" style="display:none;">
+                    <div class="preview-title" id="previewQuestionnaireName"></div>
+                    <div class="preview-stats" id="previewStats"></div>
+                    <div id="previewTree"></div>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
           <div class="wiz-card-foot">
             <div class="foot-left"></div>
@@ -1428,6 +1474,23 @@ function toggleNav(el) {
 }
 
 // ─── STEP 1 함수들 ───
+
+let step1HasData = true;
+function toggleStep1State() {
+  step1HasData = !step1HasData;
+  const emptyView = document.getElementById('step1EmptyView');
+  const dataView  = document.getElementById('step1DataView');
+  const btn       = document.getElementById('step1ToggleBtn');
+  if (step1HasData) {
+    emptyView.style.display = 'none';
+    dataView.style.display  = 'flex';
+    btn.textContent = '📋 빈 상태 보기';
+  } else {
+    emptyView.style.display = 'flex';
+    dataView.style.display  = 'none';
+    btn.textContent = '📋 데이터 있는 상태 보기';
+  }
+}
 
 function renderStep1() {
   const cardList = document.getElementById('step1CardList');
