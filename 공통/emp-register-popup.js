@@ -431,7 +431,7 @@ function _meMbrInjectDOM() {
         </div>
       </div>
       <div style="padding:10px 12px;border-top:1px solid var(--border,#e0e3e8);flex-shrink:0;">
-        <button class="btn btn-primary" style="width:100%;height:30px;background:#e53935;border-color:#e53935;" onclick="meMbrFinalReg()">선택 인원 등록</button>
+        <button id="me-mbr-final-btn" class="btn btn-primary" style="width:100%;height:30px;background:#e53935;border-color:#e53935;opacity:0.45;cursor:not-allowed;" onclick="meMbrFinalReg()" disabled>선택 인원 등록</button>
       </div>
     </div>
 
@@ -447,6 +447,14 @@ function meMbrUpdateCollected() {
   const empty = document.getElementById('me-mbr-collected-empty');
   const listEl= document.getElementById('me-mbr-collected-list');
   if (cnt2)  cnt2.textContent  = ME_COLLECTED.length + '명';
+  // [선택 인원 등록] 버튼: 선택인원 패널이 비어 있으면 비활성화 (탭 공통)
+  const finalBtn = document.getElementById('me-mbr-final-btn');
+  if (finalBtn) {
+    const has = ME_COLLECTED.length > 0;
+    finalBtn.disabled = !has;
+    finalBtn.style.opacity = has ? '1' : '0.45';
+    finalBtn.style.cursor  = has ? 'pointer' : 'not-allowed';
+  }
   if (!ME_COLLECTED.length) {
     if (empty) empty.style.display = 'flex';
     listEl?.querySelectorAll('.mbr-coll-tag').forEach(t => t.remove());
