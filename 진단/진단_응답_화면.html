@@ -148,7 +148,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .diag-progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .4s ease;}
 
 /* ── 섹션 헤더 ── */
-.section-header-block{margin-bottom:16px;text-align:center;}
+.section-header-block{margin-bottom:20px;text-align:center;}
 .section-header-block h2{font-size:15px;font-weight:700;color:var(--text-900);margin-bottom:10px;}
 .section-guide{
   font-size:13px;color:var(--text-700);line-height:1.75;
@@ -156,6 +156,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   padding:12px 16px;border-left:3px solid var(--primary);
   text-align:center;
 }
+/* ── 유형 설명 다크 카드 ── */
+.area-desc-card{
+  margin-top:16px;padding:18px 20px;
+  background:#4B5563;border-radius:10px;
+  color:#fff;text-align:left;
+}
+.area-desc-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+.area-desc-text{font-size:13px;line-height:1.65;opacity:.85;}
+/* ── 역량군 섹션 카드 ── */
+.group-section-card{
+  margin:28px 0 14px;padding:16px 20px;
+  background:#3B4E6E;border-radius:10px;
+  color:#fff;
+}
+.group-section-name{font-size:13px;font-weight:700;margin-bottom:5px;}
+.group-section-desc{font-size:12.5px;line-height:1.65;opacity:.82;}
 
 /* ── 질문 카드 ── */
 .q-card{
@@ -629,15 +645,16 @@ const DIAG_INFO = {
     {
       id: 'lc', label: '팀장 리더십 역량', type: 'likert',
       desc: '팀장 리더십 역량에 대한 질문입니다.',
+      areaDesc: '리더십역량(LC) 진단은 팀장으로서의 리더십 행동을 측정합니다. 본인의 평소 행동을 솔직하게 응답해 주세요.',
       guide: 'Q. 각 문장을 읽고, 홍길동님이 그 행동을 얼마나 자주, 강하게 보이는지에 따라 5점 척도로 응답해 주세요.',
       questions: [
-        { groupHeader: 'Self역량군' },
+        { groupHeader: 'Self역량군', groupDesc: '자기 자신에 대한 인식과 관리 역량군입니다. 전략적 사고와 합리적 의사결정 능력을 평가합니다.' },
         '전략적으로 사고하고 장기적인 방향을 설정하며 팀에 공유한다.',
         '충분한 정보를 바탕으로 합리적인 의사결정을 내린다.',
-        { groupHeader: 'People역량군' },
+        { groupHeader: 'People역량군', groupDesc: '구성원의 성장과 동기부여를 이끄는 역량군입니다. 비전 제시와 인재 육성 행동을 평가합니다.' },
         '비전/목표를 수립하고 이를 구성원들에게 명확하게 전달한다.',
         '팀원의 강점과 개발 영역을 파악하고 성장 기회를 제공한다.',
-        { groupHeader: 'Team역량군' },
+        { groupHeader: 'Team역량군', groupDesc: '팀 성과를 이끌어내는 실행 역량군입니다. 갈등 관리와 성과 창출 능력을 평가합니다.' },
         '팀 내 갈등 상황을 신속히 파악하고 건설적으로 해결한다.',
         '성과 창출을 위해 자원을 효과적으로 배분하고 관리한다.',
       ]
@@ -819,11 +836,18 @@ function renderContent() {
   let html = `<div class="section-header-block">
     <h2>${tab.desc}</h2>
     <div class="section-guide">${tab.guide}</div>
+    ${tab.areaDesc ? `<div class="area-desc-card">
+      <div class="area-desc-title">본인 진단 — ${tab.label}</div>
+      <div class="area-desc-text">${tab.areaDesc}</div>
+    </div>` : ''}
   </div>`;
   let qNum = 0;
   tab.questions.forEach((q, idx) => {
     if (q && q.groupHeader) {
-      html += `<div style="margin: 20px 0 8px; padding: 8px 14px; background: #e8f0fe; border-left: 3px solid #1a73e8; border-radius: 4px; font-size: 12px; font-weight: 700; color: #1a5cc8;">${q.groupHeader}</div>`;
+      html += `<div class="group-section-card">
+        <div class="group-section-name">${q.groupHeader}</div>
+        ${q.groupDesc ? `<div class="group-section-desc">${q.groupDesc}</div>` : ''}
+      </div>`;
     } else {
       qNum++;
       if      (tab.type === 'ab')        html += renderABCard(tab, q, qNum);
