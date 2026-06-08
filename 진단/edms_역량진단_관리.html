@@ -544,7 +544,7 @@
           </tr>
 
           <!-- ⓪-B 임시저장 : STEP2 응답자 유형 미설정 → 대상자/응답자 설정 버튼 미노출 -->
-          <tr style="background:#fdf9ff;">
+          <tr style="background:#fdf9ff;" data-skip-bind="true">
             <td>14</td>
             <td style="font-size:11px; color:#bbb;">-</td>
             <td style="text-align:left; padding-left:10px;">
@@ -1114,6 +1114,7 @@
     }
   }
   document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
+    if (tr.dataset.skipBind) return; // 임시저장 STEP2 미설정 행 → 설정 버튼 바인딩 건너뜀
     const cells = tr.querySelectorAll('td');
     if (cells.length >= 5) _bindDiagCell(cells[4], rowIdx, 'target');
     if (cells.length >= 6) _bindDiagCell(cells[5], rowIdx, 'respondent');
