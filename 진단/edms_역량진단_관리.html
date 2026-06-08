@@ -518,17 +518,21 @@
         </thead>
         <tbody>
 
-          <!-- ⓪ 임시저장 -->
+          <!-- ⓪-A 임시저장 : STEP2 응답자 유형 설정됨 → 대상자/응답자 설정 버튼 노출 -->
           <tr style="background:#fdf9ff;">
-            <td>14</td>
+            <td>15</td>
             <td style="font-size:11px; color:#bbb;">-</td>
             <td style="text-align:left; padding-left:10px;">
               <a class="diag-link" href="edms_진단_만들기.html" style="color:#7c3aed;">2026년 하반기 임원 역량진단 (작성중)</a>
-              <span style="font-size:10px; color:#bbb; margin-left:4px;">[임시저장]</span>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[임시저장 · STEP2 완료]</span>
             </td>
-            <td style="color:#bbb;">-</td>
-            <td style="color:#bbb;">-</td>
-            <td style="color:#bbb;">-</td>
+            <td>50</td>
+            <td>
+              <a class="diag-link" href="edms_진단_상세.html?state=before" style="font-size:11px;">설정</a>
+            </td>
+            <td>
+              <a class="diag-link" href="edms_진단_상세.html?state=before" style="font-size:11px;">설정</a>
+            </td>
             <td style="color:#bbb; font-size:11px;">-</td>
             <td style="color:#bbb;">-</td>
             <td><span class="badge badge-draft">임시저장</span></td>
@@ -536,6 +540,27 @@
             <td style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
               <button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button>
               <button class="btn btn-sm" style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;" onclick="openDraftDeleteModal('2026년 하반기 임원 역량진단 (작성중)')">삭제</button>
+            </td>
+          </tr>
+
+          <!-- ⓪-B 임시저장 : STEP2 응답자 유형 미설정 → 대상자/응답자 설정 버튼 미노출 -->
+          <tr style="background:#fdf9ff;">
+            <td>14</td>
+            <td style="font-size:11px; color:#bbb;">-</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="edms_진단_만들기.html" style="color:#7c3aed;">2026년 하반기 신입 역량진단 (작성중)</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[임시저장 · STEP2 미완료]</span>
+            </td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb; font-size:11px;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td><span class="badge badge-draft">임시저장</span></td>
+            <td style="font-size:11px;">2026.06.05</td>
+            <td style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
+              <button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button>
+              <button class="btn btn-sm" style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;" onclick="openDraftDeleteModal('2026년 하반기 신입 역량진단 (작성중)')">삭제</button>
             </td>
           </tr>
 
