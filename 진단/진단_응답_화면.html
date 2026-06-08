@@ -834,12 +834,8 @@ function renderContent() {
   const tab = DIAG_INFO.tabs.find(t => t.id === activeTabId);
   if (!tab) return;
   let html = `<div class="section-header-block">
-    <h2>${tab.desc}</h2>
+    <h2>${tab.label}에 대한 질문입니다.</h2>
     <div class="section-guide">${tab.guide}</div>
-    ${tab.areaDesc ? `<div class="area-desc-card">
-      <div class="area-desc-title">본인 진단 — ${tab.label}</div>
-      <div class="area-desc-text">${tab.areaDesc}</div>
-    </div>` : ''}
   </div>`;
   let qNum = 0;
   tab.questions.forEach((q, idx) => {
