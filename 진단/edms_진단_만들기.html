@@ -602,6 +602,8 @@ body {
 .tree-sub-btn:hover { border-color: var(--primary); color: var(--primary); }
 .tree-sub-courses { display: flex; gap: 4px; flex-wrap: wrap; }
 .course-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #e6f7ee; color: #1a7a4a; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.course-more-badge { display: inline-flex; align-items: center; padding: 2px 8px; background: #e8f0fe; color: #1a5cc8; border-radius: 3px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.course-more-badge:hover { background: #d0e2ff; }
 
 /* ── STEP 4: 섹션 ── */
 .step4-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
@@ -2045,9 +2047,11 @@ const COURSE_CATALOG = [
 ];
 const courseData = {};
 let currentCourseKey = '';
+let currentCourseTitle = '';
 
 function openCourseModal(title, key) {
   currentCourseKey = key;
+  currentCourseTitle = title;
   document.getElementById('courseModalTitle').textContent = title;
   document.getElementById('courseSearchInput').value = '';
   const cat1El = document.getElementById('crsFilterCat1');
@@ -2163,10 +2167,22 @@ function renderSelectedCourses() {
   ).join('');
 }
 
+function renderCoursePills(key, title, list) {
+  const div = document.getElementById(`courses-${key}`);
+  if (!div) return;
+  if (list.length === 0) { div.innerHTML = ''; return; }
+  if (list.length <= 2) {
+    div.innerHTML = list.map(c => `<span class="course-pill">${c}</span>`).join('');
+    return;
+  }
+  // 3개 이상: 첫 1개 + "+N개 더" 뱃지
+  const safeTitle = title.replace(/'/g, "\\'");
+  div.innerHTML = `<span class="course-pill">${list[0]}</span><span class="course-more-badge" onclick="event.stopPropagation();openCourseModal('${safeTitle}','${key}')">+${list.length - 1}개 더</span>`;
+}
+
 function saveCourse() {
   const list = courseData[currentCourseKey] || [];
-  const coursesDiv = document.getElementById(`courses-${currentCourseKey}`);
-  if (coursesDiv) coursesDiv.innerHTML = list.map(c => `<span class="course-pill">${c}</span>`).join('');
+  renderCoursePills(currentCourseKey, currentCourseTitle, list);
   showToast('과정 설정이 저장되었습니다.');
   closeModal('courseModal');
 }
