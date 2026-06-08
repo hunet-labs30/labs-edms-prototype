@@ -945,6 +945,12 @@ body {
           </div>
         </div>
         <div class="wiz-aside-foot">
+          <a href="edms_역량진단_관리.html"
+             style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;transition:border-color .15s,color .15s;"
+             onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
+             onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
+            ← 목록으로
+          </a>
           <button class="btn btn-draft" onclick="saveDraft()">💾 임시저장</button>
           <span class="draft-saved" id="draftSavedMsg">✓ 저장됨</span>
         </div>
@@ -1440,6 +1446,23 @@ body {
   </div>
 </div>
 
+<!-- 응답자 유형 변경 경고 팝업 -->
+<div class="modal-overlay" id="respTypeChangeModal">
+  <div class="modal-box" style="width:380px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="cancelRespTypeChange()">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">알림</div>
+      <p style="font-size:13px; color:#444; line-height:1.8;">응답자 유형 변경 시<br>응답자 설정이 초기화됩니다.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="cancelRespTypeChange()">취소</button>
+      <button class="btn btn-primary" onclick="confirmRespTypeChange()">확인</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="../공통/emp-register-popup.js"></script>
@@ -1802,10 +1825,44 @@ function generateRespondentCards() {
   });
 }
 
+let _pendingRespToggle = null;
+
 function toggleRespRole(el, typeId, roleKey) {
+  const isCurrentlySelected = el.classList.contains('selected');
+  // 선택 해제 시 && 해당 유형에 응답자가 이미 등록되어 있으면 팝업
+  if (isCurrentlySelected) {
+    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.startsWith(typeId + '-' + roleKey + ':') && MK_RESPONDENTS[k].length > 0);
+    if (hasRespondents) {
+      _pendingRespToggle = { el, typeId, roleKey };
+      document.getElementById('respTypeChangeModal').classList.add('open');
+      return;
+    }
+  }
+  _applyRespToggle(el, typeId, roleKey);
+}
+
+function _applyRespToggle(el, typeId, roleKey) {
   el.classList.toggle('selected');
   if (!respondentSettings[typeId]) respondentSettings[typeId] = {};
   respondentSettings[typeId][roleKey] = el.classList.contains('selected');
+}
+
+function confirmRespTypeChange() {
+  document.getElementById('respTypeChangeModal').classList.remove('open');
+  if (_pendingRespToggle) {
+    const { el, typeId, roleKey } = _pendingRespToggle;
+    // 해당 유형 응답자 데이터 초기화
+    Object.keys(MK_RESPONDENTS).forEach(k => {
+      if (k.startsWith(typeId + '-' + roleKey + ':')) MK_RESPONDENTS[k] = [];
+    });
+    _applyRespToggle(el, typeId, roleKey);
+    _pendingRespToggle = null;
+  }
+}
+
+function cancelRespTypeChange() {
+  document.getElementById('respTypeChangeModal').classList.remove('open');
+  _pendingRespToggle = null;
 }
 
 function updateRespondentSetting(checkbox) {
@@ -1823,6 +1880,9 @@ function generateScoreSettings() {
   selectedQuestionnaire.types.forEach(type => {
     const div = document.createElement('div');
     div.className = 'score-type-card';
+    const scaleMin = 1, scaleMax = 5;
+    const defaultStrong = Math.round(scaleMax * 0.7);
+    const defaultWeak   = Math.round(scaleMax * 0.5);
     div.innerHTML = `
       <div class="score-type-head">
         <span class="score-type-name">${type.name}</span>
@@ -1831,17 +1891,19 @@ function generateScoreSettings() {
       <div class="score-inputs-wrap">
         <div class="score-group">
           <div class="score-group-label strong"><span class="dot"></span> 강점 기준</div>
-          <input type="number" class="score-num-input" id="score-strong-${type.id}" value="70" min="0" max="100">
+          <input type="number" class="score-num-input" id="score-strong-${type.id}" value="${defaultStrong}" min="${scaleMin}" max="${scaleMax}" step="1">
           <div class="score-num-unit">이 점수 이상이면 강점</div>
+          <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
         </div>
         <div class="score-group">
           <div class="score-group-label weak"><span class="dot"></span> 약점 기준</div>
-          <input type="number" class="score-num-input" id="score-weak-${type.id}" value="50" min="0" max="100">
+          <input type="number" class="score-num-input" id="score-weak-${type.id}" value="${defaultWeak}" min="${scaleMin}" max="${scaleMax}" step="1">
           <div class="score-num-unit">이 점수 미만이면 약점</div>
+          <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
         </div>
         <div style="flex:1;min-width:200px;">
           <div style="font-size:11px;color:#aaa;margin-bottom:6px;">점수 구간 미리보기</div>
-          <div class="score-zone-bar" id="zone-bar-${type.id}" style="--weak-pct:50%;--strong-pct:70%;"></div>
+          <div class="score-zone-bar" id="zone-bar-${type.id}" style="--weak-pct:${defaultWeak/scaleMax*100}%;--strong-pct:${defaultStrong/scaleMax*100}%;"></div>
           <div class="score-zone-labels">
             <span class="z-weak">약점</span>
             <span class="z-mid">보통</span>
@@ -1849,15 +1911,37 @@ function generateScoreSettings() {
           </div>
         </div>
       </div>
+      <div id="score-err-${type.id}" style="display:none;margin-top:10px;padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:12px;color:#c0392b;"></div>
     `;
-    // zone bar 업데이트
+    // zone bar 업데이트 + 유효성 검사
     const updateZone = () => {
       const w = +document.getElementById('score-weak-' + type.id).value;
       const s = +document.getElementById('score-strong-' + type.id).value;
       const bar = document.getElementById('zone-bar-' + type.id);
-      if (bar) bar.style.cssText = bar.style.cssText.replace(/--weak-pct:[^;]+/, '--weak-pct:' + w + '%').replace(/--strong-pct:[^;]+/, '--strong-pct:' + s + '%');
+      const errEl = document.getElementById('score-err-' + type.id);
+      const strongEl = document.getElementById('score-strong-' + type.id);
+      const weakEl   = document.getElementById('score-weak-'   + type.id);
+      if (bar) {
+        bar.style.setProperty('--weak-pct',   (w / scaleMax * 100) + '%');
+        bar.style.setProperty('--strong-pct', (s / scaleMax * 100) + '%');
+      }
+      if (s <= w) {
+        errEl.textContent = '강점 기준은 약점 기준보다 높아야 합니다.';
+        errEl.style.display = 'block';
+        strongEl.style.borderColor = '#c0392b';
+        weakEl.style.borderColor   = '#c0392b';
+      } else if (s < scaleMin || s > scaleMax || w < scaleMin || w > scaleMax) {
+        errEl.textContent = `${scaleMin}~${scaleMax} 사이의 값을 입력해주세요.`;
+        errEl.style.display = 'block';
+        strongEl.style.borderColor = '#c0392b';
+        weakEl.style.borderColor   = '#c0392b';
+      } else {
+        errEl.style.display = 'none';
+        strongEl.style.borderColor = '';
+        weakEl.style.borderColor   = '';
+      }
     };
-    div.querySelector('#score-weak-' + type.id).addEventListener('input', updateZone);
+    div.querySelector('#score-weak-'   + type.id).addEventListener('input', updateZone);
     div.querySelector('#score-strong-' + type.id).addEventListener('input', updateZone);
     container.appendChild(div);
   });
@@ -2600,9 +2684,45 @@ function saveDraft() {
 function createDiagnosis() {
   if (!selectedDiagnosticId) { showToast('진단지를 선택해주세요.'); return; }
   const diagName = document.getElementById('diagNameInput')?.value?.trim();
-  if (!diagName) { showToast('진단명을 입력해주세요. (STEP 4 섹션 A)'); return; }
+  if (!diagName) { showToast('진단명을 입력해주세요.'); return; }
+  if (!validateDates()) return;
+  if (!validateScores()) return;
   showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
   setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
+}
+
+function validateScores() {
+  if (!selectedQuestionnaire) return true;
+  let valid = true;
+  selectedQuestionnaire.types.forEach(type => {
+    const s = +document.getElementById('score-strong-' + type.id)?.value;
+    const w = +document.getElementById('score-weak-'   + type.id)?.value;
+    if (s <= w) { showToast('강점 기준은 약점 기준보다 높아야 합니다.'); valid = false; }
+  });
+  return valid;
+}
+
+function validateDates() {
+  const startDate = document.getElementById('diagStartDate').value;
+  const startTime = document.getElementById('diagStartTime').value;
+  const endDate   = document.getElementById('diagEndDate').value;
+  const endTime   = document.getElementById('diagEndTime').value;
+  if (!startDate || !endDate) {
+    showToast('시작일시와 종료일시를 모두 입력해주세요.');
+    return false;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(startDate + (startTime ? 'T' + startTime : 'T00:00'));
+  const end   = new Date(endDate   + (endTime   ? 'T' + endTime   : 'T23:59'));
+  if (start < today) {
+    showToast('진단 시작일은 오늘 이후(오늘 포함) 날짜여야 합니다.');
+    return false;
+  }
+  if (end < start) {
+    showToast('종료일시는 시작일시보다 이후여야 합니다.');
+    return false;
+  }
+  return true;
 }
 
 function nextStep() {
@@ -2610,6 +2730,8 @@ function nextStep() {
     showToast('진단지를 선택해주세요.');
     return;
   }
+  if (currentStep === 3 && !validateScores()) return;
+  if (currentStep === 5 && !validateDates()) return;
   if (currentStep < 6) {
     currentStep++;
     goToStep(currentStep);
@@ -2662,6 +2784,21 @@ document.addEventListener('DOMContentLoaded', () => {
   updateBottomButtons();
   const mainEl = document.querySelector('.main');
   if (mainEl) mainEl.scrollTop = 0;
+  // 오늘 날짜를 min으로 설정 (과거 날짜 선택 불가, 오늘 포함)
+  const today = new Date().toISOString().split('T')[0];
+  const startDateEl = document.getElementById('diagStartDate');
+  const endDateEl   = document.getElementById('diagEndDate');
+  if (startDateEl) startDateEl.min = today;
+  if (endDateEl)   endDateEl.min   = today;
+  // 종료일 min을 시작일 변경 시 동기화
+  if (startDateEl && endDateEl) {
+    startDateEl.addEventListener('change', () => {
+      endDateEl.min = startDateEl.value || today;
+      if (endDateEl.value && endDateEl.value < startDateEl.value) {
+        endDateEl.value = startDateEl.value;
+      }
+    });
+  }
 });
 </script>
 

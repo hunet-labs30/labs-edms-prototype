@@ -187,6 +187,7 @@
   .badge-green  { background: #e6f7ee; color: #1a7a4a; }
   .badge-orange { background: #fff4e0; color: #b35c00; }
   .badge-gray   { background: #f0f2f5; color: #888; }
+  .badge-draft  { background: #f5f0ff; color: #7c3aed; border: 1px solid #e0d0ff; }
 
   /* STATUS BUTTONS (버튼 타입 상태 — 클릭 시 TP 어드민 이동) */
   .status-btn {
@@ -453,6 +454,7 @@
         <span class="label-auto">상태</span>
         <select class="select" style="width:100px;">
           <option>전체</option>
+          <option>임시저장</option>
           <option>대기</option>
           <option>진행중</option>
           <option>완료</option>
@@ -502,6 +504,26 @@
           </tr>
         </thead>
         <tbody>
+
+          <!-- ⓪ 임시저장 -->
+          <tr style="background:#fdf9ff;">
+            <td>14</td>
+            <td style="font-size:11px; color:#bbb;">-</td>
+            <td style="text-align:left; padding-left:10px;">
+              <a class="diag-link" href="edms_진단_만들기.html" style="color:#7c3aed;">2026년 하반기 임원 역량진단 (작성중)</a>
+              <span style="font-size:10px; color:#bbb; margin-left:4px;">[임시저장]</span>
+            </td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td style="color:#bbb; font-size:11px;">-</td>
+            <td style="color:#bbb;">-</td>
+            <td><span class="badge badge-draft">임시저장</span></td>
+            <td style="font-size:11px;">2026.06.06</td>
+            <td>
+              <button class="btn btn-sm btn-gray" onclick="openDraftDeleteModal('2026년 하반기 임원 역량진단 (작성중)')">삭제</button>
+            </td>
+          </tr>
 
           <!-- ① 진행중 -->
           <tr>
@@ -779,6 +801,24 @@
   </main>
 </div>
 
+<!-- ===== 임시저장 삭제 확인 팝업 ===== -->
+<div class="modal-overlay" id="draftDeleteModal">
+  <div class="modal-box" style="width:360px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="closeDraftDeleteModal()">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">임시저장 삭제</div>
+      <p id="draftDeleteName" style="font-size:13px; color:#7c3aed; font-weight:700; margin-bottom:10px;"></p>
+      <p style="font-size:13px; color:#444; line-height:1.7;">임시저장된 진단을 삭제하시겠습니까?<br>삭제된 내용은 복구되지 않습니다.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="closeDraftDeleteModal()">취소</button>
+      <button class="btn btn-primary" style="background:#c0392b; border-color:#c0392b;" onclick="confirmDraftDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 대기 클릭 팝업 1: 대상자 미설정 ===== -->
 <div class="modal-overlay" id="daegiModal1">
   <div class="modal-box" style="width:340px;">
@@ -823,7 +863,7 @@
       <p id="d3Name" style="font-size:13px; color:#333;"></p>
       <p id="d3Period" style="font-size:13px; color:#1a73e8; font-weight:600;"></p>
       <p id="d3Count" style="font-size:13px; color:#333;"></p>
-      <p style="font-size:13px; color:#333;">진단 대상자에게 링크를 발송하겠습니까?</p>
+      <p style="font-size:13px; color:#333;">진단 대상자에게 메일을 발송하겠습니까?</p>
     </div>
     <div class="modal-footer" style="justify-content:center; gap:8px;">
       <button class="btn btn-reset" onclick="closeDaegiModal(3)">취소</button>
@@ -940,6 +980,21 @@
     document.getElementById('daegiModal' + n).classList.remove('open');
   }
 
+  let _draftDeleteTarget = null;
+  function openDraftDeleteModal(diagName) {
+    _draftDeleteTarget = diagName;
+    document.getElementById('draftDeleteName').textContent = diagName;
+    document.getElementById('draftDeleteModal').classList.add('open');
+  }
+  function closeDraftDeleteModal() {
+    document.getElementById('draftDeleteModal').classList.remove('open');
+    _draftDeleteTarget = null;
+  }
+  function confirmDraftDelete() {
+    closeDraftDeleteModal();
+    showToast('임시저장된 진단이 삭제되었습니다.');
+  }
+
   function confirmDaegiStart() {
     closeDaegiModal(3);
     if (_daegiTargetRow) {
@@ -949,7 +1004,7 @@
         '<a class="btn btn-sm btn-outline" href="#" onclick="showToast(\'리더십 진단 관리자 페이지 — 해당 진단 상세 페이지로 이동합니다 (연동 예정)\'); return false;">관리</a>';
       _daegiTargetRow = null;
     }
-    showToast('진단이 시작되었습니다. 대상자에게 링크가 발송됩니다.');
+    showToast('진단이 시작되었습니다. 대상자에게 메일이 발송됩니다.');
   }
 
   [1,2,3].forEach(n => {

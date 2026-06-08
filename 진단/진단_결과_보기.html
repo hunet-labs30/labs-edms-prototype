@@ -119,6 +119,40 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .toggle-btn:hover{border-color:var(--primary);color:var(--primary);}
 .toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 
+/* ── 추천과정 Drawer ── */
+.rec-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:400;}
+.rec-drawer-overlay.open{display:block;}
+.rec-drawer{position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--white);box-shadow:-4px 0 24px rgba(0,0,0,.12);display:flex;flex-direction:column;z-index:401;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.rec-drawer-overlay.open .rec-drawer{transform:translateX(0);}
+.rec-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rec-drawer-title{font-size:15px;font-weight:700;color:var(--text-900);}
+.rec-drawer-close{background:none;border:none;cursor:pointer;color:var(--text-500);font-size:22px;line-height:1;padding:2px 4px;border-radius:4px;}
+.rec-drawer-close:hover{background:var(--bg);color:var(--text-900);}
+.rec-drawer-body{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:4px;}
+.rec-drawer-body::-webkit-scrollbar{width:4px;}
+.rec-drawer-body::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:4px;}
+.rec-drawer-desc{font-size:12px;color:var(--text-400);padding:4px 0 12px;line-height:1.6;}
+
+/* 추천과정 카드 — 썸네일 좌측형 */
+.rec-course-item{display:flex;gap:12px;align-items:flex-start;padding:12px 10px;border-radius:var(--r-lg);cursor:pointer;transition:background .12s;text-decoration:none;color:inherit;border:none;background:none;width:100%;}
+.rec-course-item:hover{background:var(--bg);}
+.rec-thumb{width:88px;height:64px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0;background:#e5e7eb;overflow:hidden;position:relative;}
+.rec-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.rec-thumb-badge{position:absolute;top:5px;left:5px;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;color:#fff;line-height:1.4;}
+.rec-thumb-badge.blue{background:var(--primary);}
+.rec-thumb-badge.purple{background:var(--purple);}
+.rec-thumb-badge.green{background:var(--green);}
+.rec-thumb-badge.orange{background:var(--orange);}
+.rec-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding-top:2px;}
+.rec-info-title{font-size:13px;font-weight:600;color:var(--text-900);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rec-info-meta{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-400);}
+.rec-info-meta svg{flex-shrink:0;}
+.rec-divider{height:1px;background:var(--border-light);margin:4px 0;}
+
+/* 추천과정 트리거 버튼 */
+.rec-trigger-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--primary-light);border:1.5px solid #c7d7fd;border-radius:20px;font-size:13px;font-weight:600;color:var(--primary);cursor:pointer;transition:all .15s;font-family:inherit;}
+.rec-trigger-btn:hover{background:#dde9fe;}
+
 /* ── Spec Note ── */
 .spec-section{margin-top:32px;}
 .spec-title{font-size:14px;font-weight:700;color:#b45309;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
@@ -219,6 +253,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             목록으로
           </a>
+          <button class="rec-trigger-btn" onclick="openRecDrawer()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            추천과정 보기
+          </button>
           <button class="btn btn-outline" id="downloadBtn" onclick="downloadReport()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             리포트 PDF 저장
@@ -421,7 +459,104 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   </div>
 </div>
 
+<!-- ── 추천과정 드로어 ── -->
+<div class="rec-drawer-overlay" id="recDrawerOverlay" onclick="if(event.target===this)closeRecDrawer()">
+  <div class="rec-drawer">
+    <div class="rec-drawer-head">
+      <span class="rec-drawer-title">📚 추천 과정</span>
+      <button class="rec-drawer-close" onclick="closeRecDrawer()">×</button>
+    </div>
+    <div class="rec-drawer-body">
+      <div class="rec-drawer-desc">진단 결과를 바탕으로 역량 향상에 도움이 되는 과정을 추천해드립니다.</div>
+
+      <button class="rec-course-item" onclick="location.href='#'">
+        <div class="rec-thumb">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1e3a5f,#246cf9);display:flex;align-items:center;justify-content:center;font-size:22px;">🤖</div>
+          <span class="rec-thumb-badge blue">북러닝</span>
+        </div>
+        <div class="rec-info">
+          <div class="rec-info-title">[북러닝] AI 2026 트렌드&amp;활용백과 (도서 미제공)</div>
+          <div class="rec-info-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            2시간
+          </div>
+        </div>
+      </button>
+      <div class="rec-divider"></div>
+
+      <button class="rec-course-item" onclick="location.href='#'">
+        <div class="rec-thumb">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#f5e6d3,#e8c09a);display:flex;align-items:center;justify-content:center;font-size:22px;">🧠</div>
+          <span class="rec-thumb-badge purple">Micro</span>
+        </div>
+        <div class="rec-info">
+          <div class="rec-info-title">AI 에이전트: 개인화된 AI의 등장</div>
+          <div class="rec-info-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            11분
+          </div>
+        </div>
+      </button>
+      <div class="rec-divider"></div>
+
+      <button class="rec-course-item" onclick="location.href='#'">
+        <div class="rec-thumb">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a7a4a,#22c55e);display:flex;align-items:center;justify-content:center;font-size:22px;">🏆</div>
+          <span class="rec-thumb-badge green">온라인</span>
+        </div>
+        <div class="rec-info">
+          <div class="rec-info-title">성과를 만드는 목표관리(OKR) 실전</div>
+          <div class="rec-info-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            1시간 30분
+          </div>
+        </div>
+      </button>
+      <div class="rec-divider"></div>
+
+      <button class="rec-course-item" onclick="location.href='#'">
+        <div class="rec-thumb">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:22px;">💬</div>
+          <span class="rec-thumb-badge purple">온라인</span>
+        </div>
+        <div class="rec-info">
+          <div class="rec-info-title">VUCA 시대 빛나는 코칭 리더십</div>
+          <div class="rec-info-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            2시간 40분
+          </div>
+        </div>
+      </button>
+      <div class="rec-divider"></div>
+
+      <button class="rec-course-item" onclick="location.href='#'">
+        <div class="rec-thumb">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#d06b00,#f97316);display:flex;align-items:center;justify-content:center;font-size:22px;">📊</div>
+          <span class="rec-thumb-badge orange">온라인</span>
+        </div>
+        <div class="rec-info">
+          <div class="rec-info-title">사람을 움직이는 사람관리의 기술</div>
+          <div class="rec-info-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            1시간 20분
+          </div>
+        </div>
+      </button>
+
+    </div>
+  </div>
+</div>
+
 <script>
+function openRecDrawer() {
+  document.getElementById('recDrawerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeRecDrawer() {
+  document.getElementById('recDrawerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 function showView(viewId, btn) {
   document.getElementById('view-available').style.display = 'none';
   document.getElementById('view-not-met').style.display = 'none';
