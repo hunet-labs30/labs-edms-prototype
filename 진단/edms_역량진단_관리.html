@@ -186,8 +186,21 @@
   .badge-blue   { background: #e8f0fe; color: #1a5cc8; }
   .badge-green  { background: #e6f7ee; color: #1a7a4a; }
   .badge-orange { background: #fff4e0; color: #b35c00; }
+  .badge-yellow { background: #fffbe6; color: #8a6400; }
   .badge-gray   { background: #f0f2f5; color: #888; }
   .badge-draft  { background: #f5f0ff; color: #7c3aed; border: 1px solid #e0d0ff; }
+
+  /* 상태 셀 내부: 배지 + 액션버튼 스택 */
+  .status-cell { text-align: center; vertical-align: middle; }
+  .status-stack { display: inline-flex; flex-direction: column; align-items: center; gap: 5px; }
+  .status-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 3px; padding: 2px 9px; font-size: 10px; font-weight: 700;
+    white-space: nowrap; cursor: pointer; font-family: inherit; transition: opacity .15s; border: 1px solid;
+  }
+  .status-action-btn:hover { opacity: 0.8; }
+  .action-start  { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+  .action-magam  { background: #b35c00; color: #fff; border-color: #b35c00; }
 
   /* STATUS BUTTONS (버튼 타입 상태 — 클릭 시 TP 어드민 이동) */
   .status-btn {
@@ -583,7 +596,10 @@
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('신임 팀장 온보딩 역량진단')">다운로드</button></td>
             <td class="status-cell">
-              <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '신임 팀장 온보딩 역량진단', 22, 18, '2025.04.10', '2025.04.30')">마감하기</button>
+              <div class="status-stack">
+                <span class="badge badge-orange">마감 가능</span>
+                <button class="status-action-btn action-magam" onclick="openMagamModal(this, '신임 팀장 온보딩 역량진단', 22, 18, '2025.04.10', '2025.04.30')">마감하기</button>
+              </div>
             </td>
             <td style="font-size:11px;">2025.03.31</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -608,7 +624,10 @@
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 핵심인재 역량진단')">다운로드</button></td>
             <td class="status-cell">
-              <button class="status-btn status-btn-orange" onclick="openMagamModal(this, '2025년 상반기 핵심인재 역량진단', 45, 45, '2025.03.01', '2025.03.31')">마감하기</button>
+              <div class="status-stack">
+                <span class="badge badge-orange">마감 가능</span>
+                <button class="status-action-btn action-magam" onclick="openMagamModal(this, '2025년 상반기 핵심인재 역량진단', 45, 45, '2025.03.01', '2025.03.31')">마감하기</button>
+              </div>
             </td>
             <td style="font-size:11px;">2025.02.20</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -628,7 +647,10 @@
             <td style="color:#bbb; font-size:11px;">대상자 미배정</td>
             <td style="color:#bbb;">-</td>
             <td class="status-cell">
-              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 팀장 역량진단', 0, '2026-09-01', '2026-09-30')">대기</button>
+              <div class="status-stack">
+                <span class="badge badge-yellow">대기</span>
+                <button class="status-action-btn action-start" onclick="openDaegiFlow(this, '2026년 하반기 팀장 역량진단', 0, '2026-09-01', '2026-09-30')">시작하기</button>
+              </div>
             </td>
             <td style="font-size:11px;">2026.05.10</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -653,7 +675,10 @@
             </td>
             <td style="color:#bbb;">-</td>
             <td class="status-cell">
-              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 하반기 전사 역량진단', 200, '2026-08-01', '2026-08-31')">대기</button>
+              <div class="status-stack">
+                <span class="badge badge-yellow">대기</span>
+                <button class="status-action-btn action-start" onclick="openDaegiFlow(this, '2026년 하반기 전사 역량진단', 200, '2026-08-01', '2026-08-31')">시작하기</button>
+              </div>
             </td>
             <td style="font-size:11px;">2026.05.01</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -678,7 +703,10 @@
             </td>
             <td style="color:#bbb;">-</td>
             <td class="status-cell">
-              <button class="status-btn status-btn-yellow" onclick="openDaegiFlow(this, '2026년 상반기 전사 역량진단', 580, '2026-05-14', '2026-06-13')">대기</button>
+              <div class="status-stack">
+                <span class="badge badge-yellow">대기</span>
+                <button class="status-action-btn action-start" onclick="openDaegiFlow(this, '2026년 상반기 전사 역량진단', 580, '2026-05-14', '2026-06-13')">시작하기</button>
+              </div>
             </td>
             <td style="font-size:11px;">2026.04.14</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -1000,7 +1028,8 @@
     closeDaegiModal(3);
     if (_daegiTargetRow) {
       _daegiTargetRow.querySelector('.status-cell').innerHTML =
-        '<span class="badge badge-blue">진행중</span>';
+        '<span class="badge badge-blue">진행중</span>'
+        ;
       _daegiTargetRow.querySelector('.action-cell').innerHTML =
         '<a class="btn btn-sm btn-outline" href="#" onclick="showToast(\'리더십 진단 관리자 페이지 — 해당 진단 상세 페이지로 이동합니다 (연동 예정)\'); return false;">관리</a>';
       _daegiTargetRow = null;
