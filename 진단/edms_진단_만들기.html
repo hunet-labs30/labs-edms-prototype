@@ -939,8 +939,8 @@ body {
           <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
             <div class="wiz-step-badge">6</div>
             <div class="wiz-step-meta">
-              <div class="wiz-step-title">대상자 & 응답자</div>
-              <div class="wiz-step-desc">진단 참여자 등록</div>
+              <div class="wiz-step-title">생성 확인</div>
+              <div class="wiz-step-desc">설정 요약 확인 후 생성</div>
             </div>
           </div>
         </div>
@@ -1143,22 +1143,42 @@ body {
           </div>
         </div>
 
-        <!-- STEP 6: 대상자 & 응답자 설정 -->
+        <!-- STEP 6: 진단 생성 확인 -->
         <div class="step-content wiz-card" id="step-content-6">
           <div class="wiz-card-head">
             <span class="wiz-step-tag">STEP 6 / 6 · 마지막 단계</span>
-            <h2>진단 대상자와 응답자를 설정해주세요</h2>
-            <p>진단을 받을 대상자와 각 유형별 응답자를 등록합니다.</p>
+            <h2>진단을 생성할까요?</h2>
+            <p>아래 내용을 확인한 뒤 진단을 생성하세요. 대상자와 응답자는 생성 후 진단 상세 화면에서 등록할 수 있습니다.</p>
           </div>
           <div class="wiz-card-body padded">
-            <div class="step4-section">
-              <div style="display:flex;flex-direction:column;overflow:hidden;">
-                <div class="tab-group" id="step4TabGroup"></div>
-                <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
-                  <div id="step4TabPanes"></div>
+
+            <!-- 설정 요약 -->
+            <div id="step6Summary" style="background:#f8f9fb;border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin-bottom:20px;display:flex;flex-direction:column;gap:12px;">
+              <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:4px;">설정 요약</div>
+              <div style="display:grid;grid-template-columns:120px 1fr;gap:8px 12px;font-size:13px;">
+                <span style="color:#888;font-weight:600;">진단지</span>
+                <span id="sum-diag" style="color:#1a1a2e;">—</span>
+                <span style="color:#888;font-weight:600;">응답자 유형</span>
+                <span id="sum-resp" style="color:#1a1a2e;">—</span>
+                <span style="color:#888;font-weight:600;">진단명</span>
+                <span id="sum-name" style="color:#1a1a2e;">—</span>
+                <span style="color:#888;font-weight:600;">진단 기간</span>
+                <span id="sum-period" style="color:#1a1a2e;">—</span>
+              </div>
+            </div>
+
+            <!-- 대상자/응답자 안내 -->
+            <div style="display:flex;align-items:flex-start;gap:14px;background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:18px 20px;">
+              <span style="font-size:28px;flex-shrink:0;margin-top:2px;">👥</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#1a5cc8;margin-bottom:6px;">대상자 &amp; 응답자는 진단 생성 후 등록합니다</div>
+                <div style="font-size:12px;color:#1a5cc8;line-height:1.8;">
+                  진단이 생성(대기 상태)된 이후 <strong>진단 상세 화면</strong>에서 대상자와 응답자를 등록할 수 있습니다.<br>
+                  임시저장 상태에서는 대상자·응답자 설정이 불가합니다.
                 </div>
               </div>
             </div>
+
           </div>
           <div class="wiz-card-foot">
             <div class="foot-left">
@@ -2648,6 +2668,32 @@ function exportTargetExcel(tabIdx) {
   showToast('엑셀 파일이 다운로드됩니다.');
 }
 
+function renderStep6Summary() {
+  // 진단지
+  const diagName = selectedQuestionnaire ? selectedQuestionnaire.name : '—';
+  document.getElementById('sum-diag').textContent = diagName;
+
+  // 응답자 유형
+  const respList = [];
+  if (selectedQuestionnaire) {
+    selectedQuestionnaire.types.forEach(type => {
+      const sel = Object.entries(respondentSettings[type.id] || {})
+        .filter(([,v]) => v).map(([k]) => k);
+      if (sel.length) respList.push(`${type.name}: ${sel.join('·')}`);
+    });
+  }
+  document.getElementById('sum-resp').textContent = respList.length ? respList.join(' / ') : '—';
+
+  // 진단명
+  const nameVal = document.getElementById('diagNameInput')?.value?.trim();
+  document.getElementById('sum-name').textContent = nameVal || '—';
+
+  // 기간
+  const sd = document.getElementById('diagStartDate')?.value;
+  const ed = document.getElementById('diagEndDate')?.value;
+  document.getElementById('sum-period').textContent = (sd && ed) ? `${sd} ~ ${ed}` : '—';
+}
+
 function previewDiagnosis() {
   showToast('미리보기 페이지로 이동합니다.');
 }
@@ -2772,7 +2818,7 @@ function goToStep(step) {
   if (step === 2) generateRespondentCards();
   if (step === 3) generateScoreSettings();
   if (step === 4) generateCourseTree();
-  if (step === 6) generateStep4Tabs();
+  if (step === 6) renderStep6Summary();
   updateBottomButtons();
   const wc = document.querySelector('.wiz-content');
   if (wc) wc.scrollTop = 0;
