@@ -171,6 +171,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .score-table th.ta-l{text-align:left;}
 .score-table td{padding:9px 12px;border-bottom:1px solid var(--border-light);text-align:center;vertical-align:middle;color:var(--text-700);}
 .score-table td.ta-l{text-align:left;}
+.score-table tr.type-header td{background:#e8f0fe;font-weight:800;font-size:13px;color:#1a5cc8;padding:10px 12px;border-left:4px solid #1a73e8;}
 .score-table tr.grp td{background:var(--bg);font-weight:700;font-size:12px;color:var(--text-700);padding:8px 12px;}
 .score-table tr.grp td:first-child{border-left:3px solid var(--primary);}
 .score-table tr:last-child td{border-bottom:none;}
@@ -440,10 +441,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="section-body">
             <div class="chart-section">
 
-              <!-- 전략적 사고: 강점 -->
+              <!-- Self역량군: 강점 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">전략적 사고</div>
+                  <div class="chart-label-name">Self역량군</div>
                   <div><span class="chart-badge s">강점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -462,10 +463,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">4.2</div>
               </div>
 
-              <!-- 리더십 역량: 보통 -->
+              <!-- People역량군: 보통 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">리더십 역량</div>
+                  <div class="chart-label-name">People역량군</div>
                 </div>
                 <div class="chart-track-area">
                   <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
@@ -481,10 +482,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">3.6</div>
               </div>
 
-              <!-- 의사소통 역량: 약점 -->
+              <!-- Team역량군: 약점 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">의사소통 역량</div>
+                  <div class="chart-label-name">Team역량군</div>
                   <div><span class="chart-badge w">약점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -501,10 +502,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score lo">2.3</div>
               </div>
 
-              <!-- 협업/관계 역량: 강점 -->
+              <!-- 소통협력역량군: 강점 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">협업/관계 역량</div>
+                  <div class="chart-label-name">소통협력역량군</div>
                   <div><span class="chart-badge s">강점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -521,10 +522,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">3.9</div>
               </div>
 
-              <!-- 변화 대응 역량: 약점 -->
+              <!-- 혁신성과역량군: 약점 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">변화 대응 역량</div>
+                  <div class="chart-label-name">혁신성과역량군</div>
                   <div><span class="chart-badge w">약점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -564,60 +565,67 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               </thead>
               <tbody>
 
-                <!-- 전략적 사고 -->
+                <!-- LC (리더십역량) -->
+                <tr class="type-header">
+                  <td colspan="5">LC (리더십역량)</td>
+                </tr>
+
+                <!-- Self역량군 -->
                 <tr class="grp">
-                  <td colspan="5">전략적 사고
+                  <td colspan="5">Self역량군
                     <span class="mini-badge s">강점</span>
                     <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 4.2 / 강점 기준 4.0 / 약점 기준 2.5</span>
                   </td>
                 </tr>
-                <tr><td></td><td class="ta-l">비전 수립</td><td class="hi">4.5</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
-                <tr><td></td><td class="ta-l">목표 관리</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">의사결정</td><td class="hi">4.0</td><td>3.3</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">전략적 사고</td><td class="hi">4.5</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">의사결정 능력</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
 
-                <!-- 리더십 역량 -->
+                <!-- People역량군 -->
                 <tr class="grp">
-                  <td colspan="5">리더십 역량
+                  <td colspan="5">People역량군
                     <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 3.6 / 강점 기준 4.2 / 약점 기준 2.8</span>
                   </td>
                 </tr>
-                <tr><td></td><td class="ta-l">조직 관리</td><td>3.8</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
-                <tr><td></td><td class="ta-l">동기 부여</td><td>3.5</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
+                <tr><td></td><td class="ta-l">비전 및 목표 설정</td><td>3.8</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
+                <tr><td></td><td class="ta-l">구성원 육성 및 동기부여</td><td>3.5</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
                 <tr><td></td><td class="ta-l">인재 육성</td><td>3.7</td><td>3.8</td><td class="gap-n">-0.1</td></tr>
-                <tr><td></td><td class="ta-l">성과 관리</td><td>3.4</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td>3.4</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
 
-                <!-- 의사소통 역량 -->
+                <!-- Team역량군 -->
                 <tr class="grp">
-                  <td colspan="5">의사소통 역량
+                  <td colspan="5">Team역량군
                     <span class="mini-badge w">약점</span>
                     <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 2.3 / 강점 기준 4.0 / 약점 기준 2.5</span>
                   </td>
                 </tr>
-                <tr><td></td><td class="ta-l">경청</td><td class="lo">2.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">갈등 관리</td><td class="lo">2.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
                 <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">2.1</td><td>3.6</td><td class="gap-n">-1.5</td></tr>
-                <tr><td></td><td class="ta-l">피드백</td><td class="lo">2.3</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td class="lo">2.3</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
 
-                <!-- 협업/관계 역량 -->
+                <!-- OC (조직문화역량) -->
+                <tr class="type-header">
+                  <td colspan="5">OC (조직문화역량)</td>
+                </tr>
+
+                <!-- 소통협력역량군 -->
                 <tr class="grp">
-                  <td colspan="5">협업/관계 역량
+                  <td colspan="5">소통협력역량군
                     <span class="mini-badge s">강점</span>
                     <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 3.9 / 강점 기준 3.8 / 약점 기준 2.5</span>
                   </td>
                 </tr>
-                <tr><td></td><td class="ta-l">팀워크</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">갈등 관리</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">네트워킹</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">소통 및 협력</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">다양성 존중</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
 
-                <!-- 변화 대응 역량 -->
+                <!-- 혁신성과역량군 -->
                 <tr class="grp">
-                  <td colspan="5">변화 대응 역량
+                  <td colspan="5">혁신성과역량군
                     <span class="mini-badge w">약점</span>
                     <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 2.4 / 강점 기준 4.0 / 약점 기준 2.5</span>
                   </td>
                 </tr>
-                <tr><td></td><td class="ta-l">혁신 추진</td><td class="lo">2.6</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
-                <tr><td></td><td class="ta-l">변화 관리</td><td class="lo">2.3</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
-                <tr><td></td><td class="ta-l">디지털 역량</td><td class="lo">2.3</td><td>3.3</td><td class="gap-n">-1.0</td></tr>
+                <tr><td></td><td class="ta-l">윤리경영 및 책임의식</td><td class="lo">2.6</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
+                <tr><td></td><td class="ta-l">변화관리 및 혁신</td><td class="lo">2.3</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
 
               </tbody>
             </table>
@@ -717,10 +725,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="section-body">
             <div class="chart-section">
 
-              <!-- 전략적 사고 -->
+              <!-- Self역량군 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">전략적 사고</div>
+                  <div class="chart-label-name">Self역량군</div>
                   <div><span class="chart-badge s">강점 근접</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -740,10 +748,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">4.2</div>
               </div>
 
-              <!-- 리더십 역량 -->
+              <!-- People역량군 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">리더십 역량</div>
+                  <div class="chart-label-name">People역량군</div>
                 </div>
                 <div class="chart-track-area">
                   <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
@@ -762,10 +770,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">3.6</div>
               </div>
 
-              <!-- 의사소통 역량 -->
+              <!-- Team역량군 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">의사소통 역량</div>
+                  <div class="chart-label-name">Team역량군</div>
                   <div><span class="chart-badge w">약점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -785,10 +793,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score lo">2.3</div>
               </div>
 
-              <!-- 협업/관계 역량 -->
+              <!-- 소통협력역량군 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">협업/관계 역량</div>
+                  <div class="chart-label-name">소통협력역량군</div>
                   <div><span class="chart-badge s">강점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -808,10 +816,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                 <div class="chart-score">3.9</div>
               </div>
 
-              <!-- 변화 대응 역량 -->
+              <!-- 혁신성과역량군 -->
               <div class="chart-row">
                 <div class="chart-label-wrap">
-                  <div class="chart-label-name">변화 대응 역량</div>
+                  <div class="chart-label-name">혁신성과역량군</div>
                   <div><span class="chart-badge w">약점</span></div>
                 </div>
                 <div class="chart-track-area">
@@ -857,46 +865,53 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               </thead>
               <tbody>
 
-                <!-- 전략적 사고 -->
-                <tr class="grp">
-                  <td colspan="8">전략적 사고 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                <!-- LC (리더십역량) -->
+                <tr class="type-header">
+                  <td colspan="8">LC (리더십역량)</td>
                 </tr>
-                <tr><td></td><td class="ta-l">비전 수립</td><td class="hi">4.5</td><td>4.0</td><td>4.2</td><td>4.1</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
-                <tr><td></td><td class="ta-l">목표 관리</td><td class="hi">4.1</td><td>3.8</td><td>3.9</td><td>3.8</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">의사결정</td><td class="hi">4.0</td><td>3.6</td><td>3.9</td><td>3.8</td><td>3.3</td><td class="gap-p">+0.7</td></tr>
 
-                <!-- 리더십 역량 -->
+                <!-- Self역량군 -->
                 <tr class="grp">
-                  <td colspan="8">리더십 역량 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.2 / 약점 기준 2.8</span></td>
+                  <td colspan="8">Self역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
                 </tr>
-                <tr><td></td><td class="ta-l">조직 관리</td><td>3.8</td><td class="hi">4.3</td><td>3.9</td><td class="hi">4.4</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
-                <tr><td></td><td class="ta-l">동기 부여</td><td>3.5</td><td>4.0</td><td>3.8</td><td>4.2</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
+                <tr><td></td><td class="ta-l">전략적 사고</td><td class="hi">4.5</td><td>4.0</td><td>4.2</td><td>4.1</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">의사결정 능력</td><td class="hi">4.1</td><td>3.8</td><td>3.9</td><td>3.8</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- People역량군 -->
+                <tr class="grp">
+                  <td colspan="8">People역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.2 / 약점 기준 2.8</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">비전 및 목표 설정</td><td>3.8</td><td class="hi">4.3</td><td>3.9</td><td class="hi">4.4</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
+                <tr><td></td><td class="ta-l">구성원 육성 및 동기부여</td><td>3.5</td><td>4.0</td><td>3.8</td><td>4.2</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
                 <tr><td></td><td class="ta-l">인재 육성</td><td>3.7</td><td>4.0</td><td>3.7</td><td>4.1</td><td>3.8</td><td class="gap-n">-0.1</td></tr>
-                <tr><td></td><td class="ta-l">성과 관리</td><td>3.4</td><td>4.1</td><td>3.8</td><td>4.1</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td>3.4</td><td>4.1</td><td>3.8</td><td>4.1</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
 
-                <!-- 의사소통 역량 -->
+                <!-- Team역량군 -->
                 <tr class="grp">
-                  <td colspan="8">의사소통 역량 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                  <td colspan="8">Team역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
                 </tr>
-                <tr><td></td><td class="ta-l">경청</td><td class="lo">2.5</td><td>3.4</td><td>3.6</td><td>3.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">갈등 관리</td><td class="lo">2.5</td><td>3.4</td><td>3.6</td><td>3.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
                 <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">2.1</td><td>3.0</td><td>3.4</td><td>3.3</td><td>3.6</td><td class="gap-n">-1.5</td></tr>
-                <tr><td></td><td class="ta-l">피드백</td><td class="lo">2.3</td><td>3.2</td><td>3.5</td><td>3.4</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td class="lo">2.3</td><td>3.2</td><td>3.5</td><td>3.4</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
 
-                <!-- 협업/관계 역량 -->
-                <tr class="grp">
-                  <td colspan="8">협업/관계 역량 <span class="mini-badge s">강점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 3.8 / 약점 기준 2.5</span></td>
+                <!-- OC (조직문화역량) -->
+                <tr class="type-header">
+                  <td colspan="8">OC (조직문화역량)</td>
                 </tr>
-                <tr><td></td><td class="ta-l">팀워크</td><td class="hi">4.1</td><td>4.2</td><td>4.3</td><td class="hi">4.4</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">갈등 관리</td><td class="hi">3.8</td><td>3.9</td><td>4.0</td><td>4.1</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
-                <tr><td></td><td class="ta-l">네트워킹</td><td class="hi">3.8</td><td>3.9</td><td>4.0</td><td>4.1</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
 
-                <!-- 변화 대응 역량 -->
+                <!-- 소통협력역량군 -->
                 <tr class="grp">
-                  <td colspan="8">변화 대응 역량 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                  <td colspan="8">소통협력역량군 <span class="mini-badge s">강점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 3.8 / 약점 기준 2.5</span></td>
                 </tr>
-                <tr><td></td><td class="ta-l">혁신 추진</td><td class="lo">2.6</td><td>3.2</td><td>3.3</td><td>3.2</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
-                <tr><td></td><td class="ta-l">변화 관리</td><td class="lo">2.3</td><td>2.9</td><td>3.1</td><td>3.0</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
-                <tr><td></td><td class="ta-l">디지털 역량</td><td class="lo">2.3</td><td>2.9</td><td>3.2</td><td>3.1</td><td>3.3</td><td class="gap-n">-1.0</td></tr>
+                <tr><td></td><td class="ta-l">소통 및 협력</td><td class="hi">4.1</td><td>4.2</td><td>4.3</td><td class="hi">4.4</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">다양성 존중</td><td class="hi">3.8</td><td>3.9</td><td>4.0</td><td>4.1</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- 혁신성과역량군 -->
+                <tr class="grp">
+                  <td colspan="8">혁신성과역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">윤리경영 및 책임의식</td><td class="lo">2.6</td><td>3.2</td><td>3.3</td><td>3.2</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
+                <tr><td></td><td class="ta-l">변화관리 및 혁신</td><td class="lo">2.3</td><td>2.9</td><td>3.1</td><td>3.0</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
 
               </tbody>
             </table>

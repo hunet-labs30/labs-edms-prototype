@@ -631,11 +631,15 @@ const DIAG_INFO = {
       desc: '팀장 리더십 역량에 대한 질문입니다.',
       guide: 'Q. 각 문장을 읽고, 홍길동님이 그 행동을 얼마나 자주, 강하게 보이는지에 따라 5점 척도로 응답해 주세요.',
       questions: [
+        { groupHeader: 'Self역량군' },
+        '전략적으로 사고하고 장기적인 방향을 설정하며 팀에 공유한다.',
+        '충분한 정보를 바탕으로 합리적인 의사결정을 내린다.',
+        { groupHeader: 'People역량군' },
         '비전/목표를 수립하고 이를 구성원들에게 명확하게 전달한다.',
-        '팀원의 역할과 책임을 명확히 배분하고 공정하게 운영한다.',
-        '업무 진행 상황을 체계적으로 파악하고 필요한 지원을 한다.',
         '팀원의 강점과 개발 영역을 파악하고 성장 기회를 제공한다.',
-        '팀원이 도전적인 목표를 설정하고 달성할 수 있도록 동기를 부여한다.',
+        { groupHeader: 'Team역량군' },
+        '팀 내 갈등 상황을 신속히 파악하고 건설적으로 해결한다.',
+        '성과 창출을 위해 자원을 효과적으로 배분하고 관리한다.',
       ]
     },
     {
@@ -721,13 +725,25 @@ function goNextTab() {
 }
 
 /* ── 진행율 계산 ── */
-function getTotalQuestions() { return DIAG_INFO.tabs.reduce((s, t) => s + t.questions.length, 0); }
+function getTotalQuestions() {
+  return DIAG_INFO.tabs.reduce((s, t) => s + t.questions.filter(q => !q || !q.groupHeader).length, 0);
+}
 function getAnsweredCount()  {
   const mainPrefixes = DIAG_INFO.tabs.map(t => t.id + '_');
   return Object.keys(answers).filter(k => mainPrefixes.some(p => k.startsWith(p))).length;
 }
-function getTabAnswered(tab) { return tab.questions.filter((_, i) => answers[`${tab.id}_${i}`] !== undefined).length; }
-function isTabComplete(tab)  { return getTabAnswered(tab) === tab.questions.length; }
+function getTabAnswered(tab) {
+  let qNum = 0;
+  return tab.questions.filter(q => {
+    if (q && q.groupHeader) return false;
+    qNum++;
+    return answers[`${tab.id}_${qNum}`] !== undefined;
+  }).length;
+}
+function isTabComplete(tab)  {
+  const actualQuestions = tab.questions.filter(q => !q || !q.groupHeader).length;
+  return getTabAnswered(tab) === actualQuestions;
+}
 function isAllComplete()     { return getAnsweredCount() === getTotalQuestions(); }
 
 /* ── 진행율 UI ── */
@@ -760,9 +776,10 @@ function showAutoSaved() {
 function renderTabBar() {
   document.getElementById('tabBar').innerHTML = DIAG_INFO.tabs.map(tab => {
     const answered = getTabAnswered(tab);
+    const actualQuestions = tab.questions.filter(q => !q || !q.groupHeader).length;
     let badgeClass = 'waiting', badgeLabel = '대기';
-    if (answered === tab.questions.length) { badgeClass = 'done';    badgeLabel = '완료'; }
-    else if (answered > 0)                 { badgeClass = 'ongoing'; badgeLabel = '진행중'; }
+    if (answered === actualQuestions) { badgeClass = 'done';    badgeLabel = '완료'; }
+    else if (answered > 0)            { badgeClass = 'ongoing'; badgeLabel = '진행중'; }
     return `<div class="diag-tab-item ${tab.id === activeTabId ? 'active' : ''}" onclick="switchTab('${tab.id}')">
       ${tab.label}
       <span class="tab-badge ${badgeClass}">${badgeLabel}</span>
@@ -803,13 +820,19 @@ function renderContent() {
     <h2>${tab.desc}</h2>
     <div class="section-guide">${tab.guide}</div>
   </div>`;
+  let qNum = 0;
   tab.questions.forEach((q, idx) => {
-    if      (tab.type === 'ab')        html += renderABCard(tab, q, idx);
-    else if (tab.type === 'text')      html += renderTextCard(tab, q, idx);
-    else if (tab.type === 'radio')     html += renderRadioCard(tab, q, idx);
-    else if (tab.type === 'dropdown')  html += renderDropdownCard(tab, q, idx);
-    else if (tab.type === 'shorttext') html += renderShortTextCard(tab, q, idx);
-    else                               html += renderLikertCard(tab, q, idx);
+    if (q && q.groupHeader) {
+      html += `<div style="margin: 20px 0 8px; padding: 8px 14px; background: #e8f0fe; border-left: 3px solid #1a73e8; border-radius: 4px; font-size: 12px; font-weight: 700; color: #1a5cc8;">${q.groupHeader}</div>`;
+    } else {
+      qNum++;
+      if      (tab.type === 'ab')        html += renderABCard(tab, q, qNum);
+      else if (tab.type === 'text')      html += renderTextCard(tab, q, qNum);
+      else if (tab.type === 'radio')     html += renderRadioCard(tab, q, qNum);
+      else if (tab.type === 'dropdown')  html += renderDropdownCard(tab, q, qNum);
+      else if (tab.type === 'shorttext') html += renderShortTextCard(tab, q, qNum);
+      else                               html += renderLikertCard(tab, q, qNum);
+    }
   });
   document.getElementById('contentArea').innerHTML = html;
 }
@@ -997,13 +1020,19 @@ function renderSampleSection() {
   SAMPLE_TYPES.forEach(tab => {
     html += `<div class="sample-type-block">
       <div class="sample-type-label">${tab.label}</div>`;
+    let qNum = 0;
     tab.questions.forEach((q, idx) => {
-      if      (tab.type === 'ab')        html += renderABCard(tab, q, idx);
-      else if (tab.type === 'text')      html += renderTextCard(tab, q, idx);
-      else if (tab.type === 'radio')     html += renderRadioCard(tab, q, idx);
-      else if (tab.type === 'dropdown')  html += renderDropdownCard(tab, q, idx);
-      else if (tab.type === 'shorttext') html += renderShortTextCard(tab, q, idx);
-      else                               html += renderLikertCard(tab, q, idx);
+      if (q && q.groupHeader) {
+        html += `<div style="margin: 20px 0 8px; padding: 8px 14px; background: #e8f0fe; border-left: 3px solid #1a73e8; border-radius: 4px; font-size: 12px; font-weight: 700; color: #1a5cc8;">${q.groupHeader}</div>`;
+      } else {
+        qNum++;
+        if      (tab.type === 'ab')        html += renderABCard(tab, q, qNum);
+        else if (tab.type === 'text')      html += renderTextCard(tab, q, qNum);
+        else if (tab.type === 'radio')     html += renderRadioCard(tab, q, qNum);
+        else if (tab.type === 'dropdown')  html += renderDropdownCard(tab, q, qNum);
+        else if (tab.type === 'shorttext') html += renderShortTextCard(tab, q, qNum);
+        else                               html += renderLikertCard(tab, q, qNum);
+      }
     });
     html += `</div>`;
   });
