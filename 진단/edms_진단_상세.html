@@ -603,7 +603,6 @@
                 <th style="width:95px;">휴대번호</th>
                 <th style="width:70px;">메일발송상태</th>
                 <th style="width:70px;">진단진행상태</th>
-                <th style="width:130px;">진단시작일</th>
                 <th style="width:130px;">진단종료일</th>
               </tr>
             </thead>
@@ -616,7 +615,7 @@
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
+                <td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
               <!-- Row 2: 진행중 (본인) — 종료일만 편집 가능 -->
               <tr>
@@ -626,7 +625,6 @@
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;" title="현재 날짜 이전으로 변경 불가">
@@ -642,7 +640,7 @@
                 <td>이*우</td><td>g***@hunet.co.kr</td><td>2019005</td><td>휴넷</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
+                <td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
               <!-- Row 4: 시작 전 (본인) -->
               <tr>
@@ -652,7 +650,6 @@
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
@@ -668,7 +665,7 @@
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
+                <td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
               <!-- Row 6: 진행중 (구성원 평가자) — 종료일만 편집 가능 -->
               <tr>
@@ -678,7 +675,6 @@
                 <td>이*우</td><td>j***@hunet.co.kr</td><td>2021030</td><td>휴넷</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;" title="현재 날짜 이전으로 변경 불가">
@@ -694,7 +690,6 @@
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">시작 전</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
@@ -710,17 +705,32 @@
                 <td>박*경</td><td>s***@hunet.co.kr</td><td>2022055</td><td>휴넷</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
-                <td style="font-size:11px;">2025.05.01 00:00</td><td style="font-size:11px;">2025.05.31 23:59</td>
+                <td style="font-size:11px;">2025.05.31 23:59</td>
               </tr>
-              <!-- Row 9: 중단 — 진단 대상자 탈퇴 (체크박스 비활성화) -->
+              <!-- Row 9: 미발송 (본인) -->
+              <tr>
+                <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
+                <td>9</td>
+                <td>류*나</td><td>r***@hunet.co.kr</td><td>2025055</td><td>휴넷</td><td>인사팀</td><td>대리</td><td>010-****-9988</td><td><span class="badge badge-blue">본인</span></td>
+                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="badge badge-gray">미발송</span></td>
+                <td><span class="badge badge-gray">시작 전</span></td>
+                <td>
+                  <div class="date-cell">
+                    <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
+                    <input type="time" class="input input-sm" value="23:59" style="width:82px;">
+                  </div>
+                </td>
+              </tr>
+              <!-- Row 10: 중단 — 진단 대상자 탈퇴 (체크박스 비활성화) -->
               <tr class="withdrawn-row">
                 <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>9</td>
                 <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-                <td><span class="badge badge-gray">미발송</span> <button class="btn btn-sm" style="height:22px;padding:0 8px;font-size:11px;background:#1a73e8;color:#fff;border:none;border-radius:3px;cursor:pointer;margin-top:2px;" onclick="showToast('메일이 발송되었습니다.')">발송하기</button></td>
+                <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
-                <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
+                <td style="font-size:11px;">—</td>
               </tr>
               <!-- Row 10: 중단 — 응답(평가자) 탈퇴 (체크박스 비활성화) -->
               <tr class="withdrawn-row">
@@ -728,9 +738,9 @@
                 <td>10</td>
                 <td>정*은</td><td>d***@hunet.co.kr</td><td>2023055</td><td>휴넷</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
                 <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-                <td><span class="badge badge-gray">미발송</span> <button class="btn btn-sm" style="height:22px;padding:0 8px;font-size:11px;background:#1a73e8;color:#fff;border:none;border-radius:3px;cursor:pointer;margin-top:2px;" onclick="showToast('메일이 발송되었습니다.')">발송하기</button></td>
+                <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
-                <td style="font-size:11px;">—</td><td style="font-size:11px;">—</td>
+                <td style="font-size:11px;">—</td>
               </tr>
             </tbody>
           </table>
@@ -746,7 +756,7 @@
 <div id="mailModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('mailModal')">
   <div class="modal-box">
     <div class="modal-title">알림</div>
-    <div class="modal-msg" id="mailModalMsg">0선택 인원에게 메일을 전송하겠습니까?</div>
+    <div class="modal-msg" id="mailModalMsg">선택 인원에게 메일을 전송하겠습니까?</div>
     <div class="modal-btn-row">
       <button class="btn btn-primary btn-sm" onclick="confirmMail()">확인</button>
       <button class="btn btn-reset btn-sm" onclick="closeModalById('mailModal')">취소</button>
@@ -754,11 +764,21 @@
   </div>
 </div>
 
-<!-- 종료일 변경 모달 -->
+<!-- 시작/종료일 변경 모달 -->
 <div id="dateChangeModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('dateChangeModal')">
   <div class="modal-box">
     <div class="modal-title">알림</div>
-    <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 종료일을 아래와 같이 변경하겠습니까?</div>
+    <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?</div>
+    <div class="modal-date-row">
+      <div class="modal-date-label">시작일</div>
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
+        <div style="display:flex;gap:6px;">
+          <input type="date" id="modalStartDateInp" class="input" value="2025-05-01" style="width:140px;height:30px;">
+          <input type="time" id="modalStartTimeInp" class="input" value="00:00" style="width:100px;height:30px;">
+        </div>
+        <div class="modal-notice" id="modalStartDateNote">진행중인 진단은 시작일 변경이 적용되지 않습니다.</div>
+      </div>
+    </div>
     <div class="modal-date-row">
       <div class="modal-date-label">종료일</div>
       <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
@@ -1078,12 +1098,16 @@
       sel.value = ''; return;
     }
     if (val === 'mail') {
-      document.getElementById('mailModalMsg').textContent = count + '선택 인원에게 메일을 전송하겠습니까?';
+      document.getElementById('mailModalMsg').textContent = '선택 인원에게 메일을 전송하겠습니까?';
       document.getElementById('mailModal').classList.add('open');
     } else if (val === 'datechange') {
-      // 시작일 수정 불가 — 종료일만 변경 가능
+      // 선택된 행 중 진행중 상태가 있으면 안내 문구 표시 (시작일 입력은 가능하지만 확인 시 무시됨)
       const checkedRows = [...document.querySelectorAll('.after-row-chk:not(:disabled):checked')]
         .map(cb => cb.closest('tr'));
+      const hasInProgress = checkedRows.some(tr =>
+        [...tr.querySelectorAll('.badge')].some(b => b.textContent.trim() === '진행중')
+      );
+      document.getElementById('modalStartDateNote').style.display = hasInProgress ? '' : 'none';
 
       // 선택된 행들의 현재 종료일 중 가장 늦은 날짜를 min으로 설정
       const endDates = checkedRows.map(tr => {
@@ -1106,7 +1130,7 @@
         endDateNote.style.display = 'none';
       }
 
-      document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 종료일을 아래와 같이 변경하겠습니까?';
+      document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
       document.getElementById('dateChangeModal').classList.add('open');
     }
     sel.value = '';
@@ -1477,6 +1501,7 @@
   function closeModalById(id) {
     document.getElementById(id).classList.remove('open');
   }
+
 </script>
 </body>
 </html>

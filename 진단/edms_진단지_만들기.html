@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단지 만들기 — LABS New EDMS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #1a73e8;
+  --primary-dark: #1557b0;
+  --bg: #f5f6fa;
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #3d5166;
+  --header-bg: #1e2b37;
+  --white: #ffffff;
+  --border: #dde1e7;
+  --text: #333;
+  --depth1: #1a73e8;
+  --depth2: #6f42c1;
+  --depth3: #e26a00;
+}
+body {
+  font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+  font-size: 13px; background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ── HEADER ── */
+.top-header { background: var(--header-bg); color: #fff; height: 46px; display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; z-index: 200; }
+.top-header .logo { font-size: 15px; font-weight: 700; color: #fff; }
+.top-header .logo span { color: #7eb8f7; }
+.top-header .subtitle { font-size: 12px; color: #aab; }
+.top-header .spacer { flex: 1; }
+.top-header .user-name { font-size: 13px; color: #ccc; }
+.top-header .btn-header { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar { width: 180px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+.nav-group-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; cursor: pointer; user-select: none; color: #b8c4ce; font-size: 12px; font-weight: 700; border-left: 3px solid transparent; }
+.nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-group.open > .nav-group-header { color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7; }
+.nav-group-label { flex: 1; }
+.nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; }
+.nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+.nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.nav-group.open > .nav-sub { max-height: 500px; padding: 2px 0 6px; }
+.nav-item { display: block; padding: 5px 12px 5px 22px; color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; }
+.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+.nav-flat { display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+.nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+/* 2-depth sub nav-group (역량진단 관리 하위) */
+.nav-sub-group { margin: 1px 8px 3px 12px; border-left: 2px solid rgba(126,184,247,0.25); }
+.nav-sub-group-header {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 10px; color: #b8c4ce; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; user-select: none;
+}
+.nav-sub-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-sub-group.active-section > .nav-sub-group-header { color: #7eb8f7; }
+.nav-sub-group-arrow { font-size: 8px; transition: transform 0.2s; color: #556; }
+.nav-sub-group.open .nav-sub-group-arrow { transform: rotate(90deg); color: #7eb8f7; }
+.nav-sub-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.nav-sub-group.open > .nav-sub-sub { max-height: 280px; padding: 2px 0 4px; }
+.nav-sub-item {
+  display: block; padding: 5px 10px 5px 26px;
+  color: #8da0b0; font-size: 11.5px; text-decoration: none; cursor: pointer;
+}
+.nav-sub-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-sub-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+
+/* ── MAIN (wizard) ── */
+.main { flex: 1; overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+.wiz-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* 왼쪽 단계 패널 */
+.wiz-aside {
+  width: 220px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.wiz-aside-head { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+.wiz-aside-head .wiz-aside-title { font-size: 14px; font-weight: 800; color: #1a1a2e; }
+.wiz-aside-head .wiz-aside-sub { font-size: 11px; color: #999; margin-top: 3px; }
+.wiz-step-list { padding: 8px 10px; flex: 1; }
+.wiz-step-connector { width: 1.5px; height: 16px; background: #e0e3e8; margin: 0 auto 0 20px; }
+.wiz-step-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 8px; border-radius: 8px; cursor: pointer;
+  transition: background .12s;
+}
+.wiz-step-item:hover { background: #f5f6f8; }
+.wiz-step-item.is-active { background: #eef2ff; }
+.wiz-step-badge {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  background: #e0e3e8; color: #999; margin-top: 1px;
+  transition: background .2s, color .2s;
+}
+.wiz-step-item.is-active .wiz-step-badge { background: var(--primary); color: #fff; }
+.wiz-step-item.is-done .wiz-step-badge { background: #1a7a4a; color: #fff; font-size: 14px; }
+.wiz-step-meta { flex: 1; }
+.wiz-step-title { font-size: 12px; font-weight: 700; color: #bbb; line-height: 1.3; }
+.wiz-step-item.is-active .wiz-step-title { color: var(--primary); }
+.wiz-step-item.is-done .wiz-step-title { color: #333; }
+.wiz-step-desc { font-size: 11px; color: #ccc; margin-top: 3px; line-height: 1.4; }
+.wiz-step-item.is-active .wiz-step-desc { color: #7aaaf7; }
+.wiz-step-item.is-done .wiz-step-desc { color: #999; }
+.wiz-aside-foot { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+/* 오른쪽 콘텐츠 영역 */
+.wiz-content { flex: 1; min-width: 0; overflow-y: auto; background: var(--bg); padding: 20px; }
+
+/* 스텝 카드 */
+.wiz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-direction: column; overflow: hidden;
+  min-height: calc(100vh - 130px);
+}
+.wiz-card-head {
+  padding: 22px 28px 18px; background: #fafbfc;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.wiz-step-tag {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  background: #e8f0fe; padding: 3px 10px; border-radius: 12px;
+  margin-bottom: 10px;
+}
+.wiz-card-head h2 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; letter-spacing: -.3px; }
+.wiz-card-head p { font-size: 13px; color: #888; margin: 0; line-height: 1.65; }
+.wiz-card-body { flex: 1; padding: 20px 24px; }
+.wiz-card-foot {
+  flex-shrink: 0; padding: 14px 28px;
+  border-top: 1px solid var(--border); background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wiz-card-foot .foot-left { display: flex; align-items: center; gap: 8px; }
+.wiz-card-foot .foot-right { display: flex; align-items: center; gap: 8px; }
+
+.step-content { display: none; }
+.step-content.active { display: flex; flex-direction: column; }
+
+/* breadcrumb */
+.wiz-breadcrumb { font-size: 11px; color: #999; margin-bottom: 8px; }
+
+/* ── BUTTONS ── */
+.btn { height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; font-weight: 700; }
+.btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); font-weight: 600; }
+.btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+.btn-danger { background: #fff; color: #c0392b; border: 1px solid #e8c4bf; }
+.btn-sm { height: 26px; padding: 0 10px; font-size: 11px; }
+.btn-xs { height: 22px; padding: 0 8px; font-size: 11px; gap: 3px; }
+.btn-lg { height: 38px; padding: 0 22px; font-size: 14px; font-weight: 700; }
+.btn-draft {
+  background: #fff; border: 1px solid #ccc; color: #555;
+  display: inline-flex; align-items: center; gap: 5px; width: 100%; justify-content: center;
+  height: 32px; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: inherit;
+}
+.btn-draft:hover { border-color: var(--primary); color: var(--primary); }
+.draft-saved { font-size: 11px; color: #888; display: none; text-align: center; }
+.draft-saved.show { display: block; }
+
+/* ── 안내 배너 ── */
+.guide-banner {
+  background: linear-gradient(120deg, #e8f0fe 0%, #f0e9ff 100%);
+  border: 1px solid #c7d8f7; border-radius: 8px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+}
+.guide-banner-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.guide-banner-text { flex: 1; line-height: 1.6; font-size: 12.5px; color: #1a3a7a; }
+.guide-banner-text strong { color: #0a1e4a; }
+
+/* ── 뎁스 구조 시각 안내 ── */
+.depth-explainer { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.depth-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; background: #fff; border-radius: 14px;
+  font-size: 11px; font-weight: 700;
+}
+.depth-chip .dot { width: 9px; height: 9px; border-radius: 50%; }
+.depth-chip .d1 { background: var(--depth1); }
+.depth-chip .d2 { background: var(--depth2); }
+.depth-chip .d3 { background: var(--depth3); }
+.depth-arrow { color: #999; font-size: 12px; }
+
+/* ── 본문 2-pane ── */
+.workspace { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 16px; align-items: start; }
+
+/* ── 카드 ── */
+.card { background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.card-head { padding: 13px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-head-title { font-size: 14px; font-weight: 700; color: #1a1a2e; flex: 1; }
+.card-head-sub { font-size: 11px; color: #888; }
+.card-body { padding: 14px 18px; }
+.card-body.p0 { padding: 0; }
+
+/* ── 옵션 바 ── */
+.options-bar { display: flex; align-items: center; gap: 14px; padding: 10px 18px; background: #fafbfc; border-bottom: 1px solid var(--border); font-size: 12px; }
+.opt-label { color: #666; }
+
+/* ── 빈 상태 ── */
+.empty-state { padding: 56px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.empty-icon { font-size: 44px; opacity: 0.8; }
+.empty-title { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+.empty-desc { font-size: 13px; color: #666; line-height: 1.7; max-width: 480px; }
+.empty-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* ── 트리 ── */
+.tree { padding: 6px 0; }
+.tree-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid #f0f2f5; position: relative; }
+.tree-row:hover { background: #f8faff; }
+.tree-row.editing { background: #fff8e1; }
+.toggle-btn {
+  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #666; cursor: pointer; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.toggle-btn.open { transform: rotate(90deg); }
+.toggle-btn.invisible { visibility: hidden; }
+.depth-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 20px; padding: 0 8px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.depth-badge.d1 { background: var(--depth1); }
+.depth-badge.d2 { background: var(--depth2); }
+.depth-badge.d3 { background: var(--depth3); }
+.code-label {
+  font-family: 'Consolas', monospace; font-size: 11px;
+  color: #666; background: #f0f2f5; padding: 1px 6px; border-radius: 3px;
+  flex-shrink: 0;
+}
+.row-name { font-size: 13px; font-weight: 600; color: #1a1a2e; flex: 1; }
+.row-name.d2 { font-weight: 600; color: #2a2a3e; }
+.row-name.d3 { font-weight: 500; color: #444; }
+.row-meta { font-size: 11px; color: #999; flex-shrink: 0; }
+.row-actions { display: flex; gap: 4px; }
+
+/* ── 질문 행 미리보기 (응답 화면 스타일) ── */
+.qrow-q-text { font-size: 13px; color: #1a1a2e; line-height: 1.65; margin-bottom: 12px; font-weight: 500; }
+.qrow-likert-wrap { display: flex; gap: 4px; border-top: 1px solid #f0f2f5; padding-top: 12px; }
+.qrow-likert-opt { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.qrow-likert-circle { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #dde1e7; }
+.qrow-likert-lbl { font-size: 10px; color: #888; text-align: center; line-height: 1.3; word-break: keep-all; }
+.qrow-ab-wrap { display: flex; gap: 8px; margin-bottom: 8px; }
+.qrow-ab-card { flex: 1; border: 1.5px dashed #dde1e7; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #555; line-height: 1.5; }
+.qrow-ab-tag-lbl { display: inline-block; font-size: 11px; font-weight: 700; color: #999; background: #f3f4f6; border: 1px solid #dde1e7; border-radius: 3px; padding: 1px 6px; margin-bottom: 5px; }
+.qrow-ab-btns { display: flex; gap: 3px; }
+.qrow-ab-scale-btn { flex: 1; text-align: center; font-size: 10px; padding: 6px 2px; border: 1px solid #dde1e7; border-radius: 4px; color: #aaa; background: #fafbfc; line-height: 1.3; word-break: keep-all; }
+.qrow-ab-scale-btn.side { font-weight: 700; color: #555; }
+.qrow-essay-mock { border: 1.5px solid #dde1e7; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #bbb; min-height: 56px; margin-top: 8px; }
+/* ── 드래그 핸들 ── */
+.drag-handle { cursor: grab; color: #ccc; font-size: 16px; flex-shrink: 0; display: flex; align-items: center; padding: 0 2px; user-select: none; }
+.drag-handle:hover { color: #999; }
+.s2-q-row.drag-over { border: 2px dashed var(--primary); background: #f0f7ff; }
+.tree-row.drag-over { background: #f0f7ff; border-left: 3px solid var(--primary); }
+
+/* indent levels */
+.tree-row.d2 { padding-left: 38px; background: #fcfcfd; }
+.tree-row.d3 { padding-left: 64px; background: #fff; }
+
+/* inline edit */
+.inline-input { height: 26px; border: 1px solid var(--primary); border-radius: 3px; padding: 0 8px; font-size: 12px; font-family: inherit; outline: none; flex: 1; }
+.inline-code { height: 26px; border: 1px solid #d0d7e2; border-radius: 3px; padding: 0 8px; font-size: 11px; font-family: 'Consolas', monospace; outline: none; width: 130px; color: #555; }
+
+/* ── 우측 패널 ── */
+.summary-stat { display: flex; align-items: baseline; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #f0f2f5; }
+.summary-stat:last-of-type { border-bottom: none; }
+.stat-label { font-size: 11px; color: #666; flex: 1; display: flex; align-items: center; gap: 6px; }
+.stat-num { font-size: 20px; font-weight: 800; color: var(--primary); }
+.stat-num.d2 { color: var(--depth2); }
+.stat-num.d3 { color: var(--depth3); }
+.stat-suffix { font-size: 11px; color: #888; }
+
+.next-step-card { background: #f8faff; border: 1px solid #c7d8f7; }
+.next-step-card .card-body { padding: 14px 16px; font-size: 12px; line-height: 1.7; color: #1a3a7a; }
+.next-step-card strong { color: #0a1e4a; }
+
+/* ── 모달 ── */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; border-radius: 8px; width: 600px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; font-size: 13px; line-height: 1.7; color: #333; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+.preset-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 12px 14px; cursor: pointer; margin-bottom: 10px; transition: all 0.15s; }
+.preset-card:hover { border-color: var(--primary); background: #f8faff; }
+.preset-card.selected { border-color: var(--primary); background: #eaf2fd; }
+.preset-title { font-weight: 700; font-size: 13px; color: #1a1a2e; margin-bottom: 4px; }
+.preset-desc { font-size: 11.5px; color: #666; margin-bottom: 6px; }
+.preset-stats { font-size: 11px; color: var(--primary); font-weight: 600; }
+
+/* 토스트 */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 11px 18px; border-radius: 5px; font-size: 12.5px; z-index: 9999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+/* ── 점수 설정 & 미리보기 ── */
+/* 척도 단계 선택 */
+.step-selector { display:flex;gap:4px;flex-wrap:wrap; }
+.step-btn { height:28px;padding:0 12px;border:1px solid var(--border);border-radius:4px;font-size:12px;color:#666;background:#fff;cursor:pointer;font-family:inherit;transition:all .12s; }
+.step-btn:hover { border-color:var(--primary);color:var(--primary); }
+.step-btn.active { background:var(--primary);color:#fff;border-color:var(--primary);font-weight:700; }
+.scale-label-row { display:flex;align-items:center;gap:8px;padding:5px 4px;border-bottom:1px solid #f5f6f8; }
+.scale-label-num { width:24px;height:24px;border-radius:50%;background:#e8f0fe;color:var(--primary);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.scale-label-input { flex:1;height:28px;border:1px solid var(--border);border-radius:4px;padding:0 8px;font-size:12px;font-family:inherit;outline:none; }
+.scale-label-input:focus { border-color:var(--primary); }
+.scale-label-score { font-size:10px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 6px;border-radius:4px;flex-shrink:0;min-width:32px;text-align:center; }
+.score-input { width:52px;height:28px;border:1px solid var(--border);border-radius:4px;padding:0 6px;font-size:12px;text-align:center;font-family:inherit;outline:none; }
+.score-input:focus { border-color:var(--primary); }
+.score-unit { font-size:11px;color:#888;flex-shrink:0; }
+.option-score-row { display:flex;align-items:center;gap:6px; }
+.q-score-info { font-size:10.5px;color:#aaa;margin-top:3px;line-height:1.5; }
+.q-score-tag { display:inline-flex;align-items:center;background:#f0f4ff;color:var(--primary);padding:0px 5px;border-radius:5px;font-size:10px;font-weight:700; }
+.q-preview-section { margin-top:12px;border-top:1px dashed var(--border);padding-top:10px; }
+.q-preview-toggle { display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#888;user-select:none;background:none;border:1px solid var(--border);padding:5px 10px;border-radius:4px;font-family:inherit; }
+.q-preview-toggle:hover { color:var(--primary);border-color:var(--primary);background:#f8faff; }
+.pv-arrow { font-size:9px;transition:transform .15s; }
+.qpv-area { margin-top:10px; }
+.qpv-card { background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:16px 18px; }
+.qpv-num { font-size:10px;font-weight:700;color:var(--primary);background:#e8f0fe;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:10px; }
+.qpv-text { font-size:13px;color:#1a1a2e;line-height:1.7;margin-bottom:14px;font-weight:500; }
+.qpv-prefix { font-weight:700; }
+.qpv-likert { display:flex;gap:4px; }
+.qpv-likert-opt { flex:1;text-align:center; }
+.qpv-circle { width:28px;height:28px;border:2px solid var(--border);border-radius:50%;margin:0 auto 5px; }
+.qpv-likert-label { font-size:10px;color:#888;line-height:1.3;word-break:keep-all; }
+.qpv-score-label { font-size:10px;color:var(--primary);font-weight:700;margin-top:3px; }
+.qpv-ab-wrap { display:flex;gap:8px;margin-bottom:10px; }
+.qpv-ab-box { flex:1;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:#444;line-height:1.5; }
+.qpv-ab-tag { font-weight:800;color:var(--primary);font-size:14px;margin-right:5px; }
+.qpv-ab-scale { display:flex;gap:3px; }
+.qpv-ab-btn { flex:1;text-align:center;font-size:9px;padding:5px 2px;border:1px solid var(--border);border-radius:4px;color:#888;background:#fafbfc;line-height:1.4; }
+.qpv-ab-btn.side { background:#e8f0fe;color:var(--primary);font-weight:700; }
+.qpv-options { display:flex;flex-direction:column;gap:6px; }
+.qpv-option { display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:#444; }
+.qpv-radio-dot { width:15px;height:15px;border:2px solid var(--border);border-radius:50%;flex-shrink:0; }
+.qpv-score-chip { margin-left:auto;font-size:10px;font-weight:700;background:#e8f0fe;color:var(--primary);padding:1px 6px;border-radius:6px;flex-shrink:0; }
+.qpv-input-mock { border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;color:#bbb;background:#fafbfc; }
+.qpv-textarea-mock { min-height:56px;border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:12px;color:#bbb;background:#fafbfc; }
+.qpv-counter { font-size:10px;color:#aaa;text-align:right;margin-top:3px; }
+
+/* ── STEP 3: 기본 정보 ── */
+.s3-grid { display:grid;grid-template-columns:1fr 270px;gap:24px;align-items:start; }
+.s3-radio-card { display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px 14px;border:1.5px solid var(--border);border-radius:7px;transition:all .12s; }
+.s3-radio-card:hover { border-color:var(--primary);background:#f8faff; }
+.s3-radio-card.selected { border-color:var(--primary);background:#e8f0fe; }
+.s3-radio-dot { width:16px;height:16px;min-width:16px;border:2px solid var(--border);border-radius:50%;margin-top:2px;flex-shrink:0;transition:all .12s; }
+.s3-radio-card.selected .s3-radio-dot { border-color:var(--primary);background:var(--primary);box-shadow:inset 0 0 0 3px #fff; }
+.s3-summary-box { background:#f8faff;border:1.5px solid #c7d8f7;border-radius:8px;padding:16px;position:sticky;top:0; }
+.s3-summary-title { font-size:12px;font-weight:700;color:#0a1e4a;margin-bottom:10px;display:flex;align-items:center;gap:6px; }
+.s3-summary-row { display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #dde8f8;font-size:12px; }
+.s3-summary-row:last-of-type { border-bottom:none; }
+.s3-summary-label { color:#555; }
+.s3-summary-val { font-weight:700;color:var(--primary); }
+.s3-summary-section-title { font-size:11px;font-weight:700;color:#0a1e4a;margin:10px 0 4px;padding-top:8px;border-top:1px solid #dde8f8; }
+
+/* 미구현 STEP placeholder */
+.step-placeholder {
+  padding: 56px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  background: #fafbfc; border: 1px dashed var(--border); border-radius: 8px; margin: 0;
+}
+.step-placeholder .ph-icon { font-size: 48px; opacity: 0.6; }
+.step-placeholder .ph-title { font-size: 16px; font-weight: 700; color: #555; }
+.step-placeholder .ph-desc { font-size: 13px; color: #888; line-height: 1.7; max-width: 480px; }
+
+/* ── STEP 2: 질문 유형 카드 ── */
+.qtype-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.qtype-card {
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 8px;
+  cursor: pointer; text-align: center; transition: all .15s; background: #fff; user-select: none;
+}
+.qtype-card:hover { border-color: var(--primary); background: #f0f7ff; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(26,115,232,.1); }
+.qtype-icon { font-size: 26px; margin-bottom: 4px; line-height: 1; }
+.qtype-name { font-size: 12px; font-weight: 700; color: #1a1a2e; margin: 2px 0; }
+.qtype-desc { font-size: 10px; color: #888; line-height: 1.4; }
+.qtype-preview-tag { font-size: 10px; color: var(--primary); background: #e8f0fe; padding: 2px 7px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+.qtype-selected-label { display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:#e8f0fe;color:var(--primary);padding:4px 10px;border-radius:12px; }
+.back-btn { background:none;border:none;cursor:pointer;font-size:11px;color:#999;padding:0;display:inline-flex;align-items:center;gap:3px; }
+.back-btn:hover { color:var(--primary); }
+
+/* 상세 폼 필드 */
+.form-row { display:flex;flex-direction:column;gap:4px;margin-bottom:8px; }
+.form-row label { font-size:11px;font-weight:700;color:#555; }
+.form-row .form-input { border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;width:100%; }
+.form-row .form-input:focus { border-color:var(--primary); }
+.form-row textarea.form-input { resize:vertical; }
+.form-hint { font-size:10.5px;color:#bbb; }
+.option-list { display:flex;flex-direction:column;gap:5px; }
+.option-row { display:flex;align-items:center;gap:6px; }
+.option-num { font-size:11px;color:#888;width:18px;flex-shrink:0;text-align:right; }
+.option-input { flex:1;height:30px;border:1px solid var(--border);border-radius:4px;padding:0 8px;font-size:12px;font-family:inherit;outline:none; }
+.option-input:focus { border-color:var(--primary); }
+.option-del-btn { background:none;border:none;cursor:pointer;color:#ccc;font-size:15px;line-height:1;flex-shrink:0;padding:0; }
+.option-del-btn:hover { color:#c00; }
+.add-option-btn { font-size:11px;color:var(--primary);background:none;border:1px dashed #b3c8f0;padding:5px 12px;border-radius:4px;cursor:pointer;align-self:flex-start;margin-top:2px; }
+.add-option-btn:hover { background:#e8f0fe; }
+.maxlen-row { display:flex;align-items:center;gap:8px; }
+.maxlen-unit { font-size:12px;color:#888; }
+
+/* 질문 행 타입 뱃지 */
+.q-type-badge { font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap; }
+.q-type-badge.scale,
+.q-type-badge.likert    { background:#e8f0fe;color:#1a73e8; }
+.q-type-badge.ab        { background:#ede9fe;color:#7c3aed; }
+.q-type-badge.essay,
+.q-type-badge.shorttext,
+.q-type-badge.text      { background:#f0fdf4;color:#16a34a; }
+
+/* ── STEP 2: 질문 등록 ── */
+.s2-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
+/* 좌측 네비 */
+.s2-nav { width: 260px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: #fafbfc; }
+.s2-nav::-webkit-scrollbar { width: 4px; }
+.s2-nav::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.s2-nav-head { padding: 12px 14px; font-size: 11px; font-weight: 700; color: #999; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .05em; background: #fff; }
+
+/* 유형 헤더 */
+.s2-type { border-bottom: 1px solid var(--border); }
+.s2-type-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; cursor: pointer; user-select: none;
+  font-size: 12px; font-weight: 700; color: #1a1a2e;
+  background: #fff;
+}
+.s2-type-header:hover { background: #f0f4ff; }
+.s2-type-toggle { font-size: 9px; color: #999; transition: transform .15s; flex-shrink: 0; }
+.s2-type.open .s2-type-toggle { transform: rotate(90deg); }
+.s2-type-badge { background: var(--depth1); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; }
+.s2-type-body { display: none; }
+.s2-type.open .s2-type-body { display: block; }
+
+/* 역량군 헤더 */
+.s2-group { border-top: 1px solid #f0f2f5; }
+.s2-group-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px 7px 22px; cursor: pointer; user-select: none;
+  font-size: 11.5px; font-weight: 700; color: #555;
+}
+.s2-group-header:hover { background: #f5f6f8; }
+.s2-group-toggle { font-size: 8px; color: #bbb; transition: transform .15s; flex-shrink: 0; }
+.s2-group.open .s2-group-toggle { transform: rotate(90deg); }
+.s2-group-badge { background: var(--depth2); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 7px; }
+.s2-group-body { display: none; }
+.s2-group.open .s2-group-body { display: block; }
+
+/* 세부역량 아이템 */
+.s2-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px 7px 36px; cursor: pointer;
+  font-size: 12px; color: #444; border-top: 1px solid #f5f6f8;
+  transition: background .1s;
+}
+.s2-item:hover { background: #f0f4ff; }
+.s2-item.active { background: #e8f0fe; color: var(--primary); font-weight: 700; }
+.s2-item-name { flex: 1; }
+.s2-item-badge {
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px;
+  background: #eee; color: #888;
+}
+.s2-item.active .s2-item-badge { background: #c7d8f7; color: var(--primary); }
+.s2-item-badge.has-q { background: #d4edda; color: #1a7a4a; }
+.s2-item-badge.no-q { background: #fde8e8; color: #c0392b; }
+
+/* 우측 질문 영역 */
+.s2-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.s2-main::-webkit-scrollbar { width: 5px; }
+.s2-main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+/* 선택 없는 상태 */
+.s2-no-select {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: #999; padding: 40px;
+}
+.s2-no-select-icon { font-size: 40px; opacity: 0.5; }
+.s2-no-select-title { font-size: 14px; font-weight: 700; color: #aaa; }
+.s2-no-select-desc { font-size: 12px; color: #bbb; text-align: center; line-height: 1.7; }
+
+/* STEP 1 구조 없는 상태 */
+.s2-empty-struct { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px; text-align: center; }
+.s2-empty-struct-icon { font-size: 44px; opacity: 0.5; }
+
+/* 질문 패널 헤더 */
+.s2-q-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  background: #fff; flex-shrink: 0;
+}
+.s2-q-breadcrumb { font-size: 11px; color: #999; margin-bottom: 5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.s2-q-breadcrumb .bc-sep { color: #ccc; }
+.s2-q-breadcrumb .bc-type { color: var(--depth1); font-weight: 700; }
+.s2-q-breadcrumb .bc-group { color: var(--depth2); font-weight: 700; }
+.s2-q-breadcrumb .bc-item { color: var(--depth3); font-weight: 700; }
+.s2-q-title { font-size: 15px; font-weight: 800; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+.s2-q-code { font-family: 'Consolas', monospace; font-size: 11px; color: #888; background: #f0f2f5; padding: 2px 7px; border-radius: 3px; font-weight: 400; }
+.s2-q-count { font-size: 11px; color: #888; font-weight: 400; margin-left: 4px; }
+
+/* 질문 리스트 */
+.s2-q-list { flex: 1; padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+.s2-q-row {
+  border: 1px solid var(--border); border-radius: 7px; padding: 12px 14px;
+  background: #fff; display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color .15s, box-shadow .15s;
+}
+.s2-q-row:hover { border-color: #b3c8f0; box-shadow: 0 1px 4px rgba(26,115,232,.07); }
+.s2-q-row.editing { border-color: var(--primary); background: #fafdff; box-shadow: 0 0 0 2px rgba(26,115,232,.1); }
+.s2-q-num {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; background: #e8f0fe; color: var(--primary);
+}
+.s2-q-body { flex: 1; }
+.s2-q-text { font-size: 13px; color: #222; line-height: 1.6; }
+.s2-q-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.s2-q-edit-area { width: 100%; }
+.s2-q-textarea {
+  width: 100%; min-height: 68px; resize: vertical;
+  border: 1px solid var(--primary); border-radius: 4px; padding: 8px 10px;
+  font-size: 13px; font-family: inherit; line-height: 1.6; outline: none;
+  color: #222;
+}
+.s2-q-edit-foot { display: flex; justify-content: flex-end; gap: 6px; margin-top: 7px; }
+
+/* 새 질문 추가 폼 */
+.s2-add-form {
+  border: 1.5px dashed #b3c8f0; border-radius: 7px; padding: 12px 14px;
+  background: #f8faff; display: none; flex-direction: column; gap: 8px;
+}
+.s2-add-form.open { display: flex; }
+.s2-add-form-label { font-size: 11px; font-weight: 700; color: var(--primary); }
+.s2-add-textarea {
+  width: 100%; min-height: 72px; resize: vertical;
+  border: 1px solid #c7d8f7; border-radius: 4px; padding: 8px 10px;
+  font-size: 13px; font-family: inherit; line-height: 1.6; outline: none;
+}
+.s2-add-textarea:focus { border-color: var(--primary); }
+.s2-add-foot { display: flex; justify-content: space-between; align-items: center; }
+.s2-add-hint { font-size: 11px; color: #aaa; }
+.s2-q-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: #fafbfc; flex-shrink: 0; }
+
+/* 질문 추가 버튼 */
+#s2AddBtn {
+  width:100%; height:48px;
+  border: 2px dashed var(--primary);
+  background: #f0f7ff; color: var(--primary);
+  font-size: 14px; font-weight: 700;
+  border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .15s; font-family: inherit; letter-spacing: -.2px;
+}
+#s2AddBtn:hover { background: #e8f0fe; border-style: solid; box-shadow: 0 2px 8px rgba(26,115,232,.12); }
+
+/* 질문 행 인라인 미리보기 */
+.qrow-preview { flex: 1; min-width: 0; }
+.qrow-text { font-size: 13px; color: #1a1a2e; line-height: 1.65; margin-bottom: 8px; font-weight: 500; }
+.qrow-prefix { font-weight: 700; }
+.qrow-likert { display: flex; gap: 5px; flex-wrap: wrap; }
+.qrow-likert-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; background: #fafbfc; border: 1px solid var(--border); border-radius: 12px; padding: 3px 8px; }
+.qrow-circle { width: 14px; height: 14px; border: 1.5px solid #dde1e7; border-radius: 50%; flex-shrink: 0; }
+.qrow-score-tag { font-size: 10px; color: var(--primary); font-weight: 700; background: #e8f0fe; padding: 1px 5px; border-radius: 4px; flex-shrink: 0; }
+.qrow-ab-boxes { display: flex; gap: 6px; margin-bottom: 6px; }
+.qrow-ab-box { flex: 1; font-size: 11px; color: #555; border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; line-height: 1.4; }
+.qrow-ab-tag { font-weight: 800; color: var(--primary); margin-right: 3px; }
+.qrow-ab-scale { display: flex; gap: 2px; }
+.qrow-ab-btn { flex: 1; text-align: center; font-size: 9px; padding: 3px 1px; border: 1px solid var(--border); border-radius: 3px; color: #aaa; background: #fafbfc; line-height: 1.4; }
+.qrow-ab-btn.side { background: #e8f0fe; color: var(--primary); font-weight: 700; }
+.qrow-opts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.qrow-opt-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #555; background: #fafbfc; border: 1px solid var(--border); border-radius: 10px; padding: 3px 8px; }
+.qrow-opt-dot { width: 12px; height: 12px; border: 1.5px solid #dde1e7; border-radius: 50%; flex-shrink: 0; }
+.qrow-input-mock { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; border: 1px solid var(--border); border-radius: 4px; padding: 6px 10px; font-size: 11px; color: #bbb; background: #fafbfc; }
+
+/* 진행 현황 바 */
+.s2-progress-bar { height: 4px; background: #e0e3e8; border-radius: 2px; margin: 0 20px 0; overflow: hidden; flex-shrink: 0; }
+.s2-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #6f42c1); border-radius: 2px; transition: width .3s; }
+.s2-progress-label { padding: 6px 20px 10px; font-size: 11px; color: #999; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">교육담당자 · 휴넷</div>
+  <div class="spacer"></div>
+  <span class="user-name">김 담당</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+
+  <!-- ── SIDEBAR (진단유형 관리 메뉴 제거) ── -->
+  <aside class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">학습</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">결과</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">교육비용</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">사외교육</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">러닝메이커</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">커넥트</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">게시글</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item active" href="edms_역량진단_관리.html#qset">역량진단 관리</a>
+        <a class="nav-item" href="#">IDP 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item" href="#">계정 권한</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+    <div class="wiz-layout">
+
+      <!-- ── 왼쪽 단계 패널 ── -->
+      <aside class="wiz-aside">
+        <div class="wiz-aside-head">
+          <div class="wiz-aside-title">진단지 만들기</div>
+          <div class="wiz-aside-sub">단계별로 진단지를 구성하세요</div>
+        </div>
+        <div class="wiz-step-list">
+          <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
+            <div class="wiz-step-badge">1</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단 유형·역량군 구성</div>
+              <div class="wiz-step-desc">유형 → 역량군 → 세부역량 구조 등록</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
+            <div class="wiz-step-badge">2</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">질문 등록</div>
+              <div class="wiz-step-desc">각 세부역량에 질문 추가</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단지 기본 정보</div>
+              <div class="wiz-step-desc">진단지명·설명·공개 여부</div>
+            </div>
+          </div>
+        </div>
+        <div class="wiz-aside-foot">
+          <a href="edms_역량진단_관리.html#qset"
+             style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;"
+             onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
+             onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
+            ← 진단지 목록
+          </a>
+        </div>
+      </aside>
+
+      <!-- ── 오른쪽 콘텐츠 ── -->
+      <div class="wiz-content">
+
+        <!-- STEP 1: 진단 유형·역량군 구성 -->
+        <div class="step-content active wiz-card" id="step-content-1">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 역량진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 1 / 3</span>
+            <h2>진단 유형·역량군 구성</h2>
+            <p>진단지의 뼈대를 먼저 만듭니다. <strong>유형 → 역량군 → 세부역량</strong> 3단계 구조를 등록하면<br>다음 단계에서 각 세부역량에 질문을 붙이게 됩니다.</p>
+          </div>
+          <div class="wiz-card-body">
+
+            <!-- 안내 배너 -->
+            <div class="guide-banner">
+              <div class="guide-banner-icon">💡</div>
+              <div class="guide-banner-text">
+                <strong>이 단계에서 진단의 뼈대를 만듭니다.</strong>
+                <div class="depth-explainer">
+                  <span class="depth-chip"><span class="dot d1"></span>1단계 · 유형</span>
+                  <span class="depth-arrow">→</span>
+                  <span class="depth-chip"><span class="dot d2"></span>2단계 · 역량군</span>
+                  <span class="depth-arrow">→</span>
+                  <span class="depth-chip"><span class="dot d3"></span>3단계 · 세부역량</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 본문 2-pane -->
+            <div class="workspace">
+
+              <!-- 좌측: 트리 -->
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-head-title">구조 만들기</div>
+                  <span class="card-head-sub" id="treeMeta">유형 0 · 역량군 0 · 세부역량 0</span>
+                  <button class="btn btn-xs btn-outline" onclick="openPresetModal()">📋 기존 구조 가져오기</button>
+                  <button class="btn btn-xs btn-gray" onclick="resetAll()">🗑 초기화</button>
+                </div>
+                <div style="padding:7px 18px;font-size:11px;color:#999;background:#fafbfc;border-bottom:1px solid var(--border);">
+                  ⠿ 드래그로 순서 변경 가능 · 같은 레벨(유형↔유형, 역량군↔역량군, 세부역량↔세부역량) 내에서만 이동됩니다.
+                </div>
+
+                <!-- 빈 상태 -->
+                <div class="empty-state" id="emptyState">
+                  <div class="empty-icon">🌳</div>
+                  <div class="empty-title">아직 등록된 진단 유형이 없어요</div>
+                  <div class="empty-desc">
+                    유형 생성 후 유형 안에 <b>역량군</b>을 만들고, 그 안에 <b>세부역량</b>을 등록한 뒤 다음 단계에서 각 항목에 질문을 붙이게 됩니다.
+                  </div>
+                  <div class="empty-actions">
+                    <button class="btn btn-primary btn-lg" onclick="addType()">＋ 첫 유형 추가하기</button>
+                    <button class="btn btn-outline btn-lg" onclick="openPresetModal()">📋 기존 구조로 시작</button>
+                  </div>
+                </div>
+
+                <!-- 트리 -->
+                <div class="tree" id="tree" style="display:none;"></div>
+
+                <!-- 하단 추가 버튼 -->
+                <div id="treeFoot" style="display:none; padding: 12px 14px; border-top: 1px solid var(--border); background:#fafbfc; text-align:center;">
+                  <button class="btn btn-outline btn-sm" onclick="addType()">＋ 유형 추가</button>
+                </div>
+              </div>
+
+              <!-- 우측: 요약 -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="card">
+                  <div class="card-head">
+                    <div class="card-head-title">한눈에 보기</div>
+                  </div>
+                  <div class="card-body p0">
+                    <div class="summary-stat">
+                      <div class="stat-label"><span class="depth-chip"><span class="dot d1"></span>유형</span></div>
+                      <div class="stat-num" id="statD1">0</div><span class="stat-suffix">개</span>
+                    </div>
+                    <div class="summary-stat">
+                      <div class="stat-label"><span class="depth-chip"><span class="dot d2"></span>역량군</span></div>
+                      <div class="stat-num d2" id="statD2">0</div><span class="stat-suffix">개</span>
+                    </div>
+                    <div class="summary-stat">
+                      <div class="stat-label"><span class="depth-chip"><span class="dot d3"></span>세부역량</span></div>
+                      <div class="stat-num d3" id="statD3">0</div><span class="stat-suffix">개</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card next-step-card">
+                  <div class="card-head" style="background:#eaf2fd;border-bottom:1px solid #c7d8f7;">
+                    <div class="card-head-title" style="color:#0a1e4a;">📍 다음 단계 안내</div>
+                  </div>
+                  <div class="card-body">
+                    구조를 저장하면 STEP 2에서 각 <strong>세부역량마다 질문</strong>을 등록할 수 있어요.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"></div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 질문 등록 -->
+        <div class="step-content wiz-card" id="step-content-2">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 역량진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 2 / 3</span>
+            <h2>질문 등록</h2>
+            <p>왼쪽에서 <strong>세부역량</strong>을 선택하면 해당 세부역량에 매핑할 질문을 추가·편집할 수 있습니다.</p>
+          </div>
+
+          <!-- 진행 현황 -->
+          <div class="s2-progress-bar" id="s2ProgressBar" style="margin-top:12px;">
+            <div class="s2-progress-fill" id="s2ProgressFill" style="width:0%"></div>
+          </div>
+          <div class="s2-progress-label" id="s2ProgressLabel">세부역량 0개 중 0개에 질문 등록됨</div>
+
+          <!-- 2패널 -->
+          <div class="s2-layout">
+
+            <!-- 좌측: 구조 네비게이션 -->
+            <div class="s2-nav" id="s2Nav">
+              <div class="s2-nav-head">유형 · 역량군 · 세부역량</div>
+              <div id="s2NavTree"></div>
+            </div>
+
+            <!-- 우측: 질문 영역 -->
+            <div class="s2-main" id="s2Main">
+              <!-- STEP1 구조 없음 -->
+              <div class="s2-empty-struct" id="s2EmptyStruct" style="display:none;">
+                <div class="s2-empty-struct-icon">🌳</div>
+                <div class="empty-title" style="font-size:14px;">STEP 1에서 구조를 먼저 등록해주세요</div>
+                <div class="empty-desc">유형·역량군·세부역량을 등록해야<br>이 단계에서 질문을 매핑할 수 있습니다.</div>
+                <button class="btn btn-outline" onclick="goToStep(1)">← STEP 1로 돌아가기</button>
+              </div>
+              <!-- 세부역량 미선택 -->
+              <div class="s2-no-select" id="s2NoSelect">
+                <div class="s2-no-select-icon">👈</div>
+                <div class="s2-no-select-title">세부역량을 선택하세요</div>
+                <div class="s2-no-select-desc">왼쪽 목록에서 세부역량을 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.</div>
+              </div>
+              <!-- 질문 편집 패널 -->
+              <div id="s2QPanel" style="display:none; flex-direction:column; flex:1;">
+                <div class="s2-q-header">
+                  <div class="s2-q-breadcrumb" id="s2QBreadcrumb"></div>
+                  <div class="s2-q-title">
+                    <span id="s2QTitle"></span>
+                    <span class="s2-q-count" id="s2QCount"></span>
+                  </div>
+                </div>
+                <div class="s2-q-list" id="s2QList"></div>
+                <!-- 새 질문 추가 폼 (JS가 동적으로 채움) -->
+                <div class="s2-q-footer">
+                  <button id="s2AddBtn" onclick="openAddForm()">＋ 질문 추가</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 진단지 기본 정보 (placeholder) -->
+        <div class="step-content wiz-card" id="step-content-3">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 역량진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 3 / 3</span>
+            <h2>진단지 기본 정보</h2>
+            <p>진단지명·설명·공개 여부를 입력하고 저장합니다.</p>
+          </div>
+          <div class="wiz-card-body" style="padding:24px 28px;">
+            <div class="s3-grid">
+
+              <!-- 좌측: 입력 폼 -->
+              <div style="display:flex;flex-direction:column;gap:16px;">
+                <div class="form-row">
+                  <label>진단지명 <span style="color:#c00;">*</span></label>
+                  <input type="text" class="form-input" id="s3Name"
+                    placeholder="예: 팀장 리더십 역량 진단 (2025)" style="font-size:14px;">
+                </div>
+                <div class="form-row">
+                  <label>설명 <span style="font-size:10px;color:#aaa;font-weight:400;">(선택사항)</span></label>
+                  <textarea class="form-input" id="s3Desc" rows="3"
+                    placeholder="이 진단지에 대한 간단한 설명을 입력하세요."></textarea>
+                </div>
+                <div class="form-row">
+                  <label>공개 여부</label>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="s3-radio-card selected" id="s3card_public" onclick="setS3Visibility(true)">
+                      <div class="s3-radio-dot"></div>
+                      <div>
+                        <div style="font-size:13px;font-weight:600;color:#1a1a2e;">공개</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px;">진단 생성 시 이 진단지를 선택할 수 있습니다.</div>
+                      </div>
+                    </div>
+                    <div class="s3-radio-card" id="s3card_private" onclick="setS3Visibility(false)">
+                      <div class="s3-radio-dot"></div>
+                      <div>
+                        <div style="font-size:13px;font-weight:600;color:#1a1a2e;">비공개</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px;">진단 생성 시 해당 진단지는 미노출됩니다.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 우측: 구성 요약 -->
+              <div class="s3-summary-box">
+                <div class="s3-summary-title">📋 구성 요약</div>
+                <div id="s3SummaryContent">
+                  <div style="color:#bbb;font-size:12px;text-align:center;padding:12px 0;">
+                    STEP 3에 진입하면 자동으로 집계됩니다.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right">
+<button class="btn btn-primary btn-lg" onclick="saveAll()">✓ 진단지 완료 저장</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- 질문 추가/편집 모달 -->
+<div class="modal-overlay" id="qAddModal">
+  <div class="modal-box" style="width:700px;max-height:88vh;display:flex;flex-direction:column;">
+    <div class="modal-header">
+      <h3 id="qModalTitle" style="display:flex;align-items:center;gap:8px;">📝 질문 추가</h3>
+      <button class="modal-close" onclick="closeAddForm()">×</button>
+    </div>
+    <div id="s2AddForm" style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:8px;min-height:0;"></div>
+  </div>
+</div>
+
+<!-- 기존 구조 가져오기 모달 -->
+<div class="modal-overlay" id="presetModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>기존 진단지 구조 가져오기</h3>
+      <button class="modal-close" onclick="closeModal('presetModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">
+        완료된 진단지의 유형·역량군·세부역량 구조를 그대로 가져옵니다. 가져온 뒤 자유롭게 수정할 수 있습니다.
+      </div>
+      <div class="preset-card" onclick="selectPreset('qset001')" data-preset="qset001">
+        <div class="preset-title">팀장 리더십 역량 진단</div>
+        <div class="preset-stats">유형 1개 · 역량군 3개 · 세부역량 10개 <span style="color:#bbb;margin-left:6px;">2025.12.01</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('presetModal')">취소</button>
+      <button class="btn btn-primary" onclick="applyPreset()">선택한 구조 가져오기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 사이드바 ──
+function toggleNav(el) { el.parentElement.classList.toggle('open'); }
+function toggleSubNav(el) { el.parentElement.classList.toggle('open'); }
+
+// ── Wizard ──
+let currentStep = 1;
+const TOTAL_STEPS = 3;
+function goToStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-content-' + n).classList.add('active');
+  document.querySelectorAll('.wiz-step-item').forEach((el, i) => {
+    el.classList.toggle('is-active', i + 1 === n);
+    el.classList.toggle('is-done', i + 1 < n);
+    const badge = el.querySelector('.wiz-step-badge');
+    if (i + 1 < n) badge.textContent = '✓';
+    else badge.textContent = String(i + 1);
+  });
+  currentStep = n;
+  document.querySelector('.wiz-content').scrollTop = 0;
+  if (n === 2) initStep2();
+  if (n === 3) initStep3();
+}
+function nextStep() { if (currentStep < TOTAL_STEPS) goToStep(currentStep + 1); }
+function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
+// ─────────────────────────────────────────
+// STEP 3: 기본 정보
+// ─────────────────────────────────────────
+let s3IsPublic = true;
+
+function initStep3() {
+  setS3Visibility(s3IsPublic);
+  renderS3Summary();
+}
+
+function setS3Visibility(isPublic) {
+  s3IsPublic = isPublic;
+  document.getElementById('s3card_public')?.classList.toggle('selected', isPublic);
+  document.getElementById('s3card_private')?.classList.toggle('selected', !isPublic);
+}
+
+function renderS3Summary() {
+  const el = document.getElementById('s3SummaryContent');
+  if (!el) return;
+
+  let types = 0, groups = 0, items = 0, questions = 0;
+  state.types.forEach(t => {
+    types++;
+    t.groups.forEach(g => {
+      groups++;
+      g.items.forEach(it => {
+        items++;
+        questions += (it.questions||[]).length;
+      });
+    });
+  });
+
+  // 유형별 질문 수
+  const qByType = {};
+  state.types.forEach(t => t.groups.forEach(g => g.items.forEach(it => {
+    (it.questions||[]).forEach(q => {
+      const cfg = QTYPE_CONFIG[q.type] || QTYPE_CONFIG.scale;
+      const key = `${cfg.emoji} ${cfg.name}`;
+      qByType[key] = (qByType[key]||0) + 1;
+    });
+  })));
+
+  const qTypeRows = Object.entries(qByType).map(([name, count]) =>
+    `<div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">${name}</span><span class="s3-summary-val">${count}개</span></div>`
+  ).join('');
+
+  const warnHtml = items > 0 && questions === 0
+    ? `<div style="margin-top:10px;padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;font-size:11px;color:#a16207;">⚠️ 등록된 질문이 없습니다. STEP 2로 돌아가 질문을 추가해주세요.</div>`
+    : '';
+
+  el.innerHTML = `
+    <div class="s3-summary-row">
+      <span class="s3-summary-label">유형</span>
+      <span class="s3-summary-val">${types}개</span>
+    </div>
+    <div class="s3-summary-row">
+      <span class="s3-summary-label">역량군</span>
+      <span class="s3-summary-val">${groups}개</span>
+    </div>
+    <div class="s3-summary-row">
+      <span class="s3-summary-label">세부역량</span>
+      <span class="s3-summary-val">${items}개</span>
+    </div>
+    <div class="s3-summary-row">
+      <span class="s3-summary-label">총 질문</span>
+      <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
+    </div>
+    ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
+    ${warnHtml}`;
+}
+
+function saveAll() {
+  const name = document.getElementById('s3Name')?.value?.trim();
+  if (!name) {
+    toast('진단지명을 입력해주세요');
+    document.getElementById('s3Name')?.focus();
+    return;
+  }
+
+  if (state.types.length === 0) {
+    toast('유형을 1개 이상 등록해주세요');
+    goToStep(1); return;
+  }
+
+  let totalGroups = 0, totalItems = 0, totalQuestions = 0;
+  state.types.forEach(t => {
+    totalGroups += t.groups.length;
+    t.groups.forEach(g => {
+      totalItems += g.items.length;
+      g.items.forEach(i => { totalQuestions += (i.questions || []).length; });
+    });
+  });
+
+  if (totalGroups === 0) {
+    toast('역량군을 1개 이상 등록해주세요');
+    goToStep(1); return;
+  }
+  if (totalItems === 0) {
+    toast('세부역량을 1개 이상 등록해주세요');
+    goToStep(1); return;
+  }
+  if (totalQuestions === 0) {
+    toast('질문을 1개 이상 등록해주세요');
+    goToStep(2); return;
+  }
+
+  toast(`'${name}' 진단지가 저장됐습니다!`);
+  setTimeout(() => { window.location.href = 'edms_역량진단_관리.html#qset'; }, 1200);
+}
+
+// ─────────────────────────────────────────
+// STEP 2: 질문 등록
+// ─────────────────────────────────────────
+
+/* 질문 유형 정의 */
+const QTYPE_CONFIG = {
+  scale: { emoji:'⭐', name:'척도형',       desc:'단계·라벨 조정 / 기본 5점',    preview:'① ② ③ ④ ⑤ 척도' },
+  ab:    { emoji:'🔀', name:'A/B 강제선택', desc:'A·B 사이 6단계 척도로 선택',  preview:'A ①②③④⑤⑥ B' },
+  essay: { emoji:'📝', name:'서술형',       desc:'자유 텍스트 서술 (단답·장문)', preview:'[ 자유 서술 ]' },
+};
+
+/* 척도형 단계별 기본 라벨 */
+const SCALE_DEFAULT_LABELS = {
+  3: ['그렇다',       '보통이다',   '그렇지 않다'],
+  4: ['매우 그렇다',  '그렇다',     '그렇지 않다',    '전혀 그렇지 않다'],
+  5: ['매우 그렇다',  '그렇다',     '보통이다',       '그렇지 않다',       '전혀 그렇지 않다'],
+  6: ['매우 그렇다',  '그렇다',     '약간 그렇다',    '약간 그렇지 않다',  '그렇지 않다',  '전혀 그렇지 않다'],
+  7: ['매우 그렇다',  '그렇다',     '약간 그렇다',    '보통이다',          '약간 그렇지 않다', '그렇지 않다', '전혀 그렇지 않다'],
+};
+
+let s2Selected      = null;   // { ti, gi, ii }
+let treeDragSrc     = null;
+let s2QSeq          = 1;
+let s2AddQType      = null;
+let s2EditQId       = null;
+const s2ScaleSteps  = 5;  // 5단계 고정
+let s2ScaleLabels   = [...SCALE_DEFAULT_LABELS[5]];
+let s2ScaleReversed = false;
+
+function makeQId() { return 'q_' + (s2QSeq++); }
+
+function initStep2() {
+  state.types.forEach(t => t.groups.forEach(g => g.items.forEach(it => {
+    if (!it.questions) it.questions = [];
+  })));
+
+  const hasStruct = state.types.length > 0 &&
+    state.types.some(t => t.groups.some(g => g.items.length > 0));
+
+  document.getElementById('s2EmptyStruct').style.display = hasStruct ? 'none' : '';
+  document.getElementById('s2NoSelect').style.display    = hasStruct ? ''     : 'none';
+  document.getElementById('s2QPanel').style.display      = 'none';
+
+  const barEl = document.getElementById('s2ProgressBar');
+  const lblEl = document.getElementById('s2ProgressLabel');
+  if (barEl) barEl.style.display = hasStruct ? '' : 'none';
+  if (lblEl) lblEl.style.display = hasStruct ? '' : 'none';
+
+  if (!hasStruct) { document.getElementById('s2NavTree').innerHTML = ''; return; }
+
+  s2Selected = null;
+  renderS2Nav();
+  updateS2Progress();
+
+  outer: for (let ti = 0; ti < state.types.length; ti++) {
+    for (let gi = 0; gi < state.types[ti].groups.length; gi++) {
+      if (state.types[ti].groups[gi].items.length > 0) {
+        selectS2Item(ti, gi, 0); break outer;
+      }
+    }
+  }
+}
+
+function renderS2Nav() {
+  const container = document.getElementById('s2NavTree');
+  container.innerHTML = '';
+  state.types.forEach((t, ti) => {
+    const typeDiv = document.createElement('div');
+    typeDiv.className = 's2-type open';
+
+    const th = document.createElement('div');
+    th.className = 's2-type-header';
+    th.innerHTML = `<span class="s2-type-toggle">▶</span>
+      <span class="s2-type-badge">유형</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(t.name)}</span>`;
+    th.onclick = () => typeDiv.classList.toggle('open');
+    typeDiv.appendChild(th);
+
+    const tbody = document.createElement('div');
+    tbody.className = 's2-type-body';
+
+    t.groups.forEach((g, gi) => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 's2-group open';
+
+      const gh = document.createElement('div');
+      gh.className = 's2-group-header';
+      gh.innerHTML = `<span class="s2-group-toggle">▶</span>
+        <span class="s2-group-badge">역량군</span>
+        <span style="flex:1;">${escHtml(g.name)}</span>`;
+      gh.onclick = () => groupDiv.classList.toggle('open');
+      groupDiv.appendChild(gh);
+
+      const gbody = document.createElement('div');
+      gbody.className = 's2-group-body';
+
+      g.items.forEach((it, ii) => {
+        const qCount = (it.questions || []).length;
+        const itemEl = document.createElement('div');
+        itemEl.className = 's2-item';
+        itemEl.id = `s2item_${ti}_${gi}_${ii}`;
+        const badgeCls = qCount > 0 ? 'has-q' : 'no-q';
+        itemEl.innerHTML = `<span class="s2-item-name">${escHtml(it.name)}</span>
+          <span class="s2-item-badge ${badgeCls}" id="s2badge_${ti}_${gi}_${ii}">${qCount}개</span>`;
+        itemEl.onclick = () => selectS2Item(ti, gi, ii);
+        if (s2Selected && s2Selected.ti===ti && s2Selected.gi===gi && s2Selected.ii===ii)
+          itemEl.classList.add('active');
+        gbody.appendChild(itemEl);
+      });
+
+      groupDiv.appendChild(gbody);
+      tbody.appendChild(groupDiv);
+    });
+
+    typeDiv.appendChild(tbody);
+    container.appendChild(typeDiv);
+  });
+}
+
+function selectS2Item(ti, gi, ii) {
+  s2Selected = { ti, gi, ii };
+  document.querySelectorAll('.s2-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(`s2item_${ti}_${gi}_${ii}`);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ block:'nearest', behavior:'smooth' }); }
+
+  document.getElementById('s2NoSelect').style.display    = 'none';
+  document.getElementById('s2EmptyStruct').style.display = 'none';
+  document.getElementById('s2QPanel').style.display      = 'flex';
+
+  const t = state.types[ti], g = t.groups[gi], it = g.items[ii];
+
+  document.getElementById('s2QBreadcrumb').innerHTML =
+    `<span class="bc-type">${escHtml(t.name)}</span>
+     <span class="bc-sep">›</span>
+     <span class="bc-group">${escHtml(g.name)}</span>
+     <span class="bc-sep">›</span>
+     <span class="bc-item">${escHtml(it.name)}</span>`;
+  document.getElementById('s2QTitle').textContent = it.name;
+  document.getElementById('s2QCode').textContent  = it.code;
+
+  closeAddForm();
+  renderQuestions();
+}
+
+function renderQuestions() {
+  if (!s2Selected) return;
+  const { ti, gi, ii } = s2Selected;
+  const it = state.types[ti].groups[gi].items[ii];
+  const qs = it.questions || [];
+
+  document.getElementById('s2QCount').textContent = `(질문 ${qs.length}개)`;
+
+  const badge = document.getElementById(`s2badge_${ti}_${gi}_${ii}`);
+  if (badge) {
+    badge.textContent = `${qs.length}개`;
+    badge.className   = `s2-item-badge ${qs.length > 0 ? 'has-q' : 'no-q'}`;
+  }
+  updateS2Progress();
+
+  const list = document.getElementById('s2QList');
+  list.innerHTML = '';
+
+  if (qs.length === 0) {
+    list.innerHTML = `<div style="padding:28px 0;text-align:center;color:#bbb;font-size:12px;line-height:2;">
+      아직 등록된 질문이 없어요.<br>아래 <b>＋ 질문 추가</b> 버튼을 눌러보세요.
+    </div>`;
+    return;
+  }
+
+  qs.forEach((q, idx) => {
+    const row = document.createElement('div');
+    row.className = 's2-q-row';
+    row.id = `qrow_${q.id}`;
+    row.setAttribute('draggable', 'true');
+    row.dataset.qid = q.id;
+
+    const tkey = q.type || 'likert';
+    const tcfg = QTYPE_CONFIG[tkey] || QTYPE_CONFIG.likert;
+
+    row.innerHTML = `
+      <div class="drag-handle" title="드래그하여 순서 변경">⠿</div>
+      <div class="s2-q-num">${idx + 1}</div>
+      <div class="qrow-preview">
+        <div style="margin-bottom:7px;">
+          <span class="q-type-badge ${tkey}">${tcfg.emoji} ${tcfg.name}</span>
+        </div>
+        ${buildQRowPreviewHTML(q)}
+      </div>
+      <div class="s2-q-actions">
+        <button class="btn btn-xs btn-gray" title="수정" onclick="startEditQ('${q.id}')">✎</button>
+        <button class="btn btn-xs btn-danger" title="삭제" onclick="deleteQ('${q.id}')">×</button>
+      </div>`;
+
+    row.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', q.id);
+      setTimeout(() => row.style.opacity = '0.4', 0);
+    });
+    row.addEventListener('dragend', () => {
+      row.style.opacity = '';
+      document.querySelectorAll('.s2-q-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      document.querySelectorAll('.s2-q-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      const fromId = e.dataTransfer.getData('text/plain');
+      if (fromId === q.id || !s2Selected) return;
+      const { ti, gi, ii } = s2Selected;
+      const qs2 = state.types[ti].groups[gi].items[ii].questions;
+      const fromIdx = qs2.findIndex(x => x.id === fromId);
+      const toIdx   = qs2.findIndex(x => x.id === q.id);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = qs2.splice(fromIdx, 1);
+      qs2.splice(toIdx, 0, moved);
+      renderQuestions();
+    });
+
+    list.appendChild(row);
+  });
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* 질문 행 인라인 미리보기 */
+function buildQRowPreviewHTML(q) {
+  const t = q.type==='likert' ? 'scale' : (q.type==='shorttext'||q.type==='text') ? 'essay' : (q.type||'scale');
+
+  if (t === 'scale') {
+    const steps    = q.steps || (q.scores ? q.scores.length : 5);
+    const labels   = q.labels || SCALE_DEFAULT_LABELS[steps] || SCALE_DEFAULT_LABELS[5];
+    const cols = labels.map(lbl =>
+      `<div class="qrow-likert-opt">
+        <div class="qrow-likert-circle"></div>
+        <div class="qrow-likert-lbl">${escHtml(lbl)}</div>
+      </div>`
+    ).join('');
+    return `<div class="qrow-q-text">${escHtml(q.text||'')}</div>
+      <div class="qrow-likert-wrap">${cols}</div>`;
+  }
+
+  if (t === 'ab') {
+    const ABL = ['A','A에 더 가깝다','A에 좀 더 가깝다','B에 좀 더 가깝다','B에 더 가깝다','B'];
+    const scores = q.abReversed ? [6,5,4,3,2,1] : [1,2,3,4,5,6];
+    const btns = ABL.map((lbl,i) =>
+      `<div class="qrow-ab-scale-btn ${i===0||i===5?'side':''}">
+        ${lbl}<br><span style="font-size:9px;color:var(--primary);font-weight:700;">${scores[i]}점</span>
+      </div>`).join('');
+    return `<div class="qrow-ab-wrap">
+      <div class="qrow-ab-card"><div class="qrow-ab-tag-lbl">A</div><br>${escHtml(q.a||'')}</div>
+      <div class="qrow-ab-card"><div class="qrow-ab-tag-lbl">B</div><br>${escHtml(q.b||'')}</div>
+    </div>
+    <div class="qrow-ab-btns">${btns}</div>`;
+  }
+
+  if (t === 'essay') {
+    return `<div class="qrow-q-text">${escHtml(q.text||'')}</div>
+      <div class="qrow-essay-mock">자유롭게 서술해 주세요.</div>`;
+  }
+
+  return `<div class="qrow-q-text">${escHtml(q.text||'')}</div>`;
+}
+
+/* ── 추가/편집 모달 ── */
+function openAddForm() {
+  s2AddQType = null; s2EditQId = null;
+  document.getElementById('qModalTitle').innerHTML = '📝 질문 추가';
+  document.getElementById('qAddModal').classList.add('open');
+  renderAddFormTypeSelect();
+}
+
+function closeAddForm() {
+  document.getElementById('qAddModal').classList.remove('open');
+  const form = document.getElementById('s2AddForm');
+  if (form) form.innerHTML = '';
+  s2AddQType = null; s2EditQId = null;
+}
+
+function startEditQ(qId) {
+  if (!s2Selected) return;
+  const { ti, gi, ii } = s2Selected;
+  const q = state.types[ti].groups[gi].items[ii].questions.find(q => q.id === qId);
+  if (!q) return;
+  s2EditQId  = qId;
+  // 구버전 타입 호환
+  s2AddQType = q.type==='likert' ? 'scale'
+             : (q.type==='shorttext'||q.type==='text') ? 'essay'
+             : (q.type||'scale');
+  if (s2AddQType === 'scale') {
+    s2ScaleLabels   = q.labels ? [...q.labels] : [...SCALE_DEFAULT_LABELS[5]];
+    s2ScaleReversed = q.reversed || false;
+  }
+  const tcfg = QTYPE_CONFIG[s2AddQType] || QTYPE_CONFIG.scale;
+  document.getElementById('qModalTitle').innerHTML =
+    `✎ 질문 수정 <span style="font-size:12px;font-weight:400;color:#aaa;">— ${tcfg.emoji} ${tcfg.name}</span>`;
+  document.getElementById('qAddModal').classList.add('open');
+  renderDetailForm(q);
+}
+
+/* 유형 선택 화면 */
+function renderAddFormTypeSelect() {
+  document.getElementById('s2AddForm').innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;">
+      📌 어떤 유형의 질문인가요?
+    </div>
+    <div class="qtype-grid">
+      ${Object.entries(QTYPE_CONFIG).map(([key,cfg]) => `
+        <div class="qtype-card" onclick="selectQType('${key}')">
+          <div class="qtype-icon">${cfg.emoji}</div>
+          <div class="qtype-name">${cfg.name}</div>
+          <div class="qtype-desc">${cfg.desc}</div>
+          <div class="qtype-preview-tag">${cfg.preview}</div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+      <button class="btn btn-gray btn-sm" onclick="closeAddForm()">취소</button>
+    </div>`;
+}
+
+function selectQType(type) {
+  s2AddQType = type;
+  if (type === 'scale') {
+    s2ScaleLabels   = [...SCALE_DEFAULT_LABELS[5]];
+    s2ScaleReversed = false;
+  }
+  renderDetailForm(null);
+}
+
+function backToTypeSelect() {
+  s2AddQType = null;
+  s2EditQId  = null;
+  renderAddFormTypeSelect();
+}
+
+/* 상세 입력 화면 */
+function renderDetailForm(existingData) {
+  const cfg = QTYPE_CONFIG[s2AddQType]||QTYPE_CONFIG.scale, d = existingData||{}, isEdit = !!s2EditQId;
+  if (s2AddQType==='scale' && existingData) {
+    s2ScaleLabels   = d.labels ? [...d.labels] : [...SCALE_DEFAULT_LABELS[5]];
+    s2ScaleReversed = d.reversed || false;
+  }
+
+  document.getElementById('s2AddForm').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      ${!isEdit?`<button class="back-btn" onclick="backToTypeSelect()">← 유형 변경</button>`:''}
+      <span class="qtype-selected-label">${cfg.emoji} ${cfg.name}</span>
+      ${isEdit?`<span style="font-size:11px;color:#999;">수정 중</span>`:''}
+    </div>
+    ${buildDetailFormHTML(d)}
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <span></span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gray" onclick="closeAddForm()">취소</button>
+        <button class="btn btn-primary" onclick="saveNewQuestion()">${isEdit?'✓ 수정 완료':'저장'}</button>
+      </div>
+    </div>`;
+  const first = document.getElementById('s2AddForm').querySelector('textarea.form-input, input.form-input:not([type=number])');
+  if (first) setTimeout(() => first.focus(), 0);
+}
+
+function buildDetailFormHTML(d) {
+  const t = s2AddQType;
+
+  /* ── 척도형 (5단계 고정) ── */
+  if (t === 'scale') {
+    const reversed = s2ScaleReversed;
+    const labelRows = s2ScaleLabels.map((lbl, i) => {
+      const score = reversed ? i+1 : 5-i;
+      return `<div class="scale-label-row">
+        <div class="scale-label-num">${i+1}</div>
+        <input class="scale-label-input" id="sc_lbl_${i}" type="text"
+          value="${escHtml(lbl)}" placeholder="보기 ${i+1} 라벨" oninput="saveScaleLabels();updateQPreview()">
+        <span class="scale-label-score">${score}점</span>
+      </div>`;
+    }).join('');
+    return `
+      <div class="form-row">
+        <label>질문 내용 <span style="color:#c00;">*</span></label>
+        <textarea class="form-input" id="df_text" rows="3"
+          placeholder="예: 팀원들에게 명확한 목표와 방향을 제시한다."
+          oninput="updateQPreview()">${escHtml(d.text||'')}</textarea>
+      </div>
+      <div class="form-row">
+        <label>보기 라벨
+          <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">(시스템 기본값 — 수정 가능)</span>
+        </label>
+        <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">${labelRows}</div>
+        <div style="display:flex;gap:6px;margin-top:5px;">
+          <button type="button" class="btn btn-gray btn-xs"
+            onclick="toggleScaleReverse()">${reversed?'↺ 정방향으로 변경':'↺ 역방향 점수 적용'}</button>
+          <button type="button" class="btn btn-gray btn-xs"
+            onclick="resetScaleLabels()">⟳ 기본값으로 리셋</button>
+        </div>
+      </div>`;
+  }
+
+  /* ── A/B 강제선택 ── */
+  if (t === 'ab') return `
+    <div class="form-row">
+      <label>🅰️ A 문구 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_a" rows="2"
+        placeholder="예: 자율성을 최대한 부여하여 스스로 결정하게 한다."
+        oninput="updateQPreview()">${escHtml(d.a||'')}</textarea>
+    </div>
+    <div class="form-row">
+      <label>🅱️ B 문구 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_b" rows="2"
+        placeholder="예: 구체적인 방향을 제시하고 함께 실행을 지원한다."
+        oninput="updateQPreview()">${escHtml(d.b||'')}</textarea>
+    </div>
+    <div class="form-row">
+      <label>점수 방향</label>
+      <div style="display:flex;gap:20px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;">
+          <input type="radio" name="abDir" value="normal" ${!d.abReversed?'checked':''} onchange="updateQPreview()">
+          A = 1점 → B = 6점 <span style="color:#aaa;">(기본)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;">
+          <input type="radio" name="abDir" value="reversed" ${d.abReversed?'checked':''} onchange="updateQPreview()">
+          A = 6점 → B = 1점
+        </label>
+      </div>
+      <span class="form-hint">응답자가 A ~ B 사이 6단계 중 하나를 선택합니다.</span>
+    </div>`;
+
+  /* ── 서술형 ── */
+  if (t === 'essay') return `
+    <div class="form-row">
+      <label>질문 내용 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_text" rows="3"
+        placeholder="예: 진단대상자의 리더십 강점에 대해 자유롭게 서술해 주세요."
+        oninput="updateQPreview()">${escHtml(d.text||'')}</textarea>
+      <span class="form-hint">응답자가 단답·장문 형태로 자유롭게 서술합니다. 별도 점수 없음.</span>
+    </div>`;
+
+  return '';
+}
+
+/* 척도 관련 헬퍼 */
+function saveScaleLabels() {
+  s2ScaleLabels = Array.from({length: s2ScaleSteps}, (_,i) => {
+    const el = document.getElementById(`sc_lbl_${i}`);
+    return el ? el.value : (s2ScaleLabels[i]||'');
+  });
+}
+// setScaleSteps 제거 — 5단계 고정
+function toggleScaleReverse() {
+  saveScaleLabels();
+  s2ScaleReversed = !s2ScaleReversed;
+  const cur = { text: document.getElementById('df_text')?.value||'', steps:s2ScaleSteps, labels:s2ScaleLabels, reversed:s2ScaleReversed };
+  renderDetailForm(cur);
+  updateQPreview();
+}
+function resetScaleLabels() {
+  s2ScaleLabels = [...(SCALE_DEFAULT_LABELS[s2ScaleSteps]||SCALE_DEFAULT_LABELS[5])];
+  s2ScaleLabels.forEach((lbl,i) => { const el=document.getElementById(`sc_lbl_${i}`); if(el) el.value=lbl; });
+  updateQPreview();
+  toast('기본 라벨로 초기화됐어요');
+}
+
+function gatherCurrentFormData() {
+  const t = s2AddQType, data = {};
+  if (t === 'scale') {
+    saveScaleLabels();
+    data.text     = document.getElementById('df_text')?.value||'';
+    data.steps    = s2ScaleSteps;
+    data.labels   = [...s2ScaleLabels];
+    data.reversed = s2ScaleReversed;
+  } else if (t === 'ab') {
+    data.a = document.getElementById('df_a')?.value||'';
+    data.b = document.getElementById('df_b')?.value||'';
+    data.abReversed = document.querySelector('input[name="abDir"]:checked')?.value === 'reversed';
+  } else if (t === 'essay') {
+    data.text = document.getElementById('df_text')?.value||'';
+  }
+  return data;
+}
+
+/* 저장 */
+function saveNewQuestion() {
+  if (!s2Selected||!s2AddQType) { toast('질문 유형을 먼저 선택해주세요'); return; }
+  if (s2AddQType === 'scale') saveScaleLabels();
+  const data = gatherCurrentFormData(), t = s2AddQType;
+  if (t === 'scale' || t === 'essay') {
+    if (!data.text?.trim()) { toast('질문 내용을 입력해주세요'); return; }
+  } else if (t === 'ab') {
+    if (!data.a?.trim()||!data.b?.trim()) { toast('A·B 문구를 모두 입력해주세요'); return; }
+  }
+  const {ti,gi,ii} = s2Selected;
+  const it = state.types[ti].groups[gi].items[ii];
+  if (!it.questions) it.questions = [];
+  if (s2EditQId) {
+    const q = it.questions.find(q=>q.id===s2EditQId);
+    if (q) { Object.keys(q).forEach(k=>{if(k!=='id')delete q[k];}); Object.assign(q,{type:t,...data}); }
+    toast('질문이 수정됐어요');
+  } else {
+    it.questions.push({id:makeQId(), type:t, ...data});
+    toast('질문이 추가됐어요');
+  }
+  closeAddForm(); renderQuestions();
+}
+
+/* ── 미리보기 ── */
+function toggleQPreview(btn) {
+  const area = document.getElementById('qPreviewArea');
+  if (!area) return;
+  const isOpen = area.style.display !== 'none';
+  area.style.display = isOpen ? 'none' : '';
+  const arrow = btn?.querySelector('.pv-arrow');
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+  if (!isOpen) updateQPreview();
+}
+function updateQPreview() {
+  const area = document.getElementById('qPreviewArea');
+  if (!area||area.style.display==='none') return;
+  if (s2AddQType==='scale') saveScaleLabels();
+  area.innerHTML = buildQPreviewHTML(gatherCurrentFormData());
+}
+function buildQPreviewHTML(d) {
+  const t = s2AddQType;
+  let body = '';
+
+  if (t === 'scale') {
+    const steps    = d.steps || s2ScaleSteps || 5;
+    const labels   = d.labels || SCALE_DEFAULT_LABELS[steps] || SCALE_DEFAULT_LABELS[5];
+    const reversed = d.reversed || false;
+    const text     = d.text?.trim()||'(질문 내용을 입력해주세요)';
+    const cols = labels.map((lbl,i) => {
+      const score = reversed ? i+1 : steps-i;
+      return `<div class="qpv-likert-opt">
+        <div class="qpv-circle"></div>
+        <div class="qpv-likert-label">${escHtml(lbl)||`보기 ${i+1}`}</div>
+        <div class="qpv-score-label">${score}점</div>
+      </div>`;
+    }).join('');
+    body = `<div class="qpv-text">${escHtml(text)}</div><div class="qpv-likert">${cols}</div>`;
+  }
+  else if (t === 'ab') {
+    const aT  = escHtml(d.a?.trim()||'(A 문구 입력 중...)');
+    const bT  = escHtml(d.b?.trim()||'(B 문구 입력 중...)');
+    const ABL = ['A','A에 더<br>가깝다','A에 좀<br>더 가깝다','B에 좀<br>더 가깝다','B에 더<br>가깝다','B'];
+    const btns = ABL.map((lbl,i) =>
+      `<div class="qpv-ab-btn ${i===0||i===5?'side':''}">${lbl}<div style="font-size:8px;color:#aaa;margin-top:1px;">${i+1}점</div></div>`
+    ).join('');
+    body = `<div class="qpv-ab-wrap">
+      <div class="qpv-ab-box"><span class="qpv-ab-tag">A</span>${aT}</div>
+      <div class="qpv-ab-box"><span class="qpv-ab-tag">B</span>${bT}</div>
+    </div>
+    <div class="qpv-ab-scale">${btns}</div>`;
+  }
+  else if (t === 'essay') {
+    body = `<div class="qpv-text">${escHtml(d.text?.trim()||'(질문 내용을 입력해주세요)')}</div>
+      <div class="qpv-textarea-mock">자유롭게 서술해 주세요.</div>`;
+  }
+  return `<div class="qpv-card"><div class="qpv-num">💡 실제 질문지 미리보기</div>${body}</div>`;
+}
+
+function deleteQ(qId) {
+  if (!s2Selected) return;
+  if (!confirm('이 질문을 삭제할까요?')) return;
+  const { ti, gi, ii } = s2Selected;
+  const it = state.types[ti].groups[gi].items[ii];
+  it.questions = it.questions.filter(q => q.id !== qId);
+  renderQuestions();
+  toast('질문이 삭제됐어요');
+}
+
+function moveQ(qId, dir) {
+  if (!s2Selected) return;
+  const { ti, gi, ii } = s2Selected;
+  const qs  = state.types[ti].groups[gi].items[ii].questions;
+  const idx = qs.findIndex(q => q.id === qId);
+  const ni  = idx + dir;
+  if (ni < 0 || ni >= qs.length) return;
+  [qs[idx], qs[ni]] = [qs[ni], qs[idx]];
+  renderQuestions();
+}
+
+function updateS2Progress() {
+  let total = 0, filled = 0;
+  state.types.forEach(t => t.groups.forEach(g => g.items.forEach(it => {
+    total++;
+    if ((it.questions||[]).length > 0) filled++;
+  })));
+  const pct    = total === 0 ? 0 : Math.round(filled / total * 100);
+  const fillEl = document.getElementById('s2ProgressFill');
+  const lblEl  = document.getElementById('s2ProgressLabel');
+  if (fillEl) fillEl.style.width  = pct + '%';
+  if (lblEl)  lblEl.textContent   = `세부역량 ${total}개 중 ${filled}개에 질문 등록됨 (${pct}%)`;
+}
+
+// ── STEP 1: 트리 상태 ──
+const autoCode = true;  // 코드는 항상 자동 생성, 수정 불가
+let selectedPreset = null;
+const state = { types: [] };
+let seq = 1;
+
+function nextCode(prefix, existing) {
+  let n = 1;
+  while (existing.includes(`${prefix}_${String(n).padStart(2, '0')}`)) n++;
+  return `${prefix}_${String(n).padStart(2, '0')}`;
+}
+function makeId() { return 'id_' + (seq++); }
+
+function renderTree() {
+  const tree = document.getElementById('tree');
+  const empty = document.getElementById('emptyState');
+  const foot = document.getElementById('treeFoot');
+
+  if (state.types.length === 0) {
+    empty.style.display = '';
+    tree.style.display = 'none';
+    foot.style.display = 'none';
+  } else {
+    empty.style.display = 'none';
+    tree.style.display = '';
+    foot.style.display = '';
+  }
+
+  tree.innerHTML = '';
+  state.types.forEach((t) => {
+    tree.appendChild(rowEl(1, t));
+    if (t._open !== false) {
+      t.groups.forEach((g) => {
+        tree.appendChild(rowEl(2, g, t));
+        if (g._open !== false) {
+          g.items.forEach((it) => {
+            tree.appendChild(rowEl(3, it, g, t));
+          });
+          tree.appendChild(addRow(3, () => addItem(t, g)));
+        }
+      });
+      tree.appendChild(addRow(2, () => addGroup(t)));
+    }
+  });
+
+  refreshStats();
+}
+
+function rowEl(depth, obj, parent, grand) {
+  const row = document.createElement('div');
+  row.className = 'tree-row d' + depth;
+
+  const toggle = document.createElement('span');
+  toggle.className = 'toggle-btn ' + (obj._open !== false ? 'open' : '');
+  if (depth === 3) toggle.classList.add('invisible');
+  toggle.textContent = '▶';
+  toggle.onclick = () => { obj._open = obj._open === false ? true : false; renderTree(); };
+  row.appendChild(toggle);
+
+  const badge = document.createElement('span');
+  badge.className = 'depth-badge d' + depth;
+  badge.textContent = depth === 1 ? '유형' : depth === 2 ? '역량군' : '세부역량';
+  row.appendChild(badge);
+
+  if (obj._editing) {
+    const nameInput = document.createElement('input');
+    nameInput.className = 'inline-input';
+    nameInput.value = obj.name || '';
+    nameInput.placeholder = depth === 1 ? '예: 리더십 역량 진단' : depth === 2 ? '예: Self' : '예: 자기인식';
+    row.appendChild(nameInput);
+
+    nameInput.oninput = () => {
+      obj.code = generateCode(depth, nameInput.value, parent, grand);
+    };
+    nameInput.onkeydown = (e) => { if (e.key === 'Enter') saveEdit(obj, nameInput); if (e.key === 'Escape') cancelEdit(obj); };
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn btn-xs btn-primary';
+    saveBtn.textContent = '저장';
+    saveBtn.onclick = () => saveEdit(obj, nameInput);
+    row.appendChild(saveBtn);
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-xs btn-gray';
+    cancelBtn.textContent = '취소';
+    cancelBtn.onclick = () => cancelEdit(obj);
+    row.appendChild(cancelBtn);
+
+    row.classList.add('editing');
+    setTimeout(() => nameInput.focus(), 0);
+  } else {
+    const name = document.createElement('span');
+    name.className = 'row-name d' + depth;
+    name.textContent = obj.name;
+    row.appendChild(name);
+
+
+    if (depth < 3) {
+      const meta = document.createElement('span');
+      meta.className = 'row-meta';
+      if (depth === 1) meta.textContent = `${obj.groups.length} 역량군`;
+      if (depth === 2) meta.textContent = `${obj.items.length} 세부역량`;
+      row.appendChild(meta);
+    }
+
+    const actions = document.createElement('span');
+    actions.className = 'row-actions';
+    actions.innerHTML = `
+      <button class="btn btn-xs btn-gray" title="수정">✎</button>
+      <button class="btn btn-xs btn-danger" title="삭제">×</button>
+    `;
+    actions.children[0].onclick = () => { obj._editing = true; renderTree(); };
+    actions.children[1].onclick = () => deleteItem(obj);
+    row.appendChild(actions);
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.title = '드래그하여 순서 변경';
+    row.insertBefore(handle, row.firstChild);
+
+    row.setAttribute('draggable', 'true');
+    row.addEventListener('dragstart', e => {
+      treeDragSrc = obj;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => row.style.opacity = '0.4', 0);
+    });
+    row.addEventListener('dragend', () => {
+      row.style.opacity = '';
+      document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      if (peersOf(treeDragSrc) !== peersOf(obj)) return;
+      document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      const arr = peersOf(treeDragSrc);
+      if (arr !== peersOf(obj)) return;
+      const fromIdx = arr.indexOf(treeDragSrc);
+      const toIdx   = arr.indexOf(obj);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, moved);
+      treeDragSrc = null;
+      renderTree();
+    });
+  }
+
+  return row;
+}
+
+function addRow(depth, onAdd) {
+  const div = document.createElement('div');
+  div.className = 'tree-row d' + depth;
+  div.style.background = 'transparent';
+  div.style.borderBottom = 'none';
+  div.style.padding = depth === 2 ? '6px 14px 10px 38px' : '6px 14px 10px 64px';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-xs btn-outline';
+  btn.textContent = depth === 2 ? '＋ 역량군 추가' : '＋ 세부역량 추가';
+  btn.onclick = onAdd;
+  div.appendChild(btn);
+
+  return div;
+}
+
+function generateCode(depth, name, parent, grand) {
+  if (!name) return '';
+  if (depth === 1) {
+    const used = state.types.map(t => t.code);
+    return nextCode('TYPE', used);
+  }
+  if (depth === 2) {
+    const prefix = (parent ? parent.code : 'TYPE') + '_G';
+    const used = parent.groups.map(g => g.code);
+    return nextCode(prefix, used);
+  }
+  if (depth === 3) {
+    const prefix = (parent ? parent.code : 'GRP') + '_I';
+    const used = parent.items.map(i => i.code);
+    return nextCode(prefix, used);
+  }
+  return '';
+}
+
+function saveEdit(obj, nameInput) {
+  const name = nameInput.value.trim();
+  if (!name) { toast('이름을 입력해주세요'); return; }
+  obj.name = name;
+  obj._editing = false;
+  obj._isNew = false;
+  renderTree();
+}
+function cancelEdit(obj) {
+  if (obj._isNew) {
+    deleteItem(obj, true);
+  } else {
+    obj._editing = false;
+    renderTree();
+  }
+}
+
+function peersOf(obj) {
+  for (const t of state.types) {
+    if (t === obj) return state.types;
+    for (const g of t.groups) {
+      if (g === obj) return t.groups;
+      for (const i of g.items) if (i === obj) return g.items;
+    }
+  }
+  return [];
+}
+
+function moveItem(obj, dir) {
+  const arr = peersOf(obj);
+  const idx = arr.indexOf(obj);
+  const ni = idx + dir;
+  if (ni < 0 || ni >= arr.length) return;
+  [arr[idx], arr[ni]] = [arr[ni], arr[idx]];
+  renderTree();
+}
+function deleteItem(obj, silent) {
+  if (!silent) {
+    const label = obj.items ? '유형' : obj.groups ? '역량군' : '세부역량';
+    const childCount = obj.groups ? obj.groups.length : obj.items ? obj.items.length : 0;
+    let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠어요?`;
+    if (childCount > 0) msg += `\n\n하위 항목 ${childCount}개도 함께 삭제됩니다.`;
+    if (!confirm(msg)) return;
+  }
+  const arr = peersOf(obj);
+  const idx = arr.indexOf(obj);
+  if (idx >= 0) arr.splice(idx, 1);
+  renderTree();
+}
+
+function addType() {
+  const newT = { id: makeId(), code: '', name: '', groups: [], _open: true, _editing: true, _isNew: true };
+  newT.code = generateCode(1, '신규', null, null);
+  state.types.push(newT);
+  renderTree();
+}
+function addGroup(t) {
+  const newG = { id: makeId(), code: '', name: '', items: [], _open: true, _editing: true, _isNew: true };
+  newG.code = generateCode(2, '신규', t, null);
+  t.groups.push(newG);
+  t._open = true;
+  renderTree();
+}
+function addItem(t, g) {
+  const newI = { id: makeId(), code: '', name: '', _editing: true, _isNew: true };
+  newI.code = generateCode(3, '신규', g, t);
+  g.items.push(newI);
+  g._open = true;
+  renderTree();
+}
+
+function refreshStats() {
+  let d1 = state.types.length;
+  let d2 = 0, d3 = 0;
+  state.types.forEach(t => { d2 += t.groups.length; t.groups.forEach(g => d3 += g.items.length); });
+  document.getElementById('statD1').textContent = d1;
+  document.getElementById('statD2').textContent = d2;
+  document.getElementById('statD3').textContent = d3;
+  document.getElementById('treeMeta').textContent = `유형 ${d1} · 역량군 ${d2} · 세부역량 ${d3}`;
+}
+
+// ── 예시 모달 ──
+function openPresetModal() { document.getElementById('presetModal').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function selectPreset(key) {
+  selectedPreset = key;
+  document.querySelectorAll('.preset-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.preset === key);
+  });
+}
+
+const PRESETS = {
+  qset001: {
+    types: [
+      { name: '리더십', code: 'TYPE_01', groups: [
+        { name: '조직관리', code: 'TYPE_01_G01', items: [
+          {name:'방향설정',code:'TYPE_01_G01_I01'},
+          {name:'가치전파',code:'TYPE_01_G01_I02'},
+          {name:'변화관리',code:'TYPE_01_G01_I03'},
+          {name:'혁신활동',code:'TYPE_01_G01_I04'}
+        ]},
+        { name: '사람관리', code: 'TYPE_01_G02', items: [
+          {name:'신뢰형성',code:'TYPE_01_G02_I01'},
+          {name:'의사소통',code:'TYPE_01_G02_I02'},
+          {name:'팀원육성',code:'TYPE_01_G02_I03'},
+          {name:'코칭',code:'TYPE_01_G02_I04'}
+        ]},
+        { name: '성과관리', code: 'TYPE_01_G03', items: [
+          {name:'문제해결',code:'TYPE_01_G03_I01'},
+          {name:'전략적 의사결정',code:'TYPE_01_G03_I02'}
+        ]}
+      ]}
+    ]
+  }
+};
+
+function applyPreset() {
+  if (!selectedPreset) { toast('예시를 선택해주세요'); return; }
+  if (state.types.length > 0 && !confirm('현재 등록한 내용이 모두 지워지고 예시로 교체됩니다. 계속할까요?')) return;
+
+  state.types = JSON.parse(JSON.stringify(PRESETS[selectedPreset].types));
+  state.types.forEach(t => {
+    t.id = makeId(); t._open = true;
+    t.groups.forEach(g => {
+      g.id = makeId(); g._open = true;
+      g.items.forEach(i => i.id = makeId());
+    });
+  });
+
+  closeModal('presetModal');
+  renderTree();
+  toast('예시가 적용됐어요. 자유롭게 수정하세요.');
+}
+
+function resetAll() {
+  if (state.types.length === 0) return;
+  if (!confirm('STEP 1의 모든 구조를 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
+  state.types = [];
+  renderTree();
+}
+
+// ── 토스트 ──
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// 초기 렌더
+renderTree();
+
+// 모달 overlay 클릭 시 닫기, ESC 키 지원
+document.getElementById('qAddModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAddForm();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('qAddModal').classList.contains('open')) {
+    closeAddForm();
+  }
+});
+</script>
+</body>
+</html>

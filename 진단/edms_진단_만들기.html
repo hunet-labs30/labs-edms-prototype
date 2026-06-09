@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -985,16 +985,36 @@ body {
           <div class="wiz-card-body">
 
             <!-- ▸ 빈 상태 뷰 -->
-            <div id="step1EmptyView" style="display:none;flex:1;">
-              <div class="step1-no-data">
-                <div class="step1-no-data-icon">📋</div>
-                <h3>아직 등록된 진단지가 없어요</h3>
-                <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
-                <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
-                  ✚ 진단 플랫폼에서 진단지 만들기
-                </button>
-                <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
+            <div id="step1EmptyView" style="display:none;flex:1;flex-direction:row;gap:0;">
+
+              <!-- A타입 -->
+              <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid var(--border);">
+                <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">A타입</div>
+                <div class="step1-no-data">
+                  <div class="step1-no-data-icon">📋</div>
+                  <h3>아직 등록된 진단지가 없어요</h3>
+                  <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
+                  <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
+                    ✚ 진단 플랫폼에서 진단지 만들기
+                  </button>
+                  <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
+                </div>
               </div>
+
+              <!-- B타입 -->
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">B타입</div>
+                <div class="step1-no-data">
+                  <div class="step1-no-data-icon">📋</div>
+                  <h3>아직 등록된 진단지가 없어요</h3>
+                  <p>진단을 시작하려면 먼저 진단지를 만들어주세요.</p>
+                  <button class="btn-create" onclick="location.href='edms_진단지_만들기.html'">
+                    ✚ 진단지 만들기
+                  </button>
+                  <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
+                </div>
+              </div>
+
             </div>
 
             <!-- ▸ 데이터 있는 뷰 -->
@@ -1007,7 +1027,8 @@ body {
                   </div>
                   <div class="step1-card-list" id="step1CardList"></div>
                   <div class="step1-link-btn">
-                    <a href="#">진단 플랫폼에서 새 진단지 만들기 →</a>
+                    <!-- 분기: EDMS 진단지 생성 개발 완료 시 → edms_진단지_만들기.html / 미완료 시 → 진단 플랫폼 외부 링크 -->
+                    <a href="edms_진단지_만들기.html" onclick="/* TODO: 개발 미완료 시 href를 진단 플랫폼 URL로 교체 */">새 진단지 만들기 →</a>
                   </div>
                 </div>
                 <div class="step1-right">
@@ -1096,7 +1117,7 @@ body {
           <div class="wiz-card-head">
             <span class="wiz-step-tag">STEP 5 / 6</span>
             <h2>진단 기본 정보를 입력해주세요</h2>
-            <p>진단 이름과 진행 기간, 문항 노출 방식을 설정합니다.</p>
+            <p>진단 이름과 진행 기간을 설정합니다.</p>
           </div>
           <div class="wiz-card-body padded">
             <div class="step4-section">
@@ -1119,15 +1140,7 @@ body {
                     </div>
                   </td>
                 </tr>
-                <tr>
-                  <th class="form-th">문항 노출 방식</th>
-                  <td class="form-td">
-                    <div class="radio-group">
-                      <label class="radio-label"><input type="radio" name="diagDisplay" value="all" checked> 모든 문항 한 페이지</label>
-                      <label class="radio-label"><input type="radio" name="diagDisplay" value="one"> 하나씩 노출</label>
-                    </div>
-                  </td>
-                </tr>
+                
                 <tr>
                   <th class="form-th" style="vertical-align:top;padding-top:13px;">진단 소개 및 설명</th>
                   <td class="form-td">
@@ -1190,12 +1203,12 @@ body {
 
 <!-- Course Setting Modal -->
 <div class="modal-overlay" id="courseModal">
-  <div class="modal-box" style="width:820px;max-height:88vh;">
+  <div class="modal-box" style="width:820px;max-height:88vh;overflow:hidden;">
     <div class="modal-header">
       <h3>과정 설정 — <span id="courseModalTitle"></span></h3>
       <button class="modal-close" onclick="closeModal('courseModal')">×</button>
     </div>
-    <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;">
+    <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;min-height:0;">
       <!-- 좌: 과정 카탈로그 -->
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;min-height:0;">
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
@@ -1220,12 +1233,12 @@ body {
         <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;overflow-y:auto;height:260px;background:#fff;"></div>
       </div>
       <!-- 우: 선택한 과정 -->
-      <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;">
+      <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;max-height:360px;">
         <div style="padding:10px 14px;border-bottom:1px solid #eceef1;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
           <span style="font-size:12px;font-weight:700;color:#444;">선택한 과정 <span style="color:var(--primary);">(<span id="selectedCourseCount">0</span>)</span></span>
           <button onclick="clearAllCourses()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;text-decoration:underline;">전체삭제</button>
         </div>
-        <div id="selectedCourseList" style="flex:1;overflow-y:auto;padding:8px;min-height:220px;"></div>
+        <div id="selectedCourseList" style="flex:1;overflow-y:auto;padding:8px;"></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -1235,49 +1248,163 @@ body {
   </div>
 </div>
 
-<!-- Bulk Upload Modal -->
-<div class="modal-overlay" id="bulkUploadModal">
-  <div class="modal-box">
+<!-- Target Bulk Upload Modal -->
+<div class="modal-overlay" id="targetBulkModal">
+  <div class="modal-box w-lg" style="max-height:88vh;overflow:hidden;">
     <div class="modal-header">
-      <h3>일괄 업로드</h3>
-      <button class="modal-close" onclick="closeModal('bulkUploadModal')">×</button>
+      <h3>대상자 일괄 등록</h3>
+      <button class="modal-close" onclick="closeModal('targetBulkModal')">×</button>
     </div>
-    <div class="modal-body">
-      <div style="border:2px dashed #c5d8f7;border-radius:6px;padding:24px;text-align:center;background:#f0f4ff;">
-        <div style="font-size:32px;margin-bottom:8px;">📤</div>
-        <div style="font-size:13px;font-weight:700;color:#1a5cc8;margin-bottom:4px;">파일을 드래그하거나 클릭하여 업로드</div>
-        <div style="font-size:11px;color:#888;">Excel 파일 (.xlsx) 형식</div>
-        <input type="file" id="bulkUploadFile" style="display:none;" accept=".xlsx">
-        <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="document.getElementById('bulkUploadFile').click()">파일 선택</button>
+    <div class="modal-body" style="overflow-y:auto;gap:18px;">
+      <!-- 안내 박스 -->
+      <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
+        <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 등록 안내</div>
+        엑셀 파일(.xlsx)로 대상자·응답자를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        <strong>시트1</strong>: 유형명(드롭다운) · 유형코드(자동) · 대상자 아이디 · 대상자 사번 · 응답자 아이디 · 응답자 사번 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
+        <strong>시트2</strong>: 유형·유형코드·응답범위 코드표 (수정 금지)<br>
+        유형명·응답범위는 드롭다운 선택, 유형코드·응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
       </div>
-
-      <div class="modal-notice" style="margin-top:12px;">
-        <strong>엑셀 컬럼 구성 (A~D열)</strong><br>
-        <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:11px;">
+      <!-- Step 1 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 1. 업로드 양식 다운로드</div>
+        <button class="btn btn-outline" onclick="downloadTargetTemplate()">📥 업로드 양식 다운로드</button>
+      </div>
+      <!-- Step 2 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 2. 파일 첨부 및 미리보기</div>
+        <div style="border:2px dashed #c5d8f7;border-radius:8px;background:#f8faff;padding:36px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('targetBulkFile').click()">
+          <div style="font-size:13px;color:#999;margin-bottom:14px;">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();document.getElementById('targetBulkFile').click()">파일 선택</button>
+          <input type="file" id="targetBulkFile" style="display:none;" accept=".xlsx,.xls">
+        </div>
+      </div>
+      <!-- 오류 케이스 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 케이스 정리</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
           <thead>
-            <tr style="background:#e8f0fe;">
-              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">열</th>
-              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">항목</th>
-              <th style="padding:5px 8px;border:1px solid #c5d8f7;text-align:left;">예시</th>
+            <tr>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;width:160px;">오류내용 표시방법</th>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;">오류케이스 정리</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td style="padding:4px 8px;border:1px solid #dde;">A</td><td style="padding:4px 8px;border:1px solid #dde;">세부유형코드</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">LC_01</td></tr>
-            <tr><td style="padding:4px 8px;border:1px solid #dde;">B</td><td style="padding:4px 8px;border:1px solid #dde;">세부유형명</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">비전 및 목표 설정</td></tr>
-            <tr><td style="padding:4px 8px;border:1px solid #dde;">C</td><td style="padding:4px 8px;border:1px solid #dde;">과정명</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">VUCA 시대 빛나는 코칭 리더십</td></tr>
-            <tr><td style="padding:4px 8px;border:1px solid #dde;">D</td><td style="padding:4px 8px;border:1px solid #dde;">과정ID</td><td style="padding:4px 8px;border:1px solid #dde;color:#555;">C001</td></tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">데이터 없음</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">엑셀 파일에 등록된 데이터가 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">이름 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">이름(A열)이 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">사번 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">사번(B열)이 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">이미 등록된 사번이 엑셀 파일에 포함된 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">업로드 파일이 10MB를 초과한 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">컬럼값 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">샘플 파일의 컬럼명을 변경하거나 컬럼순서 등을 변경한 경우</td>
+            </tr>
           </tbody>
         </table>
-        <div style="margin-top:8px;color:#888;">• 세부유형코드·세부유형명은 시트2 코드표를 참고하세요.<br>• 동일 세부유형에 과정이 여러 개면 행을 추가하세요.</div>
-      </div>
-
-      <div style="margin-top:8px;">
-        <button class="btn btn-outline btn-sm" onclick="downloadTemplate()">📥 템플릿 다운로드</button>
       </div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('targetBulkModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="uploadTargetBulkFile()">등록</button>
+    </div>
+  </div>
+</div>
+<!-- Bulk Upload Modal -->
+<div class="modal-overlay" id="bulkUploadModal">
+  <div class="modal-box w-lg" style="max-height:88vh;overflow:hidden;">
+    <div class="modal-header">
+      <h3>추천과정 일괄 업로드</h3>
+      <button class="modal-close" onclick="closeModal('bulkUploadModal')">×</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;gap:18px;">
+
+      <!-- 안내 박스 -->
+      <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
+        <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 업로드 안내</div>
+        엑셀 파일(.xlsx)로 세부유형별 추천과정을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        시트 구성: <strong>세부유형코드 · 세부유형명 · 과정명 · 과정ID</strong> (A~D열)<br>
+        시트2 코드표를 참고하여 세부유형코드를 입력하고, 동일 세부유형에 과정이 여러 개면 행을 추가하세요.<br>
+        미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+      </div>
+
+      <!-- Step 1 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 1. 업로드 양식 다운로드</div>
+        <button class="btn btn-outline" onclick="downloadTemplate()">📥 업로드 양식 다운로드</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 2. 파일 첨부 및 미리보기</div>
+        <div id="bulkDropZone" style="border:2px dashed #c5d8f7;border-radius:8px;background:#f8faff;padding:36px 20px;text-align:center;cursor:pointer;transition:all .15s;"
+          onclick="document.getElementById('bulkUploadFile').click()">
+          <div style="font-size:13px;color:#999;margin-bottom:14px;">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();document.getElementById('bulkUploadFile').click()">파일 선택</button>
+          <input type="file" id="bulkUploadFile" style="display:none;" accept=".xlsx,.xls">
+        </div>
+      </div>
+
+      <!-- 오류 케이스 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 케이스 정리</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead>
+            <tr>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;width:160px;">오류내용 표시방법</th>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;">오류케이스 정리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">데이터 없음</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">엑셀 파일에 등록된 데이터가 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">세부유형코드(A열)가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트2 코드표에 없는 세부유형코드가 입력된 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">과정ID 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">과정ID(D열)가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 세부유형코드와 과정ID 조합이 이미 등록되어 있는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">업로드 파일이 10MB를 초과한 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">컬럼값 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">샘플 파일의 컬럼명을 변경하거나 컬럼순서 등을 변경한 경우</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('bulkUploadModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="uploadBulkFile()">확인</button>
+      <button class="btn btn-primary btn-sm" onclick="uploadBulkFile()">등록</button>
     </div>
   </div>
 </div>
@@ -1480,6 +1607,8 @@ body {
 <script src="../공통/emp-register-popup.js"></script>
 <script>
 let currentStep = 1;
+let _currentTargetTabIdx = 0;
+let maxReachedStep = 1;
 
 // 새로운 진단지 데이터 구조
 const QUESTIONNAIRES = [
@@ -1862,35 +1991,44 @@ function togglePreviewSub(blockId) {
 }
 
 function deletePreviewQuestion(btn) {
-  const card = btn.closest('.prev-q-card');
+  const card       = btn.closest('.prev-q-card');
+  // remove() 전에 조상 참조 미리 저장
+  const subBlock   = card.closest('.preview-sub-block');
+  const groupBlock = subBlock  ? subBlock.closest('.tree-group-block') : null;
+  const treeType   = groupBlock ? groupBlock.closest('.tree-type')      : null;
+
   card.style.transition = 'opacity .15s';
   card.style.opacity = '0';
   setTimeout(() => {
     card.remove();
 
-    // 세부항목 내 질문이 모두 삭제되면 세부항목 삭제
-    const subBlock = card.closest('.preview-sub-block');
-    if (subBlock) {
-      const remaining = subBlock.querySelectorAll('.prev-q-card');
-      if (remaining.length === 0) {
-        subBlock.style.transition = 'opacity .15s';
-        subBlock.style.opacity = '0';
-        setTimeout(() => {
-          subBlock.remove();
+    // 1단계: 세부역량 내 문항이 모두 삭제되면 세부역량 제거
+    if (!subBlock) return;
+    if (subBlock.querySelectorAll('.prev-q-card').length > 0) return;
 
-          // 역량군 내 세부항목이 모두 삭제되면 역량군 삭제
-          const treeType = subBlock.closest('.tree-type');
-          if (treeType) {
-            const remainingSubs = treeType.querySelectorAll('.preview-sub-block');
-            if (remainingSubs.length === 0) {
-              treeType.style.transition = 'opacity .15s';
-              treeType.style.opacity = '0';
-              setTimeout(() => treeType.remove(), 150);
-            }
-          }
-        }, 150);
-      }
-    }
+    subBlock.style.transition = 'opacity .15s';
+    subBlock.style.opacity = '0';
+    setTimeout(() => {
+      subBlock.remove();
+
+      // 2단계: 역량군 내 세부역량이 모두 삭제되면 역량군 제거
+      if (!groupBlock) return;
+      if (groupBlock.querySelectorAll('.preview-sub-block').length > 0) return;
+
+      groupBlock.style.transition = 'opacity .15s';
+      groupBlock.style.opacity = '0';
+      setTimeout(() => {
+        groupBlock.remove();
+
+        // 3단계: 유형 내 역량군이 모두 삭제되면 유형 제거
+        if (!treeType) return;
+        if (treeType.querySelectorAll('.tree-group-block').length > 0) return;
+
+        treeType.style.transition = 'opacity .15s';
+        treeType.style.opacity = '0';
+        setTimeout(() => treeType.remove(), 150);
+      }, 150);
+    }, 150);
   }, 150);
 }
 
@@ -2354,8 +2492,8 @@ function generateStep4Tabs() {
       <div class="toolbar">
         <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">${MK_DIAG_TARGETS.length}</strong>명 등록됨</div>
         <div class="spacer"></div>
-        <button class="btn btn-gray btn-sm" onclick="exportTargetExcel(${idx})">📥 엑셀 다운로드</button>
         <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
+        <button class="btn btn-gray btn-sm" onclick="openTargetBulkModal(${idx})">일괄 등록</button>
         <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">+ 대상 추가</button>
       </div>
       <div style="overflow-x:auto;flex:1;">
@@ -2399,9 +2537,9 @@ function downloadTemplate() {
   /* ── Sheet 1: 업로드 템플릿 ── */
   const s1 = [
     ['세부유형코드', '세부유형명', '과정명', '과정ID'],
-    ['LC_01', '비전 및 목표 설정', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
-    ['LC_01', '비전 및 목표 설정', '사람을 움직이는 사람관리의 기술', 'C002'],
-    ['LC_02', '구성원 육성 및 동기부여', '성과를 만드는 목표관리(OKR)', 'C003'],
+    ['LC_G01_01', '[Self역량군] 전략적 사고', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
+    ['LC_G01_02', '[Self역량군] 의사결정 능력', '사람을 움직이는 사람관리의 기술', 'C002'],
+    ['LC_G02_01', '[People역량군] 비전 및 목표 설정', '성과를 만드는 목표관리(OKR)', 'C003'],
   ];
   const ws1 = XLSX.utils.aoa_to_sheet(s1);
   ws1['!cols'] = [{wch:14},{wch:22},{wch:36},{wch:10}];
@@ -2433,8 +2571,131 @@ function uploadBulkFile() {
   closeModal('bulkUploadModal');
 }
 
+function openTargetBulkModal(tabIdx) {
+  _currentTargetTabIdx = tabIdx;
+  openModal('targetBulkModal');
+}
+
+function uploadTargetBulkFile() {
+  showToast('대상자가 일괄 등록되었습니다.');
+  closeModal('targetBulkModal');
+}
+
+function downloadTargetTemplate() {
+  if (!selectedQuestionnaire) {
+    showToast('진단지를 먼저 선택해주세요.');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+  wb.Workbook = { Names: [] };
+
+  /* ── Sheet2: 코드표 (현재 진단 설정 기반 자동 생성) ── */
+  const RESP_CODE = { '본인':'01', '상사':'02', '구성원':'03', '동료':'04' };
+  const s2Rows = [['유형명','유형코드','응답범위','응답범위코드','','유형명(고유)','유형코드(고유)']];
+  const uniqueTypes = [];   // { name, code, startRow, endRow }
+  let dataRow = 2;          // Sheet2 데이터 시작 행 (1-indexed)
+
+  selectedQuestionnaire.types.forEach((type, ti) => {
+    const settings   = respondentSettings[type.id] || { '본인': true };
+    const activeRoles = RESP_ROLES.filter(r => settings[r.key]);
+    if (!activeRoles.length) return;
+
+    const typeName  = '[' + type.name + ']';
+    const typeCode  = type.id + '-' + new Date().getFullYear() + '-' + String(ti + 1).padStart(3,'0');
+    const startR    = dataRow;
+
+    activeRoles.forEach(role => {
+      const respCode = typeCode.replace(/-/g,'_') + '_' + RESP_CODE[role.key];
+      s2Rows.push([typeName, typeCode, role.key, respCode, '', '', '']);
+      dataRow++;
+    });
+
+    uniqueTypes.push({ name: typeName, code: typeCode, start: startR, end: dataRow - 1 });
+  });
+
+  // 고유 유형명/코드를 F·G열에 채움
+  uniqueTypes.forEach((t, i) => {
+    if (s2Rows[i + 1]) {
+      s2Rows[i + 1][5] = t.name;
+      s2Rows[i + 1][6] = t.code;
+    }
+  });
+
+  const ws2 = XLSX.utils.aoa_to_sheet(s2Rows);
+  ws2['!cols'] = [{wch:28},{wch:18},{wch:12},{wch:16},{wch:3},{wch:28},{wch:18}];
+  XLSX.utils.book_append_sheet(wb, ws2, '코드표');
+
+  /* ── Named Ranges ── */
+  const nUnique = uniqueTypes.length;
+  if (nUnique > 0) {
+    wb.Workbook.Names.push({
+      Name: 'TYPE_NAMES',
+      Ref: '코드표!$F$2:$F$' + (nUnique + 1)
+    });
+  }
+  uniqueTypes.forEach(t => {
+    const safeCode = t.code.replace(/-/g,'_');
+    wb.Workbook.Names.push({ Name: safeCode + '_names', Ref: '코드표!$C$' + t.start + ':$C$' + t.end });
+    wb.Workbook.Names.push({ Name: safeCode + '_ids',   Ref: '코드표!$D$' + t.start + ':$D$' + t.end });
+  });
+
+  /* ── Sheet1: 업로드 템플릿 ── */
+  const MAX_ROW = 200;
+  const headers = ['유형명','유형코드','대상자 아이디','대상자 사번','응답자 아이디','응답자 사번','응답범위','응답범위코드'];
+  const hints   = ['드롭다운 선택','자동 입력 (수정 금지)','예: hong@hunet.co.kr','예: 2024001','예: kim@hunet.co.kr','예: 2023055','드롭다운 선택','자동 입력 (수정 금지)'];
+  const ws1Data = [headers, hints];
+  for (let r = 3; r <= MAX_ROW; r++) {
+    ws1Data.push([
+      '', // A: 드롭다운
+      { f: 'IF($A' + r + '="","",IFERROR(VLOOKUP($A' + r + ',코드표!$F:$G,2,FALSE),""))' }, // B: VLOOKUP
+      '', '', '', '', // C~F: 입력
+      '', // G: 드롭다운
+      { f: 'IF($G' + r + '="","",IFERROR(INDEX(INDIRECT(SUBSTITUTE($B' + r + ',"-","_")&"_ids"),MATCH($G' + r + ',INDIRECT(SUBSTITUTE($B' + r + ',"-","_")&"_names"),0)),""))' } // H: INDEX/MATCH
+    ]);
+  }
+  const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
+  ws1['!cols'] = [{wch:25},{wch:18},{wch:26},{wch:14},{wch:26},{wch:14},{wch:14},{wch:16}];
+  ws1['!freeze'] = { xSplit: 0, ySplit: 2 }; // 2행 고정
+
+  // 데이터 유효성 (A열: 유형명 드롭다운 / G열: 응답범위 종속 드롭다운)
+  ws1['!dataValidation'] = [
+    {
+      sqref: 'A3:A' + MAX_ROW,
+      type: 'list',
+      formula1: 'TYPE_NAMES',
+      allowBlank: true,
+      showErrorMessage: true,
+      errorTitle: '유형명 오류',
+      error: '코드표의 유형명을 선택해주세요.'
+    },
+    {
+      sqref: 'G3:G' + MAX_ROW,
+      type: 'list',
+      formula1: 'INDIRECT(SUBSTITUTE($B3,"-","_")&"_names")',
+      allowBlank: true,
+      showErrorMessage: true,
+      errorTitle: '응답범위 오류',
+      error: '해당 유형의 응답범위를 선택해주세요.'
+    }
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws1, '업로드_템플릿');
+
+  // Sheet 순서: 업로드_템플릿 → 코드표
+  wb.SheetNames = ['업로드_템플릿', '코드표'];
+
+  XLSX.writeFile(wb, '대상자_일괄등록_템플릿.xlsx');
+  showToast('템플릿이 다운로드됩니다. (시트2는 현재 진단 설정 기반)');
+}
+
 function openAddTargetModal(tabIdx) {
-  openModal('addTargetModal');
+  _currentTargetTabIdx = tabIdx;
+  if (typeof meOpenMemberSingleModal === 'function') {
+    meOpenMemberSingleModal();
+  } else {
+    showToast('대상자 등록 모듈을 불러오는 중입니다.');
+  }
 }
 
 function searchTargets() {
@@ -2834,7 +3095,11 @@ function updateBottomButtons() {
 }
 
 function saveDraft() {
-  // 실제 구현 시 서버 저장 API 호출
+  const nameVal = (document.getElementById('diagNameInput')?.value || '').trim();
+  if (!nameVal) {
+    showToast('진단명을 입력해야 임시저장할 수 있습니다.');
+    return;
+  }
   const msg = document.getElementById('draftSavedMsg');
   msg.classList.add('show');
   setTimeout(() => msg.classList.remove('show'), 2500);
@@ -2896,6 +3161,7 @@ function nextStep() {
   if (currentStep === 3 && !validateScores()) return;
   if (currentStep === 5 && !validateDates()) return;
   if (currentStep < 6) {
+    maxReachedStep = Math.max(maxReachedStep, currentStep + 1);
     currentStep++;
     goToStep(currentStep);
   }
@@ -2910,6 +3176,10 @@ function prevStep() {
 
 function goToStep(step) {
   if (step < 1 || step > 6) return;
+  if (step > maxReachedStep) {
+    showToast('이전 단계를 완료한 후 이동할 수 있습니다.');
+    return;
+  }
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById(`step-content-${step}`).classList.add('active');
 
@@ -2960,6 +3230,42 @@ document.addEventListener('DOMContentLoaded', () => {
       if (endDateEl.value && endDateEl.value < startDateEl.value) {
         endDateEl.value = startDateEl.value;
       }
+    });
+  }
+});
+
+// 대상자 추가 공통 모듈 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof meMbrInit === 'function') {
+    meMbrInit({
+      getRegistered: () => {
+        const tabs = document.querySelectorAll('#step6-tabs .tab-pane');
+        const pane = tabs[_currentTargetTabIdx];
+        if (!pane) return [];
+        return [...pane.querySelectorAll('tbody tr')]
+          .map(tr => ({ empno: tr.cells[3]?.textContent?.trim() }))
+          .filter(m => m.empno);
+      },
+      onRegister: (members) => {
+        const tabs = document.querySelectorAll('#step6-tabs .tab-pane');
+        const pane = tabs[_currentTargetTabIdx];
+        if (pane) {
+          const tbody = pane.querySelector('tbody');
+          const countEl = pane.querySelector(`#target-count-${_currentTargetTabIdx}`);
+          members.forEach(m => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><input type="checkbox" class="target-check"></td>
+              <td>${tbody ? tbody.querySelectorAll('tr').length + 1 : 1}</td>
+              <td>${m.name || ''}</td><td>${m.empno || ''}</td>
+              <td>${m.dept || ''}</td><td>${m.grade || ''}</td>
+              <td>${m.company || ''}</td><td>010-****-****</td>`;
+            if (tbody) tbody.appendChild(tr);
+          });
+          if (countEl) countEl.textContent = tbody ? tbody.querySelectorAll('tr').length : members.length;
+        }
+        showToast(members.length + '명이 추가되었습니다.');
+      },
+      getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
     });
   }
 });

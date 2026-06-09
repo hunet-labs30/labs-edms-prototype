@@ -283,6 +283,73 @@
     background: #f8f9fb; border: 1px solid #e0e3e8; border-radius: 4px;
     padding: 10px 14px; font-size: 12px; color: #666; line-height: 1.7;
   }
+
+  /* ── 진단지 관리 탭 추가 CSS ── */
+  /* Filter Bar */
+  .filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 18px; background: #fafbfc; border-bottom: 1px solid var(--border); }
+  .filter-input { height: 30px; border: 1px solid var(--border); border-radius: 4px; padding: 0 10px; font-size: 12px; font-family: inherit; outline: none; }
+  .filter-input:focus { border-color: var(--primary); }
+  .filter-input.search { width: 200px; }
+  .filter-select { height: 30px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px; font-size: 12px; font-family: inherit; outline: none; background: #fff; cursor: pointer; }
+  .filter-select:focus { border-color: var(--primary); }
+  .filter-count { font-size: 12px; color: #888; margin-left: auto; }
+
+  /* Table Wrapper */
+  .tbl-wrap { overflow-x: auto; }
+  .tbl-wrap table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tbl-wrap thead th { background: #f5f6fa; padding: 9px 14px; text-align: left; font-size: 11.5px; font-weight: 700; color: #555; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .tbl-wrap thead th.center { text-align: center; }
+  .tbl-wrap tbody tr { border-bottom: 1px solid #f0f2f5; transition: background .1s; }
+  .tbl-wrap tbody tr:hover { background: #f8faff; }
+  .tbl-wrap tbody tr:hover .row-actions { opacity: 1; }
+  .tbl-wrap tbody td { padding: 11px 14px; vertical-align: middle; }
+  .tbl-wrap tbody td.center { text-align: center; }
+
+  /* Status & Badge */
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .status-done { background: #dcfce7; color: #16a34a; }
+  .status-draft { background: #f3f4f6; color: #6b7280; }
+  .public-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .public-open { background: #e8f0fe; color: #1a73e8; }
+  .public-closed { background: #f3f4f6; color: #888; }
+
+  /* Questionnaire Name */
+  .qset-name { font-size: 13px; font-weight: 700; color: #1a1a2e; cursor: pointer; }
+  .qset-name:hover { color: var(--primary); text-decoration: underline; }
+  .qset-code { font-size: 10.5px; color: #aaa; font-family: 'Consolas', monospace; margin-top: 1px; }
+  .qset-target { font-size: 11.5px; color: #555; }
+
+  /* Structure info */
+  .struct-info { display: flex; gap: 6px; flex-wrap: wrap; }
+  .struct-chip { font-size: 10px; background: #f0f2f5; color: #555; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+
+  /* Row Actions */
+  .row-actions { display: flex; gap: 4px; }
+  .row-actions .btn { padding: 0 16px; white-space: nowrap; }
+
+  /* Empty */
+  .tbl-empty { text-align: center; padding: 48px 24px; color: #bbb; font-size: 13px; }
+
+  /* Pagination */
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 14px; border-top: 1px solid var(--border); }
+  .page-btn { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: #555; cursor: pointer; background: #fff; transition: all .12s; }
+  .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+
+  /* 일괄등록 모달 */
+  .bulk-modal-box { width: 800px; max-height: 88vh; display: flex; flex-direction: column; }
+  .bulk-modal-body { flex: 1; overflow-y: auto; padding: 22px 26px; }
+  .bulk-info-box { background: #f8faff; border: 1px solid #c7d8f7; border-radius: 8px; padding: 14px 18px; margin-bottom: 22px; font-size: 12.5px; line-height: 1.9; color: #2a3a6a; }
+  .bulk-info-title { font-size: 13px; font-weight: 700; color: #0a1e4a; margin-bottom: 6px; }
+  .bulk-step-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+  .bulk-section { margin-bottom: 26px; }
+  .bulk-drop-zone { border: 2px dashed #c7d8f7; border-radius: 8px; background: #f8faff; padding: 36px 20px; text-align: center; cursor: pointer; transition: all .15s; }
+  .bulk-drop-zone:hover, .bulk-drop-zone.drag-active { border-color: var(--primary); background: #eef4ff; }
+  .bulk-drop-text { font-size: 13px; color: #999; margin-bottom: 14px; }
+  .bulk-error-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .bulk-error-tbl th { background: #f5f6fa; padding: 9px 14px; text-align: center; font-size: 11.5px; font-weight: 700; color: #555; border: 1px solid var(--border); }
+  .bulk-error-tbl td { padding: 10px 14px; border: 1px solid #f0f2f5; vertical-align: middle; }
+  .bulk-error-tbl td:first-child { font-weight: 600; color: #1a1a2e; background: #fafbfc; text-align: center; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -431,6 +498,7 @@
     <!-- 탭 바 -->
     <div class="tab-bar" style="margin-top:16px;">
       <button class="tab-btn active" onclick="switchTab('manage')">역량진단 관리</button>
+      <button class="tab-btn" onclick="switchTab('qset')">진단지 관리</button>
       <button class="tab-btn" onclick="switchTab('setting')">역량진단 설정</button>
     </div>
 
@@ -511,6 +579,7 @@
             <th style="width:70px;">진단응답자</th>
             <th style="width:160px;">응답 현황</th>
             <th style="width:80px;">응답데이터</th>
+            <th style="width:80px;">결과 데이터</th>
             <th style="width:72px;">상태</th>
             <th style="width:80px;">등록일</th>
             <th style="width:72px;">관리</th>
@@ -535,6 +604,7 @@
             </td>
             <td style="color:#bbb; font-size:11px;">-</td>
             <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">—</td>
             <td><span class="badge badge-draft">임시저장</span></td>
             <td style="font-size:11px;">2026.06.06</td>
             <td><div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
@@ -556,6 +626,7 @@
             <td style="color:#bbb;">-</td>
             <td style="color:#bbb; font-size:11px;">-</td>
             <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">—</td>
             <td><span class="badge badge-draft">임시저장</span></td>
             <td style="font-size:11px;">2026.06.05</td>
             <td><div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
@@ -579,6 +650,7 @@
               </div>
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 리더십 역량진단')">다운로드</button></td>
+            <td style="color:#bbb;">—</td>
             <td><span class="badge badge-blue">진행중</span></td>
             <td style="font-size:11px;">2025.04.20</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -597,6 +669,7 @@
               </div>
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('팀장급 코칭리더십 진단 (2차)')">다운로드</button></td>
+            <td style="color:#bbb;">—</td>
             <td><span class="badge badge-blue">진행중</span></td>
             <td style="font-size:11px;">2025.04.28</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -620,6 +693,7 @@
               </div>
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('신임 팀장 온보딩 역량진단')">다운로드</button></td>
+            <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
                 <span class="badge badge-orange">마감 가능</span>
@@ -648,6 +722,7 @@
               </div>
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 핵심인재 역량진단')">다운로드</button></td>
+            <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
                 <span class="badge badge-orange">마감 가능</span>
@@ -671,6 +746,7 @@
             <td style="color:#bbb;">-</td>
             <td style="color:#bbb; font-size:11px;">대상자 미배정</td>
             <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
                 <span class="badge badge-yellow">대기</span>
@@ -699,6 +775,7 @@
               </div>
             </td>
             <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
                 <span class="badge badge-yellow">대기</span>
@@ -727,6 +804,7 @@
               </div>
             </td>
             <td style="color:#bbb;">-</td>
+            <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
                 <span class="badge badge-yellow">대기</span>
@@ -752,6 +830,7 @@
               </div>
             </td>
             <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 1분기 영업팀 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2025년 1분기 영업팀 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2025.02.10</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -771,7 +850,8 @@
                 <span class="progress-text" style="color:#1a7a4a;">303/312 (97%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-primary" onclick="directDownload('2024년 하반기 리더십 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 하반기 리더십 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 하반기 리더십 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.10.01</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -789,7 +869,8 @@
                 <span class="progress-text" style="color:#1a7a4a;">89/89 (100%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-primary" onclick="directDownload('2024년 중간리더 핵심역량 진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 중간리더 핵심역량 진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 중간리더 핵심역량 진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.08.20</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -807,7 +888,8 @@
                 <span class="progress-text" style="color:#1a7a4a;">507/540 (94%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-primary" onclick="directDownload('2024년 상반기 전사 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 상반기 전사 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 상반기 전사 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.04.01</td>
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
@@ -828,6 +910,61 @@
     </div>
 
     </div><!-- /tab-manage -->
+
+    <!-- 탭: 진단지 관리 -->
+    <div class="tab-panel" id="tab-qset">
+      <div class="card">
+
+        <!-- 필터 바 -->
+        <div class="filter-bar">
+          <input type="text" class="filter-input search" id="searchInput"
+            placeholder="🔍 진단지명 검색" oninput="filterTable()">
+          <select class="filter-select" id="filterPublic" onchange="filterTable()">
+            <option value="">공개 여부 전체</option>
+            <option value="공개">공개</option>
+            <option value="비공개">비공개</option>
+          </select>
+          <select class="filter-select" id="filterStatus" onchange="filterTable()">
+            <option value="">상태 전체</option>
+            <option value="완료">완료</option>
+            <option value="임시저장">임시저장</option>
+          </select>
+          <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button class="btn btn-gray" onclick="openBulkModal()">일괄등록</button>
+            <a href="edms_진단지_만들기.html" class="btn btn-primary">＋ 진단지 만들기</a>
+          </div>
+        </div>
+
+        <!-- 테이블 -->
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>진단지명</th>
+                <th class="center">질문수</th>
+                <th class="center">상태</th>
+                <th>최종 수정일</th>
+                <th class="center">공개 여부</th>
+                <th style="width:110px;"></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="tbl-empty" id="emptyMsg" style="display:none;">
+            검색 결과가 없습니다.
+          </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+          <div class="page-btn">‹</div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">›</div>
+        </div>
+
+      </div>
+    </div><!-- /tab-qset -->
 
     <!-- 탭: 역량진단 설정 -->
     <div class="tab-panel" id="tab-setting">
@@ -945,18 +1082,146 @@
   </div>
 </div>
 
+<!-- 개인리포트 생성 모달 -->
+<div id="reportModal" class="modal-overlay" onclick="if(event.target===this)closeReportModal()">
+  <div style="background:#fff;border-radius:6px;width:900px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);">
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:14px;font-weight:700;" id="reportModalTitle">개인리포트 생성</span>
+      <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeReportModal()">×</span>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+        <select class="select" style="width:100px;" id="reportSearchType">
+          <option>이름</option>
+          <option>아이디</option>
+          <option>사번</option>
+        </select>
+        <input class="input" type="text" id="reportSearchInput" placeholder="검색어를 입력해보세요." style="flex:1;" onkeydown="if(event.key==='Enter')filterReportTable()">
+        <button style="background:none;border:1px solid #ccc;border-radius:3px;padding:0 10px;height:28px;cursor:pointer;font-size:14px;" onclick="filterReportTable()">🔍</button>
+      </div>
+      <div style="font-size:12px;color:#555;margin-bottom:10px;">총 <span id="reportModalCount">0</span>건</div>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" id="reportChkAll" onchange="document.querySelectorAll('.report-chk').forEach(c=>c.checked=this.checked)"></th>
+            <th style="width:36px;">No</th>
+            <th style="width:70px;">이름</th>
+            <th style="width:150px;">아이디</th>
+            <th style="width:75px;">사번</th>
+            <th>부서/팀</th>
+            <th style="width:260px;">진단기간</th>
+            <th style="width:80px;">개인리포트</th>
+          </tr>
+        </thead>
+        <tbody id="reportModalBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;">
+      <button class="btn btn-primary" onclick="closeReportModal()">확인</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
+
+<!-- 일괄등록 모달 (진단지 관리) -->
+<div class="modal-overlay" id="bulkModal">
+  <div class="modal-box bulk-modal-box">
+    <div class="modal-header">
+      <h3>진단지 일괄등록</h3>
+      <button class="modal-close" onclick="closeBulkModal()">×</button>
+    </div>
+    <div class="bulk-modal-body">
+
+      <!-- 안내 박스 -->
+      <div class="bulk-info-box">
+        <div class="bulk-info-title">일괄등록 안내</div>
+        엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·질문을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        시트 구성: <strong>한 행 = 한 질문.</strong> 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
+        질문유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+      </div>
+
+      <!-- Step 1 -->
+      <div class="bulk-section">
+        <div class="bulk-step-title">Step 1. 업로드 양식 다운로드</div>
+        <a href="진단_일괄등록_템플릿.xlsx" download="진단_일괄등록_템플릿.xlsx" class="btn btn-outline">📥 업로드 양식 다운로드</a>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="bulk-section">
+        <div class="bulk-step-title">Step 2. 파일 첨부 및 미리보기</div>
+        <div class="bulk-drop-zone" id="bulkDropZone"
+          ondragover="bulkDragOver(event)" ondragleave="bulkDragLeave(event)" ondrop="bulkDrop(event)"
+          onclick="document.getElementById('bulkFileInput').click()">
+          <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+          <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput').click()">파일 선택</button>
+          <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this)">
+          <div id="bulkFileName" style="margin-top:12px; font-size:12px; color:var(--primary); font-weight:600;"></div>
+        </div>
+      </div>
+
+      <!-- 오류 케이스 -->
+      <div class="bulk-section">
+        <div class="bulk-step-title">오류 케이스 정리</div>
+        <table class="bulk-error-tbl">
+          <thead>
+            <tr>
+              <th style="width:160px;">오류내용 표시방법</th>
+              <th>오류케이스 정리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우 (헤더 행 이후 데이터 없음)</td></tr>
+            <tr><td>필수값 누락</td><td>유형명·역량군명·세부역량명·질문유형·질문내용 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>질문유형 오류</td><td>'척도형', 'A/B 강제선택', '서술형' 외의 값이 입력된 경우</td></tr>
+            <tr><td>척도형 보기 누락</td><td>질문유형이 '척도형'인데 보기1 내용(F열)이 비어 있는 경우</td></tr>
+            <tr><td>A/B 문구 누락</td><td>질문유형이 'A/B 강제선택'인데 A 문구(P열) 또는 B 문구(Q열)가 없는 경우</td></tr>
+            <tr><td>점수 형식 오류</td><td>척도형 점수값이 숫자가 아니거나 동일한 점수가 중복 입력된 경우</td></tr>
+            <tr><td>파일 용량 초과</td><td>업로드 파일이 10MB를 초과한 경우</td></tr>
+            <tr><td>컬럼값 오류</td><td>샘플 파일의 컬럼명을 변경하거나 컬럼 순서 등을 변경한 경우</td></tr>
+            <tr><td>파일 형식 오류</td><td>.xlsx, .xls 외의 파일 형식을 업로드한 경우</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeBulkModal()">취소</button>
+      <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 모달 (진단지 관리) -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🗑 진단지 삭제</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body" id="deleteModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal()">취소</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">삭제</button>
+    </div>
+  </div>
+</div>
 
 <script>
   function switchTab(name) {
     document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', ['manage','setting'][i] === name);
+      b.classList.toggle('active', ['manage','qset','setting'][i] === name);
     });
     document.querySelectorAll('.tab-panel').forEach(p => {
       p.classList.toggle('active', p.id === 'tab-' + name);
     });
   }
+
+  // URL hash로 초기 탭 설정
+  window.addEventListener('DOMContentLoaded', () => {
+    const hash = location.hash.replace('#', '');
+    if (['manage','qset','setting'].includes(hash)) switchTab(hash);
+  });
 
   function saveSetting() {
     const val = document.querySelector('input[name="diagUse"]:checked').value;
@@ -1119,6 +1384,221 @@
     if (cells.length >= 5) _bindDiagCell(cells[4], rowIdx, 'target');
     if (cells.length >= 6) _bindDiagCell(cells[5], rowIdx, 'respondent');
   });
+
+  // ── 진단지 관리 탭 JS 함수들 ──
+
+  // ── 샘플 데이터 ──
+  let QSET_DATA = [
+    {
+      id: 'QSET_001',
+      name: '팀장 리더십 역량 진단',
+      target: '팀장급',
+      types: 3, groups: 12, items: 36, questions: 108,
+      isPublic: true, status: '완료',
+      updatedAt: '2025.12.01', updatedBy: '김담당',
+    },
+    {
+      id: 'QSET_002',
+      name: '임원 리더십 역량 진단',
+      target: '임원',
+      types: 3, groups: 12, items: 36, questions: 108,
+      isPublic: true, status: '완료',
+      updatedAt: '2025.11.15', updatedBy: '김담당',
+    },
+    {
+      id: 'QSET_003',
+      name: '중간관리자 리더십 진단',
+      target: '과·차장급',
+      types: 2, groups: 8, items: 24, questions: 72,
+      isPublic: true, status: '완료',
+      updatedAt: '2025.10.20', updatedBy: '이담당',
+    },
+    {
+      id: 'QSET_004',
+      name: '신입사원 온보딩 역량 진단',
+      target: '신입사원',
+      types: 1, groups: 4, items: 12, questions: 24,
+      isPublic: false, status: '임시저장',
+      updatedAt: '2025.12.05', updatedBy: '김담당',
+    },
+    {
+      id: 'QSET_005',
+      name: '직무 역량 자가진단',
+      target: '전 임직원',
+      types: 1, groups: 5, items: 15, questions: 30,
+      isPublic: false, status: '임시저장',
+      updatedAt: '2025.12.08', updatedBy: '박담당',
+    },
+  ];
+
+  let qsetDeleteTargetId = null;
+
+  // ── 렌더 ──
+  function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    const empty = document.getElementById('emptyMsg');
+    const fc = document.getElementById('filterCount');
+    if (fc) fc.textContent = '총 ' + data.length + '건';
+
+    if (data.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = '';
+      return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = data.map(q => `
+      <tr id="row_${q.id}">
+        <td>
+          <div class="qset-name" onclick="openEdit('${q.id}')">${escHtml(q.name)}</div>
+        </td>
+        <td class="center" style="font-weight:700;color:var(--primary);">${q.questions}개</td>
+        <td class="center">
+          <span class="status-badge ${q.status==='완료'?'status-done':'status-draft'}">
+            ${q.status==='완료'?'✓ 완료':'· 임시저장'}
+          </span>
+        </td>
+        <td style="font-size:11.5px;color:#888;">${q.updatedAt}</td>
+        <td class="center">
+          <button class="btn btn-sm ${q.isPublic?'btn-outline':'btn-gray'}" onclick="togglePublic('${q.id}')">
+            ${q.isPublic?'공개':'비공개'}
+          </button>
+        </td>
+        <td>
+          <div class="row-actions">
+            <button class="btn btn-sm btn-outline" onclick="openEdit('${q.id}')">편집</button>
+            <button class="btn btn-sm btn-gray" onclick="copyItem('${q.id}')">복사</button>
+            <button class="btn btn-sm btn-danger" onclick="openDelete('${q.id}')">삭제</button>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── 필터 ──
+  function filterTable() {
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const pub     = document.getElementById('filterPublic').value;
+    const status  = document.getElementById('filterStatus').value;
+    const filtered = QSET_DATA.filter(q => {
+      const matchName   = !keyword || q.name.toLowerCase().includes(keyword) || q.id.toLowerCase().includes(keyword);
+      const matchPub    = !pub || (pub==='공개'?q.isPublic:!q.isPublic);
+      const matchStatus = !status || q.status === status;
+      return matchName && matchPub && matchStatus;
+    });
+    renderTable(filtered);
+  }
+
+  function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterPublic').value = '';
+    document.getElementById('filterStatus').value = '';
+    renderTable(QSET_DATA);
+  }
+
+  // ── 편집/복사 ──
+  function openEdit(id) {
+    window.location.href = 'edms_진단지_만들기.html';
+  }
+
+  function copyItem(id) {
+    const orig = QSET_DATA.find(q => q.id === id);
+    if (!orig) return;
+    const newId = 'QSET_' + String(QSET_DATA.length + 1).padStart(3, '0');
+    const copy  = { ...orig, id: newId, name: orig.name + ' (복사본)', status: '임시저장', updatedAt: '2025.12.08', updatedBy: '김담당' };
+    QSET_DATA.unshift(copy);
+    filterTable();
+    showToast('\''+orig.name+'\' 복사본이 생성됐습니다.');
+  }
+
+  // ── 공개 토글 ──
+  function togglePublic(id) {
+    const q = QSET_DATA.find(q => q.id === id);
+    if (!q) return;
+    q.isPublic = !q.isPublic;
+    filterTable();
+    showToast('\''+q.name+'\'이(가) '+(q.isPublic?'공개':'비공개')+'로 변경됐습니다.');
+  }
+
+  // ── 삭제 ──
+  function openDelete(id) {
+    const q = QSET_DATA.find(q => q.id === id);
+    if (!q) return;
+    qsetDeleteTargetId = id;
+    document.getElementById('deleteModalBody').innerHTML = `
+      <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠어요?<br><br>
+      <span style="color:#888;font-size:12px;">이미 생성된 진단은 진단지 구조가 저장되어 있어 영향을 받지 않습니다. 삭제 후 되돌릴 수 없습니다.</span>`;
+    document.getElementById('deleteModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    qsetDeleteTargetId = null;
+  }
+
+  function confirmDelete() {
+    if (!qsetDeleteTargetId) return;
+    const q = QSET_DATA.find(q => q.id === qsetDeleteTargetId);
+    QSET_DATA = QSET_DATA.filter(q => q.id !== qsetDeleteTargetId);
+    closeModal();
+    filterTable();
+    showToast('\''+q?.name+'\' 진단지가 삭제됐습니다.');
+  }
+
+  // overlay 클릭 닫기
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ── 초기 렌더 (탭 전환 시 호출) ──
+  function initQsetTab() {
+    if (QSET_DATA.length > 0) renderTable(QSET_DATA);
+  }
+
+  // ── 일괄등록 모달 ──
+  function openBulkModal() {
+    document.getElementById('bulkModal').classList.add('open');
+  }
+  function closeBulkModal() {
+    document.getElementById('bulkModal').classList.remove('open');
+    document.getElementById('bulkFileName').textContent = '';
+    document.getElementById('bulkFileInput').value = '';
+    const btn = document.getElementById('bulkSubmitBtn');
+    btn.disabled = true; btn.style.opacity = '.45'; btn.style.cursor = 'not-allowed';
+  }
+  function bulkDragOver(e) { e.preventDefault(); document.getElementById('bulkDropZone').classList.add('drag-active'); }
+  function bulkDragLeave() { document.getElementById('bulkDropZone').classList.remove('drag-active'); }
+  function bulkDrop(e) {
+    e.preventDefault();
+    document.getElementById('bulkDropZone').classList.remove('drag-active');
+    const file = e.dataTransfer.files[0];
+    if (file) handleBulkFile(file);
+  }
+  function bulkFileSelected(input) { if (input.files[0]) handleBulkFile(input.files[0]); }
+  function handleBulkFile(file) {
+    if (!file.name.match(/\.(xlsx|xls)$/i)) { showToast('❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.'); return; }
+    if (file.size > 10 * 1024 * 1024) { showToast('❌ 파일 용량이 10MB를 초과합니다.'); return; }
+    document.getElementById('bulkFileName').textContent = '✓ '+file.name+'  ('+(file.size/1024).toFixed(1)+' KB)';
+    const btn = document.getElementById('bulkSubmitBtn');
+    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+  }
+  function bulkSubmit() {
+    showToast('진단지 일괄등록이 완료됐습니다.');
+    closeBulkModal();
+  }
+  document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
+
+  // 탭 전환 시 진단지 관리 초기화
+  const originalSwitchTab = switchTab;
+  switchTab = function(name) {
+    if (name === 'qset') {
+      initQsetTab();
+    }
+    originalSwitchTab.call(this, name);
+  };
 </script>
 
 <!-- ═══ 진단 대상자 목록 팝업 ═══ -->
@@ -1801,6 +2281,74 @@ function _diagUpdateCell(cnt) {
 // ── 추가 등록 팝업 열기 (목록 팝업 → 공통 모듈 위임) ──
 function openDiagAddModal() {
   meOpenMemberSingleModal();
+}
+
+// ── 개인리포트 모달 ──
+const REPORT_DATA_MAP = {
+  '2025년 1분기 영업팀 역량진단': [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
+    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', dept:'인재개발팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
+    { no:3, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', dept:'영업1팀',    period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
+  ],
+  '2024년 하반기 리더십 역량진단': [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59' },
+    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', dept:'인재개발팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59' },
+  ],
+  '2024년 중간리더 핵심역량 진단': [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
+    { no:2, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', dept:'영업1팀',    period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
+  ],
+  '2024년 상반기 전사 역량진단': [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.05.01 00:00 ~ 2024.05.31 23:59' },
+    { no:2, name:'정*호', id:'s***@hunet.co.kr', empno:'2020031', dept:'IT개발팀',  period:'2024.05.01 00:00 ~ 2024.05.31 23:59' },
+  ],
+};
+let currentReportDiag = '';
+
+function renderReportTable(data) {
+  const tbody = document.getElementById('reportModalBody');
+  const count = document.getElementById('reportModalCount');
+  if (!tbody || !count) return;
+  count.textContent = data.length;
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td><input type="checkbox" class="report-chk"></td>
+      <td>${r.no}</td>
+      <td>${r.name}</td>
+      <td>${r.id}</td>
+      <td>${r.empno}</td>
+      <td>${r.dept}</td>
+      <td style="font-size:11.5px;">${r.period}</td>
+      <td><button class="btn btn-primary btn-sm" onclick="showToast('${r.name} 개인리포트를 생성했습니다.')">확인</button></td>
+    </tr>`).join('');
+}
+
+function filterReportTable() {
+  const type = document.getElementById('reportSearchType').value;
+  const kw   = document.getElementById('reportSearchInput').value.trim().toLowerCase();
+  const base = REPORT_DATA_MAP[currentReportDiag] || [];
+  const filtered = kw ? base.filter(r => {
+    if (type === '이름')  return r.name.toLowerCase().includes(kw);
+    if (type === '아이디') return r.id.toLowerCase().includes(kw);
+    if (type === '사번')  return r.empno.toLowerCase().includes(kw);
+    return true;
+  }) : base;
+  renderReportTable(filtered);
+}
+
+function openReportModal(diagName) {
+  currentReportDiag = diagName;
+  document.getElementById('reportModalTitle').textContent = diagName + ' 개인리포트 생성';
+  document.getElementById('reportSearchInput').value = '';
+  const base = REPORT_DATA_MAP[diagName] || [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'-' },
+  ];
+  renderReportTable(base);
+  document.getElementById('reportModal').classList.add('open');
+}
+
+function closeReportModal() {
+  document.getElementById('reportModal').classList.remove('open');
 }
 
 // ── 모듈 초기화 ──

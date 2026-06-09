@@ -469,6 +469,41 @@ function meMbrUpdateCollected() {
   });
   if (empty) empty.after(fragment);
   else listEl?.appendChild(fragment);
+
+  // 좌측 테이블 rows를 즉시 동기 갱신 (등록됨 처리)
+  _meMbrRefreshLeftRows();
+}
+
+// 좌측 패널의 모든 행을 ME_COLLECTED + getRegistered 상태에 맞게 즉시 갱신 (양방향)
+function _meMbrRefreshLeftRows() {
+  const registered = _meMbrConfig.getRegistered();
+  document.querySelectorAll('#me-member-modal tr[data-empno]').forEach(row => {
+    const empno = row.dataset.empno;
+    const isReg = registered.some(r => r.empno === empno) || ME_COLLECTED.some(r => r.empno === empno);
+    const chkCell = row.cells[0];
+    const btnCell = row.cells[row.cells.length - 1];
+    if (!chkCell) return;
+    if (isReg) {
+      // 체크박스 → 등록됨
+      if (chkCell.querySelector('input[type="checkbox"]')) {
+        chkCell.innerHTML = '<span style="font-size:10px;color:#ccc;">등록됨</span>';
+      }
+      // 추가 버튼 → 빈칸
+      if (btnCell && btnCell.querySelector('button')) {
+        btnCell.innerHTML = '';
+      }
+      row.style.background = '#fafafa';
+      [...row.cells].forEach(td => { if (!td.querySelector('span')) td.style.color = '#bbb'; });
+    } else {
+      // 비활성 → 복원 (등록됨 span이 있는 경우만 복원)
+      if (chkCell.querySelector('span') && !registered.some(r => r.empno === empno)) {
+        chkCell.innerHTML = '<input type="checkbox" class="me-mbr-r-chk">';
+        if (btnCell) btnCell.innerHTML = '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddRowToCollected(this)">추가</button>';
+        row.style.background = '';
+        [...row.cells].forEach(td => { td.style.color = ''; });
+      }
+    }
+  });
 }
 
 function meMbrAddCheckedToCollected() {
@@ -584,7 +619,7 @@ function meMbrSelectDept(id) {
   document.getElementById('me-mbr-right-cnt').textContent = members.length;
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = members.length ? members.map(m => {
-    const isReg = registered.some(r => r.empno === m.empno);
+    const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
     return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
     <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
@@ -685,7 +720,7 @@ function meMbrSelectTargetDiv(typeIdx, divIdx) {
   document.getElementById('me-mbr-right-cnt').textContent = d.members.length;
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = d.members.map(m => {
-    const isReg = registered.some(r => r.empno === m.empno);
+    const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
     return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
     <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
@@ -709,7 +744,7 @@ function meMbrSelectLeft(idx, type) {
   document.getElementById('me-mbr-right-cnt').textContent = item.members.length;
   const tbody = document.getElementById('me-mbr-right-tbody');
   tbody.innerHTML = item.members.map(m => {
-    const isReg = registered.some(r => r.empno === m.empno);
+    const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
     return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||''}" data-company="${m.company||''}" data-dept="${m.dept||''}"${isReg ? ' style="background:#fafafa;"' : ''}>
     <td style="text-align:center;padding:5px 4px;width:34px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-r-chk">'}</td>
     <td style="padding:5px 8px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
@@ -726,7 +761,7 @@ function meMbrSingleAll() {
   if (!tbody) return;
   const registered = _meMbrConfig.getRegistered();
   tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => {
-    const isReg = registered.some(r => r.empno === m.empno);
+    const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
     return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
     <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
     <td style="padding:5px 6px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
@@ -750,7 +785,7 @@ function meMbrSingleSearch() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length
     ? filtered.map(m => {
-        const isReg = registered.some(r => r.empno === m.empno);
+        const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
         return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
         <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
         <td style="padding:5px 6px;font-weight:600;${isReg ? 'color:#bbb;' : ''}">${_mbr_maskN(m.name)}</td>
