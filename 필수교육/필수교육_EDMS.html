@@ -2379,7 +2379,7 @@ function meRenderDashboard() {
     </div>`;
 
   // 슬라이더 렌더
-  const sorted = [...active].sort((a,b)=>new Date(a.to)-new Date(b.to));
+  const sorted = [...active].sort((a,b)=>(new Date(a.to)-new Date(b.to)) || (a.no-b.no)); // 1차: 수료기한 임박순(종료일↑), 2차: 등록 오래된순(no↑)
   document.getElementById('me-dash-active-cnt').textContent = `(${sorted.length}건)`;
   const track = document.getElementById('me-slider-track');
   const pages = Math.ceil(sorted.length/6); // 최대 6건, 2열 3행
@@ -2457,10 +2457,11 @@ function meRenderDashboard() {
   window._meSliderTotalPages = totalPages;
   window._meSliderWrapper = wrapper;
 
-  // 예정
-  document.getElementById('me-dash-upcoming-cnt').textContent = `(${upcoming.length}건)`;
-  document.getElementById('me-dash-upcoming-list').innerHTML = upcoming.length
-    ? upcoming.map(d=>`<div class="me-small-card" onclick="meOpenDetail('${d.id}','mandatory-edu')">
+  // 예정 — 1차: 시작일 오름차순, 2차: 등록 오래된순(no↑)
+  const upcomingSorted = [...upcoming].sort((a,b)=>(new Date(a.from)-new Date(b.from)) || (a.no-b.no));
+  document.getElementById('me-dash-upcoming-cnt').textContent = `(${upcomingSorted.length}건)`;
+  document.getElementById('me-dash-upcoming-list').innerHTML = upcomingSorted.length
+    ? upcomingSorted.map(d=>`<div class="me-small-card" onclick="meOpenDetail('${d.id}','mandatory-edu')">
         <span class="me-small-card-name">${d.name}</span>
         <span class="me-small-card-meta">시작: ${d.from} | 인원: ${d.count}명</span>
       </div>`).join('')
@@ -2468,7 +2469,8 @@ function meRenderDashboard() {
 
   // 종료 (최근 3개월만)
   const threeMonthsAgo = new Date(); threeMonthsAgo.setMonth(threeMonthsAgo.getMonth()-3);
-  const recentEnded = ended.filter(d => new Date(d.to) >= threeMonthsAgo);
+  const recentEnded = ended.filter(d => new Date(d.to) >= threeMonthsAgo)
+    .sort((a,b)=>(new Date(b.to)-new Date(a.to)) || (a.no-b.no)); // 1차: 종료일 최신순(↓), 2차: 등록 오래된순(no↑)
   document.getElementById('me-dash-ended-cnt').textContent = `(${recentEnded.length}건)`;
   document.getElementById('me-dash-ended-list').innerHTML = recentEnded.length
     ? recentEnded.map(d=>`<div class="me-small-card" onclick="meOpenDetail('${d.id}','mandatory-edu')">
