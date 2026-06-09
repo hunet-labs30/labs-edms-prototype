@@ -1742,7 +1742,7 @@ function renderStep1() {
       <div class="diag-card-title">
         <span>${q.name}</span>
       </div>
-      <div class="diag-card-meta">유형 ${q.typeCount}개 · 세부유형 ${q.subCount}개 · ${q.qCount}문항</div>
+      <div class="diag-card-meta">유형 ${q.typeCount}개 · 역량군 ${q.types.reduce((s,t)=>s+(t.groups?t.groups.length:0),0)}개 · 세부역량 ${q.subCount}개 · ${q.qCount}문항</div>
       <div class="diag-card-date">등록일 ${q.date}</div>
     `;
 
@@ -1778,10 +1778,13 @@ function renderPreview(questionnaire) {
   // 제목
   document.getElementById('previewQuestionnaireName').textContent = questionnaire.name;
 
-  // 통계 칩
+  // 통계 칩 (유형 > 역량군 > 세부역량 동적 계산)
+  const groupCount = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
+  const subCount   = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.reduce((gs, g) => gs + g.subs.length, 0) : 0), 0);
   const statsHtml = `
     <span class="stat-chip">유형 ${questionnaire.typeCount}개</span>
-    <span class="stat-chip">세부유형 ${questionnaire.subCount}개</span>
+    <span class="stat-chip">역량군 ${groupCount}개</span>
+    <span class="stat-chip">세부역량 ${subCount}개</span>
     <span class="stat-chip">${questionnaire.qCount}문항</span>
   `;
   document.getElementById('previewStats').innerHTML = statsHtml;
