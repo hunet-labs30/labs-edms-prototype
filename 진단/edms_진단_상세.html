@@ -764,19 +764,21 @@
   </div>
 </div>
 
-<!-- 시작/종료일 변경 모달 -->
+<!-- 종료일 변경 모달 -->
 <div id="dateChangeModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('dateChangeModal')">
   <div class="modal-box">
     <div class="modal-title">알림</div>
-    <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?</div>
+    <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 종료일을 아래와 같이 변경하겠습니까?</div>
     <div class="modal-date-row">
-      <div class="modal-date-label">시작일</div>
-      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
-        <div style="display:flex;gap:6px;">
-          <input type="date" id="modalStartDateInp" class="input" value="2025-05-01" style="width:140px;height:30px;">
-          <input type="time" id="modalStartTimeInp" class="input" value="00:00" style="width:100px;height:30px;">
-        </div>
-        <div class="modal-notice" id="modalStartDateNote">진행중인 진단은 시작일 변경이 적용되지 않습니다.</div>
+      <div class="modal-date-label" style="color:#9CA3AF;">시작일</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="date" id="modalStartDateInp" class="input" value="2025-05-01"
+          style="width:140px;height:30px;background:#f3f4f6;color:#9CA3AF;cursor:not-allowed;"
+          disabled>
+        <input type="time" id="modalStartTimeInp" class="input" value="00:00"
+          style="width:100px;height:30px;background:#f3f4f6;color:#9CA3AF;cursor:not-allowed;"
+          disabled>
+        <span style="font-size:11px;color:#9CA3AF;">수정 불가</span>
       </div>
     </div>
     <div class="modal-date-row">
@@ -1101,13 +1103,9 @@
       document.getElementById('mailModalMsg').textContent = count + '선택 인원에게 메일을 전송하겠습니까?';
       document.getElementById('mailModal').classList.add('open');
     } else if (val === 'datechange') {
-      // 선택된 행 중 진행중 상태가 있으면 안내 문구 표시 (시작일 입력은 가능하지만 확인 시 무시됨)
+      // 시작일 수정 불가 — 종료일만 변경 가능
       const checkedRows = [...document.querySelectorAll('.after-row-chk:not(:disabled):checked')]
         .map(cb => cb.closest('tr'));
-      const hasInProgress = checkedRows.some(tr =>
-        [...tr.querySelectorAll('.badge')].some(b => b.textContent.trim() === '진행중')
-      );
-      document.getElementById('modalStartDateNote').style.display = hasInProgress ? '' : 'none';
 
       // 선택된 행들의 현재 종료일 중 가장 늦은 날짜를 min으로 설정
       const endDates = checkedRows.map(tr => {
@@ -1130,7 +1128,7 @@
         endDateNote.style.display = 'none';
       }
 
-      document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
+      document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 종료일을 아래와 같이 변경하겠습니까?';
       document.getElementById('dateChangeModal').classList.add('open');
     }
     sel.value = '';
