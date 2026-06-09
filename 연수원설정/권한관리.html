@@ -543,7 +543,7 @@
         <div class="result-header">
           <div class="result-count">총 <strong id="total-count">0</strong>명</div>
           <div class="result-right">
-            <button class="btn btn-dark" onclick="meOpenMemberSingleModal()">+ 권한 등록</button>
+            <button class="btn btn-dark" onclick="openRegModal()">+ 권한 등록</button>
           </div>
         </div>
         <table class="main-table">
@@ -647,6 +647,53 @@
     </section>
 
   </main>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- 교육담당자: 권한 등록 모달               -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-reg">
+  <div class="modal" style="width:640px;">
+    <div class="modal-header">
+      <h3>교육담당자 권한 등록</h3>
+      <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box">
+        교육담당자로 등록할 담당자의 이름으로 검색하세요.<br>
+        연수원 계정으로 등록된 담당자만 등록이 가능합니다.
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input class="form-input" id="reg-name-kw" type="text" placeholder="이름을 입력해주세요." style="flex:1;"
+          onkeydown="if(event.key==='Enter') searchByName()">
+        <button class="btn-check" onclick="searchByName()">검색</button>
+      </div>
+      <div id="reg-search-result" style="display:none;">
+        <table class="reg-search-table">
+          <thead>
+            <tr>
+              <th style="width:70px;">이름</th>
+              <th>아이디(이메일)</th>
+              <th style="width:110px;">기업</th>
+              <th style="width:80px;">부서</th>
+              <th style="width:80px;"></th>
+            </tr>
+          </thead>
+          <tbody id="reg-search-tbody"></tbody>
+        </table>
+      </div>
+      <div class="selected-info-box" id="reg-selected-info" style="display:none;">
+        선택된 계정: <strong id="reg-selected-name"></strong>
+        (<span id="reg-selected-email"></span>) &nbsp;/&nbsp;
+        <span id="reg-selected-company"></span> &nbsp;/&nbsp;
+        <span id="reg-selected-dept"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-reg')">취소</button>
+      <button class="mbtn mbtn-dark" id="btn-reg-submit" onclick="submitReg()" disabled>등록</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════ -->
@@ -787,7 +834,6 @@
   </div>
 </div>
 
-<script src="../공통/emp-register-popup.js"></script>
 <script>
 // ── 사이드바 토글 ──
 function toggleNavGroup(header) {
@@ -940,34 +986,87 @@ function goPage(p) {
   renderTable();
 }
 
-// ── 권한 등록: 임직원 등록 공통 모듈 연동 ──
-// + 권한 등록 버튼 → meOpenMemberSingleModal() (HTML onclick에 직접 바인딩)
-// 모듈은 onRegister 콜백으로 선택된 임직원 배열을 전달한다.
-function onPermissionRegister(members) {
-  if (!members || !members.length) return;
+// ── 권한 등록 모달 (이름 검색 → 선택 → 단건 등록) ──
+const EDMS_USERS = [
+  { email: 'kim.manager@company.co.kr', name: '김관리', company: '건강보험공단', dept: '교육팀' },
+  { email: 'lee.admin@corp.com',         name: '이담당', company: '휴넷',         dept: '인사팀' },
+  { email: 'park.edu@org.kr',            name: '박교육', company: 'ABC마트',      dept: '기획팀' },
+  { email: 'choi.hr@company.co.kr',      name: '최인사', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'jung.dev@corp.com',          name: '정개발', company: '국민연금공단', dept: '총무팀' },
+  { email: 'kang.lead@company.co.kr',    name: '강리더', company: '건강보험공단', dept: '인사팀' },
+  { email: 'yoon.edu@corp.com',          name: '윤교육', company: '휴넷',         dept: '교육팀' },
+  { email: 'lim.hr@org.kr',              name: '임인사', company: 'ABC마트',      dept: '인사팀' },
+  { email: 'kim.edu1@company.co.kr',     name: '김교육', company: 'LABS 연수원',  dept: '교육팀' },
+  { email: 'kim.edu2@corp.com',          name: '김교육', company: '휴넷',         dept: '기획팀' },
+];
+
+let selectedUser = null;
+let _regSearchResults = [];
+
+function openRegModal() {
+  selectedUser = null;
+  _regSearchResults = [];
+  document.getElementById('reg-name-kw').value = '';
+  document.getElementById('reg-search-result').style.display = 'none';
+  document.getElementById('reg-search-tbody').innerHTML = '';
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
+  openModal('modal-reg');
+  setTimeout(() => document.getElementById('reg-name-kw').focus(), 100);
+}
+
+function searchByName() {
+  const kw = document.getElementById('reg-name-kw').value.trim();
+  if (!kw) { alert('이름을 입력해주세요.'); return; }
+  const results = EDMS_USERS.filter(u => u.name.includes(kw));
+  _regSearchResults = results;
+  const resultDiv = document.getElementById('reg-search-result');
+  const tbody = document.getElementById('reg-search-tbody');
+  if (!results.length) {
+    resultDiv.style.display = 'block';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = results.map((u, idx) => {
+    const alreadyReg = ALL_DATA.some(r => r.email === u.email);
+    return `<tr>
+      <td>${maskName(u.name)}</td>
+      <td style="text-align:left;padding-left:10px;">${maskEmail(u.email)}</td>
+      <td>${u.company}</td>
+      <td>${u.dept}</td>
+      <td>${alreadyReg
+        ? '<span style="font-size:11px;color:#e53935;">이미 등록된 계정입니다.</span>'
+        : `<button class="btn-sm btn-sm-outline" onclick="selectUser(${idx})">선택</button>`
+      }</td>
+    </tr>`;
+  }).join('');
+  resultDiv.style.display = 'block';
+  selectedUser = null;
+  document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('btn-reg-submit').disabled = true;
+}
+
+function selectUser(idx) {
+  const user = _regSearchResults[idx];
+  if (!user) return;
+  selectedUser = user;
+  document.getElementById('reg-selected-name').textContent    = maskName(user.name);
+  document.getElementById('reg-selected-email').textContent   = maskEmail(user.email);
+  document.getElementById('reg-selected-company').textContent = user.company;
+  document.getElementById('reg-selected-dept').textContent    = user.dept;
+  document.getElementById('reg-selected-info').style.display = 'block';
+  document.getElementById('btn-reg-submit').disabled = false;
+}
+
+function submitReg() {
+  if (!selectedUser) { alert('등록할 계정을 선택해주세요.'); return; }
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  let added = 0;
-  members.forEach(m => {
-    if (ALL_DATA.some(x => x.empno === m.empno || x.email === m.loginId)) return;
-    const newId = (ALL_DATA[0]?.id || 0) + 1 + added;
-    ALL_DATA.unshift({
-      id: newId,
-      empno: m.empno,
-      name: m.name,
-      email: m.loginId,
-      company: m.company,
-      dept: m.dept,
-      regDate,
-    });
-    added++;
-  });
+  const newId = (ALL_DATA[0]?.id || 0) + 1;
+  ALL_DATA.unshift({ id: newId, empno: '', name: selectedUser.name, email: selectedUser.email, company: selectedUser.company, dept: selectedUser.dept, regDate });
+  closeModal('modal-reg');
   doSearch();
-  if (added > 0) {
-    alert(added + '명의 교육담당자 권한이 등록되었습니다.\n각 계정으로 안내 메일이 발송됩니다.');
-  } else {
-    alert('이미 등록된 계정입니다.');
-  }
+  alert(selectedUser.name + ' 담당자의 교육담당자 권한이 등록되었습니다.\n계정 안내 메일이 발송됩니다.');
 }
 
 // ── 계정 안내 메일 재발송 모달 ──
@@ -1099,13 +1198,6 @@ function lmShowToast(msg) {
 }
 
 // ── 초기 렌더 ──
-document.addEventListener('DOMContentLoaded', () => {
-  meMbrInit({
-    getRegistered : () => ALL_DATA.map(r => ({ empno: r.empno, loginId: r.email, name: r.name })),
-    onRegister    : onPermissionRegister,
-    getCompanies  : () => meGetCompanies(),
-  });
-});
 doReset();
 </script>
 </body>
