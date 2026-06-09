@@ -285,7 +285,7 @@ function _meMbrInjectDOM() {
         </select>
         <input class="input" id="me-mbr-s-kw" style="flex:1;min-width:150px;height:28px;font-size:12px;" placeholder="검색어를 입력해주세요." onkeydown="if(event.key==='Enter')meMbrSingleSearch()">
         <button class="btn btn-primary" style="height:28px;" onclick="meMbrSingleSearch()">&#128269; 검색</button>
-        <button class="btn btn-reset" style="height:28px;" onclick="meMbrSingleAll()">전체검색</button>
+        <button class="btn btn-reset" style="height:28px;" onclick="meMbrSingleAll()">초기화</button>
       </div>
       <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px 14px;gap:8px;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
