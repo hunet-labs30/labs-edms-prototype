@@ -1000,7 +1000,7 @@ body {
                 <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">A타입</div>
                 <div class="step1-no-data">
                   <div class="step1-no-data-icon">📋</div>
-                  <h3>현재 조회된 데이터가 없습니다.</h3>
+                  <h3>아직 등록된 진단지가 없어요</h3>
                   <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
                   <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
                     ✚ 진단 플랫폼에서 진단지 만들기
@@ -1014,7 +1014,7 @@ body {
                 <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">B타입</div>
                 <div class="step1-no-data">
                   <div class="step1-no-data-icon">📋</div>
-                  <h3>현재 조회된 데이터가 없습니다.</h3>
+                  <h3>아직 등록된 진단지가 없어요</h3>
                   <p>진단을 시작하려면 먼저 진단지를 만들어주세요.</p>
                   <button class="btn-create" onclick="location.href='edms_진단지_만들기.html'">
                     ✚ 진단지 만들기
@@ -1180,7 +1180,7 @@ body {
         <div class="step-content wiz-card" id="step-content-6">
           <div class="wiz-card-head">
             <span class="wiz-step-tag">STEP 6 / 7</span>
-            <h2>응답 대상자를 등록해주세요</h2>
+            <h2>진단 대상자와 응답자를 설정해주세요</h2>
             <p>STEP 2에서 선택한 응답자 유형별로 응답을 진행할 대상자를 등록합니다.</p>
           </div>
           <div class="wiz-card-body padded">
@@ -2080,10 +2080,10 @@ function selectDiagnostic(id, rowEl) {
 }
 
 const RESP_ROLES = [
-  { key: 'Manager',       icon: '🏢', name: 'Manager(관리자)',      desc: '자신과 부하직원을 평가합니다' },
-  { key: 'Peer',          icon: '🤝', name: 'Peer(동료)',            desc: '같은 레벨의 동료를 평가합니다' },
-  { key: 'Direct Report', icon: '👥', name: 'Direct Report(부하)',   desc: '상사를 평가합니다' },
-  { key: 'Self',          icon: '🧑', name: 'Self(자기)',            desc: '자신을 평가합니다' },
+  { key: '본인',   icon: '🧑', name: '본인',   desc: '진단 대상자 본인이\n직접 응답합니다' },
+  { key: '구성원', icon: '👥', name: '구성원', desc: '대상자의 팀원·\n부하직원이 응답합니다' },
+  { key: '상사',   icon: '🏢', name: '상사',   desc: '대상자의 직속\n상사가 응답합니다' },
+  { key: '동료',   icon: '🤝', name: '동료',   desc: '대상자의 동료가\n응답합니다' },
 ];
 
 function generateRespondentCards() {
@@ -2094,7 +2094,7 @@ function generateRespondentCards() {
 
   selectedQuestionnaire.types.forEach((type) => {
     const key = type.id;
-    respondentSettings[key] = { 'Manager': false, 'Peer': false, 'Direct Report': false, 'Self': true };
+    respondentSettings[key] = { '본인': true, '구성원': false, '상사': false, '동료': false };
 
     const section = document.createElement('div');
     section.innerHTML = `
@@ -2105,7 +2105,7 @@ function generateRespondentCards() {
       <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
       <div class="resp-role-grid">
         ${RESP_ROLES.map(role => `
-          <div class="resp-role-card${role.key === 'Self' ? ' selected' : ''}"
+          <div class="resp-role-card${role.key === '본인' ? ' selected' : ''}"
                onclick="toggleRespRole(this, '${key}', '${role.key}')">
             <div class="resp-role-check">✓</div>
             <div class="resp-role-icon">${role.icon}</div>
@@ -2494,7 +2494,7 @@ function generateStep4Tabs() {
     tabEl.onclick = () => switchStep4Tab(idx);
     tabGroup.appendChild(tabEl);
 
-    const isSelf = tab.option === 'Self';
+    const isSelf = tab.option === '본인';
     // 샘플 대상자 행 생성
     const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
       const tabLabel = `${tab.type} - ${tab.option}`;
@@ -2813,7 +2813,7 @@ function _mkGetTypes() {
   const result = [];
   selectedQuestionnaire.types.forEach(type => {
     Object.keys(respondentSettings[type.id] || {}).forEach(opt => {
-      if (respondentSettings[type.id][opt] && opt !== 'Self') {
+      if (respondentSettings[type.id][opt] && opt !== '본인') {
         result.push({ id: `${type.id}-${opt}`, label: `${type.name} ${opt}` });
       }
     });
