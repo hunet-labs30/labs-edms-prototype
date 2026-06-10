@@ -396,9 +396,9 @@
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="state-switch-row">
           <span style="font-size:11px;color:#999;">화면 전환:</span>
-          <a class="state-switch-btn" id="btnBefore" href="?state=before">진단 진행 전 (BEFORE)</a>
-          <a class="state-switch-btn" id="btnAfter" href="?state=after">진단 진행 후 (AFTER)</a>
-          <a class="state-switch-btn" href="?state=after&expired=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">종료일 도래 후 (AFTER·마감)</a>
+          <a class="state-switch-btn" id="btnBefore" href="edms_진단_상세.html?state=before">진단 진행 전 (BEFORE)</a>
+          <a class="state-switch-btn" id="btnAfter" href="edms_진단_상세.html?state=after">진단 진행 후 (AFTER)</a>
+          <a class="state-switch-btn" href="edms_진단_상세.html?state=after&expired=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">종료일 도래 후 (AFTER·마감)</a>
         </div>
         <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단명 클릭(임시저장 제외)</div>
       </div>
@@ -1061,8 +1061,9 @@
     // 전환 링크 현재 상태 강조
     const btnBefore = document.getElementById('btnBefore');
     const btnAfter  = document.getElementById('btnAfter');
+    const expired = params.get('expired') === 'true';
     if (btnBefore) btnBefore.className = 'state-switch-btn' + (state === 'before' ? ' current' : '');
-    if (btnAfter)  btnAfter.className  = 'state-switch-btn' + (state === 'after'  ? ' current' : '');
+    if (btnAfter)  btnAfter.className  = 'state-switch-btn' + (state === 'after' && !expired ? ' current' : '');
 
     // AFTER + 종료일 도래 시: 대상자/응답자 추가 비활성화
     if (state === 'after') {
