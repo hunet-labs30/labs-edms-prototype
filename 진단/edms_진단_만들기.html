@@ -1141,10 +1141,10 @@ body {
                   <td class="form-td">
                     <div class="inline-row">
                       <input class="form-input w-date" id="diagStartDate" type="date">
-                      <input class="form-input" id="diagStartTime" type="time" style="width:100px;">
+                      <input class="form-input" id="diagStartTime" type="time" style="width:100px;" value="00:00">
                       <span style="font-size:12px;color:#888;">~</span>
                       <input class="form-input w-date" id="diagEndDate" type="date">
-                      <input class="form-input" id="diagEndTime" type="time" style="width:100px;">
+                      <input class="form-input" id="diagEndTime" type="time" style="width:100px;" value="23:59">
                     </div>
                   </td>
                 </tr>
@@ -2489,7 +2489,7 @@ function generateStep4Tabs() {
   tabs.forEach((tab, idx) => {
     const tabEl = document.createElement('div');
     tabEl.className = `tab ${idx === 0 ? 'active' : ''}`;
-    tabEl.textContent = `${tab.type} - ${tab.option}`;
+    tabEl.textContent = tab.option;
     tabEl.dataset.tabid = tab.id;
     tabEl.onclick = () => switchStep4Tab(idx);
     tabGroup.appendChild(tabEl);
@@ -2497,7 +2497,7 @@ function generateStep4Tabs() {
     const isSelf = tab.option === '본인';
     // 샘플 대상자 행 생성
     const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
-      const tabLabel = `${tab.type} - ${tab.option}`;
+      const tabLabel = tab.option;
       const respCell = isSelf
         ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
         : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tabLabel}')">설정</button>`;
