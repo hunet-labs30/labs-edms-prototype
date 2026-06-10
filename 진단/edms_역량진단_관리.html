@@ -914,16 +914,56 @@
 
     <!-- 탭: 진단지 관리 -->
     <div class="tab-panel" id="tab-qset">
-      <div class="card" style="padding: 48px 20px; text-align: center;">
-        <div style="font-size: 36px; margin-bottom: 16px;">📋</div>
-        <p style="font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px;">진단지 관리</p>
-        <p style="font-size: 13px; color: #666; margin-bottom: 28px; line-height: 1.8;">
-          진단지 생성 및 관리는 <strong>진단지 관리</strong> 페이지에서 진행합니다.<br>
-          아래 버튼을 클릭하면 진단지 관리 페이지로 이동합니다.
-        </p>
-        <a href="edms_진단지_관리.html" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; height: 36px; padding: 0 24px;">
-          진단지 관리 페이지로 이동 →
-        </a>
+      <div class="card" style="padding:0;">
+
+        <!-- 필터 바 -->
+        <div class="filter-bar">
+          <input type="text" class="filter-input search" id="searchInput"
+            placeholder="🔍 진단지명 검색" oninput="filterTable()">
+          <select class="filter-select" id="filterPublic" onchange="filterTable()">
+            <option value="">공개 여부 전체</option>
+            <option value="공개">공개</option>
+            <option value="비공개">비공개</option>
+          </select>
+          <select class="filter-select" id="filterStatus" onchange="filterTable()">
+            <option value="">상태 전체</option>
+            <option value="완료">완료</option>
+            <option value="임시저장">임시저장</option>
+          </select>
+          <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button class="btn btn-gray" onclick="openBulkModal()">일괄등록</button>
+            <a href="edms_진단지_만들기.html" class="btn btn-primary">＋ 진단지 만들기</a>
+          </div>
+        </div>
+
+        <!-- 테이블 -->
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>진단지명</th>
+                <th class="center">질문수</th>
+                <th class="center">상태</th>
+                <th>최종 수정일</th>
+                <th class="center">공개 여부</th>
+                <th style="width:110px;"></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="tbl-empty" id="emptyMsg" style="display:none;">
+            검색 결과가 없습니다.
+          </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+          <div class="page-btn">‹</div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">›</div>
+        </div>
+
       </div>
     </div><!-- /tab-qset -->
 
@@ -1181,6 +1221,7 @@
     document.querySelectorAll('.tab-panel').forEach(p => {
       p.classList.toggle('active', p.id === 'tab-' + name);
     });
+    if (name === 'qset') initQsetTab();
   }
 
   // URL hash로 초기 탭 설정
