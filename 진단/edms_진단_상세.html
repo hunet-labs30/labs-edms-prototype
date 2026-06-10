@@ -1179,10 +1179,15 @@
         if (selCnt)     selCnt.style.display     = 'none';
         if (btnAdd)     btnAdd.style.display      = 'none';
         if (btnDateChg) btnDateChg.style.display  = 'none';
-        document.querySelectorAll('#state-after .date-cell input').forEach(inp => {
-          inp.disabled = true;
-          inp.title    = '진단이 완료되어 종료일을 수정할 수 없습니다.';
-          inp.style.opacity = '0.4';
+        // 날짜 입력 셀 → 텍스트로 교체
+        document.querySelectorAll('#state-after .date-cell').forEach(cell => {
+          const dateInp = cell.querySelector('input[type="date"]');
+          const timeInp = cell.querySelector('input[type="time"]');
+          if (dateInp && timeInp) {
+            const dateVal = dateInp.value.replace(/-/g, '.'); // 2025-05-31 → 2025.05.31
+            const timeVal = timeInp.value;                    // 23:59
+            cell.innerHTML = '<span style="font-size:11px;">' + dateVal + ' ' + timeVal + '</span>';
+          }
         });
 
       } else {
