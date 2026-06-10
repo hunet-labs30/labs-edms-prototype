@@ -906,7 +906,7 @@ body {
       <aside class="wiz-aside">
         <div class="wiz-aside-head">
           <div class="wiz-aside-title">진단 만들기</div>
-          <div class="wiz-aside-sub">6단계로 쉽게 설정하세요</div>
+          <div class="wiz-aside-sub">7단계로 쉽게 설정하세요</div>
         </div>
         <div class="wiz-step-list">
           <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
@@ -952,8 +952,16 @@ body {
           <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
             <div class="wiz-step-badge">6</div>
             <div class="wiz-step-meta">
-              <div class="wiz-step-title">대상자 & 응답자</div>
+              <div class="wiz-step-title">응답자 등록</div>
               <div class="wiz-step-desc">진단 참여자 등록</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-7" onclick="goToStep(7)">
+            <div class="wiz-step-badge">7</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">검토 및 진단 생성</div>
+              <div class="wiz-step-desc">최종 확인 후 진단 생성</div>
             </div>
           </div>
         </div>
@@ -992,7 +1000,7 @@ body {
                 <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">A타입</div>
                 <div class="step1-no-data">
                   <div class="step1-no-data-icon">📋</div>
-                  <h3>아직 등록된 진단지가 없어요</h3>
+                  <h3>현재 조회된 데이터가 없습니다.</h3>
                   <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
                   <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
                     ✚ 진단 플랫폼에서 진단지 만들기
@@ -1006,7 +1014,7 @@ body {
                 <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">B타입</div>
                 <div class="step1-no-data">
                   <div class="step1-no-data-icon">📋</div>
-                  <h3>아직 등록된 진단지가 없어요</h3>
+                  <h3>현재 조회된 데이터가 없습니다.</h3>
                   <p>진단을 시작하려면 먼저 진단지를 만들어주세요.</p>
                   <button class="btn-create" onclick="location.href='edms_진단지_만들기.html'">
                     ✚ 진단지 만들기
@@ -1022,7 +1030,7 @@ body {
               <div class="step1-panel-wrap" style="flex:1;">
                 <div class="step1-left">
                   <div class="step1-search-row">
-                    <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="진단지 검색...">
+                    <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="검색어를 입력해주세요.">
                     <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
                   </div>
                   <div class="step1-card-list" id="step1CardList"></div>
@@ -1171,9 +1179,9 @@ body {
         <!-- STEP 6: 대상자 & 응답자 설정 -->
         <div class="step-content wiz-card" id="step-content-6">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 6 / 6 · 마지막 단계</span>
-            <h2>진단 대상자와 응답자를 설정해주세요</h2>
-            <p>진단을 받을 대상자와 각 유형별 응답자를 등록합니다.</p>
+            <span class="wiz-step-tag">STEP 6 / 7</span>
+            <h2>응답 대상자를 등록해주세요</h2>
+            <p>STEP 2에서 선택한 응답자 유형별로 응답을 진행할 대상자를 등록합니다.</p>
           </div>
           <div class="wiz-card-body padded">
             <div class="step4-section">
@@ -1188,10 +1196,27 @@ body {
           <div class="wiz-card-foot">
             <div class="foot-left">
               <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
-              <button class="btn btn-gray" onclick="previewDiagnosis()">미리보기</button>
             </div>
             <div class="foot-right">
-              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()">✓ 진단 생성</button>
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 7: 검토 및 진단 생성 -->
+        <div class="step-content wiz-card" id="step-content-7">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
+            <h2>진단을 생성하기 전에 검토해주세요</h2>
+            <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
+          </div>
+          <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()">진단 생성</button>
             </div>
           </div>
         </div>
@@ -1336,7 +1361,7 @@ body {
       <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
         <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 업로드 안내</div>
         엑셀 파일(.xlsx)로 세부유형별 추천과정을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        시트 구성: <strong>세부유형코드 · 세부유형명 · 과정명 · 과정ID</strong> (A~D열)<br>
+        시트 구성: <strong>세부유형코드 · 세부유형명 · 과정명 · 과정아이디</strong> (A~D열)<br>
         시트2 코드표를 참고하여 세부유형코드를 입력하고, 동일 세부유형에 과정이 여러 개면 행을 추가하세요.<br>
         미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
       </div>
@@ -1382,12 +1407,12 @@ body {
               <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트2 코드표에 없는 세부유형코드가 입력된 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">과정ID 누락</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">과정ID(D열)가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">과정아이디 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">과정아이디(D열)가 입력되지 않은 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 세부유형코드와 과정ID 조합이 이미 등록되어 있는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 세부유형코드와 과정아이디 조합이 이미 등록되어 있는 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
@@ -1472,7 +1497,7 @@ body {
 <div class="modal-overlay" id="respondentModal">
   <div class="resp-modal-box">
     <div class="modal-header">
-      <h3>응답자 등록</h3>
+      <h3 id="respondentModalTitle">응답자 추가</h3>
       <button class="modal-close" onclick="closeModal('respondentModal')">×</button>
     </div>
     <div style="display:flex;flex:1;overflow:hidden;height:600px;">
@@ -2055,10 +2080,10 @@ function selectDiagnostic(id, rowEl) {
 }
 
 const RESP_ROLES = [
-  { key: '본인',   icon: '🧑', name: '본인',   desc: '진단 대상자 본인이\n직접 응답합니다' },
-  { key: '구성원', icon: '👥', name: '구성원', desc: '대상자의 팀원·\n부하직원이 응답합니다' },
-  { key: '상사',   icon: '🏢', name: '상사',   desc: '대상자의 직속\n상사가 응답합니다' },
-  { key: '동료',   icon: '🤝', name: '동료',   desc: '대상자의 동료가\n응답합니다' },
+  { key: 'Manager',       icon: '🏢', name: 'Manager(관리자)',      desc: '자신과 부하직원을 평가합니다' },
+  { key: 'Peer',          icon: '🤝', name: 'Peer(동료)',            desc: '같은 레벨의 동료를 평가합니다' },
+  { key: 'Direct Report', icon: '👥', name: 'Direct Report(부하)',   desc: '상사를 평가합니다' },
+  { key: 'Self',          icon: '🧑', name: 'Self(자기)',            desc: '자신을 평가합니다' },
 ];
 
 function generateRespondentCards() {
@@ -2069,7 +2094,7 @@ function generateRespondentCards() {
 
   selectedQuestionnaire.types.forEach((type) => {
     const key = type.id;
-    respondentSettings[key] = { '본인': true, '구성원': false, '상사': false, '동료': false };
+    respondentSettings[key] = { 'Manager': false, 'Peer': false, 'Direct Report': false, 'Self': true };
 
     const section = document.createElement('div');
     section.innerHTML = `
@@ -2080,7 +2105,7 @@ function generateRespondentCards() {
       <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
       <div class="resp-role-grid">
         ${RESP_ROLES.map(role => `
-          <div class="resp-role-card${role.key === '본인' ? ' selected' : ''}"
+          <div class="resp-role-card${role.key === 'Self' ? ' selected' : ''}"
                onclick="toggleRespRole(this, '${key}', '${role.key}')">
             <div class="resp-role-check">✓</div>
             <div class="resp-role-icon">${role.icon}</div>
@@ -2469,12 +2494,13 @@ function generateStep4Tabs() {
     tabEl.onclick = () => switchStep4Tab(idx);
     tabGroup.appendChild(tabEl);
 
-    const isSelf = tab.option === '본인';
+    const isSelf = tab.option === 'Self';
     // 샘플 대상자 행 생성
     const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
+      const tabLabel = `${tab.type} - ${tab.option}`;
       const respCell = isSelf
         ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
-        : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri})">설정</button>`;
+        : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tabLabel}')">설정</button>`;
       return `<tr>
         <td><input type="checkbox"></td>
         <td>${ri+1}</td>
@@ -2494,7 +2520,7 @@ function generateStep4Tabs() {
         <div class="spacer"></div>
         <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
         <button class="btn btn-gray btn-sm" onclick="openTargetBulkModal(${idx})">일괄 등록</button>
-        <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">+ 대상 추가</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">대상자 추가</button>
       </div>
       <div style="overflow-x:auto;flex:1;">
         <table class="data-table">
@@ -2536,7 +2562,7 @@ function downloadTemplate() {
 
   /* ── Sheet 1: 업로드 템플릿 ── */
   const s1 = [
-    ['세부유형코드', '세부유형명', '과정명', '과정ID'],
+    ['세부유형코드', '세부유형명', '과정명', '과정아이디'],
     ['LC_G01_01', '[Self역량군] 전략적 사고', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
     ['LC_G01_02', '[Self역량군] 의사결정 능력', '사람을 움직이는 사람관리의 기술', 'C002'],
     ['LC_G02_01', '[People역량군] 비전 및 목표 설정', '성과를 만드는 목표관리(OKR)', 'C003'],
@@ -2737,9 +2763,10 @@ let _mkSplitMembers = [];
 
 function _mkKey() { return _mkCurrentTabId + ':' + _mkRowIdx; }
 
-function openRespondentModal(tabId, rowIdx) {
+function openRespondentModal(tabId, rowIdx, tabLabel) {
   _mkCurrentTabId = tabId;
   _mkRowIdx = rowIdx;
+  document.getElementById('respondentModalTitle').textContent = '응답자 추가 — ' + (tabLabel || tabId);
   _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
   _mkInitModal();
   openModal('respondentModal');
@@ -2786,7 +2813,7 @@ function _mkGetTypes() {
   const result = [];
   selectedQuestionnaire.types.forEach(type => {
     Object.keys(respondentSettings[type.id] || {}).forEach(opt => {
-      if (respondentSettings[type.id][opt] && opt !== '본인') {
+      if (respondentSettings[type.id][opt] && opt !== 'Self') {
         result.push({ id: `${type.id}-${opt}`, label: `${type.name} ${opt}` });
       }
     });
@@ -3106,6 +3133,58 @@ function saveDraft() {
   showToast('임시저장 되었습니다.');
 }
 
+function generateStep7Review() {
+  const container = document.getElementById('step7ReviewContainer');
+  if (!container) return;
+
+  const diagName  = document.getElementById('diagNameInput')?.value?.trim() || '(미입력)';
+  const startDate = document.getElementById('diagStartDate')?.value || '';
+  const startTime = document.getElementById('diagStartTime')?.value || '';
+  const endDate   = document.getElementById('diagEndDate')?.value || '';
+  const endTime   = document.getElementById('diagEndTime')?.value || '';
+  const period    = (startDate || endDate)
+    ? `${startDate}${startTime ? ' ' + startTime : ''} ~ ${endDate}${endTime ? ' ' + endTime : ''}`
+    : '(미입력)';
+
+  const qName = selectedQuestionnaire ? selectedQuestionnaire.name : '(미선택)';
+
+  const selectedRoles = [];
+  if (selectedQuestionnaire) {
+    selectedQuestionnaire.types.forEach(type => {
+      RESP_ROLES.forEach(role => {
+        if (respondentSettings[type.id]?.[role.key]) {
+          selectedRoles.push(`${type.name} — ${role.name}`);
+        }
+      });
+    });
+  }
+
+  const totalCourses = Object.values(courseData).reduce((s, arr) => s + arr.length, 0);
+
+  const rows = [
+    { step: 'STEP 1', label: '진단지 선택',      value: qName, target: 1 },
+    { step: 'STEP 2', label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)', target: 2 },
+    { step: 'STEP 3', label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨', target: 3 },
+    { step: 'STEP 4', label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정`, target: 4 },
+    { step: 'STEP 5', label: '진단 기본 설정',    value: `${diagName} / ${period}`, target: 5 },
+    { step: 'STEP 6', label: '응답자 등록',       value: '유형별 응답자 등록됨', target: 6 },
+  ];
+
+  container.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;">
+      ${rows.map(r => `
+        <tr style="border-bottom:1px solid #f0f2f5;">
+          <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.step}</td>
+          <td style="width:160px;padding:14px 0;font-size:13px;font-weight:700;color:#1a1a2e;">${r.label}</td>
+          <td style="padding:14px 16px;font-size:13px;color:#555;">${r.value}</td>
+          <td style="width:60px;padding:14px 0;text-align:right;">
+            <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">수정</button>
+          </td>
+        </tr>`).join('')}
+    </table>
+  `;
+}
+
 function createDiagnosis() {
   if (!selectedDiagnosticId) { showToast('진단지를 선택해주세요.'); return; }
   const diagName = document.getElementById('diagNameInput')?.value?.trim();
@@ -3147,7 +3226,7 @@ function validateDates() {
     return false;
   }
   if (end < start) {
-    showToast('종료일시는 시작일시보다 이후여야 합니다.');
+    showToast('종료일시는 시작일시보다 이후 날짜여야 합니다.');
     return false;
   }
   return true;
@@ -3160,7 +3239,26 @@ function nextStep() {
   }
   if (currentStep === 3 && !validateScores()) return;
   if (currentStep === 5 && !validateDates()) return;
-  if (currentStep < 6) {
+  if (currentStep === 6) {
+    const allTabs = document.querySelectorAll('#step4TabGroup .tab');
+    let valid = true;
+    allTabs.forEach(tab => {
+      const tabId = tab.dataset.tabid;
+      const isSelfTab = tabId && tabId.endsWith('-Self');
+      if (!isSelfTab) {
+        const idx = [...allTabs].indexOf(tab);
+        const rows = document.querySelectorAll(`#targets-${idx} tr`);
+        let hasRespondent = false;
+        rows.forEach(tr => {
+          const lastCell = tr.cells[tr.cells.length - 1];
+          if (lastCell && lastCell.querySelector('.resp-count-link')) hasRespondent = true;
+        });
+        if (!hasRespondent) valid = false;
+      }
+    });
+    if (!valid) { showToast('모든 응답자 유형에 최소 1명 이상 등록해주세요.'); return; }
+  }
+  if (currentStep < 7) {
     maxReachedStep = Math.max(maxReachedStep, currentStep + 1);
     currentStep++;
     goToStep(currentStep);
@@ -3175,7 +3273,7 @@ function prevStep() {
 }
 
 function goToStep(step) {
-  if (step < 1 || step > 6) return;
+  if (step < 1 || step > 7) return;
   if (step > maxReachedStep) {
     showToast('이전 단계를 완료한 후 이동할 수 있습니다.');
     return;
@@ -3184,7 +3282,7 @@ function goToStep(step) {
   document.getElementById(`step-content-${step}`).classList.add('active');
 
   // wiz-aside step item 상태 업데이트
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= 7; i++) {
     const el = document.getElementById(`wiz-step-${i}`);
     if (!el) continue;
     el.classList.remove('is-active', 'is-done');
@@ -3206,6 +3304,7 @@ function goToStep(step) {
   if (step === 3) generateScoreSettings();
   if (step === 4) generateCourseTree();
   if (step === 6) generateStep4Tabs();
+  if (step === 7) generateStep7Review();
   updateBottomButtons();
   const wc = document.querySelector('.wiz-content');
   if (wc) wc.scrollTop = 0;
