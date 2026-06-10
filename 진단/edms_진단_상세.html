@@ -1163,13 +1163,13 @@
       const btnDateChg   = document.getElementById('btnExpiredDateChange');
 
       if (isExpired) {
-        // 진단 마감 전: 작업선택·대상자등록 제거, 종료일 변경 버튼만 표시
+        // 진단 마감 전: 대상자 등록만 제거, 작업선택(메일발송·종료일변경)은 유지
         if (notice)    notice.style.display = '';
-        if (noticeMsg) noticeMsg.textContent = '진단 종료일이 도래했습니다. 대상자/응답자 추가는 불가하며 종료일 수정은 가능합니다.';
-        if (workSelect) workSelect.style.display = 'none';
-        if (selCnt)     selCnt.style.display     = 'none';
+        if (noticeMsg) noticeMsg.textContent = '진단 종료일이 도래했습니다. 대상자 추가는 불가합니다.';
+        if (workSelect) workSelect.style.display = '';
+        if (selCnt)     selCnt.style.display     = '';
         if (btnAdd)     btnAdd.style.display      = 'none';
-        if (btnDateChg) btnDateChg.style.display  = '';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
 
       } else if (isCompleted) {
         // 진단 완료 후: 모든 변경 수단 제거, 날짜 입력 비활성
