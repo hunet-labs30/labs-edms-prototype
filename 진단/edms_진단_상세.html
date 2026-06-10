@@ -233,6 +233,49 @@
   .modal-btn-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-shrink: 0; }
   .modal-scroll { overflow-y: auto; flex: 1; }
   .modal-notice { font-size: 11px; color: #b35c00; background: #fff4e0; border: 1px solid #fde68a; border-radius: 3px; padding: 5px 10px; margin-bottom: 4px; display: none; }
+
+  /* span4 */
+  .info-cell.span4 { grid-column: span 4; }
+
+  /* PAGINATION (공통) */
+  .pagination-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 4px; }
+  .pagination { display: flex; justify-content: center; align-items: center; gap: 4px; }
+  .pg-btn {
+    min-width: 28px; height: 28px; border: 1px solid #dde1e7; background: #fff;
+    border-radius: 3px; font-size: 12px; cursor: pointer; color: #555;
+    display: flex; align-items: center; justify-content: center; font-family: inherit; transition: all .12s;
+  }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .pg-size-row { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #888; }
+
+  /* 상태 분기 안내 */
+  .state-info-bar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 7px 14px; background: #f0f4ff; border: 1px solid #c9d7f7; border-radius: 4px;
+    font-size: 12px; color: #2c4a9e; margin-bottom: 12px;
+  }
+  .state-info-bar .state-label {
+    font-weight: 700; background: #1a73e8; color: #fff;
+    padding: 2px 8px; border-radius: 10px; font-size: 11px; white-space: nowrap;
+  }
+  .state-info-bar.after-bar { background: #fff8e1; border-color: #ffe082; color: #7a5800; }
+  .state-info-bar.after-bar .state-label { background: #f59e0b; }
+
+  /* 상태 전환 링크 */
+  .state-switch-row { display: flex; align-items: center; gap: 6px; }
+  .state-switch-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    border: 1px solid #ccc; border-radius: 3px; padding: 4px 12px;
+    font-size: 12px; cursor: pointer; text-decoration: none; font-family: inherit; transition: background .15s;
+  }
+  .state-switch-btn.current { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .state-switch-btn:not(.current) { background: #f5f6fa; color: #555; }
+  .state-switch-btn:not(.current):hover { background: #e4e6ea; }
+
+  /* 탭 안내 */
+  .tab-note { font-size: 11px; color: #888; background: #f8f9fb; border: 1px solid #e0e3e8; border-radius: 3px; padding: 5px 10px; margin-bottom: 8px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -349,11 +392,16 @@
 
     <!-- 페이지 헤더 -->
     <div class="page-header-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <a class="back-btn" href="edms_역량진단_관리.html">← 목록</a>
-        <div class="page-header-title">진단 상세</div>
+      <div class="page-header-title">진단 상세</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="state-switch-row">
+          <span style="font-size:11px;color:#999;">화면 전환:</span>
+          <a class="state-switch-btn" id="btnBefore" href="?state=before">진단 진행 전 (BEFORE)</a>
+          <a class="state-switch-btn" id="btnAfter" href="?state=after">진단 진행 후 (AFTER)</a>
+          <a class="state-switch-btn" href="?state=after&completed=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">진단 완료 후 (AFTER·완료)</a>
+        </div>
+        <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단명 클릭(임시저장 제외)</div>
       </div>
-      <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단 상세</div>
     </div>
 
     <!-- 진단 기본 정보 카드 -->
@@ -384,8 +432,16 @@
 
     <!-- ====== BEFORE STATE ====== -->
     <div id="state-before">
+      <div class="state-info-bar">
+        <span class="state-label">BEFORE</span>
+        진단 <strong>진행 전</strong> 상태입니다. 진단의 진행상태에 따라 BEFORE / AFTER 화면이 자동 분기 처리됩니다.
+        <span style="margin-left:4px;color:#5577bb;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
+      </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <div style="padding:14px 20px 0;">
+          <div class="tab-note">
+            ℹ️ 탭은 진단 생성 시 설정된 <strong>응답 유형</strong>에 따라 구성됩니다. (본인 / 상사 / 구성원 / 동료 중 설정된 유형만 표시)
+          </div>
           <div class="type-tab-bar">
             <button class="type-tab-btn active" onclick="switchTypeTab(this)">본인답변유형</button>
             <button class="type-tab-btn" onclick="switchTypeTab(this)">상사답변유형</button>
@@ -521,6 +577,24 @@
               </tbody>
             </table>
           </div>
+          <!-- 페이지네이션 (공통) -->
+          <div class="pagination-row">
+            <div class="pg-size-row">
+              페이지당
+              <select class="select" style="height:26px;font-size:11px;width:58px;">
+                <option>10</option><option>30</option><option>50</option><option>100</option><option>200</option>
+              </select>
+              건
+            </div>
+            <div class="pagination">
+              <button class="pg-btn" title="처음">«</button>
+              <button class="pg-btn" title="이전">‹</button>
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn" title="다음">›</button>
+              <button class="pg-btn" title="마지막">»</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -528,6 +602,14 @@
 
     <!-- ====== AFTER STATE ====== -->
     <div id="state-after" style="display:none;">
+      <div class="state-info-bar after-bar">
+        <span class="state-label">AFTER</span>
+        진단 <strong>진행 중 이후</strong> 상태입니다. 진단의 진행상태에 따라 BEFORE / AFTER 화면이 자동 분기 처리됩니다.
+        <span style="margin-left:4px;color:#9a7000;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
+      </div>
+      <div id="diagCompletedNotice" style="display:none;margin-bottom:12px;padding:8px 14px;background:#fff0f0;border:1px solid #f5c2c2;border-radius:4px;font-size:12px;color:#c0392b;">
+        🔒 진단이 <strong>완료</strong>되어 대상자 및 응답자 추가가 불가합니다.
+      </div>
       <div class="card" style="padding:16px 20px;">
 
         <!-- 상태 요약 + 액션 버튼 -->
@@ -544,7 +626,7 @@
               <option value="mail">메일 발송</option>
               <option value="datechange">종료일 변경</option>
             </select>
-            <button class="btn btn-outline btn-sm" onclick="openMemberRegModal()">대상자 등록</button>
+            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" onclick="openMemberRegModal()">대상자 등록</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
           </div>
         </div>
@@ -560,7 +642,7 @@
           <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
           <select id="after-filter-status" class="select" style="width:110px;">
             <option value="">전체</option>
-            <option>시작 전</option>
+            <option>진행 전</option>
             <option>진행중</option>
             <option>완료</option>
             <option>중단</option>
@@ -584,7 +666,7 @@
                 <th rowspan="2" style="width:32px;">No</th>
                 <th colspan="8" class="group-header">진단 대상자 정보</th>
                 <th colspan="7" class="group-header">응답(평가자) 정보</th>
-                <th colspan="4" class="group-header">진단 진행 관리</th>
+                <th colspan="3" class="group-header">진단 진행 관리</th>
               </tr>
               <tr>
                 <th style="width:60px;">이름</th>
@@ -650,7 +732,7 @@
                 <td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
-                <td><span class="badge badge-gray">시작 전</span></td>
+                <td><span class="badge badge-gray">진행 전</span></td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
@@ -690,7 +772,7 @@
                 <td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
-                <td><span class="badge badge-gray">시작 전</span></td>
+                <td><span class="badge badge-gray">진행 전</span></td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
@@ -715,7 +797,7 @@
                 <td>류*나</td><td>r***@hunet.co.kr</td><td>2025055</td><td>휴넷</td><td>인사팀</td><td>대리</td><td>010-****-9988</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
-                <td><span class="badge badge-gray">시작 전</span></td>
+                <td><span class="badge badge-gray">진행 전</span></td>
                 <td>
                   <div class="date-cell">
                     <input type="date" class="input input-sm" value="2025-05-31" min="2025-05-31" style="width:112px;">
@@ -746,9 +828,32 @@
             </tbody>
           </table>
         </div>
+        <!-- 페이지네이션 (공통) -->
+        <div class="pagination-row" style="padding:10px 0 0;">
+          <div class="pg-size-row">
+            페이지당
+            <select class="select" style="height:26px;font-size:11px;width:58px;">
+              <option>10</option><option>30</option><option>50</option><option>100</option><option>200</option>
+            </select>
+            건
+          </div>
+          <div class="pagination">
+            <button class="pg-btn" title="처음">«</button>
+            <button class="pg-btn" title="이전">‹</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn" title="다음">›</button>
+            <button class="pg-btn" title="마지막">»</button>
+          </div>
+        </div>
       </div>
     </div>
     <!-- ====== /AFTER STATE ====== -->
+
+    <!-- 하단 목록 버튼 -->
+    <div style="display:flex;justify-content:flex-end;padding:4px 2px;">
+      <a class="back-btn" href="edms_역량진단_관리.html">← 목록</a>
+    </div>
 
   </main>
 </div>
@@ -947,12 +1052,37 @@
   window._maskL = (id) => maskId(id);
 
   // ── URL 파라미터로 상태 전환 ──
+  // completed=true 파라미터로 진단 완료 상태 시뮬레이션 (예: ?state=after&completed=true)
   function initState() {
     const params = new URLSearchParams(window.location.search);
     const state = params.get('state') || 'before';
+    const isCompleted = params.get('completed') === 'true';
+
     document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
     document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
     setupInfoDates(state);
+
+    // 전환 링크 현재 상태 강조
+    const btnBefore = document.getElementById('btnBefore');
+    const btnAfter  = document.getElementById('btnAfter');
+    if (btnBefore) btnBefore.className = 'state-switch-btn' + (state === 'before' ? ' current' : '');
+    if (btnAfter)  btnAfter.className  = 'state-switch-btn' + (state === 'after'  ? ' current' : '');
+
+    // AFTER + 완료 시: 대상자/응답자 추가 비활성화
+    if (state === 'after') {
+      const notice = document.getElementById('diagCompletedNotice');
+      const btnAdd = document.getElementById('btnAfterAddTarget');
+      if (isCompleted) {
+        if (notice) notice.style.display = '';
+        if (btnAdd) {
+          btnAdd.disabled = true;
+          btnAdd.style.opacity = '0.4';
+          btnAdd.style.cursor = 'not-allowed';
+          btnAdd.title = '진단이 완료되어 대상자 추가가 불가합니다.';
+          btnAdd.onclick = null;
+        }
+      }
+    }
   }
 
   // ── 진단 날짜 필드: 상태에 따라 편집 가능 여부 설정 (날짜+시간) ──
