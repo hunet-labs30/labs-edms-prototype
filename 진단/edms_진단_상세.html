@@ -405,9 +405,10 @@
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="state-switch-row">
           <span style="font-size:11px;color:#999;">화면 전환:</span>
-          <a class="state-switch-btn" id="btnBefore" href="edms_진단_상세.html?state=before">진단 진행 전 (BEFORE)</a>
-          <a class="state-switch-btn" id="btnAfter" href="edms_진단_상세.html?state=after">진단 진행 후 (AFTER)</a>
-          <a class="state-switch-btn" href="edms_진단_상세.html?state=after&expired=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">종료일 도래 후 (AFTER·마감)</a>
+          <a class="state-switch-btn" id="btnBefore"    href="edms_진단_상세.html?state=before">진단 진행 전</a>
+          <a class="state-switch-btn" id="btnAfter"     href="edms_진단_상세.html?state=after">진단 진행 후</a>
+          <a class="state-switch-btn" id="btnExpired"   href="edms_진단_상세.html?state=after&expired=true">진단 마감 전</a>
+          <a class="state-switch-btn" id="btnCompleted" href="edms_진단_상세.html?state=after&completed=true">진단 완료 후</a>
         </div>
         <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단명 클릭(임시저장 제외)</div>
       </div>
@@ -614,7 +615,7 @@
         <span style="margin-left:4px;color:#9a7000;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
       </div>
       <div id="diagCompletedNotice" style="display:none;margin-bottom:12px;padding:8px 14px;background:#fff0f0;border:1px solid #f5c2c2;border-radius:4px;font-size:12px;color:#c0392b;">
-        🔒 진단 종료일이 도래하여 대상자 및 응답자 추가가 불가합니다.
+        🔒 <span id="diagNoticeMsg"></span>
       </div>
       <div class="card" style="padding:16px 20px;">
 
@@ -626,13 +627,16 @@
             <span class="stat-badge stat-badge-stopped">중단(탈퇴) <span class="num">2</span></span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
-            <span class="sel-count-text" id="selCountText">선택 0건</span>
-            <select class="select" style="height:28px;font-size:12px;" onchange="handleWorkSelect(this)">
+            <!-- 진단 진행 후 전용: 선택+작업+대상자등록 -->
+            <span class="sel-count-text" id="selCountText" style="display:none;">선택 0건</span>
+            <select id="afterWorkSelect" class="select" style="height:28px;font-size:12px;display:none;" onchange="handleWorkSelect(this)">
               <option value="">작업 선택 ▼</option>
               <option value="mail">메일 발송</option>
               <option value="datechange">종료일 변경</option>
             </select>
-            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" onclick="openMemberRegModal()">대상자 등록</button>
+            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openMemberRegModal()">대상자 등록</button>
+            <!-- 진단 마감 전 전용: 종료일 변경만 -->
+            <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
           </div>
         </div>
@@ -1124,36 +1128,69 @@
   window._maskL = (id) => maskId(id);
 
   // ── URL 파라미터로 상태 전환 ──
-  // expired=true 파라미터로 종료일 도래 상태 시뮬레이션 (예: ?state=after&expired=true)
+  // state: before | after
+  // expired=true   → 진단 마감 전 (종료일 도래, 아직 완료 처리 전)
+  // completed=true → 진단 완료 후 (완료 처리 완료)
   function initState() {
-    const params = new URLSearchParams(window.location.search);
-    const state = params.get('state') || 'before';
-    const isExpired = params.get('expired') === 'true'; // 진단 종료일 도래 여부
+    const params      = new URLSearchParams(window.location.search);
+    const state       = params.get('state') || 'before';
+    const isExpired   = params.get('expired')   === 'true';
+    const isCompleted = params.get('completed') === 'true';
 
     document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
     document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
     setupInfoDates(state);
 
-    // 전환 링크 현재 상태 강조
-    const btnBefore = document.getElementById('btnBefore');
-    const btnAfter  = document.getElementById('btnAfter');
-    const expired = params.get('expired') === 'true';
-    if (btnBefore) btnBefore.className = 'state-switch-btn' + (state === 'before' ? ' current' : '');
-    if (btnAfter)  btnAfter.className  = 'state-switch-btn' + (state === 'after' && !expired ? ' current' : '');
+    // ── 전환 버튼 현재 상태 강조 ──
+    const btnMap = {
+      btnBefore:   !isExpired && !isCompleted && state === 'before',
+      btnAfter:    !isExpired && !isCompleted && state === 'after',
+      btnExpired:  isExpired,
+      btnCompleted:isCompleted
+    };
+    Object.entries(btnMap).forEach(([id, active]) => {
+      const el = document.getElementById(id);
+      if (el) el.className = 'state-switch-btn' + (active ? ' current' : '');
+    });
 
-    // AFTER + 종료일 도래 시: 대상자/응답자 추가 비활성화
+    // ── AFTER 상태별 UI 제어 ──
     if (state === 'after') {
-      const notice = document.getElementById('diagCompletedNotice');
-      const btnAdd = document.getElementById('btnAfterAddTarget');
+      const notice       = document.getElementById('diagCompletedNotice');
+      const noticeMsg    = document.getElementById('diagNoticeMsg');
+      const workSelect   = document.getElementById('afterWorkSelect');
+      const selCnt       = document.getElementById('selCountText');
+      const btnAdd       = document.getElementById('btnAfterAddTarget');
+      const btnDateChg   = document.getElementById('btnExpiredDateChange');
+
       if (isExpired) {
-        if (notice) notice.style.display = '';
-        if (btnAdd) {
-          btnAdd.disabled = true;
-          btnAdd.style.opacity = '0.4';
-          btnAdd.style.cursor = 'not-allowed';
-          btnAdd.title = '진단 종료일이 도래하여 대상자 추가가 불가합니다.';
-          btnAdd.onclick = null;
-        }
+        // 진단 마감 전: 작업선택·대상자등록 제거, 종료일 변경 버튼만 표시
+        if (notice)    notice.style.display = '';
+        if (noticeMsg) noticeMsg.textContent = '진단 종료일이 도래했습니다. 대상자/응답자 추가는 불가하며 종료일 수정은 가능합니다.';
+        if (workSelect) workSelect.style.display = 'none';
+        if (selCnt)     selCnt.style.display     = 'none';
+        if (btnAdd)     btnAdd.style.display      = 'none';
+        if (btnDateChg) btnDateChg.style.display  = '';
+
+      } else if (isCompleted) {
+        // 진단 완료 후: 모든 변경 수단 제거, 날짜 입력 비활성
+        if (notice)    notice.style.display = '';
+        if (noticeMsg) noticeMsg.textContent = '진단이 완료되었습니다. 대상자/응답자 추가 및 종료일 수정이 불가합니다.';
+        if (workSelect) workSelect.style.display = 'none';
+        if (selCnt)     selCnt.style.display     = 'none';
+        if (btnAdd)     btnAdd.style.display      = 'none';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
+        document.querySelectorAll('#state-after .date-cell input').forEach(inp => {
+          inp.disabled = true;
+          inp.title    = '진단이 완료되어 종료일을 수정할 수 없습니다.';
+          inp.style.opacity = '0.4';
+        });
+
+      } else {
+        // 진단 진행 후 (일반): 전체 버튼 표시
+        if (workSelect) workSelect.style.display = '';
+        if (selCnt)     selCnt.style.display     = '';
+        if (btnAdd)     btnAdd.style.display      = '';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
       }
     }
   }
