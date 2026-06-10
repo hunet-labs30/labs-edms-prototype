@@ -921,7 +921,7 @@ body {
                   <div class="s2-q-breadcrumb" id="s2QBreadcrumb"></div>
                   <div class="s2-q-title">
                     <span id="s2QTitle"></span>
-                    <span class="s2-q-code" id="s2QCode"></span>
+                    <span class="s2-q-code" id="s2QCode" style="display:none;"></span>
                     <span class="s2-q-count" id="s2QCount"></span>
                   </div>
                 </div>
@@ -957,7 +957,7 @@ body {
                 <div class="form-row">
                   <label>진단지명 <span style="color:#c00;">*</span></label>
                   <input type="text" class="form-input" id="s3Name"
-                    placeholder="예: 팀장 리더십 역량 진단 (2025)" style="font-size:14px;">
+                    placeholder="예: 팀장 리더십 역량 진단 (2025)" maxlength="1000" style="font-size:14px;">
                 </div>
                 <div class="form-row">
                   <label>설명 <span style="font-size:10px;color:#aaa;font-weight:400;">(선택사항)</span></label>
@@ -1057,6 +1057,8 @@ let currentStep = 1;
 const TOTAL_STEPS = 3;
 function goToStep(n) {
   if (n < 1 || n > TOTAL_STEPS) return;
+  closeAddForm();
+  closeModal('presetModal');
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById('step-content-' + n).classList.add('active');
   document.querySelectorAll('.wiz-step-item').forEach((el, i) => {
@@ -1151,6 +1153,17 @@ function saveAll() {
     document.getElementById('s3Name')?.focus();
     return;
   }
+
+  // 이름 없는 항목 검사
+  let emptyName = false;
+  state.types.forEach(t => {
+    if (!t.name?.trim()) emptyName = true;
+    t.groups.forEach(g => {
+      if (!g.name?.trim()) emptyName = true;
+      g.items.forEach(it => { if (!it.name?.trim()) emptyName = true; });
+    });
+  });
+  if (emptyName) { toast('이름이 비어 있는 항목이 있어요. 확인 후 다시 저장해주세요'); goToStep(1); return; }
 
   if (state.types.length === 0) {
     toast('유형을 1개 이상 등록해주세요');
@@ -1642,10 +1655,17 @@ function saveScaleLabels() {
 // setScaleSteps 제거 — 5단계 고정
 function toggleScaleReverse() {
   saveScaleLabels();
+  const pvWasOpen = document.getElementById('qPreviewArea')?.style.display !== 'none';
   s2ScaleReversed = !s2ScaleReversed;
   const cur = { text: document.getElementById('df_text')?.value||'', steps:s2ScaleSteps, labels:s2ScaleLabels, reversed:s2ScaleReversed };
   renderDetailForm(cur);
-  updateQPreview();
+  if (pvWasOpen) {
+    const pvArea = document.getElementById('qPreviewArea');
+    const pvBtn  = document.querySelector('.q-preview-toggle');
+    if (pvArea) pvArea.style.display = '';
+    if (pvBtn) { const arrow = pvBtn.querySelector('.pv-arrow'); if (arrow) arrow.style.transform = 'rotate(90deg)'; }
+    updateQPreview();
+  }
 }
 function resetScaleLabels() {
   s2ScaleLabels = [...(SCALE_DEFAULT_LABELS[s2ScaleSteps]||SCALE_DEFAULT_LABELS[5])];
@@ -2017,7 +2037,7 @@ function moveItem(obj, dir) {
 }
 function deleteItem(obj, silent) {
   if (!silent) {
-    const label = obj.items ? '유형' : obj.groups ? '역량군' : '세부역량';
+    const label = obj.groups ? '유형' : obj.items ? '역량군' : '세부역량';
     const childCount = obj.groups ? obj.groups.length : obj.items ? obj.items.length : 0;
     // 연결된 질문 수 계산
     let totalQ = 0;
