@@ -1179,7 +1179,16 @@
         if (selCnt)     selCnt.style.display     = 'none';
         if (btnAdd)     btnAdd.style.display      = 'none';
         if (btnDateChg) btnDateChg.style.display  = 'none';
-        // 날짜 입력 셀 → 텍스트로 교체
+        // 상단 기본정보 종료일 → 텍스트로 교체
+        const endEl = document.getElementById('diagEndDate');
+        if (endEl) {
+          const dateInp = endEl.querySelector('input[type="date"]');
+          const timeInp = endEl.querySelector('input[type="time"]');
+          if (dateInp && timeInp) {
+            endEl.textContent = dateInp.value.replace(/-/g, '.') + ' ' + timeInp.value;
+          }
+        }
+        // 테이블 날짜 입력 셀 → 텍스트로 교체
         document.querySelectorAll('#state-after .date-cell').forEach(cell => {
           const dateInp = cell.querySelector('input[type="date"]');
           const timeInp = cell.querySelector('input[type="time"]');
