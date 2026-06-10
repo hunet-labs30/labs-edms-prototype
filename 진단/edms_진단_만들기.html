@@ -2489,7 +2489,7 @@ function generateStep4Tabs() {
   tabs.forEach((tab, idx) => {
     const tabEl = document.createElement('div');
     tabEl.className = `tab ${idx === 0 ? 'active' : ''}`;
-    tabEl.textContent = tab.option;
+    tabEl.textContent = `${tab.type}(${tab.option})`;
     tabEl.dataset.tabid = tab.id;
     tabEl.onclick = () => switchStep4Tab(idx);
     tabGroup.appendChild(tabEl);
@@ -2497,7 +2497,7 @@ function generateStep4Tabs() {
     const isSelf = tab.option === '본인';
     // 샘플 대상자 행 생성
     const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
-      const tabLabel = tab.option;
+      const tabLabel = `${tab.type}(${tab.option})`;
       const respCell = isSelf
         ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
         : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tabLabel}')">설정</button>`;
@@ -3237,26 +3237,27 @@ function nextStep() {
     showToast('진단지를 선택해주세요.');
     return;
   }
+  if (currentStep === 2) {
+    let anySelected = false;
+    if (selectedQuestionnaire) {
+      selectedQuestionnaire.types.forEach(type => {
+        RESP_ROLES.forEach(role => {
+          if (respondentSettings[type.id]?.[role.key]) anySelected = true;
+        });
+      });
+    }
+    if (!anySelected) { showToast('응답자 유형을 1개 이상 선택해주세요.'); return; }
+  }
   if (currentStep === 3 && !validateScores()) return;
   if (currentStep === 5 && !validateDates()) return;
   if (currentStep === 6) {
     const allTabs = document.querySelectorAll('#step4TabGroup .tab');
     let valid = true;
-    allTabs.forEach(tab => {
-      const tabId = tab.dataset.tabid;
-      const isSelfTab = tabId && tabId.endsWith('-Self');
-      if (!isSelfTab) {
-        const idx = [...allTabs].indexOf(tab);
-        const rows = document.querySelectorAll(`#targets-${idx} tr`);
-        let hasRespondent = false;
-        rows.forEach(tr => {
-          const lastCell = tr.cells[tr.cells.length - 1];
-          if (lastCell && lastCell.querySelector('.resp-count-link')) hasRespondent = true;
-        });
-        if (!hasRespondent) valid = false;
-      }
+    allTabs.forEach((tab, idx) => {
+      const rows = document.querySelectorAll(`#targets-${idx} tr`);
+      if (rows.length === 0) valid = false;
     });
-    if (!valid) { showToast('모든 응답자 유형에 최소 1명 이상 등록해주세요.'); return; }
+    if (!valid) { showToast('각 탭에 대상자를 1명 이상 등록해주세요.'); return; }
   }
   if (currentStep < 7) {
     maxReachedStep = Math.max(maxReachedStep, currentStep + 1);
