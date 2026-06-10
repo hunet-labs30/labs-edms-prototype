@@ -921,6 +921,7 @@ body {
                   <div class="s2-q-breadcrumb" id="s2QBreadcrumb"></div>
                   <div class="s2-q-title">
                     <span id="s2QTitle"></span>
+                    <span class="s2-q-code" id="s2QCode"></span>
                     <span class="s2-q-count" id="s2QCount"></span>
                   </div>
                 </div>
@@ -1536,6 +1537,12 @@ function renderDetailForm(existingData) {
       ${isEdit?`<span style="font-size:11px;color:#999;">수정 중</span>`:''}
     </div>
     ${buildDetailFormHTML(d)}
+    <div class="q-preview-section">
+      <button class="q-preview-toggle" onclick="toggleQPreview(this)">
+        👁 미리보기 <span class="pv-arrow">▶</span>
+      </button>
+      <div id="qPreviewArea" class="qpv-area" style="display:none;"></div>
+    </div>
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
       <span></span>
       <div style="display:flex;gap:8px;">
@@ -1728,8 +1735,10 @@ function buildQPreviewHTML(d) {
     const aT  = escHtml(d.a?.trim()||'(A 문구 입력 중...)');
     const bT  = escHtml(d.b?.trim()||'(B 문구 입력 중...)');
     const ABL = ['A','A에 더<br>가깝다','A에 좀<br>더 가깝다','B에 좀<br>더 가깝다','B에 더<br>가깝다','B'];
+    const abRev = d.abReversed || false;
+    const abScores = abRev ? [6,5,4,3,2,1] : [1,2,3,4,5,6];
     const btns = ABL.map((lbl,i) =>
-      `<div class="qpv-ab-btn ${i===0||i===5?'side':''}">${lbl}<div style="font-size:8px;color:#aaa;margin-top:1px;">${i+1}점</div></div>`
+      `<div class="qpv-ab-btn ${i===0||i===5?'side':''}">${lbl}<div style="font-size:8px;color:#aaa;margin-top:1px;">${abScores[i]}점</div></div>`
     ).join('');
     body = `<div class="qpv-ab-wrap">
       <div class="qpv-ab-box"><span class="qpv-ab-tag">A</span>${aT}</div>
@@ -2010,8 +2019,14 @@ function deleteItem(obj, silent) {
   if (!silent) {
     const label = obj.items ? '유형' : obj.groups ? '역량군' : '세부역량';
     const childCount = obj.groups ? obj.groups.length : obj.items ? obj.items.length : 0;
+    // 연결된 질문 수 계산
+    let totalQ = 0;
+    if (obj.questions) totalQ = obj.questions.length;
+    else if (obj.items) obj.items.forEach(i => { totalQ += (i.questions||[]).length; });
+    else if (obj.groups) obj.groups.forEach(g => g.items.forEach(i => { totalQ += (i.questions||[]).length; }));
     let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠어요?`;
     if (childCount > 0) msg += `\n\n하위 항목 ${childCount}개도 함께 삭제됩니다.`;
+    if (totalQ > 0) msg += `\n연결된 질문 ${totalQ}개도 함께 삭제됩니다.`;
     if (!confirm(msg)) return;
   }
   const arr = peersOf(obj);
@@ -2129,9 +2144,13 @@ renderTree();
 document.getElementById('qAddModal').addEventListener('click', function(e) {
   if (e.target === this) closeAddForm();
 });
+document.getElementById('presetModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('presetModal');
+});
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && document.getElementById('qAddModal').classList.contains('open')) {
-    closeAddForm();
+  if (e.key === 'Escape') {
+    if (document.getElementById('qAddModal').classList.contains('open')) closeAddForm();
+    else if (document.getElementById('presetModal').classList.contains('open')) closeModal('presetModal');
   }
 });
 </script>
