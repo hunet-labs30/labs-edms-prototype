@@ -931,7 +931,8 @@
             <option value="임시저장">임시저장</option>
           </select>
           <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
-          <div style="margin-left:auto; display:flex; gap:8px;">
+          <span class="filter-count" id="filterCount"></span>
+          <div style="display:flex; gap:8px;">
             <button class="btn btn-gray" onclick="openBulkModal()">일괄등록</button>
             <a href="edms_진단지_만들기.html" class="btn btn-primary">＋ 진단지 만들기</a>
           </div>
@@ -1452,7 +1453,7 @@
     const tbody = document.getElementById('tableBody');
     const empty = document.getElementById('emptyMsg');
     const fc = document.getElementById('filterCount');
-    if (fc) fc.textContent = '총 ' + data.length + '건';
+    if (fc) fc.textContent = '전체 ' + data.length + '건';
 
     if (data.length === 0) {
       tbody.innerHTML = '';
@@ -1544,7 +1545,7 @@
     qsetDeleteTargetId = id;
     document.getElementById('deleteModalBody').innerHTML = `
       <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠어요?<br><br>
-      <span style="color:#888;font-size:12px;">이미 생성된 진단은 진단지 구조가 저장되어 있어 영향을 받지 않습니다. 삭제 후 되돌릴 수 없습니다.</span>`;
+      `;
     document.getElementById('deleteModal').classList.add('open');
   }
 

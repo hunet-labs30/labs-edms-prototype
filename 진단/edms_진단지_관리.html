@@ -251,7 +251,8 @@ tbody td.center { text-align:center; }
           <option value="임시저장">임시저장</option>
         </select>
         <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
-        <div style="margin-left:auto; display:flex; gap:8px;">
+        <span class="filter-count" id="filterCount"></span>
+        <div style="display:flex; gap:8px;">
           <button class="btn btn-gray" onclick="openBulkModal()">일괄등록</button>
           <a href="edms_진단지_만들기.html" class="btn btn-primary">＋ 진단지 만들기</a>
         </div>
@@ -429,7 +430,7 @@ let deleteTargetId = null;
 function renderTable(data) {
   const tbody = document.getElementById('tableBody');
   const empty = document.getElementById('emptyMsg');
-  const fc = document.getElementById('filterCount'); if (fc) fc.textContent = `총 ${data.length}건`;
+  const fc = document.getElementById('filterCount'); if (fc) fc.textContent = `전체 ${data.length}건`;
 
   if (data.length === 0) {
     tbody.innerHTML = '';
