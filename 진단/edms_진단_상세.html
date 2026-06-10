@@ -614,9 +614,6 @@
         진단 <strong>진행 중 이후</strong> 상태입니다. 진단의 진행상태에 따라 BEFORE / AFTER 화면이 자동 분기 처리됩니다.
         <span style="margin-left:4px;color:#9a7000;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
       </div>
-      <div id="diagCompletedNotice" style="display:none;margin-bottom:12px;padding:8px 14px;background:#fff0f0;border:1px solid #f5c2c2;border-radius:4px;font-size:12px;color:#c0392b;">
-        🔒 <span id="diagNoticeMsg"></span>
-      </div>
       <div class="card" style="padding:16px 20px;">
 
         <!-- 상태 요약 + 액션 버튼 -->
@@ -1155,8 +1152,6 @@
 
     // ── AFTER 상태별 UI 제어 ──
     if (state === 'after') {
-      const notice       = document.getElementById('diagCompletedNotice');
-      const noticeMsg    = document.getElementById('diagNoticeMsg');
       const workSelect   = document.getElementById('afterWorkSelect');
       const selCnt       = document.getElementById('selCountText');
       const btnAdd       = document.getElementById('btnAfterAddTarget');
@@ -1164,8 +1159,6 @@
 
       if (isExpired) {
         // 진단 마감 전: 대상자 등록만 제거, 작업선택(메일발송·종료일변경)은 유지
-        if (notice)    notice.style.display = '';
-        if (noticeMsg) noticeMsg.textContent = '진단 종료일이 도래했습니다. 대상자 추가는 불가합니다.';
         if (workSelect) workSelect.style.display = '';
         if (selCnt)     selCnt.style.display     = '';
         if (btnAdd)     btnAdd.style.display      = 'none';
@@ -1173,8 +1166,6 @@
 
       } else if (isCompleted) {
         // 진단 완료 후: 모든 변경 수단 제거, 날짜 입력 비활성
-        if (notice)    notice.style.display = '';
-        if (noticeMsg) noticeMsg.textContent = '진단이 완료되었습니다. 대상자/응답자 추가 및 종료일 수정이 불가합니다.';
         if (workSelect) workSelect.style.display = 'none';
         if (selCnt)     selCnt.style.display     = 'none';
         if (btnAdd)     btnAdd.style.display      = 'none';
