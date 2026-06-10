@@ -303,7 +303,7 @@ function _meMbrInjectDOM() {
           </table>
         </div>
         <div class="table-footer" style="padding:4px 0;flex-shrink:0;">
-          <div class="page-size-wrap"><select class="select" style="height:26px;width:56px;"><option>10</option><option selected>30</option><option>50</option></select><span>항목 (페이지 당)</span></div>
+          <div class="page-size-wrap"><select class="select" style="height:26px;width:56px;"><option>30</option><option selected>50</option><option>100</option><option>200</option></select><span>항목 (페이지 당)</span></div>
           <div class="pagination"><button class="pg-btn">&#8676;</button><button class="pg-btn">&#8249;</button><button class="pg-btn active">1</button><button class="pg-btn">&#8250;</button><button class="pg-btn">&#8677;</button></div>
         </div>
       </div>
@@ -759,6 +759,13 @@ function meMbrSelectLeft(idx, type) {
 function meMbrSingleAll() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   if (!tbody) return;
+  // 검색 필터 초기화
+  const compSel = document.getElementById('me-mbr-s-company');
+  const typeSel = document.getElementById('me-mbr-s-type');
+  const kwInput = document.getElementById('me-mbr-s-kw');
+  if (compSel) compSel.selectedIndex = 0;
+  if (typeSel) typeSel.selectedIndex = 0;
+  if (kwInput) kwInput.value = '';
   const registered = _meMbrConfig.getRegistered();
   tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => {
     const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);

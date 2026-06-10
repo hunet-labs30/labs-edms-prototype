@@ -552,27 +552,28 @@
         <!-- 검색 필터 -->
         <div class="search-row" style="margin-bottom:12px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
           <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
-          <select class="select" style="width:110px;">
-            <option>전체</option>
+          <select id="after-filter-mail" class="select" style="width:110px;">
+            <option value="">전체</option>
             <option>발송완료</option>
             <option>미발송</option>
           </select>
           <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
-          <select class="select" style="width:110px;">
-            <option>전체</option>
+          <select id="after-filter-status" class="select" style="width:110px;">
+            <option value="">전체</option>
             <option>시작 전</option>
             <option>진행중</option>
             <option>완료</option>
+            <option>중단</option>
           </select>
           <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
-          <select class="select" style="width:80px;">
-            <option>이름</option>
-            <option>사번</option>
-            <option>아이디</option>
+          <select id="after-filter-search-type" class="select" style="width:80px;">
+            <option value="name">이름</option>
+            <option value="empno">사번</option>
+            <option value="loginId">아이디</option>
           </select>
-          <input class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
+          <input id="after-filter-keyword" class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
           <button class="btn btn-primary btn-sm">검색</button>
-          <button class="btn btn-reset btn-sm">초기화</button>
+          <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
         </div>
 
         <div style="overflow-x:auto;">
@@ -974,6 +975,14 @@
   }
 
   initState();
+
+  // ── 메인 목록(대상자 현황) 필터 초기화 ──
+  function resetAfterFilter() {
+    document.getElementById('after-filter-mail').selectedIndex = 0;
+    document.getElementById('after-filter-status').selectedIndex = 0;
+    document.getElementById('after-filter-search-type').selectedIndex = 0;
+    document.getElementById('after-filter-keyword').value = '';
+  }
 
   // ── 공통 모듈 초기화 ──
   document.addEventListener('DOMContentLoaded', () => {
