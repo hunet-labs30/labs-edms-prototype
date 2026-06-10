@@ -1335,20 +1335,27 @@
   });
 
   // 진단대상자·진단응답자 컬럼 클릭 → 목록 팝업
-  function _bindDiagCell(cell, rowIdx, type) {
+  function _rowReadOnly(tr) {
+    const badge = tr ? tr.querySelector('.badge') : null;
+    const status = badge ? badge.textContent.trim() : '';
+    return (status === '완료' || status === '마감 가능');
+  }
+  function _bindDiagCell(cell, rowIdx, type, tr) {
+    const readOnly = _rowReadOnly(tr);
     const link = cell.querySelector('a.diag-link');
     if (link) {
-      link.addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
+      link.addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type, readOnly); });
     } else if (cell.textContent.trim() === '-') {
+      if (readOnly) return; // 읽기전용 행: 설정 링크 미생성
       cell.innerHTML = '<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>';
-      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
+      cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type, readOnly); });
     }
   }
   document.querySelectorAll('.main-table tbody tr').forEach((tr, rowIdx) => {
     if (tr.dataset.skipBind) return; // 임시저장 STEP2 미설정 행 → 설정 버튼 바인딩 건너뜀
     const cells = tr.querySelectorAll('td');
-    if (cells.length >= 5) _bindDiagCell(cells[4], rowIdx, 'target');
-    if (cells.length >= 6) _bindDiagCell(cells[5], rowIdx, 'respondent');
+    if (cells.length >= 5) _bindDiagCell(cells[4], rowIdx, 'target', tr);
+    if (cells.length >= 6) _bindDiagCell(cells[5], rowIdx, 'respondent', tr);
   });
 
   // ── 진단지 관리 탭 JS 함수들 ──
@@ -1621,10 +1628,10 @@
 
     <!-- 푸터 -->
     <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
-      <button class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="openDiagAddModal()">+ 추가 등록</button>
+      <button id="diag-btn-add-new" class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="openDiagAddModal()">+ 추가 등록</button>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-reset" style="height:30px;padding:0 16px;" onclick="diagListClose()">닫기</button>
-        <button class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="diagListSave()">저장</button>
+        <button id="diag-btn-save" class="btn btn-primary" style="height:30px;padding:0 16px;" onclick="diagListSave()">저장</button>
       </div>
     </div>
   </div>
@@ -1701,7 +1708,7 @@
           <!-- 결과 헤더 -->
           <div style="padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;">
             <span id="diag-resp-result-info" style="font-size:12px;color:#666;">검색 결과 : 0명 · 선택 : 0명</span>
-            <button onclick="diagRespAddSelected()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
+            <button id="diag-resp-btn-add" onclick="diagRespAddSelected()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
           </div>
           <!-- 테이블 -->
           <div style="flex:1;overflow-y:auto;">
@@ -1728,7 +1735,7 @@
           <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
             <div style="padding:6px 16px;font-size:12px;color:#666;border-bottom:1px solid #f0f2f5;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
               <span id="diag-resp-split-result-info">항목을 선택하세요.</span>
-              <button onclick="diagRespAddSplitChecked()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
+              <button id="diag-resp-btn-add-split" onclick="diagRespAddSplitChecked()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
             </div>
             <div style="flex:1;overflow-y:auto;">
               <table class="main-table" style="font-size:12px;">
@@ -1760,8 +1767,8 @@
 
     <!-- 푸터 -->
     <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fafafa;">
-      <button class="btn btn-reset" style="height:30px;padding:0 20px;" onclick="diagRespListClose()">취소</button>
-      <button class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">저장</button>
+      <button id="diag-resp-btn-cancel" class="btn btn-reset" style="height:30px;padding:0 20px;" onclick="diagRespListClose()">취소</button>
+      <button id="diag-resp-btn-save" class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">저장</button>
     </div>
   </div>
 </div>
@@ -1836,13 +1843,37 @@ let _diagSearchKeyword = '';
 let _diagSearchType = 'name';
 let _diagSearchCompany = '';
 
+// ── 읽기전용 UI 적용 ──
+let _currentDiagReadOnly = false;
+function _applyDiagReadOnlyUI() {
+  const ro = _currentDiagReadOnly;
+  // 대상자 목록 팝업
+  const addNewBtn  = document.getElementById('diag-btn-add-new');
+  const saveBtn    = document.getElementById('diag-btn-save');
+  const delSelBtn  = document.getElementById('diag-btn-del-selected');
+  if (addNewBtn)  addNewBtn.style.display  = ro ? 'none' : '';
+  if (saveBtn)    { saveBtn.style.display  = ro ? 'none' : ''; }
+  if (delSelBtn)  delSelBtn.style.display  = ro ? 'none' : '';
+  // 응답자 팝업
+  const respAddBtn      = document.getElementById('diag-resp-btn-add');
+  const respAddSplitBtn = document.getElementById('diag-resp-btn-add-split');
+  const respSaveBtn     = document.getElementById('diag-resp-btn-save');
+  const respCancelBtn   = document.getElementById('diag-resp-btn-cancel');
+  if (respAddBtn)       respAddBtn.style.display      = ro ? 'none' : '';
+  if (respAddSplitBtn)  respAddSplitBtn.style.display  = ro ? 'none' : '';
+  if (respSaveBtn)      respSaveBtn.style.display      = ro ? 'none' : '';
+  if (respCancelBtn)    respCancelBtn.textContent       = ro ? '닫기' : '취소';
+}
+
 // ── 목록 팝업 열기 ──
-function openDiagListModal(rowIdx, cell, type) {
-  _currentDiagRowIdx = rowIdx ?? -1;
-  _currentDiagCell   = cell ?? null;
-  _currentDiagType   = type || 'target';
+function openDiagListModal(rowIdx, cell, type, readOnly) {
+  _currentDiagRowIdx  = rowIdx ?? -1;
+  _currentDiagCell    = cell ?? null;
+  _currentDiagType    = type || 'target';
+  _currentDiagReadOnly = !!readOnly;
   if (_currentDiagType === 'respondent') {
     diagRespModalInit();
+    _applyDiagReadOnlyUI();
     document.getElementById('diag-resp-list-modal').style.display = 'flex';
   } else {
     _diagSearchKeyword = '';
@@ -1856,6 +1887,7 @@ function openDiagListModal(rowIdx, cell, type) {
     document.getElementById('diag-search-keyword').value = '';
     document.getElementById('diag-search-type').value = 'name';
     diagListRender();
+    _applyDiagReadOnlyUI();
     document.getElementById('diag-target-list-modal').style.display = 'flex';
   }
 }
@@ -1966,16 +1998,17 @@ function _diagRespRenderPool() {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">검색 결과가 없습니다.</td></tr>';
     return;
   }
+  const roResp = _currentDiagReadOnly;
   tbody.innerHTML = _diagRespFilteredPool.map((m, i) => {
     const isReg = _diagRespTempList.some(r => r.empno === m.empno);
     return `<tr style="${isReg ? 'background:#f9f9f9;color:#bbb;' : ''}">
-    <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : `<input type="checkbox" class="diag-resp-pool-chk" data-idx="${i}" onchange="diagRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
+    <td style="text-align:center;padding:5px 4px;">${roResp ? '' : isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : `<input type="checkbox" class="diag-resp-pool-chk" data-idx="${i}" onchange="diagRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskL(m.loginId)}</td>
     <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
     <td style="text-align:center;padding:5px 8px;font-size:11px;">${m.company||'-'}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-    <td style="text-align:center;padding:5px 4px;">${isReg ? '' : `<button onclick="diagRespAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
+    <td style="text-align:center;padding:5px 4px;">${roResp || isReg ? '' : `<button onclick="diagRespAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
   </tr>`;
   }).join('');
 }
@@ -1986,12 +2019,13 @@ function _diagRespRenderRegistered() {
     list.innerHTML = '<div style="text-align:center;padding:30px 14px;color:#aaa;font-size:12px;">등록된 응답자가 없습니다.</div>';
     return;
   }
+  const roReg = _currentDiagReadOnly;
   list.innerHTML = _diagRespTempList.map((m, i) => `<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid #f5f0b0;gap:8px;">
     <div style="flex:1;min-width:0;">
       <div style="font-size:12px;font-weight:600;">${_maskN(m.name)}</div>
       <div style="font-size:11px;color:#999;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.company||''} · ${m.dept||''}</div>
     </div>
-    <button onclick="diagRespRemove(${i})" style="width:20px;height:20px;border:none;background:none;color:#ccc;font-size:18px;cursor:pointer;line-height:1;padding:0;flex-shrink:0;">×</button>
+    ${roReg ? '' : `<button onclick="diagRespRemove(${i})" style="width:20px;height:20px;border:none;background:none;color:#ccc;font-size:18px;cursor:pointer;line-height:1;padding:0;flex-shrink:0;">×</button>`}
   </div>`).join('');
 }
 
@@ -2174,13 +2208,14 @@ function diagListRender() {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa;">${allMembers.length ? '검색 결과가 없습니다.' : emptyLabel}</td></tr>`;
     return;
   }
+  const ro = _currentDiagReadOnly;
   tbody.innerHTML = _diagFilteredMembers.map(({m, origIdx}, i) => `<tr>
-    <td style="text-align:center;padding:5px 4px;"><input type="checkbox" class="diag-row-chk" onchange="diagListOnCheck()" data-idx="${origIdx}" style="cursor:pointer;accent-color:var(--primary);"></td>
+    <td style="text-align:center;padding:5px 4px;">${ro ? '' : `<input type="checkbox" class="diag-row-chk" onchange="diagListOnCheck()" data-idx="${origIdx}" style="cursor:pointer;accent-color:var(--primary);">`}</td>
     <td style="text-align:center;padding:5px 4px;color:#888;font-size:11px;">${i+1}</td>
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-    <td style="text-align:center;padding:5px 4px;"><button onclick="diagListDelete(${origIdx})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button></td>
+    <td style="text-align:center;padding:5px 4px;">${ro ? '' : `<button onclick="diagListDelete(${origIdx})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button>`}</td>
   </tr>`).join('');
 }
 function diagListSearch() {
@@ -2241,7 +2276,7 @@ function _diagUpdateCell(cnt) {
   const type = _currentDiagType;
   if(!cell) return;
   cell.innerHTML = cnt > 0 ? `<a class="diag-link" href="#">${cnt}</a>` : `<a class="diag-link" href="#" style="font-weight:600;">+ 설정</a>`;
-  cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type); });
+  cell.querySelector('a').addEventListener('click', e => { e.preventDefault(); openDiagListModal(rowIdx, cell, type, _currentDiagReadOnly); });
 }
 
 // ── 추가 등록 팝업 열기 (목록 팝업 → 공통 모듈 위임) ──
