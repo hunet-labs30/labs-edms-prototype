@@ -398,7 +398,7 @@
           <span style="font-size:11px;color:#999;">화면 전환:</span>
           <a class="state-switch-btn" id="btnBefore" href="?state=before">진단 진행 전 (BEFORE)</a>
           <a class="state-switch-btn" id="btnAfter" href="?state=after">진단 진행 후 (AFTER)</a>
-          <a class="state-switch-btn" href="?state=after&completed=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">진단 완료 후 (AFTER·완료)</a>
+          <a class="state-switch-btn" href="?state=after&expired=true" style="background:#fff0f0;color:#c0392b;border-color:#f5c2c2;font-size:11px;">종료일 도래 후 (AFTER·마감)</a>
         </div>
         <div class="breadcrumb">부가서비스 &gt; 역량진단 관리 &gt; 진단명 클릭(임시저장 제외)</div>
       </div>
@@ -608,7 +608,7 @@
         <span style="margin-left:4px;color:#9a7000;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
       </div>
       <div id="diagCompletedNotice" style="display:none;margin-bottom:12px;padding:8px 14px;background:#fff0f0;border:1px solid #f5c2c2;border-radius:4px;font-size:12px;color:#c0392b;">
-        🔒 진단이 <strong>완료</strong>되어 대상자 및 응답자 추가가 불가합니다.
+        🔒 진단 종료일이 도래하여 대상자 및 응답자 추가가 불가합니다.
       </div>
       <div class="card" style="padding:16px 20px;">
 
@@ -1052,11 +1052,11 @@
   window._maskL = (id) => maskId(id);
 
   // ── URL 파라미터로 상태 전환 ──
-  // completed=true 파라미터로 진단 완료 상태 시뮬레이션 (예: ?state=after&completed=true)
+  // expired=true 파라미터로 종료일 도래 상태 시뮬레이션 (예: ?state=after&expired=true)
   function initState() {
     const params = new URLSearchParams(window.location.search);
     const state = params.get('state') || 'before';
-    const isCompleted = params.get('completed') === 'true';
+    const isExpired = params.get('expired') === 'true'; // 진단 종료일 도래 여부
 
     document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
     document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
@@ -1068,17 +1068,17 @@
     if (btnBefore) btnBefore.className = 'state-switch-btn' + (state === 'before' ? ' current' : '');
     if (btnAfter)  btnAfter.className  = 'state-switch-btn' + (state === 'after'  ? ' current' : '');
 
-    // AFTER + 완료 시: 대상자/응답자 추가 비활성화
+    // AFTER + 종료일 도래 시: 대상자/응답자 추가 비활성화
     if (state === 'after') {
       const notice = document.getElementById('diagCompletedNotice');
       const btnAdd = document.getElementById('btnAfterAddTarget');
-      if (isCompleted) {
+      if (isExpired) {
         if (notice) notice.style.display = '';
         if (btnAdd) {
           btnAdd.disabled = true;
           btnAdd.style.opacity = '0.4';
           btnAdd.style.cursor = 'not-allowed';
-          btnAdd.title = '진단이 완료되어 대상자 추가가 불가합니다.';
+          btnAdd.title = '진단 종료일이 도래하여 대상자 추가가 불가합니다.';
           btnAdd.onclick = null;
         }
       }
