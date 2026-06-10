@@ -1564,14 +1564,7 @@
   }
   document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
 
-  // 탭 전환 시 진단지 관리 초기화
-  const originalSwitchTab = switchTab;
-  switchTab = function(name) {
-    if (name === 'qset') {
-      initQsetTab();
-    }
-    originalSwitchTab.call(this, name);
-  };
+  // (tab-qset은 단순 링크 카드로 변경됨 — initQsetTab 호출 불필요)
 </script>
 
 <!-- ═══ 진단 대상자 목록 팝업 ═══ -->
