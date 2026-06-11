@@ -235,8 +235,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .cd-group-label{font-size:11px;font-weight:700;letter-spacing:.4px;padding:4px 10px;border-radius:var(--r-sm);margin-bottom:10px;display:inline-block;}
 .cd-group-label.weak{background:var(--red-bg);color:var(--red);}
 .cd-group-label.strong{background:var(--green-bg);color:var(--green);}
-.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px;background:var(--white);transition:border-color .15s,box-shadow .15s;}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px;background:var(--white);transition:border-color .15s,box-shadow .15s;cursor:pointer;text-decoration:none;}
 .cd-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(36,108,249,.08);}
+.cd-item-thumb{width:72px;height:54px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0;background:var(--border-light);}
 .cd-item-left{flex:1;min-width:0;}
 .cd-item-cmp{font-size:10.5px;font-weight:700;color:var(--text-400);margin-bottom:3px;}
 .cd-item-name{font-size:13px;font-weight:600;color:var(--text-900);line-height:1.4;}
@@ -245,8 +246,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .cd-item-type.offline{background:var(--green-bg);color:var(--green);}
 .cd-item-type.hybrid{background:var(--purple-bg);color:var(--purple);}
 .cd-item-type.micro{background:var(--orange-bg);color:var(--orange);}
-.cd-item-btn{flex-shrink:0;font-size:12px;font-weight:600;padding:5px 12px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--white);color:var(--text-500);cursor:pointer;transition:all .15s;white-space:nowrap;}
-.cd-item-btn:hover{border-color:var(--primary);color:var(--primary);}
 .cd-tab-badge{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
 .cd-tab-badge.strong{background:var(--green-bg);color:var(--green);}
 .cd-tab-badge.weak{background:var(--red-bg);color:var(--red);}
@@ -376,28 +375,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="meta-item">
             <div class="meta-label">진단대상자</div>
             <div class="meta-val">홍길동 (본인)</div>
-          </div>
-          <div class="meta-divider"></div>
-          <div class="meta-item">
-            <div class="meta-label">응답자 현황</div>
-            <div class="respondent-count">
-              <span class="rc-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                본인
-              </span>
-              <span class="rc-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                상사 1명
-              </span>
-              <span class="rc-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                동료 2명
-              </span>
-              <span class="rc-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                부하직원 4명
-              </span>
-            </div>
           </div>
         </div>
 
@@ -972,12 +949,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           기획 스펙 노트
         </div>
         <div class="spec-box">
-          <h4>① 결과 리포트 열람 조건 (3가지 모두 충족 필요)</h4>
+          <h4>① 결과 리포트 열람 조건 (2가지 모두 충족 필요)</h4>
           <ul>
             <li><b>조건 1:</b> 진단대상자(본인)의 자기진단 응답 완료</li>
-            <li><b>조건 2:</b> 타인 응답자 2명 이상 응답 완료 (익명성 보장 기준)</li>
-            <li><b>조건 3:</b> 진단 마감 상태 'Y' — EDMS(교육담당자)에서 마감 처리 후 리포트 생성됨</li>
-            <li>→ 조건 충족 시 '결과보기' 버튼 활성화, 미충족 시 '결과대기' 버튼 비활성</li>
+            <li><b>조건 2:</b> 진단 마감 상태 'Y' — EDMS(교육담당자)에서 마감 처리 후 리포트 생성됨</li>
           </ul>
           <h4>② 접근 권한</h4>
           <ul>
@@ -1018,21 +993,21 @@ function openReport() {
 }
 
 const COURSES = [
-  {grp:'성과관리', cmp:'문제해결',        name:'데이터 기반 문제해결 프레임워크',     type:'online',   tag:'weak'},
-  {grp:'성과관리', cmp:'문제해결',        name:'비즈니스 문제해결 로직과 실전',       type:'offline',  tag:'weak'},
-  {grp:'성과관리', cmp:'문제해결',        name:'MECE 사고와 맥킨지식 문제해결',       type:'micro',    tag:'weak'},
-  {grp:'성과관리', cmp:'전략적 의사결정', name:'리더를 위한 전략적 의사결정',         type:'online',   tag:'weak'},
-  {grp:'성과관리', cmp:'전략적 의사결정', name:'불확실한 상황에서의 의사결정 기술',   type:'micro',    tag:'weak'},
-  {grp:'성과관리', cmp:'전략적 의사결정', name:'경영전략과 데이터 기반 의사결정',     type:'hybrid',   tag:'weak'},
-  {grp:'조직관리', cmp:'변화관리',        name:'변화 속에서 성과내는 리더의 방식',    type:'online',   tag:'strong'},
-  {grp:'조직관리', cmp:'변화관리',        name:'조직 변화관리 실전 마스터클래스',     type:'offline',  tag:'strong'},
-  {grp:'조직관리', cmp:'혁신활동',        name:'디자인씽킹으로 혁신하라',             type:'online',   tag:'strong'},
-  {grp:'조직관리', cmp:'혁신활동',        name:'애자일 리더십과 혁신문화 구축',       type:'hybrid',   tag:'strong'},
-  {grp:'조직관리', cmp:'가치전파',        name:'비전 스토리텔링과 조직 정렬',         type:'micro',    tag:'strong'},
-  {grp:'사람관리', cmp:'신뢰형성',        name:'심리적 안전감과 신뢰 조직 만들기',    type:'online',   tag:'strong'},
-  {grp:'사람관리', cmp:'의사소통',        name:'고성과 팀을 만드는 대화의 기술',      type:'hybrid',   tag:'strong'},
-  {grp:'사람관리', cmp:'코칭',            name:'코칭리더십 심화과정',                  type:'offline',  tag:'strong'},
-  {grp:'사람관리', cmp:'팀원육성',        name:'팀원의 성장을 이끄는 육성 리더십',    type:'micro',    tag:'strong'},
+  {grp:'성과관리', cmp:'문제해결',        name:'데이터 기반 문제해결 프레임워크',     type:'online',   tag:'weak',   thumb:'https://picsum.photos/seed/c1/80/60'},
+  {grp:'성과관리', cmp:'문제해결',        name:'비즈니스 문제해결 로직과 실전',       type:'offline',  tag:'weak',   thumb:'https://picsum.photos/seed/c2/80/60'},
+  {grp:'성과관리', cmp:'문제해결',        name:'MECE 사고와 맥킨지식 문제해결',       type:'micro',    tag:'weak',   thumb:'https://picsum.photos/seed/c3/80/60'},
+  {grp:'성과관리', cmp:'전략적 의사결정', name:'리더를 위한 전략적 의사결정',         type:'online',   tag:'weak',   thumb:'https://picsum.photos/seed/c4/80/60'},
+  {grp:'성과관리', cmp:'전략적 의사결정', name:'불확실한 상황에서의 의사결정 기술',   type:'micro',    tag:'weak',   thumb:'https://picsum.photos/seed/c5/80/60'},
+  {grp:'성과관리', cmp:'전략적 의사결정', name:'경영전략과 데이터 기반 의사결정',     type:'hybrid',   tag:'weak',   thumb:'https://picsum.photos/seed/c6/80/60'},
+  {grp:'조직관리', cmp:'변화관리',        name:'변화 속에서 성과내는 리더의 방식',    type:'online',   tag:'strong', thumb:'https://picsum.photos/seed/c7/80/60'},
+  {grp:'조직관리', cmp:'변화관리',        name:'조직 변화관리 실전 마스터클래스',     type:'offline',  tag:'strong', thumb:'https://picsum.photos/seed/c8/80/60'},
+  {grp:'조직관리', cmp:'혁신활동',        name:'디자인씽킹으로 혁신하라',             type:'online',   tag:'strong', thumb:'https://picsum.photos/seed/c9/80/60'},
+  {grp:'조직관리', cmp:'혁신활동',        name:'애자일 리더십과 혁신문화 구축',       type:'hybrid',   tag:'strong', thumb:'https://picsum.photos/seed/c10/80/60'},
+  {grp:'조직관리', cmp:'가치전파',        name:'비전 스토리텔링과 조직 정렬',         type:'micro',    tag:'strong', thumb:'https://picsum.photos/seed/c11/80/60'},
+  {grp:'사람관리', cmp:'신뢰형성',        name:'심리적 안전감과 신뢰 조직 만들기',    type:'online',   tag:'strong', thumb:'https://picsum.photos/seed/c12/80/60'},
+  {grp:'사람관리', cmp:'의사소통',        name:'고성과 팀을 만드는 대화의 기술',      type:'hybrid',   tag:'strong', thumb:'https://picsum.photos/seed/c13/80/60'},
+  {grp:'사람관리', cmp:'코칭',            name:'코칭리더십 심화과정',                  type:'offline',  tag:'strong', thumb:'https://picsum.photos/seed/c14/80/60'},
+  {grp:'사람관리', cmp:'팀원육성',        name:'팀원의 성장을 이끄는 육성 리더십',    type:'micro',    tag:'strong', thumb:'https://picsum.photos/seed/c15/80/60'},
 ];
 
 const TYPE_LABEL = {online:'온라인', offline:'오프라인', hybrid:'하이브리드러닝', micro:'마이크로러닝'};
@@ -1062,14 +1037,14 @@ function renderCourses(tab) {
   let html = `<div class="cd-count">총 ${list.length}개 과정</div>`;
   if (tab === 'all') {
     list.forEach(c => {
-      html += `<div class="cd-item">
+      html += `<a class="cd-item" href="#" onclick="return false;">
+        <img class="cd-item-thumb" src="${c.thumb}" alt="${c.name}" loading="lazy">
         <div class="cd-item-left">
           <div class="cd-item-cmp">${c.grp} &rsaquo; ${c.cmp}</div>
           <div class="cd-item-name">${c.name}</div>
           <span class="cd-item-type ${c.type}">${TYPE_LABEL[c.type]}</span>
         </div>
-        <button class="cd-item-btn">상세보기</button>
-      </div>`;
+      </a>`;
     });
   } else {
     const groups = {};
@@ -1078,14 +1053,14 @@ function renderCourses(tab) {
       const m = GROUP_META[tag];
       html += `<div class="cd-group"><div class="cd-group-label ${m.cls}">${m.label}</div>`;
       groups[tag].forEach(c => {
-        html += `<div class="cd-item">
+        html += `<a class="cd-item" href="#" onclick="return false;">
+          <img class="cd-item-thumb" src="${c.thumb}" alt="${c.name}" loading="lazy">
           <div class="cd-item-left">
             <div class="cd-item-cmp">${c.grp} &rsaquo; ${c.cmp}</div>
             <div class="cd-item-name">${c.name}</div>
             <span class="cd-item-type ${c.type}">${TYPE_LABEL[c.type]}</span>
           </div>
-          <button class="cd-item-btn">상세보기</button>
-        </div>`;
+        </a>`;
       });
       html += '</div>';
     });
