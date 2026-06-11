@@ -438,16 +438,8 @@
 
     <!-- ====== BEFORE STATE ====== -->
     <div id="state-before">
-      <div class="state-info-bar">
-        <span class="state-label">BEFORE</span>
-        진단 <strong>진행 전</strong> 상태입니다. 진단의 진행상태에 따라 BEFORE / AFTER 화면이 자동 분기 처리됩니다.
-        <span style="margin-left:4px;color:#5577bb;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
-      </div>
       <div class="card" style="padding:0;overflow:hidden;">
         <div style="padding:14px 20px 0;">
-          <div class="tab-note">
-            ℹ️ 탭은 진단 생성 시 설정된 <strong>응답 유형</strong>에 따라 구성됩니다. (본인 / 상사 / 구성원 / 동료 중 설정된 유형만 표시)
-          </div>
           <div class="type-tab-bar">
             <button class="type-tab-btn active" onclick="switchTypeTab(this)">본인답변유형</button>
             <button class="type-tab-btn" onclick="switchTypeTab(this)">상사답변유형</button>
@@ -609,11 +601,6 @@
 
     <!-- ====== AFTER STATE ====== -->
     <div id="state-after" style="display:none;">
-      <div class="state-info-bar after-bar">
-        <span class="state-label">AFTER</span>
-        진단 <strong>진행 중 이후</strong> 상태입니다. 진단의 진행상태에 따라 BEFORE / AFTER 화면이 자동 분기 처리됩니다.
-        <span style="margin-left:4px;color:#9a7000;">※ 진행 전: BEFORE &nbsp;|&nbsp; 진행 중 이후: AFTER</span>
-      </div>
       <div class="card" style="padding:16px 20px;">
 
         <!-- 상태 요약 + 액션 버튼 -->
