@@ -476,6 +476,12 @@ const DATA_RESULT = [
 ];
 
 /* ─── 진행율 컬러 ─── */
+function fmtDate(str) {
+  // 'YYYY-MM-DD HH:mm' 또는 'YYYY-MM-DD' → 'YYYY.MM.DD'
+  const m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? `${m[1]}.${m[2]}.${m[3]}` : str;
+}
+
 function progColor(pct) {
   if (pct === 100) return 'var(--green)';
   if (pct >= 1)   return 'var(--orange)';
@@ -557,7 +563,7 @@ function renderResultCard(item) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             본인
           </span>
-          <span class="diag-period">📅 ${item.startDate} ~ ${item.endDate}</span>
+          <span class="diag-period">📅 ${fmtDate(item.startDate)} ~ ${fmtDate(item.endDate)}</span>
         </div>
       </div>
       <div class="diag-right">
