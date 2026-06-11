@@ -328,11 +328,10 @@ function switchTab(btn, targetId) {
 
 /* ─── 데이터 ─── */
 // diagStatus: 진단 상태
-//   'waiting'     — 진단 시작 전 (대기)                 → 연수원 미노출
-//   'ongoing'     — 종료일 이전, 진행 중                 → 진단하기 탭
-//   'closed'      — 종료일 경과, 관리자 마감 전           → 진단하기 탭
-//   'adminClosed' — 관리자 마감처리 완료, 결과 집계 중    → 진단종료 탭 (버튼 없음)
-//   'done'        — 결과 확정 완료
+//   'waiting'  — 진단 시작 전 (대기)       → 연수원 미노출
+//   'ongoing'  — 종료일 이전, 진행 중       → 진단하기 탭
+//   'closed'   — 종료일 경과, 관리자 마감 전 → 진단하기 탭
+//   'done'     — 관리자 마감처리 완료 (결과 즉시 확인 가능)
 //       target='self'  → 진단종료 탭 (진단결과확인 버튼)
 //       target='other' → 진단종료 탭 (버튼 없음)
 // target: 'self'=본인 | 'other'=타인(이름 표시)
@@ -429,16 +428,6 @@ const DATA_DIAG = [
     questions: 60, answered: 30, pct: 50,
     diagStatus: 'closed'
   },
-  // ── 관리자 마감완료, 결과 집계 중 → 진단종료 탭 ──
-  {
-    id: 14,
-    typeName: 'BSA', typeLabel: '비즈니스상황',
-    name: '2025년 4분기 비즈니스상황 진단',
-    target: 'self', targetName: '',
-    period: '2025.12.01 ~ 2025.12.31',
-    questions: 24, answered: 24, pct: 100,
-    diagStatus: 'adminClosed'
-  },
   // ── 완료(타인평가): 결과 열람 불가 → 진단종료 탭 ──
   {
     id: 8,
@@ -457,6 +446,15 @@ const DATA_DIAG = [
    ※ respondentCount: 응답대상자 수 / responseRate: 응답율(%)
 ───────────────────────────────────────────────── */
 const DATA_RESULT = [
+  {
+    id: 14,
+    typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: '2025년 4분기 비즈니스상황 진단',
+    target: 'self',
+    startDate: '2025-12-01 00:00', endDate: '2025-12-31 00:00',
+    respondentCount: 18, responseRate: 72,
+    diagStatus: 'done'
+  },
   {
     id: 7,
     typeName: 'LS', typeLabel: '리더십스타일',
@@ -590,7 +588,7 @@ function renderResultCard(item) {
     </div>`;
 }
 
-/* ─── 진단종료 카드: 타인진단 / 집계중 — 버튼 없음 ─── */
+/* ─── 진단종료 카드: 타인진단 — 버튼 없음 ─── */
 function renderEndedCard(item) {
   const targetBadge = item.target === 'self'
     ? `<span class="diag-target self">
@@ -602,7 +600,7 @@ function renderEndedCard(item) {
          ${item.targetName}
        </span>`;
 
-  const btnLabel = item.diagStatus === 'adminClosed' ? '결과 집계 중' : '진단완료';
+  const btnLabel = '진단완료';
   const pctColor = progColor(item.pct);
 
   return `
@@ -687,15 +685,14 @@ function renderEndedList(resultData, endedData, containerId, cntId) {
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  // 진단하기 탭: ongoing + closed (waiting/adminClosed/done 제외)
+  // 진단하기 탭: ongoing + closed (waiting/done 제외)
   const DATA_DIAG_ACTIVE = DATA_DIAG.filter(d =>
     d.diagStatus === 'ongoing' || d.diagStatus === 'closed'
   );
 
-  // 진단종료 탭 — 버튼 없는 항목: adminClosed 또는 done+other
+  // 진단종료 탭 — 버튼 없는 항목: done+other (타인진단)
   const DATA_DIAG_ENDED = DATA_DIAG.filter(d =>
-    d.diagStatus === 'adminClosed' ||
-    (d.diagStatus === 'done' && d.target === 'other')
+    d.diagStatus === 'done' && d.target === 'other'
   );
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
