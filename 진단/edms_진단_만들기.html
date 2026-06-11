@@ -3122,22 +3122,8 @@ function updateBottomButtons() {
 }
 
 function saveDraft() {
-  // 설정된 값이 1개라도 있는지 확인
-  const hasAnyValue = (
-    !!selectedDiagnosticId ||
-    !!(document.getElementById('diagNameInput')?.value?.trim()) ||
-    !!(document.getElementById('diagStartDate')?.value) ||
-    !!(document.getElementById('diagEndDate')?.value) ||
-    (selectedQuestionnaire && (() => {
-      let any = false;
-      selectedQuestionnaire.types.forEach(type => {
-        RESP_ROLES.forEach(role => { if (respondentSettings[type.id]?.[role.key]) any = true; });
-      });
-      return any;
-    })())
-  );
-  if (!hasAnyValue) {
-    showToast('설정된 값이 없습니다. 최소 1개 이상 입력 후 임시저장할 수 있습니다.');
+  if (!selectedDiagnosticId) {
+    showToast('진단지를 선택해야 임시저장할 수 있습니다.');
     return;
   }
   const msg = document.getElementById('draftSavedMsg');
@@ -3288,6 +3274,10 @@ function prevStep() {
 
 function goToStep(step) {
   if (step < 1 || step > 7) return;
+  if (step > maxReachedStep) {
+    showToast('이전 단계를 완료한 후 이동할 수 있습니다.');
+    return;
+  }
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById(`step-content-${step}`).classList.add('active');
 
