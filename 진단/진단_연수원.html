@@ -594,7 +594,7 @@ function renderResultCard(item) {
     </div>`;
 }
 
-/* ─── 진단종료 카드: 타인진단 — 버튼 없음 ─── */
+/* ─── 진단종료 카드: 타인진단 — 진단완료 비활성 버튼 ─── */
 function renderEndedCard(item) {
   const targetBadge = item.target === 'self'
     ? `<span class="diag-target self">
