@@ -708,19 +708,7 @@ const SAMPLE_TYPES = [
     questions: [{ a: '피드백/조언에 시간을 할애하기보다, 부하직원이 이미 보유하고 있는 역량/스킬을 최대한 활용하게 한다.', b: '지속적으로 피드백/조언을 하여 부하직원이 역량/스킬을 개발할 수 있도록 돕는다.' }]
   },
   {
-    id: 'smp_radio', label: '객관식 선택형', type: 'radio',
-    questions: [{ text: '홍길동님의 리더십 유형 중 가장 두드러지는 특성은 무엇입니까?', options: ['비전 제시형', '코칭·육성형', '관계 중심형', '성과 지향형', '섬김의 리더십'] }]
-  },
-  {
-    id: 'smp_dd', label: '객관식 드롭다운', type: 'dropdown',
-    questions: [{ text: '홍길동님과 함께 일한 기간은 얼마나 됩니까?', options: ['6개월 미만', '6개월 ~ 1년', '1년 ~ 2년', '2년 ~ 3년', '3년 이상'] }]
-  },
-  {
-    id: 'smp_st', label: '주관식 단답형', type: 'shorttext',
-    questions: [{ text: '홍길동님을 한 단어 또는 짧은 문장으로 표현한다면?', maxLen: 50 }]
-  },
-  {
-    id: 'smp_text', label: '주관식 장문형', type: 'text',
+    id: 'smp_text', label: '서술형', type: 'text',
     questions: [{ prefix: '[강점]', text: '진단대상자의 리더십 강점에 대해 말씀해주세요.', maxLen: 500 }]
   },
 ];
@@ -839,14 +827,12 @@ function renderContent() {
   if (!tab) return;
   let html = `<div class="section-header-block">
     <h2>${tab.label}에 대한 질문입니다.</h2>
-    <div class="section-guide">${tab.guide}</div>
   </div>`;
   let qNum = 0;
   tab.questions.forEach((q, idx) => {
     if (q && q.groupHeader) {
       html += `<div class="group-section-card">
         <div class="group-section-name">${q.groupHeader}</div>
-        ${q.groupDesc ? `<div class="group-section-desc">${q.groupDesc}</div>` : ''}
       </div>`;
     } else {
       qNum++;
