@@ -8212,6 +8212,7 @@ function tdSaveType() {
 function tdDelType(typeId) {
   if (!confirm('삭제하시겠습니까?')) return;
   TD_TYPES = TD_TYPES.filter(t=>t.id!==typeId);
+  alert('삭제되었습니다.');
   tdRenderTypes();
 }
 
