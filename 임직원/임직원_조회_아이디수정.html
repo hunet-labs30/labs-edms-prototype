@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #5b6af0;
+    --bg: #f5f6fa;
+    --border: #e4e6eb;
+    --text: #222;
+    --label: #666;
+    --sidebar-active-bg: #eef0fd;
+    --sidebar-active-color: #4a58e0;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: #111827;
+    color: #fff;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 14px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .logo { font-size: 15px; font-weight: 800; color: #fff; white-space: nowrap; letter-spacing: -0.3px; }
+  .logo b { font-weight: 900; }
+  .header-sub { font-size: 12px; color: #9ca3af; }
+  .header-badge {
+    background: #374151; color: #d1d5db; font-size: 11px;
+    padding: 2px 8px; border-radius: 4px; font-weight: 600;
+  }
+  .header-spacer { flex: 1; }
+  .header-user { font-size: 13px; color: #d1d5db; }
+  .btn-logout {
+    background: #374151; border: 1px solid #4b5563; color: #d1d5db;
+    padding: 5px 14px; border-radius: 4px; font-size: 12px; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-logout:hover { background: #4b5563; }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 200px; background: #fff;
+    border-right: 1px solid var(--border);
+    overflow-y: auto; flex-shrink: 0;
+    padding: 12px 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+  .sidebar-studio {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px 16px;
+    font-size: 13px; font-weight: 700; color: #374151;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px; cursor: pointer;
+  }
+  .sidebar-studio svg { color: #9ca3af; }
+  .sidebar-studio:hover { color: var(--primary); }
+
+  .nav-section { margin-bottom: 4px; }
+  .nav-section-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    font-size: 13px; font-weight: 700; color: #374151;
+    cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .nav-section-header:hover { background: #f9fafb; }
+  .nav-section-icon { font-size: 14px; color: #6b7280; }
+  .nav-section-label { flex: 1; }
+  .nav-section-arrow { font-size: 10px; color: #9ca3af; transition: transform 0.2s; }
+  .nav-section.open .nav-section-arrow { transform: rotate(180deg); }
+
+  .nav-sub { display: none; }
+  .nav-section.open .nav-sub { display: block; }
+
+  .nav-item {
+    display: block; padding: 7px 16px 7px 38px;
+    font-size: 12px; color: #6b7280;
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: #f9fafb; color: #374151; }
+  .nav-item.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-color);
+    font-weight: 600;
+    border-radius: 6px;
+    margin: 0 8px;
+    padding-left: 30px;
+  }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* PAGE HEADER */
+  .page-top {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; margin-bottom: 20px;
+  }
+  .page-title { font-size: 20px; font-weight: 800; color: #111827; }
+  .breadcrumb { font-size: 11px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
+  .breadcrumb span { color: #9ca3af; }
+  .breadcrumb .sep { color: #d1d5db; }
+
+  /* INFO CARD */
+  .info-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden;
+  }
+  .info-row {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label {
+    width: 200px; flex-shrink: 0;
+    padding: 14px 20px;
+    font-size: 13px; color: var(--label); font-weight: 500;
+    background: #fafafa;
+    border-right: 1px solid var(--border);
+    display: flex; align-items: center;
+  }
+  .info-value {
+    flex: 1; padding: 14px 20px;
+    font-size: 13px; color: #111827;
+    display: flex; align-items: center;
+  }
+
+  /* 프로필 이미지 영역 */
+  .profile-img-wrap {
+    position: relative; display: inline-block;
+  }
+  .profile-img {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #f48fb1 0%, #e57373 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+  }
+  .profile-zoom {
+    position: absolute; bottom: 2px; right: 2px;
+    background: rgba(255,255,255,0.9); border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #555; cursor: pointer;
+    border: 1px solid #ddd;
+  }
+
+  /* 아이디 수정 인라인 */
+  .id-view-wrap { display: flex; align-items: center; gap: 10px; }
+  .btn-id-modify {
+    height: 26px; padding: 0 12px; border-radius: 4px; font-size: 12px;
+    cursor: pointer; border: 1px solid #d1d5db;
+    background: #fff; color: #374151; font-family: inherit;
+    transition: background 0.12s;
+  }
+  .btn-id-modify:hover { background: #f3f4f6; }
+
+  .id-edit-wrap { display: none; flex-direction: column; gap: 4px; width: 100%; }
+  .id-edit-wrap.active { display: flex; }
+  .id-edit-inner { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .id-input {
+    height: 32px; border: 1px solid #d1d5db; border-radius: 4px;
+    padding: 0 10px; font-size: 13px; color: #111827;
+    background: #fff; outline: none; width: 240px; font-family: inherit;
+    transition: border-color 0.15s; flex-shrink: 0;
+  }
+  .id-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(91,106,240,0.12); }
+  .id-input.error { border-color: #ef4444; }
+  .id-err-msg { font-size: 11px; color: #ef4444; display: none; }
+  .id-err-msg.visible { display: block; }
+  .btn-id-save {
+    height: 32px; padding: 0 14px; border-radius: 4px; font-size: 12px;
+    cursor: pointer; border: none; font-family: inherit;
+    background: var(--primary); color: #fff; transition: opacity 0.15s;
+  }
+  .btn-id-save:hover { opacity: 0.88; }
+  .btn-id-cancel {
+    height: 32px; padding: 0 14px; border-radius: 4px; font-size: 12px;
+    cursor: pointer; border: 1px solid #d1d5db; font-family: inherit;
+    background: #fff; color: #374151; transition: background 0.12s;
+  }
+  .btn-id-cancel:hover { background: #f3f4f6; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+    min-width: 380px; overflow: hidden;
+  }
+  .modal-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-size: 15px; font-weight: 700; color: #111827; }
+  .modal-close {
+    background: none; border: none; font-size: 20px; color: #9ca3af;
+    cursor: pointer; line-height: 1; padding: 0 2px;
+  }
+  .modal-close:hover { color: #374151; }
+  .modal-body { padding: 20px 24px; }
+  .modal-body p { font-size: 13px; color: #374151; line-height: 1.9; }
+  .modal-body .lbl { color: #9ca3af; }
+  .modal-body .val-new { color: var(--primary); font-weight: 700; }
+  .modal-notice {
+    margin-top: 12px; padding: 10px 14px;
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;
+    font-size: 11px; color: #b91c1c; line-height: 1.6;
+  }
+  .modal-footer {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+  .mbtn {
+    height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px;
+    cursor: pointer; font-family: inherit; font-weight: 500;
+    display: inline-flex; align-items: center; transition: opacity .15s;
+  }
+  .mbtn:hover { opacity: .85; }
+  .mbtn-gray { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+  .mbtn-blue { background: var(--primary); color: #fff; border: none; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #111827; color: #fff; padding: 12px 24px; border-radius: 8px;
+    font-size: 13px; z-index: 2000; opacity: 0;
+    transition: all 0.25s ease; pointer-events: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .badge-status {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: #ecfdf5; color: #059669;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <div class="logo"><b>LABS</b> New EDMS</div>
+  <div class="header-sub">Flex26 Premium 기준 연수원(qa)</div>
+  <div class="header-badge">1000190</div>
+  <div class="header-spacer"></div>
+  <div class="header-user">이강은님</div>
+  <button class="btn-logout">로그아웃</button>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-studio">
+      <span>LABS Studio</span>
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </div>
+
+    <div class="nav-section open">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">👤</span>
+        <span class="nav-section-label">임직원</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item active">임직원 관리</a>
+        <a class="nav-item">조직/역할 관리</a>
+      </div>
+    </div>
+
+    <div class="nav-section open">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">📋</span>
+        <span class="nav-section-label">수강신청</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item">개인별 신청 현황</a>
+        <a class="nav-item">과정별 신청 현황</a>
+      </div>
+    </div>
+
+    <div class="nav-section open">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">📖</span>
+        <span class="nav-section-label">학습</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item">개인별 학습 현황</a>
+        <a class="nav-item">과정별 학습 현황</a>
+      </div>
+    </div>
+
+    <div class="nav-section open">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">📊</span>
+        <span class="nav-section-label">결과</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item">수료결과</a>
+        <a class="nav-item">결과보고서</a>
+      </div>
+    </div>
+
+    <div class="nav-section open">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">💰</span>
+        <span class="nav-section-label">교육비용</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item">교육비용 현황</a>
+        <a class="nav-item">교육비용 결제</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-header" onclick="toggleNav(this)">
+        <span class="nav-section-icon">🔗</span>
+        <span class="nav-section-label">커넥트</span>
+        <span class="nav-section-arrow">▾</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item">커넥트 현황</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="page-top">
+      <div class="page-title">임직원 조회</div>
+      <div class="breadcrumb">
+        <span>임직원</span>
+        <span class="sep">›</span>
+        <span>임직원 관리</span>
+        <span class="sep">›</span>
+        <span style="color:#374151; font-weight:600;">임직원 조회</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+
+      <div class="info-row">
+        <div class="info-label">이름</div>
+        <div class="info-value">정승모데스트</div>
+      </div>
+
+      <!-- 아이디 행 (기획 포인트) -->
+      <div class="info-row">
+        <div class="info-label">아이디</div>
+        <div class="info-value">
+          <!-- 조회 상태 -->
+          <div class="id-view-wrap" id="idViewWrap">
+            <span id="idText">smjung.h@gmail.com</span>
+            <button class="btn-id-modify" onclick="enterEditMode()">수정</button>
+          </div>
+          <!-- 수정 모드 -->
+          <div class="id-edit-wrap" id="idEditWrap">
+            <div class="id-edit-inner">
+              <input type="text" class="id-input" id="idInput" placeholder="이메일 형식으로 입력" />
+              <button class="btn-id-save" onclick="saveId()">저장</button>
+              <button class="btn-id-cancel" onclick="cancelEdit()">취소</button>
+            </div>
+            <span class="id-err-msg" id="idErrMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">프로필</div>
+        <div class="info-value">
+          <div class="profile-img-wrap">
+            <div class="profile-img">😊</div>
+            <div class="profile-zoom">🔍</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">사번</div>
+        <div class="info-value" style="color:#9ca3af;">-</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">회사</div>
+        <div class="info-value">Flex26 Premium 기준 그룹사(qa)</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">부서/팀</div>
+        <div class="info-value">김수로 테스트</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">직급</div>
+        <div class="info-value" style="color:#9ca3af;">-</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">휴대번호</div>
+        <div class="info-value">01045369999</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">일반전화번호</div>
+        <div class="info-value" style="color:#9ca3af;">-</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">주소</div>
+        <div class="info-value" style="color:#9ca3af;">-</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-label">근무상태</div>
+        <div class="info-value"><span class="badge-status">재직</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 아이디 변경 확인 모달 -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">아이디 변경 확인</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>
+        아이디를 변경하시겠습니까?<br>
+        <span class="lbl">변경 전</span> : <span id="modalFrom"></span><br>
+        <span class="lbl">변경 후</span> : <span class="val-new" id="modalTo"></span>
+      </p>
+      <div class="modal-notice">
+        ※ 변경 즉시 해당 임직원의 로그인 세션이 만료됩니다.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal()">취소</button>
+      <button class="mbtn mbtn-blue" onclick="confirmChange()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+  function toggleNav(header) {
+    header.parentElement.classList.toggle('open');
+  }
+
+  function enterEditMode() {
+    document.getElementById('idViewWrap').style.display = 'none';
+    var wrap = document.getElementById('idEditWrap');
+    wrap.classList.add('active');
+    var input = document.getElementById('idInput');
+    input.value = document.getElementById('idText').textContent;
+    input.classList.remove('error');
+    document.getElementById('idErrMsg').classList.remove('visible');
+    input.focus();
+  }
+
+  function cancelEdit() {
+    document.getElementById('idViewWrap').style.display = '';
+    document.getElementById('idEditWrap').classList.remove('active');
+    document.getElementById('idInput').classList.remove('error');
+    document.getElementById('idErrMsg').classList.remove('visible');
+  }
+
+  function saveId() {
+    var input = document.getElementById('idInput');
+    var errMsg = document.getElementById('idErrMsg');
+    var val = input.value.trim();
+
+    input.classList.remove('error');
+    errMsg.classList.remove('visible');
+
+    if (!val) {
+      setErr(input, errMsg, '아이디를 입력해주세요.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      setErr(input, errMsg, '이메일 형식의 아이디를 입력해주세요.');
+      return;
+    }
+    if (val === document.getElementById('idText').textContent) {
+      setErr(input, errMsg, '현재 아이디와 동일합니다.');
+      return;
+    }
+
+    document.getElementById('modalFrom').textContent = document.getElementById('idText').textContent;
+    document.getElementById('modalTo').textContent = val;
+    document.getElementById('confirmModal').classList.add('open');
+  }
+
+  function setErr(input, errMsg, msg) {
+    input.classList.add('error');
+    errMsg.textContent = msg;
+    errMsg.classList.add('visible');
+    input.focus();
+  }
+
+  function closeModal() {
+    document.getElementById('confirmModal').classList.remove('open');
+  }
+
+  function confirmChange() {
+    var newId = document.getElementById('idInput').value.trim();
+    document.getElementById('idText').textContent = newId;
+    closeModal();
+    cancelEdit();
+    var t = document.getElementById('toast');
+    t.textContent = '아이디가 변경되었습니다.';
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2800);
+  }
+
+  document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
