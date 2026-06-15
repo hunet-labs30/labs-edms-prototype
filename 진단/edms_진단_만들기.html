@@ -1315,28 +1315,48 @@ body {
           </thead>
           <tbody>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">데이터 없음</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">엑셀 파일에 등록된 데이터가 없는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">유형명 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 유형명이 입력되지 않은 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">이름 누락</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">이름(A열)이 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">유형명 코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 값이 코드표의 유형명 목록에 없는 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">사번 누락</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">사번(B열)이 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 아이디 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 대상자 아이디가 입력되지 않은 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">이미 등록된 사번이 엑셀 파일에 포함된 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 대상자 아이디</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열에 입력한 아이디가 시스템에 존재하지 않는 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">업로드 파일이 10MB를 초과한 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">이미 진단에 등록된 대상자 아이디가 파일에 포함된 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">컬럼값 오류</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">샘플 파일의 컬럼명을 변경하거나 컬럼순서 등을 변경한 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 아이디 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 D열 응답자 아이디가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 응답자 아이디</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">D열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">특정 대상자에 이미 등록된 응답자가 파일에 포함된 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">엑셀파일 내 중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">같은 유형에 대상자 중복 또는 대상자별 응답자 중복인 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">E열 응답범위가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">E열 값이 코드표의 응답범위 목록에 없는 경우</td>
             </tr>
           </tbody>
         </table>
