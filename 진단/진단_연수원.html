@@ -295,8 +295,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <button class="tab-btn active" onclick="switchTab(this,'tab-diag')">
           진단하기<span class="tab-cnt" id="cnt-diag">0</span>
         </button>
-        <button class="tab-btn" onclick="switchTab(this,'tab-ended')">
-          진단종료<span class="tab-cnt" id="cnt-ended">0</span>
+        <button class="tab-btn" onclick="switchTab(this,'tab-result')">
+          결과보기<span class="tab-cnt" id="cnt-result">0</span>
         </button>
       </div>
 
@@ -306,10 +306,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         <div id="sentinel-diag"></div>
       </div>
 
-      <!-- TAB: 진단종료 -->
-      <div id="tab-ended" class="tab-content">
-        <div class="diag-list" id="list-ended"></div>
-        <div id="sentinel-ended"></div>
+      <!-- TAB: 결과보기 -->
+      <div id="tab-result" class="tab-content">
+        <div class="diag-list" id="list-result"></div>
       </div>
 
       <div class="page-footer">© hunet All rights reserved.<a href="#">개인정보 처리방침</a></div>
@@ -490,8 +489,8 @@ function progColor(pct) {
 
 /* ─── 버튼 렌더 (진단하기 탭 전용) ─── */
 function renderBtn(item) {
-  // 진행율 100% → 진단완료 비활성
-  if (item.pct === 100) {
+  // done 상태 또는 진행율 100% → 진단완료 비활성
+  if (item.diagStatus === 'done' || item.pct === 100) {
     return `<button class="btn-diag completed" disabled>진단완료</button>`;
   }
   // 응답 시작 전 → 진단하기
@@ -504,6 +503,7 @@ function renderBtn(item) {
 
 /* ─── 진단하기 카드 ─── */
 function renderCard(item) {
+  const isDone = item.diagStatus === 'done';
   const targetBadge = item.target === 'self'
     ? `<span class="diag-target self">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -518,7 +518,7 @@ function renderCard(item) {
   const pctColor = progColor(item.pct);
 
   return `
-    <div class="diag-card">
+    <div class="diag-card" style="${isDone ? 'opacity:.6;' : ''}">
       <div class="diag-info">
         <div class="diag-top">
           <span class="diag-name">${item.name}</span>
@@ -549,7 +549,7 @@ function renderCard(item) {
   `;
 }
 
-/* ─── 진단종료 카드: 나의 진단(결과 확정) — 진단결과확인 버튼 노출 ─── */
+/* ─── 결과보기 카드: 나의 진단(결과 확정) — 진단결과확인 버튼 노출 ─── */
 function renderResultCard(item) {
   const rateClass = item.responseRate === 100 ? 'full' : '';
   return `
@@ -594,59 +594,13 @@ function renderResultCard(item) {
     </div>`;
 }
 
-/* ─── 진단종료 카드: 타인진단 — 진단완료 비활성 버튼 ─── */
-function renderEndedCard(item) {
-  const targetBadge = item.target === 'self'
-    ? `<span class="diag-target self">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         본인
-       </span>`
-    : `<span class="diag-target other">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         ${item.targetName}
-       </span>`;
-
-  const btnLabel = '진단완료';
-  const pctColor = progColor(item.pct);
-
-  return `
-    <div class="diag-card" style="opacity:.7;">
-      <div class="diag-info">
-        <div class="diag-top">
-          <span class="diag-name">${item.name}</span>
-        </div>
-        <div class="diag-meta">
-          ${targetBadge}
-          <span class="diag-period">📅 ${item.period}</span>
-          <span class="diag-meta-dot"></span>
-          <span class="diag-questions">총 ${item.questions}문항</span>
-          <span class="diag-meta-dot"></span>
-          <span class="diag-questions">${item.answered}/${item.questions} 응답</span>
-        </div>
-      </div>
-      <div class="diag-right">
-        <div class="diag-prog">
-          <span class="diag-prog-label">진행율</span>
-          <div class="diag-prog-bar-wrap">
-            <div class="diag-prog-bar">
-              <div class="diag-prog-fill" style="width:${item.pct}%;background:${pctColor};"></div>
-            </div>
-            <span class="diag-prog-pct ${item.pct===100?'done':''}">${item.pct}%</span>
-          </div>
-        </div>
-        <div class="diag-divider"></div>
-        <button class="btn-diag completed" disabled>${btnLabel}</button>
-      </div>
-    </div>
-  `;
-}
-
 /* ─────────────────────────────────────────────────
    렌더 함수
 ───────────────────────────────────────────────── */
 const BATCH = 5;
 const visibleCount = { diag: BATCH };
 
+/* 진단하기 탭: waiting 제외 전체, ongoing→closed→done 정렬 */
 function renderDiagList(data, containerId, cntId) {
   const container = document.getElementById(containerId);
   document.getElementById(cntId).textContent = data.length;
@@ -666,43 +620,35 @@ function renderDiagList(data, containerId, cntId) {
   container.innerHTML = slice.map(renderCard).join('');
 }
 
-/* 진단종료 탭: 나의 진단(결과카드) + 타인/집계중(종료카드) 혼합 렌더 */
-function renderEndedList(resultData, endedData, containerId, cntId) {
+/* 결과보기 탭: DATA_RESULT(대상자=나, done) 만 */
+function renderResultList(data, containerId, cntId) {
   const container = document.getElementById(containerId);
-  const total = resultData.length + endedData.length;
-  document.getElementById(cntId).textContent = total;
+  document.getElementById(cntId).textContent = data.length;
 
-  if (total === 0) {
+  if (data.length === 0) {
     container.innerHTML = `
       <div class="empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
           <rect x="9" y="3" width="6" height="4" rx="1"/>
         </svg>
-        <p>종료된 진단이 없습니다.</p>
+        <p>확인 가능한 결과가 없습니다.</p>
       </div>`;
     return;
   }
-  // 나의 진단(결과확인 가능) 먼저, 이후 타인/집계중
-  container.innerHTML =
-    resultData.map(renderResultCard).join('') +
-    endedData.map(renderEndedCard).join('');
+  container.innerHTML = data.map(renderResultCard).join('');
 }
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  // 진단하기 탭: ongoing + closed (waiting/done 제외)
-  const DATA_DIAG_ACTIVE = DATA_DIAG.filter(d =>
-    d.diagStatus === 'ongoing' || d.diagStatus === 'closed'
-  );
-
-  // 진단종료 탭 — 버튼 없는 항목: done+other (타인진단)
-  const DATA_DIAG_ENDED = DATA_DIAG.filter(d =>
-    d.diagStatus === 'done' && d.target === 'other'
-  );
+  // 진단하기 탭: waiting 제외 전체, ongoing→closed→done 순 정렬
+  const statusOrder = { ongoing: 0, closed: 1, done: 2 };
+  const DATA_DIAG_ACTIVE = DATA_DIAG
+    .filter(d => d.diagStatus !== 'waiting')
+    .sort((a, b) => statusOrder[a.diagStatus] - statusOrder[b.diagStatus]);
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
-  renderEndedList(DATA_RESULT, DATA_DIAG_ENDED, 'list-ended', 'cnt-ended');
+  renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
 
   // 진단하기 무한스크롤
   const obsDiag = new IntersectionObserver(entries => {
@@ -712,10 +658,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }, { rootMargin: '100px' });
   obsDiag.observe(document.getElementById('sentinel-diag'));
-
-  // 진단종료 sentinel (데이터 적어 전체 렌더 유지)
-  new IntersectionObserver(() => {}, { rootMargin: '100px' })
-    .observe(document.getElementById('sentinel-ended'));
 });
 </script>
 </body>
