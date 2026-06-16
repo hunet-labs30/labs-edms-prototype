@@ -326,203 +326,181 @@ function switchTab(btn, targetId) {
 }
 
 /* ─── 데이터 ─── */
-// diagStatus: 진단 상태
-//   'waiting'  — 진단 시작 전 (대기)       → 연수원 미노출
-//   'ongoing'  — 종료일 이전, 진행 중       → 진단하기 탭
-//   'closed'   — 종료일 경과, 관리자 마감 전 → 진단하기 탭
-//   'done'     — 관리자 마감처리 완료 (결과 즉시 확인 가능)
-//       target='self'  → 진단종료 탭 (진단결과확인 버튼)
-//       target='other' → 진단종료 탭 (버튼 없음)
-// target: 'self'=본인 | 'other'=타인(이름 표시)
-// pct: 진행율 0~100 / questions: 총문항 / answered: 응답수
+// diagStatus: 'waiting' | 'ongoing' | 'closed' | 'done'
+// target: 'self'=내가 진단 대상자 | 'other'=타인이 진단 대상자
+// selfResponder: true=내가 응답자로 배정됨 | false=배정 안 됨
+//
+// 진단하기 탭: selfResponder=true (waiting 제외)
+//   → 진단하기 / 이어하기 / 진단완료 버튼
+//
+// 결과보기 탭: target='self' (waiting 제외, selfResponder 무관)
+//   → 결과보기(done+결과확정) / 결과대기(그 외)
 
 /* ─────────────────────────────────────────────────
-   전체 진단 데이터
+   진단 데이터
 ───────────────────────────────────────────────── */
 const DATA_DIAG = [
-  // ── 대기: 진단 시작 전 (연수원 미노출) ──
+  // ── waiting (연수원 미노출) ──
   {
-    id: 1,
-    typeName: 'LS', typeLabel: '리더십스타일',
+    id: 1, typeName: 'LS', typeLabel: '리더십스타일',
     name: '2026년 상반기 리더십스타일 진단',
-    target: 'self', targetName: '',
-    period: '2026.05.01 ~ 2026.05.31',
-    questions: 36, answered: 0, pct: 0,
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 0, pct: 0,
     diagStatus: 'waiting'
   },
   {
-    id: 4,
-    typeName: 'LC', typeLabel: '리더십역량',
+    id: 4, typeName: 'LC', typeLabel: '리더십역량',
     name: '2026년 상반기 리더십역량 진단',
-    target: 'other', targetName: '김철수',
-    period: '2026.05.01 ~ 2026.05.31',
-    questions: 60, answered: 0, pct: 0,
+    target: 'other', targetName: '김철수', selfResponder: true,
+    period: '2026.05.01 ~ 2026.05.31', questions: 60, answered: 0, pct: 0,
     diagStatus: 'waiting'
   },
-  // ── 진행 중: 응답 시작 전 ──
+
+  // ── ongoing: 대상자=본인, 응답자=본인 O → 진단하기 + 결과보기 ──
   {
-    id: 13,
-    typeName: 'LS', typeLabel: '리더십스타일',
+    id: 13, typeName: 'LS', typeLabel: '리더십스타일',
     name: '2026년 상반기 리더십스타일 진단',
-    target: 'self', targetName: '',
-    period: '2026.05.01 ~ 2026.05.31',
-    questions: 36, answered: 0, pct: 0,
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 0, pct: 0,
     diagStatus: 'ongoing'
   },
-  // ── 진행 중: 응답 중 ──
   {
-    id: 2,
-    typeName: 'LC', typeLabel: '리더십역량',
+    id: 2, typeName: 'LC', typeLabel: '리더십역량',
     name: '2026년 상반기 리더십역량 진단',
-    target: 'self', targetName: '',
-    period: '2026.05.01 ~ 2026.05.31',
-    questions: 60, answered: 36, pct: 60,
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.05.01 ~ 2026.05.31', questions: 60, answered: 36, pct: 60,
     diagStatus: 'ongoing'
   },
+
+  // ── ongoing: 대상자=본인, 응답자=본인 X → 결과보기만 ──
   {
-    id: 6,
-    typeName: 'LS', typeLabel: '리더십스타일',
+    id: 20, typeName: 'LC', typeLabel: '리더십역량',
+    name: '2026년 상반기 리더십역량 진단 (동료평가만)',
+    target: 'self', targetName: '', selfResponder: false,
+    period: '2026.05.01 ~ 2026.05.31', questions: 0, answered: 0, pct: 0,
+    diagStatus: 'ongoing'
+  },
+
+  // ── ongoing: 대상자=타인, 응답자=본인 O → 진단하기만 ──
+  {
+    id: 6, typeName: 'LS', typeLabel: '리더십스타일',
     name: '2026년 상반기 리더십스타일 진단',
-    target: 'other', targetName: '박지민',
-    period: '2026.05.01 ~ 2026.05.31',
-    questions: 36, answered: 11, pct: 30,
+    target: 'other', targetName: '박지민', selfResponder: true,
+    period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 11, pct: 30,
     diagStatus: 'ongoing'
   },
-  // ── 마감: 종료일 경과, 관리자 마감 전 (응답 수정 가능) ──
+
+  // ── ongoing: 진행율 100% (관리자 마감 전) ──
   {
-    id: 10,
-    typeName: 'BSA', typeLabel: '비즈니스상황',
+    id: 5, typeName: 'BSA', typeLabel: '비즈니스상황',
     name: '2026년 1분기 비즈니스상황 진단',
-    target: 'self', targetName: '',
-    period: '2026.04.01 ~ 2026.04.30',
-    questions: 24, answered: 10, pct: 42,
-    diagStatus: 'closed'
-  },
-  {
-    id: 11,
-    typeName: 'LC', typeLabel: '리더십역량',
-    name: '2026년 1분기 리더십역량 진단',
-    target: 'other', targetName: '이영후',
-    period: '2026.04.01 ~ 2026.04.30',
-    questions: 60, answered: 24, pct: 40,
-    diagStatus: 'closed'
-  },
-  // ── 진행율 100% (관리자 마감 전) → 진단하기 탭, 진단완료 비활성 ──
-  {
-    id: 5,
-    typeName: 'BSA', typeLabel: '비즈니스상황',
-    name: '2026년 1분기 비즈니스상황 진단',
-    target: 'self', targetName: '',
-    period: '2026.04.01 ~ 2026.04.30',
-    questions: 24, answered: 24, pct: 100,
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.04.01 ~ 2026.04.30', questions: 24, answered: 24, pct: 100,
     diagStatus: 'ongoing'
   },
-  // ── 기간 종료, 관리자 마감처리 전 (응답 수정 가능) → 진단하기 탭 ──
+
+  // ── closed: 대상자=본인, 응답자=본인 O ──
   {
-    id: 12,
-    typeName: 'LC', typeLabel: '리더십역량',
-    name: '2026년 1분기 리더십역량 진단',
-    target: 'self', targetName: '',
-    period: '2026.04.01 ~ 2026.04.30',
-    questions: 60, answered: 30, pct: 50,
+    id: 10, typeName: 'BSA', typeLabel: '비즈니스상황',
+    name: '2026년 1분기 비즈니스상황 진단',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.04.01 ~ 2026.04.30', questions: 24, answered: 10, pct: 42,
     diagStatus: 'closed'
   },
-  // ── 완료(타인평가): 결과 열람 불가 → 진단종료 탭 ──
   {
-    id: 8,
-    typeName: 'LC', typeLabel: '리더십역량',
+    id: 12, typeName: 'LC', typeLabel: '리더십역량',
+    name: '2026년 1분기 리더십역량 진단',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.04.01 ~ 2026.04.30', questions: 60, answered: 30, pct: 50,
+    diagStatus: 'closed'
+  },
+
+  // ── closed: 대상자=타인, 응답자=본인 O ──
+  {
+    id: 11, typeName: 'LC', typeLabel: '리더십역량',
+    name: '2026년 1분기 리더십역량 진단',
+    target: 'other', targetName: '이영후', selfResponder: true,
+    period: '2026.04.01 ~ 2026.04.30', questions: 60, answered: 24, pct: 40,
+    diagStatus: 'closed'
+  },
+
+  // ── done: 대상자=타인, 응답자=본인 O → 진단하기(진단완료) ──
+  {
+    id: 8, typeName: 'LC', typeLabel: '리더십역량',
     name: '2025년 하반기 리더십역량 진단',
-    target: 'other', targetName: '김민준',
-    period: '2025.10.01 ~ 2025.10.31',
-    questions: 60, answered: 60, pct: 100,
+    target: 'other', targetName: '김민준', selfResponder: true,
+    period: '2025.10.01 ~ 2025.10.31', questions: 60, answered: 60, pct: 100,
     diagStatus: 'done'
   }
 ];
 
 /* ─────────────────────────────────────────────────
-   결과 확정 데이터 (진단종료 탭 — 나의 진단만)
-   ※ 진단결과확인 + PDF 버튼 노출
-   ※ respondentCount: 응답대상자 수 / responseRate: 응답율(%)
+   결과 확정 데이터 (결과보기 탭 — 대상자=본인, done+결과생성)
+   selfResponder O/X 무관하게 결과보기 탭에 노출
 ───────────────────────────────────────────────── */
 const DATA_RESULT = [
   {
-    id: 14,
-    typeName: 'BSA', typeLabel: '비즈니스상황',
+    id: 14, typeName: 'BSA', typeLabel: '비즈니스상황',
     name: '2025년 4분기 비즈니스상황 진단',
-    target: 'self',
+    target: 'self', selfResponder: true,
     startDate: '2025-12-01 00:00', endDate: '2025-12-31 00:00',
-    respondentCount: 18, responseRate: 72,
-    diagStatus: 'done'
+    respondentCount: 18, responseRate: 72, diagStatus: 'done'
   },
   {
-    id: 7,
-    typeName: 'LS', typeLabel: '리더십스타일',
+    id: 7, typeName: 'LS', typeLabel: '리더십스타일',
     name: '2025년 하반기 리더십스타일 진단',
-    target: 'self',
+    target: 'self', selfResponder: false,
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
-    respondentCount: 15, responseRate: 80,
-    diagStatus: 'done'
+    respondentCount: 15, responseRate: 80, diagStatus: 'done'
   },
   {
-    id: 9,
-    typeName: 'BSA', typeLabel: '비즈니스상황',
+    id: 9, typeName: 'BSA', typeLabel: '비즈니스상황',
     name: '2025년 하반기 비즈니스상황 진단',
-    target: 'self',
+    target: 'self', selfResponder: true,
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
-    respondentCount: 20, responseRate: 100,
-    diagStatus: 'done'
+    respondentCount: 20, responseRate: 100, diagStatus: 'done'
   }
 ];
 
-/* ─── 진행율 컬러 ─── */
+/* ─── 유틸 ─── */
 function fmtDate(str) {
-  // 'YYYY-MM-DD HH:mm' 또는 'YYYY-MM-DD' → 'YYYY.MM.DD'
   const m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
   return m ? `${m[1]}.${m[2]}.${m[3]}` : str;
 }
-
 function progColor(pct) {
   if (pct === 100) return 'var(--green)';
   if (pct >= 1)   return 'var(--orange)';
   return 'var(--border)';
 }
 
-/* ─── 버튼 렌더 (진단하기 탭 전용) ─── */
-function renderBtn(item) {
-  // done 상태 또는 진행율 100% → 진단완료 비활성
+/* ─── 버튼: 진단하기 탭 ─── */
+function renderDiagBtn(item) {
   if (item.diagStatus === 'done' || item.pct === 100) {
     return `<button class="btn-diag completed" disabled>진단완료</button>`;
   }
-  // 응답 시작 전 → 진단하기
   if (item.answered === 0) {
     return `<button class="btn-diag start" onclick="location.href='진단_응답_화면.html'">진단하기</button>`;
   }
-  // 1건 이상 응답 → 이어하기
   return `<button class="btn-diag resume" onclick="location.href='진단_응답_화면.html'">이어하기</button>`;
 }
 
-/* ─── 진단하기 카드 ─── */
+/* ─── 카드: 진단하기 탭 ─── */
 function renderCard(item) {
   const isDone = item.diagStatus === 'done';
   const targetBadge = item.target === 'self'
     ? `<span class="diag-target self">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         본인
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>본인
        </span>`
     : `<span class="diag-target other">
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         ${item.targetName}
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${item.targetName}
        </span>`;
-
   const pctClass = item.pct === 100 ? 'done' : '';
   const pctColor = progColor(item.pct);
 
   return `
     <div class="diag-card" style="${isDone ? 'opacity:.6;' : ''}">
       <div class="diag-info">
-        <div class="diag-top">
-          <span class="diag-name">${item.name}</span>
-        </div>
+        <div class="diag-top"><span class="diag-name">${item.name}</span></div>
         <div class="diag-meta">
           ${targetBadge}
           <span class="diag-period">📅 ${item.period}</span>
@@ -543,25 +521,21 @@ function renderCard(item) {
           </div>
         </div>
         <div class="diag-divider"></div>
-        ${renderBtn(item)}
+        ${renderDiagBtn(item)}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-/* ─── 결과보기 카드: 나의 진단(결과 확정) — 진단결과확인 버튼 노출 ─── */
+/* ─── 카드: 결과보기 탭 — 결과 확정 (결과보기 버튼) ─── */
 function renderResultCard(item) {
   const rateClass = item.responseRate === 100 ? 'full' : '';
   return `
     <div class="diag-card">
       <div class="diag-info">
-        <div class="diag-top">
-          <span class="diag-name">${item.name}</span>
-        </div>
+        <div class="diag-top"><span class="diag-name">${item.name}</span></div>
         <div class="diag-meta">
           <span class="diag-target self">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            본인
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>본인
           </span>
           <span class="diag-period">📅 ${fmtDate(item.startDate)} ~ ${fmtDate(item.endDate)}</span>
         </div>
@@ -579,17 +553,35 @@ function renderResultCard(item) {
         </div>
         <div class="diag-divider"></div>
         <div class="result-btn-group">
-          <button class="btn-result-confirm" onclick="location.href='../진단_결과_보기.html'">진단결과확인</button>
+          <button class="btn-result-confirm" onclick="location.href='../진단_결과_보기.html'">결과보기</button>
           <button class="btn-pdf">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
               <line x1="12" y1="18" x2="12" y2="12"/>
               <polyline points="9 15 12 18 15 15"/>
-            </svg>
-            PDF
+            </svg>PDF
           </button>
         </div>
+      </div>
+    </div>`;
+}
+
+/* ─── 카드: 결과보기 탭 — 결과 대기 (결과대기 비활성 버튼) ─── */
+function renderResultPendingCard(item) {
+  return `
+    <div class="diag-card" style="opacity:.7;">
+      <div class="diag-info">
+        <div class="diag-top"><span class="diag-name">${item.name}</span></div>
+        <div class="diag-meta">
+          <span class="diag-target self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>본인
+          </span>
+          <span class="diag-period">📅 ${item.period}</span>
+        </div>
+      </div>
+      <div class="diag-right">
+        <button class="btn-diag completed" disabled>결과대기</button>
       </div>
     </div>`;
 }
@@ -600,11 +592,9 @@ function renderResultCard(item) {
 const BATCH = 5;
 const visibleCount = { diag: BATCH };
 
-/* 진단하기 탭: waiting 제외 전체, ongoing→closed→done 정렬 */
 function renderDiagList(data, containerId, cntId) {
   const container = document.getElementById(containerId);
   document.getElementById(cntId).textContent = data.length;
-
   if (data.length === 0) {
     container.innerHTML = `
       <div class="empty">
@@ -616,16 +606,14 @@ function renderDiagList(data, containerId, cntId) {
       </div>`;
     return;
   }
-  const slice = data.slice(0, visibleCount.diag);
-  container.innerHTML = slice.map(renderCard).join('');
+  container.innerHTML = data.slice(0, visibleCount.diag).map(renderCard).join('');
 }
 
-/* 결과보기 탭: DATA_RESULT(대상자=나, done) 만 */
-function renderResultList(data, containerId, cntId) {
+function renderResultList(resultData, pendingData, containerId, cntId) {
   const container = document.getElementById(containerId);
-  document.getElementById(cntId).textContent = data.length;
-
-  if (data.length === 0) {
+  const total = resultData.length + pendingData.length;
+  document.getElementById(cntId).textContent = total;
+  if (total === 0) {
     container.innerHTML = `
       <div class="empty">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -636,19 +624,29 @@ function renderResultList(data, containerId, cntId) {
       </div>`;
     return;
   }
-  container.innerHTML = data.map(renderResultCard).join('');
+  // 결과 확정 먼저, 결과대기 이후
+  container.innerHTML =
+    resultData.map(renderResultCard).join('') +
+    pendingData.map(renderResultPendingCard).join('');
 }
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  // 진단하기 탭: waiting 제외 전체, ongoing→closed→done 순 정렬
   const statusOrder = { ongoing: 0, closed: 1, done: 2 };
+
+  // 진단하기 탭: selfResponder=true, waiting 제외, ongoing→closed→done 정렬
   const DATA_DIAG_ACTIVE = DATA_DIAG
-    .filter(d => d.diagStatus !== 'waiting')
+    .filter(d => d.selfResponder && d.diagStatus !== 'waiting')
+    .sort((a, b) => statusOrder[a.diagStatus] - statusOrder[b.diagStatus]);
+
+  // 결과보기 탭 — 결과대기: target=self, waiting 제외, DATA_RESULT에 없는 것
+  const resultIds = new Set(DATA_RESULT.map(r => r.id));
+  const DATA_RESULT_PENDING = DATA_DIAG
+    .filter(d => d.target === 'self' && d.diagStatus !== 'waiting' && !resultIds.has(d.id))
     .sort((a, b) => statusOrder[a.diagStatus] - statusOrder[b.diagStatus]);
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
-  renderResultList(DATA_RESULT, 'list-result', 'cnt-result');
+  renderResultList(DATA_RESULT, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
 
   // 진단하기 무한스크롤
   const obsDiag = new IntersectionObserver(entries => {
