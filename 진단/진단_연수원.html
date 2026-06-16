@@ -624,21 +624,33 @@ function renderResultList(resultData, pendingData, containerId, cntId) {
 
 /* ─── 초기화 ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  const statusOrder = { ongoing: 0, closed: 1, done: 2 };
+  // period 'YYYY.MM.DD ~ ...' 또는 startDate 'YYYY-MM-DD HH:mm' → 정렬용 문자열
+  function getStartKey(item) {
+    if (item.startDate) return item.startDate.slice(0, 10);
+    if (item.period) {
+      const m = item.period.match(/(\d{4})\.(\d{2})\.(\d{2})/);
+      return m ? `${m[1]}-${m[2]}-${m[3]}` : '0000-00-00';
+    }
+    return '0000-00-00';
+  }
+  const byStartDesc = (a, b) => getStartKey(b).localeCompare(getStartKey(a));
 
-  // 진단하기 탭: selfResponder=true, waiting 제외, ongoing→closed→done 정렬
+  // 진단하기 탭: selfResponder=true, waiting 제외, 시작일 내림차순
   const DATA_DIAG_ACTIVE = DATA_DIAG
     .filter(d => d.selfResponder && d.diagStatus !== 'waiting')
-    .sort((a, b) => statusOrder[a.diagStatus] - statusOrder[b.diagStatus]);
+    .sort(byStartDesc);
 
-  // 결과보기 탭 — 결과대기: target=self, waiting 제외, DATA_RESULT에 없는 것
+  // 결과보기 탭 — 결과대기: target=self, waiting 제외, DATA_RESULT에 없는 것, 시작일 내림차순
   const resultIds = new Set(DATA_RESULT.map(r => r.id));
   const DATA_RESULT_PENDING = DATA_DIAG
     .filter(d => d.target === 'self' && d.diagStatus !== 'waiting' && !resultIds.has(d.id))
-    .sort((a, b) => statusOrder[a.diagStatus] - statusOrder[b.diagStatus]);
+    .sort(byStartDesc);
+
+  // 결과보기 탭 — 결과 확정: 시작일 내림차순
+  const DATA_RESULT_SORTED = [...DATA_RESULT].sort(byStartDesc);
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
-  renderResultList(DATA_RESULT, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
+  renderResultList(DATA_RESULT_SORTED, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
 
   // 진단하기 무한스크롤
   const obsDiag = new IntersectionObserver(entries => {
