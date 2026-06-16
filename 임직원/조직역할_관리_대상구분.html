@@ -1703,7 +1703,6 @@
           <tbody>
             <tr><td>아이디 미입력</td><td>아이디를 입력하지 않은 경우</td></tr>
             <tr><td>사용중인 아이디</td><td>입력한 아이디가 이미 등록된 아이디인 경우</td></tr>
-            <tr><td>퇴사자 아이디</td><td>입력한 아이디가 이미 퇴사한 경우</td></tr>
             <tr><td>이름 미입력</td><td>이름을 입력하지 않은 경우</td></tr>
             <tr><td>휴대전화번호 입력오류</td><td>휴대전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다.)</td></tr>
             <tr><td>일반전화번호 입력오류</td><td>일반전화번호 입력형태가 맞지 않는 경우 (번호 사이의 하이픈(-) 넣어도 무방합니다.)</td></tr>
@@ -3818,10 +3817,6 @@
               <tr>
                 <td style="text-align:left;padding:8px 12px;">아이디 미입력</td>
                 <td style="text-align:left;padding:8px 12px;">아이디를 입력하지 않은 경우</td>
-              </tr>
-              <tr>
-                <td style="text-align:left;padding:8px 12px;">퇴사자 아이디</td>
-                <td style="text-align:left;padding:8px 12px;">아이디를 입력하였고, 입력한 아이디가 이미 퇴사한 경우</td>
               </tr>
               <tr>
                 <td style="text-align:left;padding:8px 12px;">아이디 오류</td>
@@ -6280,7 +6275,6 @@ function batchPreview() {
   document.getElementById('batch-error-tbody').innerHTML = `
     <tr><td style="color:#e53935;">hong</td><td>사용중인 아이디</td></tr>
     <tr><td style="color:#e53935;"></td><td>아이디 미입력 (3행)</td></tr>
-    <tr><td style="color:#e53935;">kim_test</td><td>퇴사자 아이디</td></tr>
   `;
   setBatchRegistBtn(!batchHasError);
   alert('등록한 파일에 오류가 발견되었습니다. 오류내용을 확인하시고 다시 등록해주세요.');
@@ -8377,7 +8371,6 @@ function tdBulkPreview() {
   tbody.innerHTML = `
     <tr><td style="text-align:left;padding:8px 12px;color:#e53935;">al*******</td><td style="text-align:left;padding:8px 12px;">대상구분 코드 오류</td></tr>
     <tr><td style="text-align:left;padding:8px 12px;color:#e53935;"></td><td style="text-align:left;padding:8px 12px;">아이디 미입력 (3행)</td></tr>
-    <tr><td style="text-align:left;padding:8px 12px;color:#e53935;">al*test01</td><td style="text-align:left;padding:8px 12px;">퇴사자 아이디</td></tr>
   `;
   tdBulkSetRegistBtn(!tdBulkHasError);
   alert('파일에 오류가 발견되었습니다. 오류내용을 확인하시고 파일을 수정 후 다시 미리보기 해주세요.');
