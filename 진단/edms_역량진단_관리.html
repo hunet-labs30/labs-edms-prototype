@@ -1028,7 +1028,6 @@
       <table class="main-table">
         <thead>
           <tr>
-            <th style="width:36px;"><input type="checkbox" id="reportChkAll" onchange="document.querySelectorAll('.report-chk').forEach(c=>c.checked=this.checked)"></th>
             <th style="width:36px;">No</th>
             <th style="width:70px;">이름</th>
             <th style="width:150px;">아이디</th>
@@ -2263,7 +2262,6 @@ function renderReportTable(data) {
   count.textContent = data.length;
   tbody.innerHTML = data.map(r => `
     <tr>
-      <td>${r.canReport === false ? '' : '<input type="checkbox" class="report-chk">'}</td>
       <td>${r.no}</td>
       <td>${r.name}</td>
       <td>${r.id}</td>
