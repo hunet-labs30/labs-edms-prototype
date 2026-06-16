@@ -179,6 +179,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .btn-diag.result:hover{background:var(--primary-light);}
 /* 진단완료 — 회색 비활성 (진행율 100% 또는 타인평가 완료처리) */
 .btn-diag.completed{background:var(--gray-bg);color:var(--text-400);cursor:default;}
+/* 결과없음 — 연한 비활성 (done이나 응답 0건) */
+.btn-diag.no-result{background:var(--gray-bg);color:var(--text-400);cursor:default;}
 
 /* 구분선 */
 .diag-divider{width:1px;height:36px;background:var(--border);}
@@ -431,6 +433,15 @@ const DATA_DIAG = [
     target: 'other', targetName: '김민준', selfResponder: true,
     period: '2025.10.01 ~ 2025.10.31', questions: 60, answered: 60, pct: 100,
     diagStatus: 'done'
+  },
+
+  // ── done: 대상자=본인, 응답자 0건 마감 → 결과보기(결과없음) ──
+  {
+    id: 21, typeName: 'LC', typeLabel: '리더십역량',
+    name: '2025년 상반기 리더십역량 진단',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2025.04.01 ~ 2025.04.30', questions: 60, answered: 60, pct: 100,
+    diagStatus: 'done'
   }
 ];
 
@@ -559,6 +570,28 @@ function renderResultCard(item) {
     </div>`;
 }
 
+/* ─── 카드: 결과보기 탭 — 결과 없음 (done이나 응답 0건, 결과없음 비활성 버튼) ─── */
+function renderResultNoneCard(item) {
+  return `
+    <div class="diag-card" style="opacity:.6;">
+      <div class="diag-info">
+        <div class="diag-top"><span class="diag-name">${item.name}</span></div>
+        <div class="diag-meta">
+          <span class="diag-target self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>본인
+          </span>
+          <span class="diag-period">📅 ${item.period}</span>
+        </div>
+        <div class="diag-meta" style="margin-top:2px;">
+          <span style="font-size:11px;color:var(--text-400);">응답자가 없어 결과를 확인할 수 없습니다.</span>
+        </div>
+      </div>
+      <div class="diag-right">
+        <button class="btn-diag no-result" disabled>결과없음</button>
+      </div>
+    </div>`;
+}
+
 /* ─── 카드: 결과보기 탭 — 결과 대기 (결과대기 비활성 버튼) ─── */
 function renderResultPendingCard(item) {
   return `
@@ -601,9 +634,9 @@ function renderDiagList(data, containerId, cntId) {
   container.innerHTML = data.slice(0, visibleCount.diag).map(renderCard).join('');
 }
 
-function renderResultList(resultData, pendingData, containerId, cntId) {
+function renderResultList(resultData, noneData, pendingData, containerId, cntId) {
   const container = document.getElementById(containerId);
-  const total = resultData.length + pendingData.length;
+  const total = resultData.length + noneData.length + pendingData.length;
   document.getElementById(cntId).textContent = total;
   if (total === 0) {
     container.innerHTML = `
@@ -616,9 +649,10 @@ function renderResultList(resultData, pendingData, containerId, cntId) {
       </div>`;
     return;
   }
-  // 결과 확정 먼저, 결과대기 이후
+  // 1순위: 결과 확정(결과보기) → 2순위: 결과없음(done+응답0건) → 3순위: 결과대기
   container.innerHTML =
     resultData.map(renderResultCard).join('') +
+    noneData.map(renderResultNoneCard).join('') +
     pendingData.map(renderResultPendingCard).join('');
 }
 
@@ -640,17 +674,23 @@ document.addEventListener('DOMContentLoaded', () => {
     .filter(d => d.selfResponder && d.diagStatus !== 'waiting')
     .sort(byStartDesc);
 
-  // 결과보기 탭 — 결과대기: target=self, waiting 제외, DATA_RESULT에 없는 것, 시작일 내림차순
   const resultIds = new Set(DATA_RESULT.map(r => r.id));
+
+  // 결과보기 탭 — 결과없음: target=self, done, DATA_RESULT에 없는 것 (응답 0건 마감)
+  const DATA_RESULT_NONE = DATA_DIAG
+    .filter(d => d.target === 'self' && d.diagStatus === 'done' && !resultIds.has(d.id))
+    .sort(byStartDesc);
+
+  // 결과보기 탭 — 결과대기: target=self, waiting/done 제외, DATA_RESULT에 없는 것
   const DATA_RESULT_PENDING = DATA_DIAG
-    .filter(d => d.target === 'self' && d.diagStatus !== 'waiting' && !resultIds.has(d.id))
+    .filter(d => d.target === 'self' && d.diagStatus !== 'waiting' && d.diagStatus !== 'done' && !resultIds.has(d.id))
     .sort(byStartDesc);
 
   // 결과보기 탭 — 결과 확정: 시작일 내림차순
   const DATA_RESULT_SORTED = [...DATA_RESULT].sort(byStartDesc);
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
-  renderResultList(DATA_RESULT_SORTED, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
+  renderResultList(DATA_RESULT_SORTED, DATA_RESULT_NONE, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
 
   // 진단하기 무한스크롤
   const obsDiag = new IntersectionObserver(entries => {
