@@ -2133,7 +2133,7 @@ let _pendingRespToggle = null;
 function toggleRespRole(el, roleKey) {
   const isCurrentlySelected = el.classList.contains('selected');
   if (isCurrentlySelected) {
-    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.includes('-' + roleKey + ':') && MK_RESPONDENTS[k].length > 0);
+    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.startsWith(roleKey + ':') && MK_RESPONDENTS[k].length > 0);
     if (hasRespondents) {
       _pendingRespToggle = { el, roleKey };
       document.getElementById('respTypeChangeModal').classList.add('open');
@@ -2153,7 +2153,7 @@ function confirmRespTypeChange() {
   if (_pendingRespToggle) {
     const { el, roleKey } = _pendingRespToggle;
     Object.keys(MK_RESPONDENTS).forEach(k => {
-      if (k.includes('-' + roleKey + ':')) MK_RESPONDENTS[k] = [];
+      if (k.startsWith(roleKey + ':')) MK_RESPONDENTS[k] = [];
     });
     _applyRespToggle(el, roleKey);
     _pendingRespToggle = null;
@@ -2486,29 +2486,25 @@ function generateStep4Tabs() {
   tabPanesContainer.innerHTML = '';
 
   const tabs = [];
-  selectedQuestionnaire.types.forEach(type => {
-    RESP_ROLES.forEach(role => {
-      if (respondentSettings[role.key]) {
-        tabs.push({ type: type.name, option: role.key, id: `${type.id}-${role.key}` });
-      }
-    });
+  RESP_ROLES.forEach(role => {
+    if (respondentSettings[role.key]) {
+      tabs.push({ name: role.name, key: role.key, id: role.key });
+    }
   });
 
   tabs.forEach((tab, idx) => {
     const tabEl = document.createElement('div');
     tabEl.className = `tab ${idx === 0 ? 'active' : ''}`;
-    tabEl.textContent = `${tab.type}(${tab.option})`;
+    tabEl.textContent = tab.name;
     tabEl.dataset.tabid = tab.id;
     tabEl.onclick = () => switchStep4Tab(idx);
     tabGroup.appendChild(tabEl);
 
-    const isSelf = tab.option === '본인';
-    // 샘플 대상자 행 생성
+    const isSelf = tab.key === '본인';
     const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
-      const tabLabel = `${tab.type}(${tab.option})`;
       const respCell = isSelf
         ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
-        : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tabLabel}')">설정</button>`;
+        : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tab.name}')">설정</button>`;
       return `<tr>
         <td><input type="checkbox"></td>
         <td>${ri+1}</td>
@@ -2784,16 +2780,13 @@ function _mkInitModal() {
   document.getElementById('mk-person-name').textContent = target ? target.name : '';
   document.getElementById('mk-person-meta').textContent = target ? target.meta : '';
 
-  // 진단 유형 목록 동적 생성
+  // 진단 유형 목록 (역할 탭 구조에서는 불필요 — 섹션 숨김)
   const typeList = document.getElementById('mk-type-list');
-  const types = _mkGetTypes();
-  typeList.innerHTML = types.map(t => `
-    <div class="mk-type-item" data-tabid="${t.id}" onclick="mkRespSelectType(this)"
-         style="padding:8px 14px 8px 16px;font-size:12px;color:${t.id===_mkCurrentTabId?'var(--primary)':'#444'};cursor:pointer;border-left:3px solid ${t.id===_mkCurrentTabId?'var(--primary)':'transparent'};background:${t.id===_mkCurrentTabId?'#f0f4ff':''};">
-      ${t.label}
-    </div>`).join('');
+  typeList.innerHTML = '';
+  const typeSection = typeList.previousElementSibling;
+  if (typeSection) typeSection.style.display = 'none';
 
-  document.getElementById('mk-center-title').textContent = (_mkCurrentTabId.replace('-','진단 — ')) + ' 응답자 설정 — ' + (target ? target.name : '');
+  document.getElementById('mk-center-title').textContent = _mkCurrentTabId + ' 응답자 설정 — ' + (target ? target.name : '');
 
   // 탭 초기화
   document.querySelectorAll('.mk-resp-tab').forEach(t => {
@@ -2816,16 +2809,7 @@ function _mkInitModal() {
 }
 
 function _mkGetTypes() {
-  if (!selectedQuestionnaire) return [];
-  const result = [];
-  selectedQuestionnaire.types.forEach(type => {
-    RESP_ROLES.forEach(role => {
-      if (respondentSettings[role.key] && role.key !== '본인') {
-        result.push({ id: `${type.id}-${role.key}`, label: `${type.name} ${role.key}` });
-      }
-    });
-  });
-  return result;
+  return [];
 }
 
 function _mkRenderMemberList() {
