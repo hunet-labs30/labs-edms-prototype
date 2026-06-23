@@ -9266,7 +9266,7 @@ function deptBulkEditPreview() {
     </tr>
   `;
   deptBulkEditSetRegistBtn(!deptBulkEditHasError);
-  alert('파일에 오류가 발견되었습니다. 오류내용을 확인하시고 파일을 수정 후 다시 미리보기 해주세요.');
+  alert('오류 행을 수정한 후 파일을 다시 미리보기해 주세요.');
 }
 function deptBulkEditRegist() {
   const btn = document.getElementById('dept-bulk-edit-regist-btn');
@@ -9334,7 +9334,7 @@ function deptBulkPreview() {
   resultEl.style.display = 'block';
 
   if (hasError) {
-    alert('등록한 파일에 오류가 발견되었습니다. 오류내용을 확인하시고 수정 후 다시 업로드해주세요.');
+    alert('오류 행을 수정한 후 파일을 다시 미리보기해 주세요.');
     msgEl.innerHTML = `<span style="color:#c0392b;font-weight:600;">⚠ 오류 ${BULK_SAMPLE_ERRORS.length}건 발견</span> — 아래 항목을 수정 후 재업로드해주세요.`;
     errDown.style.display = 'inline-flex';
     tbody.innerHTML = BULK_SAMPLE_ERRORS.map(r => `

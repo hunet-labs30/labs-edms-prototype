@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>역량진단 개인 결과 | LABS 3.0</title>
+<style>
+:root {
+  --primary:       #246CF9;
+  --primary-light: #EEF3FF;
+  --bg:            #F5F6FA;
+  --white:         #ffffff;
+  --text-900:      #111827;
+  --text-700:      #374151;
+  --text-500:      #6B7280;
+  --text-400:      #9CA3AF;
+  --border:        #E5E7EB;
+  --border-light:  #F3F4F6;
+  --blue:   #246CF9; --blue-bg:   #EEF3FF;
+  --orange: #F97316; --orange-bg: #FFF4ED;
+  --green:  #16A34A; --green-bg:  #DCFCE7;
+  --red:    #DC2626; --red-bg:    #FEE2E2;
+  --purple: #7C3AED; --purple-bg: #EDE9FE;
+  --gray:   #6B7280; --gray-bg:   #F3F4F6;
+  --gnb-h:     56px;
+  --sidebar-w: 200px;
+  --font: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-size:14px;line-height:1.5;}
+
+/* ── GNB ── */
+.gnb{position:fixed;top:0;left:0;right:0;height:var(--gnb-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:300;}
+.gnb-logo{font-size:17px;font-weight:800;color:var(--text-900);letter-spacing:-.5px;display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.gnb-logo-box{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.gnb-logo-box svg{width:15px;height:15px;}
+.gnb-search-wrap{flex:1;max-width:580px;margin:0 auto;}
+.gnb-search{width:100%;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:0 16px 0 38px;font-size:13px;color:var(--text-700);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.gnb-search::placeholder{color:#B0B7C3;}
+.gnb-search:focus{border-color:var(--primary);background-color:var(--white);}
+.gnb-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+.gnb-icon{width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);transition:background .15s;position:relative;}
+.gnb-icon:hover{background:var(--bg);}
+.gnb-icon svg{width:20px;height:20px;}
+.gnb-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
+
+/* ── LAYOUT ── */
+.app{display:flex;padding-top:var(--gnb-h);min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:var(--gnb-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--gnb-h));background:var(--white);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;padding:12px 0 20px;z-index:200;}
+.sb-menu{list-style:none;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13.5px;font-weight:500;color:var(--text-500);cursor:pointer;text-decoration:none;border-left:3px solid transparent;transition:all .12s;white-space:nowrap;}
+.sb-item:hover{background:var(--bg);color:var(--text-700);}
+.sb-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;border-left-color:var(--primary);}
+.sb-item svg{width:15px;height:15px;flex-shrink:0;}
+.sb-item.sm{font-size:13px;padding:7px 18px;}
+.sb-divider{height:1px;background:var(--border);margin:8px 0;}
+.sb-footer{padding:12px 10px 0;border-top:1px solid var(--border);margin-top:8px;}
+.sb-footer-item{display:flex;align-items:center;gap:7px;padding:7px 8px;font-size:12px;color:var(--text-400);cursor:pointer;border-radius:var(--r-md);transition:all .12s;}
+.sb-footer-item:hover{background:var(--bg);color:var(--text-500);}
+.sb-footer-item svg{width:13px;height:13px;}
+
+/* ── MAIN WRAP ── */
+.main-wrap{margin-left:var(--sidebar-w);flex:1;min-width:0;}
+.main{padding:24px 28px 60px;}
+
+/* ── Page Header ── */
+.page-header{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.breadcrumb{font-size:12px;color:var(--text-400);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.breadcrumb span{color:var(--text-500);}
+.page-title{font-size:20px;font-weight:700;color:var(--text-900);letter-spacing:-.4px;}
+.page-desc{font-size:13px;color:var(--text-500);margin-top:4px;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-md);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none;white-space:nowrap;font-family:inherit;}
+.btn-outline{background:var(--white);color:var(--primary);border:1.5px solid var(--primary);}
+.btn-outline:hover{background:var(--primary-light);}
+.btn-secondary-outline{background:var(--white);color:var(--text-500);border:1.5px solid var(--border);}
+.btn-secondary-outline:hover{border-color:var(--primary);color:var(--primary);}
+
+/* ── Proto toggle ── */
+.toggle-bar{display:flex;gap:8px;flex-wrap:wrap;}
+.toggle-btn{padding:7px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text-500);transition:all .15s;font-family:inherit;}
+.toggle-btn:hover{border-color:var(--primary);color:var(--primary);}
+.toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ── Meta card ── */
+.meta-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.meta-item{display:flex;flex-direction:column;gap:2px;}
+.meta-label{font-size:11px;color:var(--text-400);}
+.meta-val{font-size:13px;font-weight:600;color:var(--text-900);}
+.meta-divider{width:1px;height:30px;background:var(--border);flex-shrink:0;}
+.type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;}
+.type-badge.self-only{background:var(--blue-bg);color:var(--blue);}
+.type-badge.multi{background:var(--purple-bg);color:var(--purple);}
+.type-badge.post{background:var(--green-bg);color:var(--green);}
+
+/* ── Section card ── */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;}
+.section-head{padding:14px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;}
+.section-head h3{font-size:14px;font-weight:700;color:var(--text-900);}
+.section-sub{font-size:12px;color:var(--text-400);}
+.section-body{padding:20px;}
+
+/* ── Strength / Weakness Summary ── */
+.sw-grid{display:grid;grid-template-columns:1fr 1fr 140px;gap:12px;}
+.sw-card{padding:14px 16px;border-radius:var(--r-md);border:1px solid;}
+.sw-card.strength{background:var(--blue-bg);border-color:#BFDBFE;}
+.sw-card.weakness{background:var(--red-bg);border-color:#FECACA;}
+.sw-card.avg-box{background:var(--gray-bg);border-color:var(--border);}
+.sw-card-title{font-size:11.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.sw-card.strength .sw-card-title{color:var(--blue);}
+.sw-card.weakness .sw-card-title{color:var(--red);}
+.sw-card.avg-box .sw-card-title{color:var(--text-700);}
+.sw-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-700);margin-bottom:6px;}
+.sw-item:last-child{margin-bottom:0;}
+.sw-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.sw-dot.s{background:var(--blue);}
+.sw-dot.w{background:var(--red);}
+.sw-score{font-size:12px;font-weight:700;color:var(--text-500);margin-left:auto;flex-shrink:0;}
+.sw-threshold{font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px;}
+.sw-threshold.s{background:rgba(36,108,249,.12);color:var(--blue);}
+.sw-threshold.w{background:rgba(220,38,38,.12);color:var(--red);}
+.big-score{text-align:center;padding-top:4px;}
+.big-score .num{font-size:30px;font-weight:800;color:var(--text-900);line-height:1;}
+.big-score .denom{font-size:12px;color:var(--text-400);margin-top:2px;}
+.big-score .comp{font-size:11.5px;color:var(--text-500);margin-top:8px;}
+
+/* ── Bar chart ── */
+.chart-section{padding:4px 0;}
+.chart-row{display:grid;grid-template-columns:150px 1fr 48px;align-items:center;gap:14px;margin-bottom:18px;}
+.chart-row:last-child{margin-bottom:4px;}
+.chart-label-wrap{text-align:right;}
+.chart-label-name{font-size:13px;font-weight:500;color:var(--text-700);}
+.chart-badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:8px;font-size:11px;font-weight:700;margin-top:3px;}
+.chart-badge.s{background:var(--blue-bg);color:var(--blue);}
+.chart-badge.w{background:var(--red-bg);color:var(--red);}
+.chart-track-area{position:relative;}
+.chart-scale{display:flex;justify-content:space-between;font-size:10px;color:var(--text-400);margin-bottom:4px;padding-right:1px;}
+.chart-track{background:var(--bg);border-radius:5px;position:relative;overflow:hidden;padding:3px 0;}
+.chart-bars{display:flex;flex-direction:column;gap:3px;padding:0 2px;}
+.bar{height:8px;border-radius:4px;min-width:2px;}
+.bar.self  {background:var(--primary);}
+.bar.avg   {background:#9CA3AF;}
+.bar.sup   {background:#F97316;}
+.bar.peer  {background:#7C3AED;}
+.bar.sub   {background:#16A34A;}
+.bar.comp  {background:#94A3B8;}
+.chart-score{font-size:13px;font-weight:700;color:var(--text-900);}
+
+/* threshold lines inside track */
+.thr-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed;}
+.thr-s{border-color:rgba(36,108,249,.45);}
+.thr-w{border-color:rgba(220,38,38,.38);}
+
+/* legend */
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border-light);font-size:12px;color:var(--text-500);}
+.leg-item{display:flex;align-items:center;gap:5px;}
+.leg-dot{width:10px;height:8px;border-radius:2px;}
+.leg-dashed{width:18px;height:0;border-top:2px dashed;}
+.leg-dashed.s{border-color:rgba(36,108,249,.6);}
+.leg-dashed.w{border-color:rgba(220,38,38,.5);}
+
+/* ── Score table ── */
+.score-table{width:100%;border-collapse:collapse;font-size:13px;}
+.score-table thead tr{background:var(--bg);}
+.score-table th{padding:10px 12px;text-align:center;font-size:12px;font-weight:700;color:var(--text-500);border-bottom:1px solid var(--border);white-space:nowrap;}
+.score-table th.ta-l{text-align:left;}
+.score-table td{padding:9px 12px;border-bottom:1px solid var(--border-light);text-align:center;vertical-align:middle;color:var(--text-700);}
+.score-table td.ta-l{text-align:left;}
+.score-table tr.type-header td{background:#e8f0fe;font-weight:800;font-size:13px;color:#1a5cc8;padding:10px 12px;border-left:4px solid #1a73e8;}
+.score-table tr.grp td{background:var(--bg);font-weight:700;font-size:12px;color:var(--text-700);padding:8px 12px;}
+.score-table tr.grp td:first-child{border-left:3px solid var(--primary);}
+.score-table tr:last-child td{border-bottom:none;}
+.hi{color:var(--blue);font-weight:700;}
+.lo{color:var(--red);font-weight:700;}
+.gap-p{color:var(--blue);font-weight:600;}
+.gap-n{color:var(--red);font-weight:600;}
+.gap-z{color:var(--text-400);}
+.mini-badge{display:inline-flex;padding:1px 7px;border-radius:8px;font-size:10.5px;font-weight:700;margin-left:6px;}
+.mini-badge.s{background:var(--blue-bg);color:var(--blue);}
+.mini-badge.w{background:var(--red-bg);color:var(--red);}
+
+/* ── Post comparison ── */
+.compare-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.compare-card{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
+.compare-card-head{padding:10px 14px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px;}
+.compare-badge{display:inline-flex;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;}
+.compare-badge.before{background:var(--gray-bg);color:var(--gray);}
+.compare-badge.after{background:var(--green-bg);color:var(--green);}
+.compare-row{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border-light);font-size:13px;}
+.compare-row:last-child{border-bottom:none;}
+.compare-row .name{color:var(--text-700);}
+.compare-row .score{font-weight:700;color:var(--text-900);}
+.delta-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px;}
+.delta-table th{padding:9px 12px;background:var(--bg);font-size:12px;font-weight:700;color:var(--text-500);border-bottom:1px solid var(--border);text-align:center;}
+.delta-table th.ta-l{text-align:left;}
+.delta-table td{padding:9px 12px;border-bottom:1px solid var(--border-light);text-align:center;color:var(--text-700);}
+.delta-table td.ta-l{text-align:left;}
+.delta-table tr:last-child td{border-bottom:none;}
+.arrow-up{color:var(--green);}
+.arrow-dn{color:var(--red);}
+.arrow-eq{color:var(--text-400);}
+
+/* ── Spec note ── */
+.spec-section{margin-top:32px;}
+.spec-title{font-size:14px;font-weight:700;color:#b45309;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.spec-box{background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r-md);padding:16px 20px;}
+.spec-box h4{font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px;margin-top:16px;}
+.spec-box h4:first-child{margin-top:0;}
+.spec-box ul{padding-left:18px;}
+.spec-box li{font-size:12.5px;color:#78350f;line-height:1.9;}
+.spec-box li b{font-weight:700;}
+.spec-tag{font-size:10.5px;background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:8px;font-weight:700;margin-left:4px;vertical-align:middle;}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header class="gnb">
+  <a href="진단_연수원.html" class="gnb-logo">
+    <div class="gnb-logo-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+    </div>
+    LABS
+  </a>
+  <div class="gnb-search-wrap">
+    <input class="gnb-search" type="text" placeholder="과정명, 키워드로 검색해 보세요">
+  </div>
+  <div class="gnb-right">
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="gnb-badge"></span>
+    </button>
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a></li>
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Contents</a></li>
+      <li><a href="#" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Connect</a></li>
+      <li><a href="진단_연수원.html" class="sb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>my Canvas</a></li>
+    </ul>
+    <div class="sb-divider"></div>
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item sm">학습상세</a></li>
+      <li><a href="#" class="sb-item sm">교재 배송현황</a></li>
+      <li><a href="#" class="sb-item sm">관심과정</a></li>
+      <li><a href="#" class="sb-item sm">스크랩</a></li>
+      <li><a href="#" class="sb-item sm">학점</a></li>
+      <li><a href="#" class="sb-item sm">IDP</a></li>
+      <li><a href="진단_연수원.html" class="sb-item sm active">진단</a></li>
+      <li><a href="#" class="sb-item sm">레벨/마일리지</a></li>
+      <li><a href="#" class="sb-item sm">필수교육</a></li>
+      <li><a href="#" class="sb-item sm">사외교육</a></li>
+      <li><a href="#" class="sb-item sm">결재하기</a></li>
+      <li><a href="#" class="sb-item sm">팀원현황</a></li>
+    </ul>
+    <div class="sb-footer">
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>학습 문의 및 원격 상담</div>
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>모바일 App 설치</div>
+      <div class="sb-footer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>설정</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrap">
+    <main class="main">
+
+      <!-- ⚙️ 프로토타입 전환 (실제 서비스 미노출) -->
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r-md);padding:10px 14px;margin-bottom:16px;">
+        <div style="font-size:12px;color:#92400e;margin-bottom:8px;">⚙️ 기획 프로토타입 뷰 전환 — 실제 서비스에서는 이 영역 미노출 (URL 파라미터 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px;">modelType</code> 및 사후진단 여부로 자동 결정)</div>
+        <div class="toggle-bar">
+          <button class="toggle-btn active" onclick="switchView('self',this)">① 본인진단 (사전, modelType=1)</button>
+          <button class="toggle-btn" onclick="switchView('multi',this)">② 다면평가 (modelType=2)</button>
+          <button class="toggle-btn" onclick="switchView('post',this)">③ 본인진단 (사후 비교)</button>
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="breadcrumb">
+            <span>my Canvas</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>진단</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            <span>개인 결과</span>
+          </div>
+          <div class="page-title">역량진단 개인 결과</div>
+          <div class="page-desc" id="desc-txt">2024 하반기 리더십 역량진단 · 홍길동</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <a class="btn btn-secondary-outline" href="진단_연수원.html">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            목록으로
+          </a>
+          <button class="btn btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PDF 저장
+          </button>
+        </div>
+      </div>
+
+      <!-- META INFO CARD -->
+      <div class="meta-card">
+        <div class="meta-item">
+          <div class="meta-label">진단명</div>
+          <div class="meta-val">2024 하반기 리더십 역량진단</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item">
+          <div class="meta-label">진단기간</div>
+          <div class="meta-val">2024.09.01 ~ 2024.09.30</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item">
+          <div class="meta-label">대상자</div>
+          <div class="meta-val">홍길동 (인사팀 · 팀장)</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item">
+          <div class="meta-label">역량분야</div>
+          <div class="meta-val">리더십 역량 모델 v2.0</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item">
+          <div class="meta-label">진단유형</div>
+          <div class="meta-val"><span class="type-badge self-only" id="type-badge">본인진단</span></div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item" id="respondent-meta">
+          <div class="meta-label">응답자 현황</div>
+          <div class="meta-val" style="color:var(--green);">본인 완료</div>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- VIEW 1: 본인진단 (사전)                          -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div id="view-self">
+
+        <!-- 종합 평가 -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>종합 평가</h3>
+            <span class="section-sub">5점 척도 · 역량군별 기준점 적용</span>
+          </div>
+          <div class="section-body">
+            <div class="sw-grid">
+
+              <!-- 강점 역량 -->
+              <div class="sw-card strength">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  강점 역량
+                  <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 강점 도달 기준점 이상</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>전략적 사고</span>
+                  <span class="sw-score">4.2점</span>
+                  <span class="sw-threshold s">기준 4.0↑</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>협업/관계 역량</span>
+                  <span class="sw-score">3.9점</span>
+                  <span class="sw-threshold s">기준 3.8↑</span>
+                </div>
+              </div>
+
+              <!-- 약점 역량 -->
+              <div class="sw-card weakness">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  약점 역량
+                  <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 약점 기준점 이하</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>의사소통 역량</span>
+                  <span class="sw-score">2.3점</span>
+                  <span class="sw-threshold w">기준 2.5↓</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>변화 대응 역량</span>
+                  <span class="sw-score">2.4점</span>
+                  <span class="sw-threshold w">기준 2.5↓</span>
+                </div>
+              </div>
+
+              <!-- 종합 평균 -->
+              <div class="sw-card avg-box">
+                <div class="sw-card-title">종합 평균</div>
+                <div class="big-score">
+                  <div class="num">3.28</div>
+                  <div class="denom">/ 5.0점</div>
+                  <div class="comp">전체평균 <b style="color:var(--text-700);">3.60점</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 역량군별 종합 지수 차트 -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>역량군별 종합 지수</h3>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <div class="chart-legend" style="margin:0;padding:0;border:none;">
+                <div class="leg-item"><div class="leg-dot" style="background:var(--primary);"></div>본인</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#9CA3AF;"></div>전체평균</div>
+                <div class="leg-item"><div class="leg-dashed s"></div>강점 기준</div>
+                <div class="leg-item"><div class="leg-dashed w"></div>약점 기준</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="chart-section">
+
+              <!-- Self역량군: 강점 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">Self역량군</div>
+                  <div><span class="chart-badge s">강점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:22px;">
+                    <!-- 강점 기준선 4.0 = 80% -->
+                    <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
+                    <!-- 약점 기준선 2.5 = 50% -->
+                    <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:84%;"></div><!-- 4.2 -->
+                      <div class="bar avg"  style="width:72%;"></div><!-- 3.6 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">4.2</div>
+              </div>
+
+              <!-- People역량군: 보통 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">People역량군</div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:22px;">
+                    <div class="thr-line thr-s" style="left:84%;"></div><!-- 강점 기준 4.2 -->
+                    <div class="thr-line thr-w" style="left:56%;"></div><!-- 약점 기준 2.8 -->
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:72%;"></div><!-- 3.6 -->
+                      <div class="bar avg"  style="width:76%;"></div><!-- 3.8 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">3.6</div>
+              </div>
+
+              <!-- Team역량군: 약점 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">Team역량군</div>
+                  <div><span class="chart-badge w">약점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:22px;">
+                    <div class="thr-line thr-s" style="left:80%;"></div>
+                    <div class="thr-line thr-w" style="left:50%;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:46%;background:#DC2626;"></div><!-- 2.3 -->
+                      <div class="bar avg"  style="width:74%;"></div><!-- 3.7 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score lo">2.3</div>
+              </div>
+
+              <!-- 소통협력역량군: 강점 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">소통협력역량군</div>
+                  <div><span class="chart-badge s">강점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:22px;">
+                    <div class="thr-line thr-s" style="left:76%;"></div><!-- 강점 기준 3.8 -->
+                    <div class="thr-line thr-w" style="left:50%;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:78%;"></div><!-- 3.9 -->
+                      <div class="bar avg"  style="width:70%;"></div><!-- 3.5 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">3.9</div>
+              </div>
+
+              <!-- 혁신성과역량군: 약점 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">혁신성과역량군</div>
+                  <div><span class="chart-badge w">약점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:22px;">
+                    <div class="thr-line thr-s" style="left:80%;"></div>
+                    <div class="thr-line thr-w" style="left:50%;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:48%;background:#DC2626;"></div><!-- 2.4 -->
+                      <div class="bar avg"  style="width:68%;"></div><!-- 3.4 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score lo">2.4</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 역량 상세 결과 테이블 -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>역량 상세 결과</h3>
+            <span class="section-sub">GAP = 본인 − 전체평균</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="ta-l" style="width:130px;">역량군</th>
+                  <th class="ta-l">역량명</th>
+                  <th style="width:72px;">본인</th>
+                  <th style="width:80px;">전체평균</th>
+                  <th style="width:64px;">GAP</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <!-- LC (리더십역량) -->
+                <tr class="type-header">
+                  <td colspan="5">LC (리더십역량)</td>
+                </tr>
+
+                <!-- Self역량군 -->
+                <tr class="grp">
+                  <td colspan="5">Self역량군
+                    <span class="mini-badge s">강점</span>
+                    <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 4.2 / 강점 기준 4.0 / 약점 기준 2.5</span>
+                  </td>
+                </tr>
+                <tr><td></td><td class="ta-l">전략적 사고</td><td class="hi">4.5</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">의사결정 능력</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- People역량군 -->
+                <tr class="grp">
+                  <td colspan="5">People역량군
+                    <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 3.6 / 강점 기준 4.2 / 약점 기준 2.8</span>
+                  </td>
+                </tr>
+                <tr><td></td><td class="ta-l">비전 및 목표 설정</td><td>3.8</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
+                <tr><td></td><td class="ta-l">구성원 육성 및 동기부여</td><td>3.5</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
+                <tr><td></td><td class="ta-l">인재 육성</td><td>3.7</td><td>3.8</td><td class="gap-n">-0.1</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td>3.4</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
+
+                <!-- Team역량군 -->
+                <tr class="grp">
+                  <td colspan="5">Team역량군
+                    <span class="mini-badge w">약점</span>
+                    <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 2.3 / 강점 기준 4.0 / 약점 기준 2.5</span>
+                  </td>
+                </tr>
+                <tr><td></td><td class="ta-l">갈등 관리</td><td class="lo">2.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">2.1</td><td>3.6</td><td class="gap-n">-1.5</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td class="lo">2.3</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
+
+                <!-- OC (조직문화역량) -->
+                <tr class="type-header">
+                  <td colspan="5">OC (조직문화역량)</td>
+                </tr>
+
+                <!-- 소통협력역량군 -->
+                <tr class="grp">
+                  <td colspan="5">소통협력역량군
+                    <span class="mini-badge s">강점</span>
+                    <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 3.9 / 강점 기준 3.8 / 약점 기준 2.5</span>
+                  </td>
+                </tr>
+                <tr><td></td><td class="ta-l">소통 및 협력</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">다양성 존중</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- 혁신성과역량군 -->
+                <tr class="grp">
+                  <td colspan="5">혁신성과역량군
+                    <span class="mini-badge w">약점</span>
+                    <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">본인 평균 2.4 / 강점 기준 4.0 / 약점 기준 2.5</span>
+                  </td>
+                </tr>
+                <tr><td></td><td class="ta-l">윤리경영 및 책임의식</td><td class="lo">2.6</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
+                <tr><td></td><td class="ta-l">변화관리 및 혁신</td><td class="lo">2.3</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /view-self -->
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- VIEW 2: 다면평가 (modelType=2)                   -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div id="view-multi" style="display:none;">
+
+        <!-- 종합 평가 -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>종합 평가</h3>
+            <span class="section-sub">5점 척도 · 역량군별 기준점 적용 · GAP = 본인 − 전사평균</span>
+          </div>
+          <div class="section-body">
+            <div class="sw-grid">
+              <div class="sw-card strength">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  강점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 전사평균 기준 강점 도달</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>전략적 사고</span>
+                  <span class="sw-score">3.98점</span>
+                  <span class="sw-threshold s">기준 4.0↑</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>협업/관계 역량</span>
+                  <span class="sw-score">4.07점</span>
+                  <span class="sw-threshold s">기준 3.8↑</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>리더십 역량</span>
+                  <span class="sw-score">4.13점</span>
+                  <span class="sw-threshold s">기준 4.2↑ <span style="font-size:10px;color:var(--text-400);">(근접)</span></span>
+                </div>
+              </div>
+              <div class="sw-card weakness">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  약점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 본인 자기평가 약점</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>의사소통 역량</span>
+                  <span class="sw-score">2.3점</span>
+                  <span class="sw-threshold w">기준 2.5↓</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>변화 대응 역량</span>
+                  <span class="sw-score">2.4점</span>
+                  <span class="sw-threshold w">기준 2.5↓</span>
+                </div>
+                <div class="sw-item" style="margin-top:8px;padding-top:8px;border-top:1px dashed #fecaca;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span style="font-size:11.5px;color:var(--red);">타인 평가와 큰 인식 차이 존재</span>
+                </div>
+              </div>
+              <div class="sw-card avg-box">
+                <div class="sw-card-title">종합 평균</div>
+                <div class="big-score">
+                  <div class="num" style="font-size:24px;">3.28</div>
+                  <div class="denom">본인 / 5.0점</div>
+                  <div style="height:8px;"></div>
+                  <div style="font-size:11px;color:var(--text-500);">상사 <b style="color:var(--text-700);">3.62</b></div>
+                  <div style="font-size:11px;color:var(--text-500);">동료 <b style="color:var(--text-700);">3.72</b></div>
+                  <div style="font-size:11px;color:var(--text-500);">구성원 <b style="color:var(--text-700);">3.76</b></div>
+                  <div style="font-size:11px;color:var(--text-500);">전사평균 <b style="color:var(--text-700);">3.60</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 역량군별 종합 지수 (다면) -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>역량군별 종합 지수 — 평가자별 비교</h3>
+            <div class="chart-legend" style="margin:0;padding:0;border:none;">
+              <div class="leg-item"><div class="leg-dot" style="background:var(--primary);"></div>본인</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#F97316;"></div>상사</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#7C3AED;"></div>동료</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#16A34A;"></div>구성원</div>
+              <div class="leg-item"><div class="leg-dot" style="background:#94A3B8;"></div>전사평균</div>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="chart-section">
+
+              <!-- Self역량군 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">Self역량군</div>
+                  <div><span class="chart-badge s">강점 근접</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:40px;">
+                    <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
+                    <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:84%;"></div><!-- 본인 4.2 -->
+                      <div class="bar sup"  style="width:76%;"></div><!-- 상사 3.8 -->
+                      <div class="bar peer" style="width:80%;"></div><!-- 동료 4.0 -->
+                      <div class="bar sub"  style="width:78%;"></div><!-- 구성원 3.9 -->
+                      <div class="bar comp" style="width:72%;"></div><!-- 전사 3.6 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">4.2</div>
+              </div>
+
+              <!-- People역량군 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">People역량군</div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:40px;">
+                    <div class="thr-line thr-s" style="left:84%;top:0;bottom:0;"></div>
+                    <div class="thr-line thr-w" style="left:56%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:72%;"></div><!-- 3.6 -->
+                      <div class="bar sup"  style="width:82%;"></div><!-- 4.1 -->
+                      <div class="bar peer" style="width:76%;"></div><!-- 3.8 -->
+                      <div class="bar sub"  style="width:84%;"></div><!-- 4.2 -->
+                      <div class="bar comp" style="width:76%;"></div><!-- 3.8 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">3.6</div>
+              </div>
+
+              <!-- Team역량군 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">Team역량군</div>
+                  <div><span class="chart-badge w">약점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:40px;">
+                    <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
+                    <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:46%;background:#DC2626;"></div><!-- 2.3 -->
+                      <div class="bar sup"  style="width:64%;"></div><!-- 3.2 -->
+                      <div class="bar peer" style="width:70%;"></div><!-- 3.5 -->
+                      <div class="bar sub"  style="width:68%;"></div><!-- 3.4 -->
+                      <div class="bar comp" style="width:74%;"></div><!-- 3.7 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score lo">2.3</div>
+              </div>
+
+              <!-- 소통협력역량군 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">소통협력역량군</div>
+                  <div><span class="chart-badge s">강점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:40px;">
+                    <div class="thr-line thr-s" style="left:76%;top:0;bottom:0;"></div>
+                    <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:78%;"></div><!-- 3.9 -->
+                      <div class="bar sup"  style="width:80%;"></div><!-- 4.0 -->
+                      <div class="bar peer" style="width:82%;"></div><!-- 4.1 -->
+                      <div class="bar sub"  style="width:84%;"></div><!-- 4.2 -->
+                      <div class="bar comp" style="width:70%;"></div><!-- 3.5 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score">3.9</div>
+              </div>
+
+              <!-- 혁신성과역량군 -->
+              <div class="chart-row">
+                <div class="chart-label-wrap">
+                  <div class="chart-label-name">혁신성과역량군</div>
+                  <div><span class="chart-badge w">약점</span></div>
+                </div>
+                <div class="chart-track-area">
+                  <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                  <div class="chart-track" style="height:40px;">
+                    <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
+                    <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
+                    <div class="chart-bars">
+                      <div class="bar self" style="width:48%;background:#DC2626;"></div><!-- 2.4 -->
+                      <div class="bar sup"  style="width:60%;"></div><!-- 3.0 -->
+                      <div class="bar peer" style="width:64%;"></div><!-- 3.2 -->
+                      <div class="bar sub"  style="width:62%;"></div><!-- 3.1 -->
+                      <div class="bar comp" style="width:68%;"></div><!-- 3.4 -->
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-score lo">2.4</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 역량 상세 결과 (다면) -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>역량 상세 결과 — 평가자별 비교</h3>
+            <span class="section-sub">GAP = 본인 − 전사평균</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="ta-l" style="width:120px;">역량군</th>
+                  <th class="ta-l" style="min-width:120px;">역량명</th>
+                  <th style="width:64px;" title="본인 자기평가">본인</th>
+                  <th style="width:64px;" title="상사 평가">상사</th>
+                  <th style="width:64px;" title="동료 평가">동료</th>
+                  <th style="width:64px;" title="구성원 평가">구성원</th>
+                  <th style="width:72px;" title="전사 평균">전사평균</th>
+                  <th style="width:64px;" title="본인 − 전사평균">GAP</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <!-- LC (리더십역량) -->
+                <tr class="type-header">
+                  <td colspan="8">LC (리더십역량)</td>
+                </tr>
+
+                <!-- Self역량군 -->
+                <tr class="grp">
+                  <td colspan="8">Self역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">전략적 사고</td><td class="hi">4.5</td><td>4.0</td><td>4.2</td><td>4.1</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">의사결정 능력</td><td class="hi">4.1</td><td>3.8</td><td>3.9</td><td>3.8</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- People역량군 -->
+                <tr class="grp">
+                  <td colspan="8">People역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.2 / 약점 기준 2.8</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">비전 및 목표 설정</td><td>3.8</td><td class="hi">4.3</td><td>3.9</td><td class="hi">4.4</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
+                <tr><td></td><td class="ta-l">구성원 육성 및 동기부여</td><td>3.5</td><td>4.0</td><td>3.8</td><td>4.2</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
+                <tr><td></td><td class="ta-l">인재 육성</td><td>3.7</td><td>4.0</td><td>3.7</td><td>4.1</td><td>3.8</td><td class="gap-n">-0.1</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td>3.4</td><td>4.1</td><td>3.8</td><td>4.1</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
+
+                <!-- Team역량군 -->
+                <tr class="grp">
+                  <td colspan="8">Team역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">갈등 관리</td><td class="lo">2.5</td><td>3.4</td><td>3.6</td><td>3.5</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">2.1</td><td>3.0</td><td>3.4</td><td>3.3</td><td>3.6</td><td class="gap-n">-1.5</td></tr>
+                <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td class="lo">2.3</td><td>3.2</td><td>3.5</td><td>3.4</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
+
+                <!-- OC (조직문화역량) -->
+                <tr class="type-header">
+                  <td colspan="8">OC (조직문화역량)</td>
+                </tr>
+
+                <!-- 소통협력역량군 -->
+                <tr class="grp">
+                  <td colspan="8">소통협력역량군 <span class="mini-badge s">강점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 3.8 / 약점 기준 2.5</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">소통 및 협력</td><td class="hi">4.1</td><td>4.2</td><td>4.3</td><td class="hi">4.4</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">다양성 존중</td><td class="hi">3.8</td><td>3.9</td><td>4.0</td><td>4.1</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
+
+                <!-- 혁신성과역량군 -->
+                <tr class="grp">
+                  <td colspan="8">혁신성과역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
+                </tr>
+                <tr><td></td><td class="ta-l">윤리경영 및 책임의식</td><td class="lo">2.6</td><td>3.2</td><td>3.3</td><td>3.2</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
+                <tr><td></td><td class="ta-l">변화관리 및 혁신</td><td class="lo">2.3</td><td>2.9</td><td>3.1</td><td>3.0</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /view-multi -->
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- VIEW 3: 사후진단 (전/후 비교)                    -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div id="view-post" style="display:none;">
+
+        <!-- 종합 평가 (사후 기준) -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>종합 평가 — 사후진단 결과</h3>
+            <span class="section-sub">사전 대비 변화 반영 기준</span>
+          </div>
+          <div class="section-body">
+            <div class="sw-grid">
+              <div class="sw-card strength">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  강점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 기준점 이상 도달</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>전략적 사고</span>
+                  <span class="sw-score">4.2점</span>
+                  <span class="sw-threshold s">↑+0.6</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot s"></span>
+                  <span>협업/관계 역량</span>
+                  <span class="sw-score">3.9점</span>
+                  <span class="sw-threshold s">↑+0.5</span>
+                </div>
+              </div>
+              <div class="sw-card weakness">
+                <div class="sw-card-title">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  약점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 기준점 미달 지속</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>의사소통 역량</span>
+                  <span class="sw-score">2.3점</span>
+                  <span class="sw-threshold w">↑+0.2 (미달)</span>
+                </div>
+                <div class="sw-item">
+                  <span class="sw-dot w"></span>
+                  <span>변화 대응 역량</span>
+                  <span class="sw-score">2.4점</span>
+                  <span class="sw-threshold w" style="background:rgba(220,38,38,.12);color:var(--red);">↓-0.4 악화</span>
+                </div>
+              </div>
+              <div class="sw-card avg-box">
+                <div class="sw-card-title">사후 종합 평균</div>
+                <div class="big-score">
+                  <div class="num">3.28</div>
+                  <div class="denom">/ 5.0점</div>
+                  <div style="margin-top:8px;font-size:11.5px;color:var(--green);">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+                    사전 대비 <b>+0.34</b> 향상
+                  </div>
+                  <div style="font-size:11px;color:var(--text-400);margin-top:4px;">사전: 2.94점</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 사전/사후 비교 -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>사전 · 사후 비교</h3>
+            <span class="section-sub">역량군별 점수 변화</span>
+          </div>
+          <div class="section-body">
+            <div class="compare-wrap">
+              <div class="compare-card">
+                <div class="compare-card-head">
+                  <span class="compare-badge before">사전 진단</span>
+                  <span style="font-size:12px;color:var(--text-400);">2024.03.01 ~ 2024.03.31</span>
+                </div>
+                <div class="compare-row"><span class="name">전략적 사고</span><span class="score">3.6점</span></div>
+                <div class="compare-row"><span class="name">리더십 역량</span><span class="score">3.2점</span></div>
+                <div class="compare-row"><span class="name">의사소통 역량</span><span class="score lo">2.1점</span></div>
+                <div class="compare-row"><span class="name">협업/관계 역량</span><span class="score">3.4점</span></div>
+                <div class="compare-row"><span class="name">변화 대응 역량</span><span class="score">2.8점</span></div>
+              </div>
+              <div class="compare-card">
+                <div class="compare-card-head">
+                  <span class="compare-badge after">사후 진단</span>
+                  <span style="font-size:12px;color:var(--text-400);">2024.09.01 ~ 2024.09.30</span>
+                </div>
+                <div class="compare-row"><span class="name">전략적 사고</span><span class="score hi">4.2점</span></div>
+                <div class="compare-row"><span class="name">리더십 역량</span><span class="score">3.6점</span></div>
+                <div class="compare-row"><span class="name">의사소통 역량</span><span class="score lo">2.3점</span></div>
+                <div class="compare-row"><span class="name">협업/관계 역량</span><span class="score hi">3.9점</span></div>
+                <div class="compare-row"><span class="name">변화 대응 역량</span><span class="score lo">2.4점</span></div>
+              </div>
+            </div>
+
+            <!-- 변화 테이블 -->
+            <table class="delta-table">
+              <thead>
+                <tr>
+                  <th class="ta-l">역량군</th>
+                  <th>사전</th>
+                  <th>사후</th>
+                  <th>변화</th>
+                  <th>추이</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ta-l">전략적 사고</td><td>3.6</td><td class="hi">4.2</td>
+                  <td class="gap-p">+0.6</td>
+                  <td><span class="arrow-up">▲ 향상</span></td>
+                </tr>
+                <tr>
+                  <td class="ta-l">리더십 역량</td><td>3.2</td><td>3.6</td>
+                  <td class="gap-p">+0.4</td>
+                  <td><span class="arrow-up">▲ 향상</span></td>
+                </tr>
+                <tr>
+                  <td class="ta-l">의사소통 역량</td><td class="lo">2.1</td><td class="lo">2.3</td>
+                  <td class="gap-p">+0.2</td>
+                  <td><span class="arrow-up">▲ 소폭 향상</span></td>
+                </tr>
+                <tr>
+                  <td class="ta-l">협업/관계 역량</td><td>3.4</td><td class="hi">3.9</td>
+                  <td class="gap-p">+0.5</td>
+                  <td><span class="arrow-up">▲ 향상</span></td>
+                </tr>
+                <tr>
+                  <td class="ta-l">변화 대응 역량</td><td>2.8</td><td class="lo">2.4</td>
+                  <td class="gap-n">-0.4</td>
+                  <td><span class="arrow-dn">▼ 악화</span></td>
+                </tr>
+                <tr style="background:var(--bg);font-weight:700;">
+                  <td class="ta-l">종합 평균</td><td>2.94</td><td>3.28</td>
+                  <td class="gap-p">+0.34</td>
+                  <td><span class="arrow-up">▲ 향상</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 역량 상세 결과 (사후 기준) -->
+        <div class="section-card">
+          <div class="section-head">
+            <h3>역량 상세 결과</h3>
+            <span class="section-sub">사후진단 기준 · GAP = 사후 − 전체평균</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="ta-l" style="width:130px;">역량군</th>
+                  <th class="ta-l">역량명</th>
+                  <th style="width:60px;">사전</th>
+                  <th style="width:64px;">사후</th>
+                  <th style="width:70px;">전체평균</th>
+                  <th style="width:64px;">변화</th>
+                  <th style="width:64px;">GAP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="grp"><td colspan="7">전략적 사고 <span class="mini-badge s">강점</span></td></tr>
+                <tr><td></td><td class="ta-l">비전 수립</td><td>3.9</td><td class="hi">4.5</td><td>3.8</td><td class="gap-p">+0.6</td><td class="gap-p">+0.7</td></tr>
+                <tr><td></td><td class="ta-l">목표 관리</td><td>3.5</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.6</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">의사결정</td><td>3.4</td><td class="hi">4.0</td><td>3.3</td><td class="gap-p">+0.6</td><td class="gap-p">+0.7</td></tr>
+
+                <tr class="grp"><td colspan="7">리더십 역량</td></tr>
+                <tr><td></td><td class="ta-l">조직 관리</td><td>3.2</td><td>3.8</td><td>4.0</td><td class="gap-p">+0.6</td><td class="gap-n">-0.2</td></tr>
+                <tr><td></td><td class="ta-l">동기 부여</td><td>3.0</td><td>3.5</td><td>3.9</td><td class="gap-p">+0.5</td><td class="gap-n">-0.4</td></tr>
+                <tr><td></td><td class="ta-l">인재 육성</td><td>3.3</td><td>3.7</td><td>3.8</td><td class="gap-p">+0.4</td><td class="gap-n">-0.1</td></tr>
+                <tr><td></td><td class="ta-l">성과 관리</td><td>3.1</td><td>3.4</td><td>3.5</td><td class="gap-p">+0.3</td><td class="gap-n">-0.1</td></tr>
+
+                <tr class="grp"><td colspan="7">의사소통 역량 <span class="mini-badge w">약점</span></td></tr>
+                <tr><td></td><td class="ta-l">경청</td><td class="lo">2.3</td><td class="lo">2.5</td><td>3.9</td><td class="gap-p">+0.2</td><td class="gap-n">-1.4</td></tr>
+                <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">1.9</td><td class="lo">2.1</td><td>3.6</td><td class="gap-p">+0.2</td><td class="gap-n">-1.5</td></tr>
+                <tr><td></td><td class="ta-l">피드백</td><td class="lo">2.1</td><td class="lo">2.3</td><td>3.7</td><td class="gap-p">+0.2</td><td class="gap-n">-1.4</td></tr>
+
+                <tr class="grp"><td colspan="7">협업/관계 역량 <span class="mini-badge s">강점</span></td></tr>
+                <tr><td></td><td class="ta-l">팀워크</td><td>3.6</td><td class="hi">4.1</td><td>3.7</td><td class="gap-p">+0.5</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">갈등 관리</td><td>3.3</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.5</td><td class="gap-p">+0.4</td></tr>
+                <tr><td></td><td class="ta-l">네트워킹</td><td>3.3</td><td class="hi">3.8</td><td>3.4</td><td class="gap-p">+0.5</td><td class="gap-p">+0.4</td></tr>
+
+                <tr class="grp"><td colspan="7">변화 대응 역량 <span class="mini-badge w">약점</span></td></tr>
+                <tr><td></td><td class="ta-l">혁신 추진</td><td>3.0</td><td class="lo">2.6</td><td>3.5</td><td class="gap-n">-0.4</td><td class="gap-n">-0.9</td></tr>
+                <tr><td></td><td class="ta-l">변화 관리</td><td>2.8</td><td class="lo">2.3</td><td>3.4</td><td class="gap-n">-0.5</td><td class="gap-n">-1.1</td></tr>
+                <tr><td></td><td class="ta-l">디지털 역량</td><td>2.6</td><td class="lo">2.3</td><td>3.3</td><td class="gap-n">-0.3</td><td class="gap-n">-1.0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /view-post -->
+
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- 기획 스펙 노트                                    -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="spec-section">
+        <div class="spec-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          기획 스펙 노트 (실제 서비스 미노출)
+        </div>
+        <div class="spec-box">
+
+          <h4>1. 페이지 진입 조건 및 접근 제어</h4>
+          <ul>
+            <li>대상자 <b>본인만</b> 접근 가능 (타인 접근 시 권한 오류 안내)</li>
+            <li><b>본인 응답 완료</b> + <b>마감 처리</b> 조건을 모두 충족해야 결과 열람 가능 <span class="spec-tag">조건 미충족 시 안내 화면 표시</span></li>
+            <li>다면평가(modelType=2): <b>본인 응답 완료</b> + <b>타인 응답 N명 이상</b> + <b>마감 처리</b> 모두 충족 필요 (최소 응답자 수는 진단 설정에서 관리자 지정)</li>
+          </ul>
+
+          <h4>2. 화면 분기 로직 (URL 파라미터)</h4>
+          <ul>
+            <li><code>modelType=1</code>: 본인진단 → VIEW ①③</li>
+            <li><code>modelType=2</code>: 다면평가 → VIEW ②</li>
+            <li>사후진단 여부는 동일 역량분야에 <b>사전진단 결과가 존재</b>하면 자동으로 VIEW ③ 탭 노출</li>
+            <li>사전/사후 매핑은 <b>역량분야(역량군 설정) 동일 여부</b>로 판단 <span class="spec-tag">BE 확인 필요</span></li>
+          </ul>
+
+          <h4>3. 강점 / 약점 판정 기준</h4>
+          <ul>
+            <li>역량군(역량영역)별로 <b>강점 도달 점수</b>와 <b>약점 점수</b>가 진단 생성 시 관리자에 의해 각각 설정됨</li>
+            <li><b>강점</b>: 역량군 평균 점수 ≥ 해당 역량군의 강점 도달 점수</li>
+            <li><b>약점</b>: 역량군 평균 점수 ≤ 해당 역량군의 약점 점수</li>
+            <li>두 조건 모두 해당하지 않으면 <b>판정 없음(보통)</b> — 배지 미표시</li>
+            <li>다면평가 시 강점/약점은 <b>전사평균 기준</b>으로 판정 (별도 협의 필요) <span class="spec-tag">기획 확인 필요</span></li>
+          </ul>
+
+          <h4>4. GAP 정의</h4>
+          <ul>
+            <li><b>본인진단 (VIEW①)</b>: GAP = 본인 점수 − 전체평균</li>
+            <li><b>다면평가 (VIEW②)</b>: GAP = 본인(자기평가) − 전사평균 <span class="spec-tag">인식 차이 지표</span></li>
+            <li><b>사후진단 (VIEW③)</b>: 변화 = 사후 점수 − 사전 점수, GAP = 사후 점수 − 전체평균</li>
+            <li>GAP 표시: 양수(+) 파란색, 음수(-) 빨간색, 0 회색</li>
+          </ul>
+
+          <h4>5. 평가자 유형 및 표시</h4>
+          <ul>
+            <li>지원 평가자 유형: <b>본인, 상사, 동료, 구성원(부하), 전사평균</b></li>
+            <li>진단 설정에서 포함 여부 선택 가능 → 미포함 유형 열(컬럼)은 테이블에서 자동 숨김</li>
+            <li>다면평가 차트: 역량군별로 5개 이하의 가로 막대를 색상 구분하여 표시</li>
+            <li>전사평균은 동일 역량분야 전체 대상자 평균 (본인 포함 여부 BE 확인) <span class="spec-tag">BE 확인 필요</span></li>
+          </ul>
+
+          <h4>6. PDF 저장</h4>
+          <ul>
+            <li>우측 상단 "PDF 저장" 버튼 → 현재 화면 기준으로 PDF 생성 (뷰 탭별 각각 가능 여부 협의 필요)</li>
+            <li>PDF 내 차트 및 표 포함 여부, 페이지 레이아웃 추가 기획 필요 <span class="spec-tag">별도 스펙</span></li>
+          </ul>
+
+          <h4>7. 미정 / 협의 필요 항목</h4>
+          <ul>
+            <li>다면평가에서 <b>역량군별 강점/약점 판정 기준값 적용 대상</b>: 본인 점수? 전사평균? 타인 평균? <span class="spec-tag">기획 결정 필요</span></li>
+            <li>차트 내 <b>임계값(기준선) 표시 방식</b>: 점선 유지 vs 범례 설명 전환 여부</li>
+            <li>세부 역량 점수의 <b>소수점 자리수</b> (현재 1자리 표기)</li>
+            <li><b>모바일</b> 화면 대응 방식 (테이블 가로 스크롤 vs 카드형 전환)</li>
+          </ul>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+function switchView(view, btn) {
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.getElementById('view-self').style.display  = view === 'self'  ? 'block' : 'none';
+  document.getElementById('view-multi').style.display = view === 'multi' ? 'block' : 'none';
+  document.getElementById('view-post').style.display  = view === 'post'  ? 'block' : 'none';
+
+  const badge = document.getElementById('type-badge');
+  const respondent = document.getElementById('respondent-meta');
+  const desc = document.getElementById('desc-txt');
+
+  if (view === 'self') {
+    badge.className = 'type-badge self-only';
+    badge.textContent = '본인진단';
+    respondent.innerHTML = '<div class="meta-label">응답자 현황</div><div class="meta-val" style="color:var(--green);">본인 완료</div>';
+    desc.textContent = '2024 하반기 리더십 역량진단 · 홍길동';
+  } else if (view === 'multi') {
+    badge.className = 'type-badge multi';
+    badge.textContent = '다면평가';
+    respondent.innerHTML = '<div class="meta-label">응답자 현황</div><div class="meta-val">본인 + 상사 1 · 동료 3 · 구성원 4</div>';
+    desc.textContent = '2024 하반기 리더십 역량진단 (다면) · 홍길동';
+  } else {
+    badge.className = 'type-badge post';
+    badge.textContent = '사후진단';
+    respondent.innerHTML = '<div class="meta-label">사전 진단</div><div class="meta-val">2024.03 완료</div>';
+    desc.textContent = '2024 하반기 리더십 역량진단 (사후) · 홍길동';
+  }
+}
+</script>
+</body>
+</html>

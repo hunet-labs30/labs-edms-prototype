@@ -1652,6 +1652,16 @@
           <div id="diag-resp-person-name" style="font-size:13px;font-weight:700;color:#222;">—</div>
           <div id="diag-resp-person-role" style="font-size:11px;color:#888;margin-top:2px;">—</div>
         </div>
+        <!-- 응답자 구분 -->
+        <div style="padding:10px 12px 8px;border-bottom:1px solid #eee;">
+          <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;">응답자 구분</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button id="diag-resp-type-peer" onclick="diagRespSelectType('peer')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid var(--primary);background:var(--primary);color:#fff;font-weight:600;">동료</button>
+            <button id="diag-resp-type-manager" onclick="diagRespSelectType('manager')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">상사</button>
+          </div>
+        </div>
         <!-- 진단 대상자 선택 -->
         <div style="padding:4px 12px 8px;">
           <div style="font-size:11px;color:#999;font-weight:600;padding:8px 0 6px;border-top:1px solid #eee;">진단 대상자 선택</div>
@@ -1917,9 +1927,22 @@ function _diagRespRenderSidebar() {
   const sel = targets[_diagRespSelPersonIdx];
   document.getElementById('diag-resp-person-name').textContent = sel ? _maskN(sel.name) : '—';
   document.getElementById('diag-resp-person-role').textContent = sel ? (sel.dept || '—') : '—';
+  // 응답자 구분 버튼 스타일 갱신
+  const typePeer = document.getElementById('diag-resp-type-peer');
+  const typeMgr = document.getElementById('diag-resp-type-manager');
+  if (typePeer && typeMgr) {
+    if (_diagRespType === 'peer') {
+      typePeer.style.cssText = 'text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid var(--primary);background:var(--primary);color:#fff;font-weight:600;';
+      typeMgr.style.cssText = 'text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;';
+    } else {
+      typePeer.style.cssText = 'text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;';
+      typeMgr.style.cssText = 'text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid var(--primary);background:var(--primary);color:#fff;font-weight:600;';
+    }
+  }
   // 서브타이틀
+  const typeLabel = _diagRespType === 'peer' ? '동료' : '상사';
   document.getElementById('diag-resp-subtitle').textContent =
-    '응답자 설정' + (sel ? ' — ' + _maskN(sel.name) : '');
+    typeLabel + ' 응답자 설정' + (sel ? ' — ' + _maskN(sel.name) : '');
   // 대상자 목록
   const ul = document.getElementById('diag-resp-target-list');
   if (!targets.length) { ul.innerHTML = '<li style="font-size:12px;color:#aaa;padding:6px 4px;">대상자 없음</li>'; return; }
@@ -1932,6 +1955,10 @@ function _diagRespRenderSidebar() {
   }).join('');
 }
 
+function diagRespSelectType(type) {
+  _diagRespType = type;
+  _diagRespRenderSidebar();
+}
 function diagRespSelectPerson(idx) {
   _diagRespSelPersonIdx = idx;
   _diagRespRenderSidebar();
