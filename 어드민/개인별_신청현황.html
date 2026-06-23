@@ -468,6 +468,33 @@
 
     <!-- 검색 -->
     <div class="card search-wrap">
+      <!-- 연수원검색 (단일 선택) -->
+      <div class="search-row">
+        <div class="search-label">연수원검색</div>
+        <div class="search-body">
+          <div class="singleselect-wrap" id="yeonsuwan-wrap">
+            <!-- 선택 전: 검색 입력 -->
+            <div id="yeonsuwan-input-area" style="position:relative; display:none; align-items:center;">
+              <span style="position:absolute;left:10px;color:#94a3b8;font-size:13px;pointer-events:none;">&#128269;</span>
+              <input type="text" class="input" id="s-yeonsuwan-input"
+                style="padding-left:30px;width:240px;"
+                placeholder="연수원명을 입력해주세요."
+                autocomplete="off"
+                oninput="onYeonsuwanInput()"
+                onfocus="onYeonsuwanFocus()"
+                onkeydown="onYeonsuwanKeydown(event)">
+              <ul class="typeahead-list" id="yeonsuwan-list" style="display:none;width:240px;"></ul>
+            </div>
+            <!-- 선택 후: 칩 표시 (디폴트: 연수원 전체) -->
+            <div id="yeonsuwan-selected-area" style="display:flex; align-items:center; gap:6px;">
+              <span class="company-chip" id="yeonsuwan-chip">
+                <span id="yeonsuwan-chip-label">연수원 전체</span>
+                <button class="chip-x" onclick="openYeonsuwanInput()">×</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- 신청일 -->
       <div class="search-row">
         <div class="search-label">신청일</div>
@@ -513,19 +540,12 @@
             <span class="ico">&#128269;</span>
             <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
           </div>
-          <!-- 과정유형: 고객상품유형 확정 후 옵션 변경 예정 (현재 임시 적용) -->
-          <select class="select" id="s-course-type" style="width:130px;">
+          <!-- 연수원 전체: disabled / 연수원 선택: 해당 옵션 활성 -->
+          <select class="select" id="s-course-type" style="width:130px;" disabled>
             <option value="">과정유형 전체</option>
-            <option value="online">온라인</option>
-            <option value="micro">마이크로러닝</option>
           </select>
-          <select class="select" id="s-course-cat" style="width:120px;">
+          <select class="select" id="s-course-cat" style="width:120px;" disabled>
             <option value="">과정분류 전체</option>
-            <option>외국어</option>
-            <option>자격/공인</option>
-            <option>자기개발</option>
-            <option>전문직무</option>
-            <option>직무공통</option>
           </select>
         </div>
       </div>
@@ -648,6 +668,94 @@
 </div>
 
 <script>
+// ── 연수원 데이터 (단일 선택) ──
+const YEONSUWAN_LIST = [
+  { id:'labs',    label:'LABS 연수원',      types:[{value:'online',label:'온라인'},{value:'micro',label:'마이크로러닝'}], cats:['외국어','자격/공인','자기개발','전문직무','직무공통'] },
+  { id:'hunet',   label:'휴넷 아카데미',    types:[{value:'online',label:'온라인'},{value:'offline',label:'오프라인'}],   cats:['전문직무','직무공통','자기개발'] },
+  { id:'global',  label:'글로벌 연수원',    types:[{value:'offline',label:'오프라인'},{value:'hybrid',label:'하이브리드'}], cats:['외국어','자기개발','전문직무'] },
+  { id:'digital', label:'디지털 혁신 연수원', types:[{value:'online',label:'온라인'},{value:'micro',label:'마이크로러닝'},{value:'hybrid',label:'하이브리드'}], cats:['자기개발','전문직무','직무공통'] },
+  { id:'inno',    label:'이노베이션 연수원', types:[{value:'online',label:'온라인'},{value:'offline',label:'오프라인'}],   cats:['자기개발','직무공통'] },
+  { id:'leader',  label:'리더십 연수원',    types:[{value:'offline',label:'오프라인'},{value:'hybrid',label:'하이브리드'}], cats:['전문직무','직무공통','자기개발'] },
+];
+
+let selectedYeonsuwan = null; // { id, label, types, cats }
+
+function onYeonsuwanInput() {
+  const q = document.getElementById('s-yeonsuwan-input').value.trim();
+  renderYeonsuwanList(q);
+}
+function onYeonsuwanFocus() {
+  renderYeonsuwanList(document.getElementById('s-yeonsuwan-input').value.trim());
+}
+function onYeonsuwanKeydown(e) {
+  if (e.key === 'Escape') document.getElementById('yeonsuwan-list').style.display = 'none';
+}
+
+function renderYeonsuwanList(q) {
+  const list = document.getElementById('yeonsuwan-list');
+  const filtered = q
+    ? YEONSUWAN_LIST.filter(y => y.label.includes(q))
+    : YEONSUWAN_LIST;
+  // 검색어 없을 때만 "연수원 전체" 항목 노출
+  const allItem = !q
+    ? `<li onmousedown="clearYeonsuwan()" style="color:#64748b;border-bottom:1px solid #f1f5f9;">연수원 전체</li>`
+    : '';
+  if (!allItem && !filtered.length) { list.style.display = 'none'; return; }
+  list.innerHTML = allItem + filtered.map(y =>
+    `<li onmousedown="selectYeonsuwan('${y.id}')">
+      ${q ? y.label.replace(new RegExp(`(${q})`, 'g'), '<strong>$1</strong>') : y.label}
+    </li>`
+  ).join('');
+  list.style.display = 'block';
+}
+
+function selectYeonsuwan(id) {
+  selectedYeonsuwan = YEONSUWAN_LIST.find(y => y.id === id);
+  document.getElementById('yeonsuwan-list').style.display = 'none';
+  // 칩 표시
+  document.getElementById('yeonsuwan-chip-label').textContent = selectedYeonsuwan.label;
+  document.getElementById('yeonsuwan-input-area').style.display = 'none';
+  document.getElementById('yeonsuwan-selected-area').style.display = 'flex';
+  document.querySelector('#yeonsuwan-chip .chip-x').onclick = clearYeonsuwan;
+  // 과정유형/분류 드롭다운 구성
+  _applyYeonsuwanOptions(selectedYeonsuwan);
+}
+
+// 연수원 전체 칩으로 복귀
+function clearYeonsuwan() {
+  selectedYeonsuwan = null;
+  document.getElementById('s-yeonsuwan-input').value = '';
+  document.getElementById('yeonsuwan-input-area').style.display = 'none';
+  document.getElementById('yeonsuwan-list').style.display = 'none';
+  document.getElementById('yeonsuwan-chip-label').textContent = '연수원 전체';
+  document.getElementById('yeonsuwan-selected-area').style.display = 'flex';
+  // 칩 × → openYeonsuwanInput 으로 교체
+  document.querySelector('#yeonsuwan-chip .chip-x').onclick = openYeonsuwanInput;
+  // 과정유형/분류 숨김
+  const typeEl = document.getElementById('s-course-type');
+  const catEl  = document.getElementById('s-course-cat');
+  typeEl.disabled = true; typeEl.value = '';
+  catEl.disabled  = true; catEl.value  = '';
+}
+
+// 연수원 전체 칩 × 클릭 → 검색 입력창으로 전환
+function openYeonsuwanInput() {
+  document.getElementById('yeonsuwan-selected-area').style.display = 'none';
+  document.getElementById('yeonsuwan-input-area').style.display = 'flex';
+  document.getElementById('s-yeonsuwan-input').focus();
+}
+
+function _applyYeonsuwanOptions(ys) {
+  const typeEl = document.getElementById('s-course-type');
+  const catEl  = document.getElementById('s-course-cat');
+  typeEl.innerHTML = '<option value="">과정유형 전체</option>' +
+    ys.types.map(t => `<option value="${t.value}">${t.label}</option>`).join('');
+  catEl.innerHTML = '<option value="">과정분류 전체</option>' +
+    ys.cats.map(c => `<option>${c}</option>`).join('');
+  typeEl.disabled = false;
+  catEl.disabled  = false;
+}
+
 function toggleNavGroup(header) {
   event.stopPropagation();
   header.parentElement.classList.toggle('open');
@@ -819,10 +927,13 @@ function renderCompanyChips() {
 
 // 외부 클릭 시 드롭다운 닫기
 document.addEventListener('mousedown', function(e) {
-  const wrap = document.getElementById('company-multiselect');
-  if (wrap && !wrap.contains(e.target)) {
+  const companyWrap = document.getElementById('company-multiselect');
+  if (companyWrap && !companyWrap.contains(e.target))
     document.getElementById('company-list').style.display = 'none';
-  }
+
+  const ysWrap = document.getElementById('yeonsuwan-input-area');
+  if (ysWrap && !ysWrap.contains(e.target))
+    document.getElementById('yeonsuwan-list').style.display = 'none';
 });
 
 // ── 날짜 상호 제한 (from > to 방지) ──
@@ -871,6 +982,11 @@ function doSearch() {
     }
 
     if (courseType && r.courseType.code !== courseType) return false;
+    // 연수원 선택 시 해당 연수원에 속한 과정유형만 조회
+    if (selectedYeonsuwan) {
+      const allowed = selectedYeonsuwan.types.map(t => t.value);
+      if (!allowed.includes(r.courseType.code)) return false;
+    }
     if (selectedCompanies.length && !selectedCompanies.includes(r.company)) return false;
     return true;
   });
@@ -889,8 +1005,7 @@ function doReset() {
   document.getElementById('s-approval-status').selectedIndex = 0;
   document.getElementById('s-course-field').selectedIndex   = 0;
   document.getElementById('s-course-kw').value              = '';
-  document.getElementById('s-course-type').selectedIndex    = 0;
-  document.getElementById('s-course-cat').selectedIndex     = 0;
+  clearYeonsuwan();
   selectedCompanies = [];
   renderCompanyChips();
   doSearch();
