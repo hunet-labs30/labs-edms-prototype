@@ -1285,9 +1285,9 @@ body {
       <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
         <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 등록 안내</div>
         엑셀 파일(.xlsx)로 대상자·응답자를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        <strong>시트1</strong>: 유형명(드롭다운) · 유형코드(자동) · 대상자 아이디 · 대상자 사번 · 응답자 아이디 · 응답자 사번 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
-        <strong>시트2</strong>: 유형·유형코드·응답범위 코드표 (수정 금지)<br>
-        유형명·응답범위는 드롭다운 선택, 유형코드·응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+        <strong>시트1</strong>: 대상자 아이디 · 대상자 사번 · 응답자 아이디 · 응답자 사번 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
+        <strong>시트2</strong>: 응답범위 코드표 (수정 금지)<br>
+        응답범위는 드롭다운 선택, 응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
       </div>
       <!-- Step 1 -->
       <div>
@@ -1315,20 +1315,12 @@ body {
           </thead>
           <tbody>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">유형명 미입력</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 유형명이 입력되지 않은 경우</td>
-            </tr>
-            <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">유형명 코드 불일치</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 값이 코드표의 유형명 목록에 없는 경우</td>
-            </tr>
-            <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 아이디 미입력</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 대상자 아이디가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 대상자 아이디가 입력되지 않은 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 대상자 아이디</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열에 입력한 아이디가 시스템에 존재하지 않는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열에 입력한 아이디가 시스템에 존재하지 않는 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 중복 오류</td>
@@ -1336,11 +1328,11 @@ body {
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 아이디 미입력</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 D열 응답자 아이디가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 C열 응답자 아이디가 입력되지 않은 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 응답자 아이디</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">D열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 중복 오류</td>
@@ -1348,7 +1340,7 @@ body {
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">엑셀파일 내 중복 오류</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">같은 유형에 대상자 중복 또는 대상자별 응답자 중복인 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">대상자 중복 또는 대상자별 응답자 중복인 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 미입력</td>
@@ -2620,92 +2612,53 @@ function downloadTargetTemplate() {
   const wb = XLSX.utils.book_new();
   wb.Workbook = { Names: [] };
 
-  /* ── Sheet2: 코드표 (현재 진단 설정 기반 자동 생성) ── */
+  /* ── Sheet2: 코드표 (응답범위 코드표) ── */
   const RESP_CODE = { '본인':'01', '상사':'02', '구성원':'03', '동료':'04' };
-  const s2Rows = [['유형명','유형코드','응답범위','응답범위코드','','유형명(고유)','유형코드(고유)']];
-  const uniqueTypes = [];   // { name, code, startRow, endRow }
-  let dataRow = 2;          // Sheet2 데이터 시작 행 (1-indexed)
-
-  selectedQuestionnaire.types.forEach((type, ti) => {
-    const activeRoles = RESP_ROLES.filter(r => respondentSettings[r.key]);
-    if (!activeRoles.length) return;
-
-    const typeName  = '[' + type.name + ']';
-    const typeCode  = type.id + '-' + new Date().getFullYear() + '-' + String(ti + 1).padStart(3,'0');
-    const startR    = dataRow;
-
-    activeRoles.forEach(role => {
-      const respCode = typeCode.replace(/-/g,'_') + '_' + RESP_CODE[role.key];
-      s2Rows.push([typeName, typeCode, role.key, respCode, '', '', '']);
-      dataRow++;
-    });
-
-    uniqueTypes.push({ name: typeName, code: typeCode, start: startR, end: dataRow - 1 });
-  });
-
-  // 고유 유형명/코드를 F·G열에 채움
-  uniqueTypes.forEach((t, i) => {
-    if (s2Rows[i + 1]) {
-      s2Rows[i + 1][5] = t.name;
-      s2Rows[i + 1][6] = t.code;
-    }
+  const activeRoles = RESP_ROLES.filter(r => respondentSettings[r.key]);
+  const s2Rows = [['응답범위', '응답범위코드']];
+  activeRoles.forEach(role => {
+    s2Rows.push([role.key, RESP_CODE[role.key]]);
   });
 
   const ws2 = XLSX.utils.aoa_to_sheet(s2Rows);
-  ws2['!cols'] = [{wch:28},{wch:18},{wch:12},{wch:16},{wch:3},{wch:28},{wch:18}];
+  ws2['!cols'] = [{wch:14},{wch:16}];
   XLSX.utils.book_append_sheet(wb, ws2, '코드표');
 
   /* ── Named Ranges ── */
-  const nUnique = uniqueTypes.length;
-  if (nUnique > 0) {
+  const nRoles = activeRoles.length;
+  if (nRoles > 0) {
     wb.Workbook.Names.push({
-      Name: 'TYPE_NAMES',
-      Ref: '코드표!$F$2:$F$' + (nUnique + 1)
+      Name: 'RESP_NAMES',
+      Ref: '코드표!$A$2:$A$' + (nRoles + 1)
     });
   }
-  uniqueTypes.forEach(t => {
-    const safeCode = t.code.replace(/-/g,'_');
-    wb.Workbook.Names.push({ Name: safeCode + '_names', Ref: '코드표!$C$' + t.start + ':$C$' + t.end });
-    wb.Workbook.Names.push({ Name: safeCode + '_ids',   Ref: '코드표!$D$' + t.start + ':$D$' + t.end });
-  });
 
   /* ── Sheet1: 업로드 템플릿 ── */
   const MAX_ROW = 200;
-  const headers = ['유형명','유형코드','대상자 아이디','대상자 사번','응답자 아이디','응답자 사번','응답범위','응답범위코드'];
-  const hints   = ['드롭다운 선택','자동 입력 (수정 금지)','예: hong@hunet.co.kr','예: 2024001','예: kim@hunet.co.kr','예: 2023055','드롭다운 선택','자동 입력 (수정 금지)'];
+  const headers = ['대상자 아이디','대상자 사번','응답자 아이디','응답자 사번','응답범위','응답범위코드'];
+  const hints   = ['예: hong@hunet.co.kr','예: 2024001','예: kim@hunet.co.kr','예: 2023055','드롭다운 선택','자동 입력 (수정 금지)'];
   const ws1Data = [headers, hints];
   for (let r = 3; r <= MAX_ROW; r++) {
     ws1Data.push([
-      '', // A: 드롭다운
-      { f: 'IF($A' + r + '="","",IFERROR(VLOOKUP($A' + r + ',코드표!$F:$G,2,FALSE),""))' }, // B: VLOOKUP
-      '', '', '', '', // C~F: 입력
-      '', // G: 드롭다운
-      { f: 'IF($G' + r + '="","",IFERROR(INDEX(INDIRECT(SUBSTITUTE($B' + r + ',"-","_")&"_ids"),MATCH($G' + r + ',INDIRECT(SUBSTITUTE($B' + r + ',"-","_")&"_names"),0)),""))' } // H: INDEX/MATCH
+      '', '', '', '', // A~D: 입력
+      '', // E: 드롭다운
+      { f: 'IF($E' + r + '="","",IFERROR(VLOOKUP($E' + r + ',코드표!$A:$B,2,FALSE),""))' } // F: VLOOKUP
     ]);
   }
   const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
-  ws1['!cols'] = [{wch:25},{wch:18},{wch:26},{wch:14},{wch:26},{wch:14},{wch:14},{wch:16}];
+  ws1['!cols'] = [{wch:26},{wch:14},{wch:26},{wch:14},{wch:14},{wch:16}];
   ws1['!freeze'] = { xSplit: 0, ySplit: 2 }; // 2행 고정
 
-  // 데이터 유효성 (A열: 유형명 드롭다운 / G열: 응답범위 종속 드롭다운)
+  // 데이터 유효성 (E열: 응답범위 드롭다운)
   ws1['!dataValidation'] = [
     {
-      sqref: 'A3:A' + MAX_ROW,
+      sqref: 'E3:E' + MAX_ROW,
       type: 'list',
-      formula1: 'TYPE_NAMES',
-      allowBlank: true,
-      showErrorMessage: true,
-      errorTitle: '유형명 오류',
-      error: '코드표의 유형명을 선택해주세요.'
-    },
-    {
-      sqref: 'G3:G' + MAX_ROW,
-      type: 'list',
-      formula1: 'INDIRECT(SUBSTITUTE($B3,"-","_")&"_names")',
+      formula1: 'RESP_NAMES',
       allowBlank: true,
       showErrorMessage: true,
       errorTitle: '응답범위 오류',
-      error: '해당 유형의 응답범위를 선택해주세요.'
+      error: '코드표의 응답범위를 선택해주세요.'
     }
   ];
 

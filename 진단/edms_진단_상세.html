@@ -1036,9 +1036,9 @@
       <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:6px;padding:14px 18px;font-size:12px;line-height:1.9;color:#2a3a6a;">
         <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 등록 안내</div>
         엑셀 파일(.xlsx)로 대상자·응답자를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        <strong>시트1:</strong> 유형명(드롭다운) · 유형코드(자동) · 대상자 아이디 · 응답자 아이디 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
-        <strong>시트2:</strong> 유형·유형코드·응답범위 코드표 (수정 금지)<br>
-        유형명·응답범위는 드롭다운 선택, 유형코드·응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+        <strong>시트1:</strong> 대상자 아이디 · 응답자 아이디 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
+        <strong>시트2:</strong> 응답범위 코드표 (수정 금지)<br>
+        응답범위는 드롭다운 선택, 응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
       </div>
 
       <!-- Step 1 -->
@@ -1074,17 +1074,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>유형명 미입력</td><td>A열 유형명이 입력되지 않은 경우</td></tr>
-            <tr><td>유형명 코드 불일치</td><td>A열 값이 코드표의 유형명 목록에 없는 경우</td></tr>
-            <tr><td>대상자 아이디 미입력</td><td>C열 대상자 아이디가 입력되지 않은 경우</td></tr>
-            <tr><td>존재하지 않는 대상자 아이디</td><td>C열에 입력한 아이디가 시스템에 존재하지 않는 경우</td></tr>
+            <tr><td>대상자 아이디 미입력</td><td>A열 대상자 아이디가 입력되지 않은 경우</td></tr>
+            <tr><td>존재하지 않는 대상자 아이디</td><td>A열에 입력한 아이디가 시스템에 존재하지 않는 경우</td></tr>
             <tr><td>대상자 중복 오류</td><td>이미 진단에 등록된 대상자 아이디가 파일에 포함된 경우</td></tr>
-            <tr><td>응답자 아이디 미입력</td><td>응답범위가 본인 외 유형인데 D열 응답자 아이디가 입력되지 않은 경우</td></tr>
-            <tr><td>존재하지 않는 응답자 아이디</td><td>D열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td></tr>
+            <tr><td>응답자 아이디 미입력</td><td>응답범위가 본인 외 유형인데 B열 응답자 아이디가 입력되지 않은 경우</td></tr>
+            <tr><td>존재하지 않는 응답자 아이디</td><td>B열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td></tr>
             <tr><td>응답자 중복 오류</td><td>특정 대상자에 이미 등록된 응답자가 파일에 포함된 경우</td></tr>
-            <tr><td>엑셀파일 내 중복 오류</td><td>같은 유형에 대상자 중복 또는 대상자별 응답자 중복인 경우</td></tr>
-            <tr><td>응답범위 미입력</td><td>E열 응답범위가 입력되지 않은 경우</td></tr>
-            <tr><td>응답범위 코드 불일치</td><td>E열 값이 코드표의 응답범위 목록에 없는 경우</td></tr>
+            <tr><td>엑셀파일 내 중복 오류</td><td>대상자 중복 또는 대상자별 응답자 중복인 경우</td></tr>
+            <tr><td>응답범위 미입력</td><td>C열 응답범위가 입력되지 않은 경우</td></tr>
+            <tr><td>응답범위 코드 불일치</td><td>C열 값이 코드표의 응답범위 목록에 없는 경우</td></tr>
           </tbody>
         </table>
       </div>
@@ -1761,7 +1759,7 @@
     document.getElementById('bulkRegModal').classList.remove('open');
   }
   function downloadBulkTemplate() {
-    const header = '유형명,유형코드,대상자 아이디,대상자 사번,응답자 아이디,응답자 사번,응답범위,응답범위코드';
+    const header = '대상자 아이디,응답자 아이디,응답범위,응답범위코드';
     const csv = '﻿' + header + '\n';
     const blob = new Blob([csv], { type: 'application/vnd.ms-excel' });
     const url = URL.createObjectURL(blob);
