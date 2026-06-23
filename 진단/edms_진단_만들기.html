@@ -1067,7 +1067,7 @@ body {
           <div class="wiz-card-head">
             <span class="wiz-step-tag">STEP 2 / 6</span>
             <h2>누가 응답하나요?</h2>
-            <p>각 진단 유형별로 응답에 참여할 대상을 선택하세요.<br>선택한 유형별로 STEP 4에서 대상자를 등록합니다.</p>
+            <p>이 진단에 응답할 대상을 선택하세요. 선택한 역할은 모든 진단 유형에 동일하게 적용됩니다.</p>
           </div>
           <div class="wiz-card-body padded">
             <div class="respondent-cards" id="respondentCardsContainer"></div>
@@ -2110,64 +2110,52 @@ function generateRespondentCards() {
   if (!selectedQuestionnaire) return;
   const container = document.getElementById('respondentCardsContainer');
   container.innerHTML = '';
-  respondentSettings = {};
+  respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
 
-  selectedQuestionnaire.types.forEach((type) => {
-    const key = type.id;
-    respondentSettings[key] = { '본인': true, '구성원': false, '상사': false, '동료': false };
-
-    const section = document.createElement('div');
-    section.innerHTML = `
-      <div class="resp-section-head">
-        <span class="resp-type-name">${type.name}</span>
-        <span class="resp-type-meta">${type.qCount}문항</span>
-      </div>
-      <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
-      <div class="resp-role-grid">
-        ${RESP_ROLES.map(role => `
-          <div class="resp-role-card${role.key === '본인' ? ' selected' : ''}"
-               onclick="toggleRespRole(this, '${key}', '${role.key}')">
-            <div class="resp-role-check">✓</div>
-            <div class="resp-role-icon">${role.icon}</div>
-            <div class="resp-role-name">${role.name}</div>
-            <div class="resp-role-desc">${role.desc.replace(/\n/g,'<br>')}</div>
-          </div>`).join('')}
-      </div>`;
-    container.appendChild(section);
-  });
+  const section = document.createElement('div');
+  section.innerHTML = `
+    <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
+    <div class="resp-role-grid">
+      ${RESP_ROLES.map(role => `
+        <div class="resp-role-card${role.key === '본인' ? ' selected' : ''}"
+             onclick="toggleRespRole(this, '${role.key}')">
+          <div class="resp-role-check">✓</div>
+          <div class="resp-role-icon">${role.icon}</div>
+          <div class="resp-role-name">${role.name}</div>
+          <div class="resp-role-desc">${role.desc.replace(/\n/g,'<br>')}</div>
+        </div>`).join('')}
+    </div>`;
+  container.appendChild(section);
 }
 
 let _pendingRespToggle = null;
 
-function toggleRespRole(el, typeId, roleKey) {
+function toggleRespRole(el, roleKey) {
   const isCurrentlySelected = el.classList.contains('selected');
-  // 선택 해제 시 && 해당 유형에 응답자가 이미 등록되어 있으면 팝업
   if (isCurrentlySelected) {
-    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.startsWith(typeId + '-' + roleKey + ':') && MK_RESPONDENTS[k].length > 0);
+    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.includes('-' + roleKey + ':') && MK_RESPONDENTS[k].length > 0);
     if (hasRespondents) {
-      _pendingRespToggle = { el, typeId, roleKey };
+      _pendingRespToggle = { el, roleKey };
       document.getElementById('respTypeChangeModal').classList.add('open');
       return;
     }
   }
-  _applyRespToggle(el, typeId, roleKey);
+  _applyRespToggle(el, roleKey);
 }
 
-function _applyRespToggle(el, typeId, roleKey) {
+function _applyRespToggle(el, roleKey) {
   el.classList.toggle('selected');
-  if (!respondentSettings[typeId]) respondentSettings[typeId] = {};
-  respondentSettings[typeId][roleKey] = el.classList.contains('selected');
+  respondentSettings[roleKey] = el.classList.contains('selected');
 }
 
 function confirmRespTypeChange() {
   document.getElementById('respTypeChangeModal').classList.remove('open');
   if (_pendingRespToggle) {
-    const { el, typeId, roleKey } = _pendingRespToggle;
-    // 해당 유형 응답자 데이터 초기화
+    const { el, roleKey } = _pendingRespToggle;
     Object.keys(MK_RESPONDENTS).forEach(k => {
-      if (k.startsWith(typeId + '-' + roleKey + ':')) MK_RESPONDENTS[k] = [];
+      if (k.includes('-' + roleKey + ':')) MK_RESPONDENTS[k] = [];
     });
-    _applyRespToggle(el, typeId, roleKey);
+    _applyRespToggle(el, roleKey);
     _pendingRespToggle = null;
   }
 }
@@ -2499,9 +2487,9 @@ function generateStep4Tabs() {
 
   const tabs = [];
   selectedQuestionnaire.types.forEach(type => {
-    Object.keys(respondentSettings[type.id] || {}).forEach(option => {
-      if (respondentSettings[type.id][option]) {
-        tabs.push({ type: type.name, option, id: `${type.id}-${option}` });
+    RESP_ROLES.forEach(role => {
+      if (respondentSettings[role.key]) {
+        tabs.push({ type: type.name, option: role.key, id: `${type.id}-${role.key}` });
       }
     });
   });
@@ -2643,8 +2631,7 @@ function downloadTargetTemplate() {
   let dataRow = 2;          // Sheet2 데이터 시작 행 (1-indexed)
 
   selectedQuestionnaire.types.forEach((type, ti) => {
-    const settings   = respondentSettings[type.id] || { '본인': true };
-    const activeRoles = RESP_ROLES.filter(r => settings[r.key]);
+    const activeRoles = RESP_ROLES.filter(r => respondentSettings[r.key]);
     if (!activeRoles.length) return;
 
     const typeName  = '[' + type.name + ']';
@@ -2832,9 +2819,9 @@ function _mkGetTypes() {
   if (!selectedQuestionnaire) return [];
   const result = [];
   selectedQuestionnaire.types.forEach(type => {
-    Object.keys(respondentSettings[type.id] || {}).forEach(opt => {
-      if (respondentSettings[type.id][opt] && opt !== '본인') {
-        result.push({ id: `${type.id}-${opt}`, label: `${type.name} ${opt}` });
+    RESP_ROLES.forEach(role => {
+      if (respondentSettings[role.key] && role.key !== '본인') {
+        result.push({ id: `${type.id}-${role.key}`, label: `${type.name} ${role.key}` });
       }
     });
   });
@@ -3168,15 +3155,9 @@ function generateStep7Review() {
   const qName = selectedQuestionnaire ? selectedQuestionnaire.name : '(미선택)';
 
   const selectedRoles = [];
-  if (selectedQuestionnaire) {
-    selectedQuestionnaire.types.forEach(type => {
-      RESP_ROLES.forEach(role => {
-        if (respondentSettings[type.id]?.[role.key]) {
-          selectedRoles.push(`${type.name} — ${role.name}`);
-        }
-      });
-    });
-  }
+  RESP_ROLES.forEach(role => {
+    if (respondentSettings[role.key]) selectedRoles.push(role.name);
+  });
 
   const totalCourses = Object.values(courseData).reduce((s, arr) => s + arr.length, 0);
 
@@ -3258,13 +3239,9 @@ function nextStep() {
   }
   if (currentStep === 2) {
     let anySelected = false;
-    if (selectedQuestionnaire) {
-      selectedQuestionnaire.types.forEach(type => {
-        RESP_ROLES.forEach(role => {
-          if (respondentSettings[type.id]?.[role.key]) anySelected = true;
-        });
-      });
-    }
+    RESP_ROLES.forEach(role => {
+      if (respondentSettings[role.key]) anySelected = true;
+    });
     if (!anySelected) { showToast('응답자 유형을 1개 이상 선택해주세요.'); return; }
   }
   if (currentStep === 3 && !validateScores()) return;
