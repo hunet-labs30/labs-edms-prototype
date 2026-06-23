@@ -1285,9 +1285,9 @@ body {
       <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
         <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 등록 안내</div>
         엑셀 파일(.xlsx)로 대상자·응답자를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        <strong>시트1</strong>: 대상자 아이디 · 대상자 사번 · 응답자 아이디 · 응답자 사번 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
+        <strong>시트1</strong>: 대상자 아이디 · 응답자 아이디 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
         <strong>시트2</strong>: 응답범위 코드표 (수정 금지)<br>
-        응답범위는 드롭다운 선택, 응답범위코드는 수식으로 자동 입력됩니다. 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+        응답범위는 드롭다운 선택, 응답범위코드는 수식으로 자동 입력됩니다. 샘플 데이터는 삭제 후 사용하세요.
       </div>
       <!-- Step 1 -->
       <div>
@@ -1315,6 +1315,14 @@ body {
           </thead>
           <tbody>
             <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">데이터 없음</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트1에 등록된 데이터가 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">컬럼 구조 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">컬럼명을 변경하거나 컬럼 순서가 다른 경우 (A: 대상자 아이디 / B: 응답자 아이디 / C: 응답범위 / D: 응답범위코드)</td>
+            </tr>
+            <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 아이디 미입력</td>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 대상자 아이디가 입력되지 않은 경우</td>
             </tr>
@@ -1328,11 +1336,11 @@ body {
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 아이디 미입력</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 C열 응답자 아이디가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 B열 응답자 아이디가 입력되지 않은 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 응답자 아이디</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">B열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 중복 오류</td>
@@ -1344,11 +1352,15 @@ body {
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 미입력</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">E열 응답범위가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 응답범위가 입력되지 않은 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 코드 불일치</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">E열 값이 코드표의 응답범위 목록에 없는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 값이 코드표의 응답범위 목록에 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">업로드 파일이 10MB를 초과하는 경우</td>
             </tr>
           </tbody>
         </table>
