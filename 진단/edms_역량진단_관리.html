@@ -1606,12 +1606,6 @@
           <div id="diag-resp-person-name" style="font-size:13px;font-weight:700;color:#222;">—</div>
           <div id="diag-resp-person-role" style="font-size:11px;color:#888;margin-top:2px;">—</div>
         </div>
-        <!-- 진단 유형 선택 -->
-        <div style="padding:10px 12px 8px;">
-          <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;">진단 유형 선택</div>
-          <div id="diag-resp-type-member" onclick="diagRespSelectType('member')" style="padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:3px;background:var(--primary);color:#fff;font-weight:600;">구성원 진단</div>
-          <div id="diag-resp-type-manager" onclick="diagRespSelectType('manager')" style="padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;color:#555;">상사 진단</div>
-        </div>
         <!-- 진단 대상자 선택 -->
         <div style="padding:4px 12px 8px;">
           <div style="font-size:11px;color:#999;font-weight:600;padding:8px 0 6px;border-top:1px solid #eee;">진단 대상자 선택</div>
@@ -1623,7 +1617,7 @@
       <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;">
         <!-- 서브타이틀 -->
         <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#fff;">
-          <span id="diag-resp-subtitle" style="font-size:13px;font-weight:700;color:#222;">구성원진단 응답자 설정</span>
+          <span id="diag-resp-subtitle" style="font-size:13px;font-weight:700;color:#222;">응답자 설정</span>
         </div>
         <!-- 탭 -->
         <div style="padding:0 16px;border-bottom:1px solid var(--border);display:flex;flex-shrink:0;overflow-x:auto;background:#fff;">
@@ -1879,7 +1873,7 @@ function _diagRespRenderSidebar() {
   document.getElementById('diag-resp-person-role').textContent = sel ? (sel.dept || '—') : '—';
   // 서브타이틀
   document.getElementById('diag-resp-subtitle').textContent =
-    (_diagRespType === 'member' ? '구성원진단' : '상사진단') + ' 응답자 설정' + (sel ? ' — ' + _maskN(sel.name) : '');
+    '응답자 설정' + (sel ? ' — ' + _maskN(sel.name) : '');
   // 대상자 목록
   const ul = document.getElementById('diag-resp-target-list');
   if (!targets.length) { ul.innerHTML = '<li style="font-size:12px;color:#aaa;padding:6px 4px;">대상자 없음</li>'; return; }
@@ -1890,20 +1884,10 @@ function _diagRespRenderSidebar() {
       ${_maskN(t.name)} <span style="color:#aaa;font-size:11px;">${t.dept||''}</span>
     </li>`;
   }).join('');
-  // 진단 유형 버튼 스타일
-  const baseStyle = 'padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:3px;';
-  document.getElementById('diag-resp-type-member').style.cssText =
-    baseStyle + (_diagRespType==='member' ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:#555;');
-  document.getElementById('diag-resp-type-manager').style.cssText =
-    'padding:6px 10px;border-radius:4px;font-size:12px;cursor:pointer;' + (_diagRespType==='manager' ? 'background:var(--primary);color:#fff;font-weight:600;' : 'color:#555;');
 }
 
 function diagRespSelectPerson(idx) {
   _diagRespSelPersonIdx = idx;
-  _diagRespRenderSidebar();
-}
-function diagRespSelectType(type) {
-  _diagRespType = type;
   _diagRespRenderSidebar();
 }
 function diagRespSelectTab(el) {
