@@ -1062,6 +1062,31 @@
         </div>
       </div>
 
+      <!-- 미리보기 결과 -->
+      <div id="bulkPreviewResult" style="display:none;">
+        <!-- 시나리오A: 오류 있음 -->
+        <div id="bulkPreviewErr">
+          <div style="background:#fff8f0;border:1px solid #ffb347;border-radius:6px;padding:10px 16px;font-size:12px;color:#7a3800;font-weight:600;margin-bottom:10px;">
+            ⚠️ 총 5건 중 2건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
+          </div>
+          <table class="main-table" style="font-size:12px;">
+            <thead>
+              <tr><th style="width:52px;">행</th><th>대상자 아이디</th><th>응답자 아이디</th><th>오류내용</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="text-align:center;">3행</td><td>hong@hunet.co.kr</td><td>kim@hunet.co.kr</td><td style="color:#c00000;">존재하지 않는 응답자 아이디</td></tr>
+              <tr><td style="text-align:center;">5행</td><td>lee@hunet.co.kr</td><td>-</td><td style="color:#c00000;">응답자 아이디 미입력</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 시나리오B: 오류 없음 -->
+        <div id="bulkPreviewOk" style="display:none;">
+          <div style="background:#f0fff4;border:1px solid #68d391;border-radius:6px;padding:10px 16px;font-size:12px;color:#1a6630;font-weight:600;">
+            ✅ 총 5건 오류 없이 확인되었습니다. 등록 버튼을 클릭해주세요.
+          </div>
+        </div>
+      </div>
+
       <!-- 오류 내용 정리 -->
       <div>
         <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 내용 정리</div>
@@ -1776,15 +1801,19 @@
     document.getElementById('bulkRegFileName').textContent = '📎 ' + file.name;
     document.getElementById('btnBulkRegSubmit').disabled = true;
   }
+  let _bulkPreviewTick = 0;
   function bulkRegPreview() {
     const input = document.getElementById('bulkRegFile');
     const file = input.files[0];
     if (!file) { alert('엑셀파일을 등록해주세요.'); return; }
     if (!file.name.match(/\.(xlsx|xls)$/i)) { alert('엑셀파일을 등록해주세요.'); input.value = ''; document.getElementById('bulkRegFileName').textContent = ''; return; }
     if (file.size > 10 * 1024 * 1024) { alert('파일 용량이 10MB를 초과합니다.'); input.value = ''; document.getElementById('bulkRegFileName').textContent = ''; return; }
-    // 프로토타입: 오류 없음 시나리오
-    alert('미리보기가 완료되었습니다. 등록버튼을 클릭해주세요.');
-    document.getElementById('btnBulkRegSubmit').disabled = false;
+    // 프로토타입: 홀수 클릭 → 오류, 짝수 클릭 → 성공
+    const isError = (++_bulkPreviewTick % 2 === 1);
+    document.getElementById('bulkPreviewResult').style.display = 'block';
+    document.getElementById('bulkPreviewErr').style.display = isError ? 'block' : 'none';
+    document.getElementById('bulkPreviewOk').style.display  = isError ? 'none'  : 'block';
+    document.getElementById('btnBulkRegSubmit').disabled = isError;
   }
   function bulkRegFileDrop(e) {
     e.preventDefault();

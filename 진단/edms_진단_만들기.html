@@ -1303,6 +1303,47 @@ body {
           <input type="file" id="targetBulkFile" style="display:none;" accept=".xlsx,.xls">
         </div>
       </div>
+
+      <!-- 미리보기 결과 -->
+      <div id="targetPreviewResult" style="display:none;">
+        <!-- 시나리오A: 오류 있음 -->
+        <div id="targetPreviewErr">
+          <div style="background:#fff8f0;border:1px solid #ffb347;border-radius:6px;padding:10px 16px;font-size:12px;color:#7a3800;font-weight:600;margin-bottom:10px;">
+            ⚠️ 총 5건 중 2건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;width:52px;">행</th>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;">대상자 아이디</th>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;">응답자 아이디</th>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;">오류내용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">3행</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;">hong@hunet.co.kr</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;">kim@hunet.co.kr</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">존재하지 않는 응답자 아이디</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">5행</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;">lee@hunet.co.kr</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;">-</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">응답자 아이디 미입력</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 시나리오B: 오류 없음 -->
+        <div id="targetPreviewOk" style="display:none;">
+          <div style="background:#f0fff4;border:1px solid #68d391;border-radius:6px;padding:10px 16px;font-size:12px;color:#1a6630;font-weight:600;">
+            ✅ 총 5건 오류 없이 확인되었습니다. 등록 버튼을 클릭해주세요.
+          </div>
+        </div>
+      </div>
+
       <!-- 오류 케이스 -->
       <div>
         <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 케이스 정리</div>
@@ -1360,7 +1401,8 @@ body {
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray btn-sm" onclick="closeModal('targetBulkModal')">취소</button>
-      <button class="btn btn-primary btn-sm" onclick="uploadTargetBulkFile()">등록</button>
+      <button class="btn btn-outline btn-sm" onclick="targetBulkPreview()">미리보기</button>
+      <button class="btn btn-primary btn-sm" id="btnTargetBulkSubmit" disabled onclick="uploadTargetBulkFile()">등록</button>
     </div>
   </div>
 </div>
@@ -2600,6 +2642,36 @@ function uploadBulkFile() {
 function openTargetBulkModal(tabIdx) {
   _currentTargetTabIdx = tabIdx;
   openModal('targetBulkModal');
+}
+
+let _targetPreviewTick = 0;
+function targetBulkPreview() {
+  const input = document.getElementById('targetBulkFile');
+  const file = input ? input.files[0] : null;
+  if (!file) { alert('엑셀파일을 등록해주세요.'); return; }
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    alert('엑셀파일을 등록해주세요.');
+    input.value = '';
+    const nameEl = document.getElementById('targetBulkFileName');
+    if (nameEl) nameEl.textContent = '';
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('파일 용량이 10MB를 초과합니다.');
+    input.value = '';
+    const nameEl = document.getElementById('targetBulkFileName');
+    if (nameEl) nameEl.textContent = '';
+    return;
+  }
+  const isError = (++_targetPreviewTick % 2 === 1);
+  const resultEl = document.getElementById('targetPreviewResult');
+  const errEl    = document.getElementById('targetPreviewErr');
+  const okEl     = document.getElementById('targetPreviewOk');
+  if (resultEl) resultEl.style.display = 'block';
+  if (errEl)    errEl.style.display    = isError ? 'block' : 'none';
+  if (okEl)     okEl.style.display     = isError ? 'none'  : 'block';
+  const submitBtn = document.getElementById('btnTargetBulkSubmit');
+  if (submitBtn) submitBtn.disabled = isError;
 }
 
 function uploadTargetBulkFile() {
