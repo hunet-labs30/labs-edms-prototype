@@ -2635,24 +2635,24 @@ function downloadTargetTemplate() {
 
   /* ── Sheet1: 업로드 템플릿 ── */
   const MAX_ROW = 200;
-  const headers = ['대상자 아이디','대상자 사번','응답자 아이디','응답자 사번','응답범위','응답범위코드'];
-  const hints   = ['예: hong@hunet.co.kr','예: 2024001','예: kim@hunet.co.kr','예: 2023055','드롭다운 선택','자동 입력 (수정 금지)'];
+  const headers = ['대상자 아이디','응답자 아이디','응답범위','응답범위코드'];
+  const hints   = ['예: hong@hunet.co.kr','예: kim@hunet.co.kr','드롭다운 선택','자동 입력 (수정 금지)'];
   const ws1Data = [headers, hints];
   for (let r = 3; r <= MAX_ROW; r++) {
     ws1Data.push([
-      '', '', '', '', // A~D: 입력
-      '', // E: 드롭다운
-      { f: 'IF($E' + r + '="","",IFERROR(VLOOKUP($E' + r + ',코드표!$A:$B,2,FALSE),""))' } // F: VLOOKUP
+      '', '', // A~B: 입력
+      '', // C: 드롭다운
+      { f: 'IF($C' + r + '="","",IFERROR(VLOOKUP($C' + r + ',코드표!$A:$B,2,FALSE),""))' } // D: VLOOKUP
     ]);
   }
   const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
-  ws1['!cols'] = [{wch:26},{wch:14},{wch:26},{wch:14},{wch:14},{wch:16}];
+  ws1['!cols'] = [{wch:26},{wch:26},{wch:14},{wch:16}];
   ws1['!freeze'] = { xSplit: 0, ySplit: 2 }; // 2행 고정
 
-  // 데이터 유효성 (E열: 응답범위 드롭다운)
+  // 데이터 유효성 (C열: 응답범위 드롭다운)
   ws1['!dataValidation'] = [
     {
-      sqref: 'E3:E' + MAX_ROW,
+      sqref: 'C3:C' + MAX_ROW,
       type: 'list',
       formula1: 'RESP_NAMES',
       allowBlank: true,
