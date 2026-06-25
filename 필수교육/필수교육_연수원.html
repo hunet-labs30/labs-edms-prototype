@@ -400,6 +400,8 @@ const TYPE = {
   offline:  { label:'오프라인',    icon:'orange' },
   hybrid:   { label:'하이브리드',  icon:'green'  },
   micro:    { label:'마이크로러닝', icon:'purple' },
+  card:     { label:'카드뉴스',    icon:'blue'   },
+  article:  { label:'아티클',      icon:'gray'   },
 };
 
 /* ─── 이수율 색상 규칙 ───────────────────────────
@@ -545,7 +547,7 @@ const allGroups = [...progressGroups, ...doneGroups].sort((a,b)=>getStartDate(b)
 
 /* ─── 상태 ─── */
 let selectedId = null;
-let filterTypes = ['online','offline','hybrid','micro'];
+let filterTypes = ['online','offline','hybrid','micro','card','article'];
 
 /* ─── 통계 ─── */
 function calcStats(courses){
@@ -668,6 +670,8 @@ function buildPanel(g){
       <label class="chk"><input type="checkbox" data-type="offline"  checked onchange="panelFilter(${g.id})"> 오프라인</label>
       <label class="chk"><input type="checkbox" data-type="hybrid"    checked onchange="panelFilter(${g.id})"> 하이브리드</label>
       <label class="chk"><input type="checkbox" data-type="micro"    checked onchange="panelFilter(${g.id})"> 마이크로러닝</label>
+      <label class="chk"><input type="checkbox" data-type="card"     checked onchange="panelFilter(${g.id})"> 카드뉴스</label>
+      <label class="chk"><input type="checkbox" data-type="article"  checked onchange="panelFilter(${g.id})"> 아티클</label>
     </div>
     <div class="p-course-list" id="p-course-list">${courseHTML}</div>
   `;
@@ -703,7 +707,7 @@ function closePanel(){
   document.getElementById('panel').classList.remove('open');
   document.getElementById('mainWrap').classList.remove('panel-open');
   selectedId = null;
-  filterTypes = ['online','offline','hybrid','micro'];
+  filterTypes = ['online','offline','hybrid','micro','card','article'];
   renderCards(allGroups,'gl-all');
 }
 
