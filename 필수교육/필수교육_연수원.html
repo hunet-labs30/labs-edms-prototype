@@ -212,7 +212,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .p-ach-bar-fill{height:100%;border-radius:4px;transition:width .7s ease;}
 
 /* 과정 목록 */
-.p-filter{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.p-filter{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+
+/* 드롭다운 버튼 */
+.filter-btn{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--white);font-size:12.5px;color:var(--text-700);cursor:pointer;transition:all .12s;user-select:none;white-space:nowrap;}
+.filter-btn:hover{border-color:var(--primary);color:var(--primary);}
+.filter-btn.active{border-color:var(--primary);color:var(--primary);background:var(--primary-light);}
+.filter-btn svg{width:13px;height:13px;flex-shrink:0;}
+.filter-btn .chevron{font-size:10px;transition:transform .15s;}
+.filter-btn.open .chevron{transform:rotate(180deg);}
+.filter-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;background:var(--primary);color:white;border-radius:8px;font-size:10px;font-weight:700;}
+
+/* 드롭다운 메뉴 */
+.filter-dropdown-wrap{position:relative;}
+.filter-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:500;min-width:140px;padding:6px 0;display:none;}
+.filter-dropdown.open{display:block;}
+.filter-dd-item{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12.5px;color:var(--text-700);cursor:pointer;transition:background .1s;}
+.filter-dd-item:hover{background:var(--bg);}
+.filter-dd-item input{width:13px;height:13px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;}
+
 .chk{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--text-700);cursor:pointer;user-select:none;}
 .chk input{width:13px;height:13px;accent-color:var(--primary);cursor:pointer;}
 
@@ -666,12 +684,22 @@ function buildPanel(g){
       <span>과정 목록</span>
     </div>
     <div class="p-filter" id="p-filter">
-      <label class="chk"><input type="checkbox" data-type="online"   checked onchange="panelFilter(${g.id})"> 온라인</label>
-      <label class="chk"><input type="checkbox" data-type="offline"  checked onchange="panelFilter(${g.id})"> 오프라인</label>
-      <label class="chk"><input type="checkbox" data-type="hybrid"    checked onchange="panelFilter(${g.id})"> 하이브리드</label>
-      <label class="chk"><input type="checkbox" data-type="micro"    checked onchange="panelFilter(${g.id})"> 마이크로러닝</label>
-      <label class="chk"><input type="checkbox" data-type="card"     checked onchange="panelFilter(${g.id})"> 카드뉴스</label>
-      <label class="chk"><input type="checkbox" data-type="article"  checked onchange="panelFilter(${g.id})"> 아티클</label>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-400)" stroke-width="1.8" style="flex-shrink:0"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      <div class="filter-dropdown-wrap">
+        <button class="filter-btn" id="type-btn-${g.id}" onclick="toggleTypeDropdown(${g.id})">
+          유형
+          <span class="filter-badge" id="type-badge-${g.id}" style="display:none"></span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="filter-dropdown" id="type-dropdown-${g.id}">
+          <label class="filter-dd-item"><input type="checkbox" data-type="online"   checked onchange="panelFilter(${g.id})"> 온라인</label>
+          <label class="filter-dd-item"><input type="checkbox" data-type="offline"  checked onchange="panelFilter(${g.id})"> 오프라인</label>
+          <label class="filter-dd-item"><input type="checkbox" data-type="hybrid"   checked onchange="panelFilter(${g.id})"> 하이브리드</label>
+          <label class="filter-dd-item"><input type="checkbox" data-type="micro"    checked onchange="panelFilter(${g.id})"> 마이크로러닝</label>
+          <label class="filter-dd-item"><input type="checkbox" data-type="card"     checked onchange="panelFilter(${g.id})"> 카드뉴스</label>
+          <label class="filter-dd-item"><input type="checkbox" data-type="article"  checked onchange="panelFilter(${g.id})"> 아티클</label>
+        </div>
+      </div>
     </div>
     <div class="p-course-list" id="p-course-list">${courseHTML}</div>
   `;
@@ -689,10 +717,42 @@ function selectGroup(id){
   document.getElementById('mainWrap').classList.add('panel-open');
 }
 
+/* ─── 유형 드롭다운 토글 ─── */
+function toggleTypeDropdown(gid){
+  const btn = document.getElementById(`type-btn-${gid}`);
+  const dd  = document.getElementById(`type-dropdown-${gid}`);
+  const isOpen = dd.classList.contains('open');
+  closeAllDropdowns();
+  if(!isOpen){
+    dd.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+function closeAllDropdowns(){
+  document.querySelectorAll('.filter-dropdown').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('open'));
+}
+
 /* ─── 패널 필터 ─── */
 function panelFilter(gid){
-  const checks = document.querySelectorAll('#p-filter input');
+  const dd = document.getElementById(`type-dropdown-${gid}`);
+  if(!dd) return;
+  const checks = dd.querySelectorAll('input');
   filterTypes = [...checks].filter(c=>c.checked).map(c=>c.dataset.type);
+
+  /* 배지 업데이트 */
+  const badge = document.getElementById(`type-badge-${gid}`);
+  const btn   = document.getElementById(`type-btn-${gid}`);
+  const unchecked = [...checks].filter(c=>!c.checked).length;
+  if(unchecked > 0){
+    badge.textContent = filterTypes.length;
+    badge.style.display = '';
+    btn.classList.add('active');
+  } else {
+    badge.style.display = 'none';
+    btn.classList.remove('active');
+  }
+
   const g = allGroups.find(g=>g.id===gid);
   if(!g) return;
   const periodEnded = doneGroups.some(dg => dg.id === g.id);
@@ -708,6 +768,7 @@ function closePanel(){
   document.getElementById('mainWrap').classList.remove('panel-open');
   selectedId = null;
   filterTypes = ['online','offline','hybrid','micro','card','article'];
+  closeAllDropdowns();
   renderCards(allGroups,'gl-all');
 }
 
@@ -719,8 +780,9 @@ function toggleTooltip(btn, e){
   document.querySelectorAll('.tooltip-layer').forEach(t=>t.style.display='none');
   if(!isOpen) layer.style.display = 'block';
 }
-document.addEventListener('click', ()=>{
+document.addEventListener('click', (e)=>{
   document.querySelectorAll('.tooltip-layer').forEach(t=>t.style.display='none');
+  if(!e.target.closest('.filter-dropdown-wrap')) closeAllDropdowns();
 });
 
 /* ─── 초기 렌더 ─── */
