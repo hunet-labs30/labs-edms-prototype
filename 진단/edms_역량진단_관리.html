@@ -1195,7 +1195,6 @@
 
   function saveSetting() {
     const val = document.querySelector('input[name="diagUse"]:checked').value;
-    showToast(val === 'use' ? '역량진단 기능이 사용으로 설정되었습니다.' : '역량진단 기능이 미사용으로 설정되었습니다.');
   }
 
   function toggleNav(header) {
@@ -1275,7 +1274,6 @@
   }
   function confirmDraftDelete() {
     closeDraftDeleteModal();
-    showToast('임시저장된 진단이 삭제되었습니다.');
   }
 
   function confirmDaegiStart() {
@@ -1329,7 +1327,6 @@
         '<span class="badge badge-green">완료</span>';
       _magamTargetRow = null;
     }
-    showToast('진단이 마감되었습니다.');
   }
 
   document.getElementById('magamModal').addEventListener('click', function(e) {
@@ -2059,7 +2056,6 @@ function diagRespAddOne(poolIdx) {
   if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
   _diagRespTempList.push({...m});
   _diagRespRenderRegistered();
-  showToast(_maskN(m.name) + ' 추가되었습니다.');
 }
 function diagRespAddSelected() {
   const checked = [...document.querySelectorAll('.diag-resp-pool-chk:checked')];
@@ -2073,7 +2069,6 @@ function diagRespAddSelected() {
   document.getElementById('diag-resp-chk-all').checked = false;
   diagRespOnPoolCheck();
   _diagRespRenderRegistered();
-  showToast(cnt + '명이 추가되었습니다.');
 }
 function diagRespRemove(idx) {
   _diagRespTempList.splice(idx, 1);
@@ -2083,7 +2078,6 @@ function diagRespSave() {
   DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] = [..._diagRespTempList];
   _diagUpdateCell(_diagRespTempList.length);
   diagRespListClose();
-  showToast('저장되었습니다. (' + _diagRespTempList.length + '명)');
 }
 // ── 분류별(스플릿) 패널 ──────────────────────────────────────────────
 let _diagRespSplitItems = [];          // [{label, members}]
@@ -2174,7 +2168,6 @@ function diagRespSplitAddOne(idx) {
   _diagRespTempList.push({...m});
   _diagRespRenderRegistered();
   _diagRespRenderSplitRight(_diagRespSplitFilteredMembers);
-  showToast(_maskN(m.name) + ' 추가되었습니다.');
 }
 function diagRespAddSplitChecked() {
   const checked = [...document.querySelectorAll('.diag-resp-split-chk:checked')];
@@ -2186,7 +2179,6 @@ function diagRespAddSplitChecked() {
   });
   _diagRespRenderRegistered();
   _diagRespRenderSplitRight(_diagRespSplitFilteredMembers);
-  showToast(cnt + '명이 추가되었습니다.');
 }
 
 function diagRespListClose() {
@@ -2281,7 +2273,6 @@ function diagListDelete(origIdx) {
 function diagListSave() {
   const cnt = (_currentDict()[_currentDiagRowIdx] || []).length;
   diagListClose();
-  showToast('저장되었습니다. (' + cnt + '명)');
 }
 function diagListClose() {
   document.getElementById('diag-target-list-modal').style.display = 'none';
@@ -2391,7 +2382,6 @@ document.addEventListener('DOMContentLoaded', () => {
           _diagUpdateCell(existing.length);
         }
         if (document.getElementById('diag-target-list-modal')?.style.display !== 'none') diagListRender();
-        showToast(members.length + '명이 추가 등록되었습니다.');
       },
       getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스'],
     });
