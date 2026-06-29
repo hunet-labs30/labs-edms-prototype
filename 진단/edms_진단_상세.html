@@ -619,8 +619,7 @@
               <option value="datechange">종료일 변경</option>
               <option value="resp_delete">응답자 삭제</option>
             </select>
-            <button class="btn btn-danger btn-sm" id="btnAfterDeleteTarget" style="display:none;" onclick="deleteAfterTargetSelected()">대상자 삭제</button>
-            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 등록</button>
+<button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 등록</button>
             <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 등록</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
@@ -1239,26 +1238,23 @@
       const btnAdd       = document.getElementById('btnAfterAddTarget');
       const btnDateChg   = document.getElementById('btnExpiredDateChange');
 
-      const btnDelTarget = document.getElementById('btnAfterDeleteTarget');
-      const btnAddResp   = document.getElementById('btnAfterAddResp');
+      const btnAddResp = document.getElementById('btnAfterAddResp');
 
       if (isExpired) {
-        // 진단 마감 전: 대상자 등록/삭제·응답자 등록 제거, 작업선택(메일발송·종료일변경)은 유지
-        if (workSelect)  workSelect.style.display  = '';
-        if (selCnt)      selCnt.style.display      = '';
-        if (btnDelTarget)btnDelTarget.style.display = 'none';
-        if (btnAdd)      btnAdd.style.display       = 'none';
-        if (btnAddResp)  btnAddResp.style.display   = 'none';
-        if (btnDateChg)  btnDateChg.style.display   = 'none';
+        // 진단 마감 전: 대상자 등록·응답자 등록 제거, 작업선택(메일발송·종료일변경)은 유지
+        if (workSelect) workSelect.style.display = '';
+        if (selCnt)     selCnt.style.display     = '';
+        if (btnAdd)     btnAdd.style.display      = 'none';
+        if (btnAddResp) btnAddResp.style.display  = 'none';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
 
       } else if (isCompleted) {
         // 진단 완료 후: 모든 변경 수단 제거, 날짜 입력 비활성
-        if (workSelect)  workSelect.style.display  = 'none';
-        if (selCnt)      selCnt.style.display      = 'none';
-        if (btnDelTarget)btnDelTarget.style.display = 'none';
-        if (btnAdd)      btnAdd.style.display       = 'none';
-        if (btnAddResp)  btnAddResp.style.display   = 'none';
-        if (btnDateChg)  btnDateChg.style.display   = 'none';
+        if (workSelect) workSelect.style.display = 'none';
+        if (selCnt)     selCnt.style.display     = 'none';
+        if (btnAdd)     btnAdd.style.display      = 'none';
+        if (btnAddResp) btnAddResp.style.display  = 'none';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
         // 상단 기본정보 종료일 → 텍스트로 교체
         const endEl = document.getElementById('diagEndDate');
         if (endEl) {
@@ -1280,13 +1276,12 @@
         });
 
       } else {
-        // 진단 진행 중 (일반): 대상자 삭제·추가, 응답자 등록, 메일발송·종료일변경 모두 가능
-        if (workSelect)  workSelect.style.display  = '';
-        if (selCnt)      selCnt.style.display      = '';
-        if (btnDelTarget)btnDelTarget.style.display = '';
-        if (btnAdd)      btnAdd.style.display       = '';
-        if (btnAddResp)  btnAddResp.style.display   = '';
-        if (btnDateChg)  btnDateChg.style.display   = 'none';
+        // 진단 진행 중 (일반): 대상자 등록, 응답자 등록, 메일발송·종료일변경 모두 가능
+        if (workSelect) workSelect.style.display = '';
+        if (selCnt)     selCnt.style.display     = '';
+        if (btnAdd)     btnAdd.style.display      = '';
+        if (btnAddResp) btnAddResp.style.display  = '';
+        if (btnDateChg) btnDateChg.style.display  = 'none';
       }
     }
   }
