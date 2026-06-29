@@ -452,8 +452,8 @@
             <div class="action-row-right">
               <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
               <button class="btn btn-danger btn-sm" onclick="deleteBeforeSelected()">삭제</button>
-              <button class="btn btn-primary btn-sm" onclick="openTargetListModal()">대상자 등록</button>
-              <button class="btn btn-primary btn-sm" onclick="openRespRegModal()">응답자 등록</button>
+              <button class="btn btn-primary btn-sm" onclick="openTargetListModal()">대상자 관리</button>
+              <button class="btn btn-primary btn-sm" onclick="openRespRegModal()">응답자 관리</button>
             </div>
           </div>
           <div style="overflow-x:auto;">
@@ -619,8 +619,8 @@
               <option value="datechange">종료일 변경</option>
               <option value="resp_delete">응답자 삭제</option>
             </select>
-<button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 등록</button>
-            <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 등록</button>
+<button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 관리</button>
+            <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 관리</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
