@@ -620,7 +620,7 @@
               <option value="resp_delete">응답자 삭제</option>
             </select>
             <button class="btn btn-danger btn-sm" id="btnAfterDeleteTarget" style="display:none;" onclick="deleteAfterTargetSelected()">대상자 삭제</button>
-            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openMemberRegModal()">대상자 등록</button>
+            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 등록</button>
             <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 등록</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
@@ -1079,7 +1079,6 @@
     <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
       <div style="display:flex;gap:6px;">
         <button class="btn btn-outline btn-sm" onclick="openTargetAddFromList()">+ 추가 등록</button>
-        <button class="btn btn-gray btn-sm" onclick="openBulkRegModal()">일괄 등록</button>
       </div>
       <div style="display:flex;gap:6px;">
         <button class="btn btn-reset btn-sm" onclick="closeTargetListModal()">닫기</button>
