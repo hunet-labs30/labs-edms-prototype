@@ -452,8 +452,8 @@
             <div class="action-row-right">
               <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
               <button class="btn btn-danger btn-sm" onclick="deleteBeforeSelected()">삭제</button>
-              <button class="btn btn-gray btn-sm" onclick="openBulkRegModal()">일괄 등록</button>
-              <button class="btn btn-primary btn-sm" onclick="openMemberRegModal()">대상자 등록</button>
+              <button class="btn btn-primary btn-sm" onclick="openTargetListModal()">대상자 등록</button>
+              <button class="btn btn-primary btn-sm" onclick="openRespRegModal()">응답자 등록</button>
             </div>
           </div>
           <div style="overflow-x:auto;">
@@ -1024,6 +1024,68 @@
   </div>
 </div>
 
+<!-- ═══ 진단 대상자 목록 팝업 ═══ -->
+<div id="targetListModal" onclick="if(event.target===this)closeTargetListModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2900;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:6px;width:680px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;">
+
+    <!-- 타이틀바 -->
+    <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:14px;font-weight:700;">진단 대상자 목록</span>
+      <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeTargetListModal()">×</span>
+    </div>
+
+    <!-- 검색 영역 -->
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="tl-search-type" class="select" style="width:80px;">
+          <option value="name">이름</option>
+          <option value="empno">사번</option>
+          <option value="dept">부서</option>
+        </select>
+        <input id="tl-search-keyword" class="input" type="text" placeholder="검색어를 입력해주세요." style="flex:1;height:30px;" onkeydown="if(event.key==='Enter')targetListSearch()">
+        <button class="btn btn-primary btn-sm" style="height:30px;" onclick="targetListSearch()">검색</button>
+        <button class="btn btn-reset btn-sm" style="height:30px;" onclick="targetListResetSearch()">초기화</button>
+      </div>
+    </div>
+
+    <!-- 결과 헤더 -->
+    <div style="padding:8px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;">
+      <span id="tl-result-info" style="font-size:12px;color:#666;">총 <strong id="tl-total-cnt">0</strong>명</span>
+      <button class="btn btn-danger btn-sm" style="height:26px;" onclick="targetListDeleteSelected()">선택 삭제</button>
+    </div>
+
+    <!-- 테이블 -->
+    <div style="flex:1;overflow-y:auto;">
+      <table class="main-table" style="font-size:12px;">
+        <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;">
+          <tr>
+            <th style="width:36px;"><input type="checkbox" id="tl-chk-all" onchange="targetListSelectAll(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
+            <th style="width:36px;">NO</th>
+            <th style="width:80px;">이름</th>
+            <th style="width:100px;">사번</th>
+            <th>부서명</th>
+            <th style="width:60px;">직급</th>
+            <th style="width:50px;">삭제</th>
+          </tr>
+        </thead>
+        <tbody id="tl-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fafafa;">
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="openTargetAddFromList()">+ 추가 등록</button>
+        <button class="btn btn-gray btn-sm" onclick="openBulkRegModal()">일괄 등록</button>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-reset btn-sm" onclick="closeTargetListModal()">닫기</button>
+        <button class="btn btn-primary btn-sm" onclick="saveTargetList()">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ 대상자/응답자 일괄 등록 모달 ═══ -->
 <div class="modal-overlay" id="bulkRegModal" onclick="if(event.target===this)closeBulkRegModal()">
   <div class="modal-box w-lg" style="max-height:88vh;overflow:hidden;display:flex;flex-direction:column;">
@@ -1433,6 +1495,99 @@
     } else {
       showToast('대상자 등록 모듈을 불러오는 중입니다.');
     }
+  }
+
+  // ── 진단 대상자 목록 팝업 ──
+  // BEFORE STATE 테이블의 현재 데이터를 읽어 팝업에 렌더링
+  function openTargetListModal() {
+    _renderTargetList('');
+    document.getElementById('tl-search-keyword').value = '';
+    document.getElementById('tl-search-type').selectedIndex = 0;
+    document.getElementById('tl-chk-all').checked = false;
+    document.getElementById('targetListModal').style.display = 'flex';
+  }
+  function closeTargetListModal() {
+    document.getElementById('targetListModal').style.display = 'none';
+  }
+
+  function _renderTargetList(keyword) {
+    const type = document.getElementById('tl-search-type').value;
+    const rows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
+    const tbody = document.getElementById('tl-tbody');
+    tbody.innerHTML = '';
+    let seq = 0;
+    rows.forEach((tr, idx) => {
+      const cells = tr.querySelectorAll('td');
+      const name  = cells[2] ? cells[2].textContent.trim() : '';
+      const empno = cells[4] ? cells[4].textContent.trim() : '';
+      const dept  = cells[6] ? cells[6].textContent.trim() : '';
+      const rank  = cells[7] ? cells[7].textContent.trim() : '';
+      const kw = keyword.trim().toLowerCase();
+      if (kw) {
+        const target = type === 'name' ? name : type === 'empno' ? empno : dept;
+        if (!target.toLowerCase().includes(kw)) return;
+      }
+      seq++;
+      const row = document.createElement('tr');
+      row.dataset.srcIdx = idx;
+      row.innerHTML = `
+        <td><input type="checkbox" class="tl-row-chk" style="cursor:pointer;accent-color:var(--primary);"></td>
+        <td style="text-align:center;">${seq}</td>
+        <td>${name}</td>
+        <td>${empno}</td>
+        <td>${dept}</td>
+        <td>${rank}</td>
+        <td style="text-align:center;"><button class="btn btn-danger btn-xs" onclick="targetListDeleteRow(this)">삭제</button></td>`;
+      tbody.appendChild(row);
+    });
+    document.getElementById('tl-total-cnt').textContent = seq;
+    document.getElementById('tl-result-info').innerHTML = '총 <strong id="tl-total-cnt">' + seq + '</strong>명';
+  }
+
+  function targetListSearch() {
+    const kw = document.getElementById('tl-search-keyword').value;
+    _renderTargetList(kw);
+  }
+  function targetListResetSearch() {
+    document.getElementById('tl-search-keyword').value = '';
+    _renderTargetList('');
+  }
+  function targetListSelectAll(checked) {
+    document.querySelectorAll('.tl-row-chk').forEach(c => { c.checked = checked; });
+  }
+  function targetListDeleteRow(btn) {
+    const row = btn.closest('tr');
+    const srcIdx = parseInt(row.dataset.srcIdx);
+    const srcRows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
+    if (srcRows[srcIdx]) srcRows[srcIdx].remove();
+    _renderTargetList(document.getElementById('tl-search-keyword').value);
+    showToast('대상자가 삭제되었습니다.');
+  }
+  function targetListDeleteSelected() {
+    const checked = [...document.querySelectorAll('.tl-row-chk:checked')];
+    if (!checked.length) { showToast('삭제할 대상자를 선택하세요.'); return; }
+    if (!confirm(checked.length + '명을 대상자에서 삭제하겠습니까?')) return;
+    const srcRows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
+    checked.map(c => parseInt(c.closest('tr').dataset.srcIdx)).sort((a,b) => b-a)
+      .forEach(i => { if (srcRows[i]) srcRows[i].remove(); });
+    _renderTargetList(document.getElementById('tl-search-keyword').value);
+    showToast(checked.length + '명이 삭제되었습니다.');
+  }
+  function openTargetAddFromList() {
+    closeTargetListModal();
+    openMemberRegModal();
+  }
+  function saveTargetList() {
+    closeTargetListModal();
+    showToast('저장되었습니다.');
+  }
+
+  // ── 응답자 등록 버튼 (BEFORE STATE): 첫 번째 대상자 기준으로 팝업 오픈 ──
+  function openRespRegModal() {
+    const firstRow = document.querySelector('#state-before tbody tr.before-data-row');
+    if (!firstRow) { showToast('먼저 대상자를 등록해주세요.'); return; }
+    const rowNo = parseInt(firstRow.dataset.rowno || 1);
+    openRespSetModal(rowNo, '상사');
   }
 
   // ── 대상자 삭제 ──

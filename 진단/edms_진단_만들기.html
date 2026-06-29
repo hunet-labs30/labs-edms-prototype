@@ -767,6 +767,54 @@ body {
 .draft-saved { font-size: 11px; color: #888; display: none; text-align: center; }
 .draft-saved.show { display: block; }
 
+/* ── 진단 상태 시뮬레이터 (wiz-aside) ── */
+.wiz-status-switcher {
+  border-top: 1px solid #3d5166;
+  border-bottom: 1px solid #3d5166;
+  padding: 8px 0;
+  background: rgba(0,0,0,.18);
+}
+.wiz-status-switcher-label {
+  font-size: 10px; color: #7eb8f7; font-weight: 700;
+  margin-bottom: 5px; padding: 0 14px; letter-spacing: .3px;
+}
+.wiz-status-btn {
+  display: block; width: 100%;
+  padding: 5px 14px; text-align: left;
+  background: transparent; border: none;
+  color: #8da0b0; font-size: 11px; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.wiz-status-btn:hover { background: rgba(255,255,255,.07); color: #d0dae2; }
+.wiz-status-btn.active { color: #fff; font-weight: 700; }
+.wiz-status-btn.active::before { content: '▶ '; }
+
+/* ── 진단 상태 배너 (wiz-content 상단) ── */
+#diag-status-banner {
+  border-radius: 5px; padding: 9px 14px;
+  display: none; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 600; margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+#diag-status-banner.status-after   { background: #e3f2fd; border: 1px solid #90caf9; color: #1565c0; }
+#diag-status-banner.status-expired { background: #fff3e0; border: 1px solid #ffb74d; color: #e65100; }
+#diag-status-banner.status-completed { background: #fce4ec; border: 1px solid #f48fb1; color: #880e4f; }
+#diag-status-banner .banner-desc { font-weight: 400; opacity: .85; }
+
+/* ── STEP 잠금 overlay (wiz-card-body 내부에만 삽입) ── */
+.step-lock-overlay {
+  position: absolute; inset: 0; z-index: 10;
+  background: transparent;
+  pointer-events: all;
+  cursor: not-allowed;
+}
+.step-lock-badge {
+  background: #546e7a; color: #fff;
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 12px; display: inline-flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
@@ -905,8 +953,16 @@ body {
       <!-- ── 왼쪽 단계 패널 ── -->
       <aside class="wiz-aside">
         <div class="wiz-aside-head">
-          <div class="wiz-aside-title">진단 만들기</div>
-          <div class="wiz-aside-sub">7단계로 쉽게 설정하세요</div>
+          <div class="wiz-aside-title" id="wiz-aside-title-text">진단 만들기</div>
+          <div class="wiz-aside-sub" id="wiz-aside-sub-text">7단계로 쉽게 설정하세요</div>
+        </div>
+        <!-- 프로토타입 전용: 진단 상태 시뮬레이터 -->
+        <div class="wiz-status-switcher">
+          <div class="wiz-status-switcher-label">⚙ 상태 시뮬레이션</div>
+          <button class="wiz-status-btn active" id="wiz-status-btn-before"    onclick="setDiagStatus('before')">진단 전 (만들기)</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-after"     onclick="setDiagStatus('after')">진단 진행 중</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-expired"   onclick="setDiagStatus('expired')">진단 마감 전</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-completed" onclick="setDiagStatus('completed')">진단 완료</button>
         </div>
         <div class="wiz-step-list">
           <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
@@ -979,6 +1035,9 @@ body {
 
       <!-- ── 오른쪽 콘텐츠 ── -->
       <div class="wiz-content">
+
+        <!-- 진단 상태 배너 (수정/보기 모드) -->
+        <div id="diag-status-banner"></div>
 
         <!-- STEP 1: 진단지 선택 -->
         <div class="step-content active wiz-card" id="step-content-1">
@@ -1145,6 +1204,7 @@ body {
                       <span style="font-size:12px;color:#888;">~</span>
                       <input class="form-input w-date" id="diagEndDate" type="date">
                       <input class="form-input" id="diagEndTime" type="time" style="width:100px;" value="23:59">
+                      <span id="step5-enddate-hint" style="display:none;font-size:11px;color:#e65100;font-weight:600;">← 종료일만 변경 가능</span>
                     </div>
                   </td>
                 </tr>
@@ -1211,12 +1271,13 @@ body {
             <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
           </div>
           <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
-          <div class="wiz-card-foot">
+          <div class="wiz-card-foot" id="step7-foot">
             <div class="foot-left">
-              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+              <button class="btn btn-gray" onclick="prevStep()" id="step7-prev-btn">← 이전</button>
             </div>
             <div class="foot-right">
-              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()">진단 생성</button>
+              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()" id="step7-create-btn">진단 생성</button>
+              <button class="btn btn-primary btn-lg" onclick="saveDiagEdit()" id="step7-save-btn" style="display:none;">수정 완료</button>
             </div>
           </div>
         </div>
@@ -3372,6 +3433,139 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+/* ══════════════════════════════════════════════════════
+   진단 상태별 수정 분기 (프로토타입 시뮬레이터)
+   상태값: before | after | expired | completed
+   ══════════════════════════════════════════════════════ */
+let _diagStatus = 'before';
+
+// 상태별 STEP 잠금 목록
+// before:    전체 수정 가능
+// after:     STEP 1·2만 잠금 (3~6 수정 가능)
+// expired:   STEP 1·2·5·6 잠금 (3·4만 수정 가능)
+// completed: 전체 잠금
+const STEP_LOCK_MAP = {
+  before:    [],
+  after:     [1, 2],
+  expired:   [1, 2, 5, 6],
+  completed: [1, 2, 3, 4, 5, 6],
+};
+
+function setDiagStatus(status) {
+  _diagStatus = status;
+
+  /* ── 수정/보기 모드에서는 모든 STEP 자유 이동 허용 ── */
+  if (status !== 'before') {
+    maxReachedStep = 7;
+    for (let i = 1; i <= 7; i++) {
+      const el = document.getElementById('wiz-step-' + i);
+      if (el) { el.classList.remove('is-done'); const b = el.querySelector('.wiz-step-badge'); if (b) b.textContent = i; }
+    }
+  }
+
+  /* ── 사이드바 버튼 강조 ── */
+  ['before','after','expired','completed'].forEach(s => {
+    const btn = document.getElementById('wiz-status-btn-' + s);
+    if (btn) btn.classList.toggle('active', s === status);
+  });
+
+  /* ── 사이드바 타이틀 ── */
+  const titles = {
+    before:    ['진단 만들기',      '7단계로 쉽게 설정하세요'],
+    after:     ['진단 수정',        '진단 진행 중'],
+    expired:   ['진단 수정',        '진단 마감 전'],
+    completed: ['진단 보기',        '진단 완료 (보기 전용)'],
+  };
+  const [t, s] = titles[status] || titles.before;
+  const titleEl = document.getElementById('wiz-aside-title-text');
+  const subEl   = document.getElementById('wiz-aside-sub-text');
+  if (titleEl) titleEl.textContent = t;
+  if (subEl)   subEl.textContent   = s;
+
+  /* ── 상태 배너 ── */
+  const banner = document.getElementById('diag-status-banner');
+  if (banner) {
+    if (status === 'before') {
+      banner.style.display = 'none';
+      banner.className = '';
+    } else {
+      const info = {
+        after:     { cls: 'status-after',     icon: '🔵', label: '진단 진행 중',  desc: 'STEP 1·2 수정 불가 / STEP 3~6 수정 가능' },
+        expired:   { cls: 'status-expired',   icon: '🟠', label: '진단 마감 전',  desc: 'STEP 3·4 수정 가능 / 나머지 수정 불가' },
+        completed: { cls: 'status-completed', icon: '🔴', label: '진단 완료',     desc: '모든 항목 수정 불가 · 보기 전용' },
+      }[status];
+      banner.style.display = 'flex';
+      banner.className = info.cls;
+      banner.innerHTML = `<strong>${info.icon} ${info.label}</strong><span class="banner-desc">${info.desc}</span>`;
+    }
+  }
+
+  /* ── STEP 잠금 처리: wiz-card-body에 투명 overlay 삽입, head에 배지 추가 ── */
+  const locked = STEP_LOCK_MAP[status] || [];
+  for (let i = 1; i <= 7; i++) {
+    const stepEl = document.getElementById('step-content-' + i);
+    if (!stepEl) continue;
+
+    // 기존 overlay·배지 제거
+    stepEl.querySelectorAll('.step-lock-overlay').forEach(o => o.remove());
+    stepEl.querySelectorAll('.step-lock-badge').forEach(b => b.remove());
+
+    if (locked.includes(i)) {
+      // wiz-card-body에 투명 overlay (클릭 시 토스트)
+      const body = stepEl.querySelector('.wiz-card-body');
+      if (body) {
+        body.style.position = 'relative';
+        const overlay = document.createElement('div');
+        overlay.className = 'step-lock-overlay';
+        overlay.onclick = () => showToast('수정이 불가합니다.');
+        body.appendChild(overlay);
+      }
+      // wiz-card-head 우측에 🔒 배지
+      const head = stepEl.querySelector('.wiz-card-head');
+      if (head) {
+        head.style.display = 'flex';
+        head.style.justifyContent = 'space-between';
+        head.style.alignItems = 'flex-start';
+        const badge = document.createElement('span');
+        badge.className = 'step-lock-badge';
+        badge.innerHTML = '🔒 수정 불가';
+        head.appendChild(badge);
+      }
+    } else {
+      // 잠금 해제: body position·overlay 정리
+      const body = stepEl.querySelector('.wiz-card-body');
+      if (body) body.style.position = '';
+      const head = stepEl.querySelector('.wiz-card-head');
+      if (head) { head.style.display = ''; head.style.justifyContent = ''; head.style.alignItems = ''; }
+    }
+  }
+
+  /* ── STEP 7 버튼 분기 ── */
+  const createBtn = document.getElementById('step7-create-btn');
+  const saveBtn   = document.getElementById('step7-save-btn');
+  const prevBtn   = document.getElementById('step7-prev-btn');
+  if (createBtn) createBtn.style.display = status === 'before' ? '' : 'none';
+  if (saveBtn)   saveBtn.style.display   = (status !== 'before' && status !== 'completed') ? '' : 'none';
+  if (prevBtn)   prevBtn.style.display   = status === 'completed' ? 'none' : '';
+
+  /* ── 완료 상태: wiz-aside foot 버튼 숨김 ── */
+  const draftBtn = document.querySelector('.btn-draft');
+  if (draftBtn) draftBtn.style.display = status === 'completed' ? 'none' : '';
+}
+
+function saveDiagEdit() {
+  showToast('수정이 완료되었습니다.');
+}
+
+// 페이지 로드 시 URL 파라미터로 상태 초기화
+(function initFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const s = params.get('status');
+  if (s && ['before','after','expired','completed'].includes(s)) {
+    setDiagStatus(s);
+  }
+})();
 </script>
 
 </body>
