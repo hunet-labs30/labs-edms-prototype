@@ -617,8 +617,11 @@
               <option value="">작업 선택 ▼</option>
               <option value="mail">메일 발송</option>
               <option value="datechange">종료일 변경</option>
+              <option value="resp_delete">응답자 삭제</option>
             </select>
+            <button class="btn btn-danger btn-sm" id="btnAfterDeleteTarget" style="display:none;" onclick="deleteAfterTargetSelected()">대상자 삭제</button>
             <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openMemberRegModal()">대상자 등록</button>
+            <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 등록</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
@@ -1237,19 +1240,26 @@
       const btnAdd       = document.getElementById('btnAfterAddTarget');
       const btnDateChg   = document.getElementById('btnExpiredDateChange');
 
+      const btnDelTarget = document.getElementById('btnAfterDeleteTarget');
+      const btnAddResp   = document.getElementById('btnAfterAddResp');
+
       if (isExpired) {
-        // 진단 마감 전: 대상자 등록만 제거, 작업선택(메일발송·종료일변경)은 유지
-        if (workSelect) workSelect.style.display = '';
-        if (selCnt)     selCnt.style.display     = '';
-        if (btnAdd)     btnAdd.style.display      = 'none';
-        if (btnDateChg) btnDateChg.style.display  = 'none';
+        // 진단 마감 전: 대상자 등록/삭제·응답자 등록 제거, 작업선택(메일발송·종료일변경)은 유지
+        if (workSelect)  workSelect.style.display  = '';
+        if (selCnt)      selCnt.style.display      = '';
+        if (btnDelTarget)btnDelTarget.style.display = 'none';
+        if (btnAdd)      btnAdd.style.display       = 'none';
+        if (btnAddResp)  btnAddResp.style.display   = 'none';
+        if (btnDateChg)  btnDateChg.style.display   = 'none';
 
       } else if (isCompleted) {
         // 진단 완료 후: 모든 변경 수단 제거, 날짜 입력 비활성
-        if (workSelect) workSelect.style.display = 'none';
-        if (selCnt)     selCnt.style.display     = 'none';
-        if (btnAdd)     btnAdd.style.display      = 'none';
-        if (btnDateChg) btnDateChg.style.display  = 'none';
+        if (workSelect)  workSelect.style.display  = 'none';
+        if (selCnt)      selCnt.style.display      = 'none';
+        if (btnDelTarget)btnDelTarget.style.display = 'none';
+        if (btnAdd)      btnAdd.style.display       = 'none';
+        if (btnAddResp)  btnAddResp.style.display   = 'none';
+        if (btnDateChg)  btnDateChg.style.display   = 'none';
         // 상단 기본정보 종료일 → 텍스트로 교체
         const endEl = document.getElementById('diagEndDate');
         if (endEl) {
@@ -1271,11 +1281,13 @@
         });
 
       } else {
-        // 진단 진행 후 (일반): 전체 버튼 표시
-        if (workSelect) workSelect.style.display = '';
-        if (selCnt)     selCnt.style.display     = '';
-        if (btnAdd)     btnAdd.style.display      = '';
-        if (btnDateChg) btnDateChg.style.display  = 'none';
+        // 진단 진행 중 (일반): 대상자 삭제·추가, 응답자 등록, 메일발송·종료일변경 모두 가능
+        if (workSelect)  workSelect.style.display  = '';
+        if (selCnt)      selCnt.style.display      = '';
+        if (btnDelTarget)btnDelTarget.style.display = '';
+        if (btnAdd)      btnAdd.style.display       = '';
+        if (btnAddResp)  btnAddResp.style.display   = '';
+        if (btnDateChg)  btnDateChg.style.display   = 'none';
       }
     }
   }
@@ -1412,6 +1424,19 @@
     window._tt = setTimeout(() => { t.style.display = 'none'; }, 2800);
   }
 
+  // ── After 상태: 대상자 선택 삭제 ──
+  function deleteAfterTargetSelected() {
+    const checked = document.querySelectorAll('.after-row-chk:not(:disabled):checked');
+    if (checked.length === 0) {
+      showToast('삭제할 대상자를 선택해주세요.');
+      return;
+    }
+    if (!confirm(checked.length + '명의 대상자를 삭제하겠습니까?\n진행 중인 응답자의 진단도 함께 중단됩니다.')) return;
+    checked.forEach(cb => cb.closest('tr').remove());
+    updateSelCount();
+    showToast('선택 대상자가 삭제되었습니다.');
+  }
+
   // ── After 상태: 선택 건수 (disabled 제외) ──
   function updateSelCount() {
     const count = document.querySelectorAll('.after-row-chk:not(:disabled):checked').length;
@@ -1434,6 +1459,20 @@
     if (val === 'mail') {
       document.getElementById('mailModalMsg').textContent = '선택 인원에게 메일을 전송하겠습니까?';
       document.getElementById('mailModal').classList.add('open');
+    } else if (val === 'resp_delete') {
+      if (confirm(count + '명의 응답자를 삭제하겠습니까?\n응답자를 삭제하면 해당 응답자의 진단이 중단됩니다.')) {
+        document.querySelectorAll('.after-row-chk:not(:disabled):checked').forEach(cb => {
+          const tr = cb.closest('tr');
+          const respCells = tr.querySelectorAll('td');
+          // 응답자 정보 컬럼(인덱스 10~16)을 '—'으로 초기화
+          for (let i = 10; i <= 16; i++) {
+            if (respCells[i]) respCells[i].textContent = '—';
+          }
+          cb.checked = false;
+        });
+        updateSelCount();
+        showToast('선택 응답자가 삭제되었습니다.');
+      }
     } else if (val === 'datechange') {
       // 선택된 행 중 진행중 상태가 있으면 안내 문구 표시 (시작일 입력은 가능하지만 확인 시 무시됨)
       const checkedRows = [...document.querySelectorAll('.after-row-chk:not(:disabled):checked')]
