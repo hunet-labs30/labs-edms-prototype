@@ -1603,6 +1603,7 @@
   function targetListDeleteRow(btn) {
     const row = btn.closest('tr');
     const srcIdx = parseInt(row.dataset.srcIdx);
+    if (!confirm('해당 대상자를 삭제하겠습니까?\n등록된 응답자도 함께 삭제됩니다.')) return;
     const srcRows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
     if (srcRows[srcIdx]) srcRows[srcIdx].remove();
     _renderTargetList(document.getElementById('tl-search-keyword').value);
@@ -1611,7 +1612,7 @@
   function targetListDeleteSelected() {
     const checked = [...document.querySelectorAll('.tl-row-chk:checked')];
     if (!checked.length) { showToast('삭제할 대상자를 선택하세요.'); return; }
-    if (!confirm(checked.length + '명을 대상자에서 삭제하겠습니까?')) return;
+    if (!confirm(checked.length + '명을 대상자에서 삭제하겠습니까?\n등록된 응답자도 함께 삭제됩니다.')) return;
     const srcRows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
     checked.map(c => parseInt(c.closest('tr').dataset.srcIdx)).sort((a,b) => b-a)
       .forEach(i => { if (srcRows[i]) srcRows[i].remove(); });
@@ -1639,7 +1640,7 @@
   function deleteBeforeSelected() {
     const checked = [...document.querySelectorAll('#state-before tbody input[type="checkbox"]:checked')];
     if (!checked.length) { showToast('삭제할 대상자를 선택하세요.'); return; }
-    if (!confirm(checked.length + '명을 대상자에서 삭제하겠습니까?')) return;
+    if (!confirm(checked.length + '명을 대상자에서 삭제하겠습니까?\n등록된 응답자도 함께 삭제됩니다.')) return;
     checked.forEach(chk => chk.closest('tr').remove());
     // 순번 재정렬
     document.querySelectorAll('#state-before tbody tr.before-data-row').forEach((tr, i) => {
