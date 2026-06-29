@@ -2253,6 +2253,11 @@ function diagListOnCheck() {
 function diagListDeleteSelected() {
   const idxs = [...document.querySelectorAll('.diag-row-chk:checked')].map(c => +c.dataset.idx);
   if (!idxs.length) { showToast('삭제할 임직원을 선택하세요.'); return; }
+  const isTarget = _currentDiagType !== 'respondent';
+  const msg = isTarget
+    ? idxs.length + '명을 대상자에서 삭제하겠습니까?\n등록된 응답자도 함께 삭제됩니다.'
+    : idxs.length + '명을 응답자에서 삭제하겠습니까?';
+  if (!confirm(msg)) return;
   const dict = _currentDict();
   const members = dict[_currentDiagRowIdx] || [];
   idxs.sort((a, b) => b - a).forEach(i => members.splice(i, 1));
@@ -2261,6 +2266,11 @@ function diagListDeleteSelected() {
   diagListRender();
 }
 function diagListDelete(origIdx) {
+  const isTarget = _currentDiagType !== 'respondent';
+  const msg = isTarget
+    ? '해당 대상자를 삭제하겠습니까?\n등록된 응답자도 함께 삭제됩니다.'
+    : '해당 응답자를 삭제하겠습니까?';
+  if (!confirm(msg)) return;
   const dict = _currentDict();
   const members = dict[_currentDiagRowIdx] || [];
   members.splice(origIdx, 1);
