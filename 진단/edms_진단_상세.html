@@ -918,6 +918,18 @@
           <div id="diag-resp-person-name" style="font-size:13px;font-weight:700;color:#222;">—</div>
           <div id="diag-resp-person-role" style="font-size:11px;color:#888;margin-top:2px;">—</div>
         </div>
+        <!-- 응답자 구분 -->
+        <div style="padding:10px 12px 8px;border-bottom:1px solid #eee;">
+          <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;">응답자 구분</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button id="diag-resp-type-manager" onclick="diagRespSelectType('상사')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">상사</button>
+            <button id="diag-resp-type-member" onclick="diagRespSelectType('구성원')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">구성원</button>
+            <button id="diag-resp-type-peer" onclick="diagRespSelectType('동료')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">동료</button>
+          </div>
+        </div>
         <!-- 진단 대상자 선택 -->
         <div style="padding:4px 12px 8px;">
           <div style="font-size:11px;color:#999;font-weight:600;padding:8px 0 6px;">진단 대상자 선택</div>
@@ -1385,9 +1397,9 @@
 
   function openRespSetModal(rowNo, type) {
     _diagRespCurrentRowNo = rowNo;
-    _diagRespCurrentType  = type;
-    diagRespModalInitBefore(rowNo, type);
+    _diagRespCurrentType  = '';
     document.getElementById('diag-resp-list-modal').style.display = 'flex';
+    diagRespSelectType(type);
   }
 
   // ── 직접 다운로드 ──
@@ -1662,6 +1674,28 @@
   let _diagRespSplitFilteredMembers = [];
 
   function _storeKey(rowNo, type) { return rowNo + '_' + type; }
+
+  function diagRespSelectType(type) {
+    _diagRespCurrentType = type;
+    // 버튼 스타일 토글
+    const btnMap = { '상사': 'diag-resp-type-manager', '구성원': 'diag-resp-type-member', '동료': 'diag-resp-type-peer' };
+    Object.entries(btnMap).forEach(([t, id]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      if (t === type) {
+        btn.style.border = '1px solid var(--primary)';
+        btn.style.background = 'var(--primary)';
+        btn.style.color = '#fff';
+        btn.style.fontWeight = '600';
+      } else {
+        btn.style.border = '1px solid #ddd';
+        btn.style.background = '#fff';
+        btn.style.color = '#555';
+        btn.style.fontWeight = 'normal';
+      }
+    });
+    diagRespModalInitBefore(_diagRespCurrentRowNo, type);
+  }
 
   function diagRespModalInitBefore(rowNo, type) {
     const key = _storeKey(rowNo, type);
