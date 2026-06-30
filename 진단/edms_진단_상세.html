@@ -439,14 +439,6 @@
     <!-- ====== BEFORE STATE ====== -->
     <div id="state-before">
       <div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:14px 20px 0;">
-          <div class="type-tab-bar">
-            <button class="type-tab-btn active" onclick="switchTypeTab(this)">본인</button>
-            <button class="type-tab-btn" onclick="switchTypeTab(this)">상사</button>
-            <button class="type-tab-btn" onclick="switchTypeTab(this)">구성원</button>
-            <button class="type-tab-btn" onclick="switchTypeTab(this)">동료</button>
-          </div>
-        </div>
         <div style="padding:14px 20px;">
           <div class="action-row" style="margin-bottom:12px;">
             <div class="action-row-right">
@@ -1328,6 +1320,7 @@
 
   // ── 공통 모듈 초기화 ──
   document.addEventListener('DOMContentLoaded', () => {
+    renderBeforeTable();
     if (typeof meMbrInit === 'function') {
       meMbrInit({
         getRegistered: () => [],
@@ -1347,14 +1340,8 @@
     if (!isOpen) group.classList.add('open');
   }
 
-  // ── 진단 유형 탭 ──
-  function switchTypeTab(btn) {
-    btn.closest('.type-tab-bar').querySelectorAll('.type-tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const tabs = [...btn.closest('.type-tab-bar').querySelectorAll('.type-tab-btn')];
-    const tabIdx = tabs.indexOf(btn);
-
+  // ── 진단진행전 테이블 렌더링 ──
+  function renderBeforeTable() {
     document.querySelectorAll('#state-before .before-data-row').forEach(tr => {
       const name   = tr.dataset.name   || '-';
       const boss   = parseInt(tr.dataset.boss   || 0);
@@ -1367,30 +1354,16 @@
       const memberCell = tr.querySelector('.resp-member');
       const peerCell   = tr.querySelector('.resp-peer');
 
-      if (selfCell)   selfCell.innerHTML   = '-';
-      if (bossCell)   bossCell.innerHTML   = '-';
-      if (memberCell) memberCell.innerHTML = '-';
-      if (peerCell)   peerCell.innerHTML   = '-';
-
-      if (tabIdx === 0) {
-        // 본인답변유형: 본인 이름만 노출
-        if (selfCell) selfCell.textContent = name;
-      } else if (tabIdx === 1) {
-        // 상사답변유형: 상사 인원수 or 설정 버튼
-        if (bossCell) bossCell.innerHTML = boss > 0
-          ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;cursor:pointer;" onclick="openRespSetModal(${rowNo},'상사')">${boss}명</span>`
-          : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'상사')">설정</button>`;
-      } else if (tabIdx === 2) {
-        // 구성원답변유형: 구성원 인원수 or 설정 버튼
-        if (memberCell) memberCell.innerHTML = member > 0
-          ? `<span class="badge" style="background:#e3f2fd;color:#1565c0;cursor:pointer;" onclick="openRespSetModal(${rowNo},'구성원')">${member}명</span>`
-          : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'구성원')">설정</button>`;
-      } else if (tabIdx === 3) {
-        // 동료답변유형: 동료 인원수 or 설정 버튼
-        if (peerCell) peerCell.innerHTML = peer > 0
-          ? `<span class="badge" style="background:#fff3e0;color:#e65100;cursor:pointer;" onclick="openRespSetModal(${rowNo},'동료')">${peer}명</span>`
-          : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'동료')">설정</button>`;
-      }
+      if (selfCell) selfCell.textContent = name;
+      if (bossCell) bossCell.innerHTML = boss > 0
+        ? `<span class="badge" style="background:#e8f5e9;color:#2e7d32;cursor:pointer;" onclick="openRespSetModal(${rowNo},'상사')">${boss}명</span>`
+        : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'상사')">설정</button>`;
+      if (memberCell) memberCell.innerHTML = member > 0
+        ? `<span class="badge" style="background:#e3f2fd;color:#1565c0;cursor:pointer;" onclick="openRespSetModal(${rowNo},'구성원')">${member}명</span>`
+        : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'구성원')">설정</button>`;
+      if (peerCell) peerCell.innerHTML = peer > 0
+        ? `<span class="badge" style="background:#fff3e0;color:#e65100;cursor:pointer;" onclick="openRespSetModal(${rowNo},'동료')">${peer}명</span>`
+        : `<button class="btn btn-outline btn-xs" onclick="openRespSetModal(${rowNo},'동료')">설정</button>`;
     });
   }
 
@@ -1863,9 +1836,7 @@
       const typeAttr = {상사:'boss', 구성원:'member', 동료:'peer'}[_diagRespCurrentType];
       if (typeAttr) {
         tr.dataset[typeAttr] = cnt;
-        // 현재 활성 탭 재렌더링
-        const activeBtn = document.querySelector('#state-before .type-tab-btn.active');
-        if (activeBtn) switchTypeTab(activeBtn);
+        renderBeforeTable();
       }
     }
     diagRespListClose();
