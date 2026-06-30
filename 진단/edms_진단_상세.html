@@ -461,10 +461,10 @@
                   <th>부서/팀</th>
                   <th style="width:52px;">직급</th>
                   <th style="width:100px;">휴대번호</th>
-                  <th style="width:80px;">응답자(본인)</th>
-                  <th style="width:80px;">응답자(상사)</th>
-                  <th style="width:90px;">응답자(구성원)</th>
-                  <th style="width:80px;">응답자(동료)</th>
+                  <th class="th-resp-self" style="width:80px;">응답자(본인)</th>
+                  <th class="th-resp-boss" style="width:80px;">응답자(상사)</th>
+                  <th class="th-resp-member" style="width:90px;">응답자(구성원)</th>
+                  <th class="th-resp-peer" style="width:80px;">응답자(동료)</th>
                 </tr>
               </thead>
               <tbody>
@@ -1221,6 +1221,17 @@
     document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
     document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
     setupInfoDates(state);
+
+    // ── BEFORE 응답자 컬럼 노출 제어 (진단 설정 기반) ──
+    // URL ?types=self,boss,member,peer (기본값: 모두 표시)
+    const typesParam = params.get('types');
+    const activeTypes = typesParam ? typesParam.split(',') : ['self', 'boss', 'member', 'peer'];
+    ['self', 'boss', 'member', 'peer'].forEach(t => {
+      const show = activeTypes.includes(t);
+      document.querySelectorAll(`.th-resp-${t}, .resp-${t}`).forEach(el => {
+        el.style.display = show ? '' : 'none';
+      });
+    });
 
     // ── 전환 버튼 현재 상태 강조 ──
     const btnMap = {
