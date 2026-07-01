@@ -276,6 +276,12 @@ body {
 /* inline edit */
 .inline-input { height: 26px; border: 1px solid var(--primary); border-radius: 3px; padding: 0 8px; font-size: 12px; font-family: inherit; outline: none; flex: 1; }
 .inline-code { height: 26px; border: 1px solid #d0d7e2; border-radius: 3px; padding: 0 8px; font-size: 11px; font-family: 'Consolas', monospace; outline: none; width: 130px; color: #555; }
+.tree-row.editing { flex-wrap: wrap; align-items: flex-start; }
+.edit-row-top { display: flex; align-items: center; gap: 8px; width: 100%; }
+.desc-textarea { width: 100%; margin-top: 6px; border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; font-size: 12px; font-family: inherit; resize: vertical; color: var(--text); min-height: 52px; line-height: 1.5; }
+.desc-textarea:focus { outline: none; border-color: var(--primary); }
+.row-name-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.row-desc-preview { font-size: 11px; color: #999; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── 우측 패널 ── */
 .summary-stat { display: flex; align-items: baseline; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #f0f2f5; }
@@ -1872,36 +1878,61 @@ function rowEl(depth, obj, parent, grand) {
   row.appendChild(badge);
 
   if (obj._editing) {
+    const topRow = document.createElement('div');
+    topRow.className = 'edit-row-top';
+
     const nameInput = document.createElement('input');
     nameInput.className = 'inline-input';
     nameInput.value = obj.name || '';
     nameInput.placeholder = depth === 1 ? '예: 리더십 역량 진단' : depth === 2 ? '예: Self' : '예: 자기인식';
-    row.appendChild(nameInput);
+    topRow.appendChild(nameInput);
 
     nameInput.oninput = () => {
       obj.code = generateCode(depth, nameInput.value, parent, grand);
     };
-    nameInput.onkeydown = (e) => { if (e.key === 'Enter') saveEdit(obj, nameInput); if (e.key === 'Escape') cancelEdit(obj); };
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn btn-xs btn-primary';
     saveBtn.textContent = '저장';
-    saveBtn.onclick = () => saveEdit(obj, nameInput);
-    row.appendChild(saveBtn);
+    topRow.appendChild(saveBtn);
 
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'btn btn-xs btn-gray';
     cancelBtn.textContent = '취소';
     cancelBtn.onclick = () => cancelEdit(obj);
-    row.appendChild(cancelBtn);
+    topRow.appendChild(cancelBtn);
+
+    row.appendChild(topRow);
+
+    let descInput = null;
+    if (depth < 3) {
+      descInput = document.createElement('textarea');
+      descInput.className = 'desc-textarea';
+      descInput.value = obj.description || '';
+      descInput.placeholder = depth === 1 ? '유형 설명 (선택사항)' : '역량군 설명 (선택사항)';
+      descInput.rows = 2;
+      row.appendChild(descInput);
+    }
+
+    nameInput.onkeydown = (e) => { if (e.key === 'Enter') saveEdit(obj, nameInput, descInput); if (e.key === 'Escape') cancelEdit(obj); };
+    saveBtn.onclick = () => saveEdit(obj, nameInput, descInput);
 
     row.classList.add('editing');
     setTimeout(() => nameInput.focus(), 0);
   } else {
+    const nameWrap = document.createElement('span');
+    nameWrap.className = 'row-name-wrap';
     const name = document.createElement('span');
     name.className = 'row-name d' + depth;
     name.textContent = obj.name;
-    row.appendChild(name);
+    nameWrap.appendChild(name);
+    if (depth < 3 && obj.description) {
+      const descPrev = document.createElement('span');
+      descPrev.className = 'row-desc-preview';
+      descPrev.textContent = obj.description;
+      nameWrap.appendChild(descPrev);
+    }
+    row.appendChild(nameWrap);
 
 
     if (depth < 3) {
@@ -1999,10 +2030,11 @@ function generateCode(depth, name, parent, grand) {
   return '';
 }
 
-function saveEdit(obj, nameInput) {
+function saveEdit(obj, nameInput, descInput) {
   const name = nameInput.value.trim();
   if (!name) { toast('이름을 입력해주세요'); return; }
   obj.name = name;
+  if (descInput != null) obj.description = descInput.value.trim();
   obj._editing = false;
   obj._isNew = false;
   renderTree();
