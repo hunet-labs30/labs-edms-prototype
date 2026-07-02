@@ -301,7 +301,6 @@
   .tbl-wrap thead th.center { text-align: center; }
   .tbl-wrap tbody tr { border-bottom: 1px solid #f0f2f5; transition: background .1s; }
   .tbl-wrap tbody tr:hover { background: #f8faff; }
-  .tbl-wrap tbody tr:hover .row-actions { opacity: 1; }
   .tbl-wrap tbody td { padding: 11px 14px; vertical-align: middle; }
   .tbl-wrap tbody td.center { text-align: center; }
 
@@ -900,14 +899,9 @@
             <option value="공개">공개</option>
             <option value="비공개">비공개</option>
           </select>
-          <select class="filter-select" id="filterStatus" onchange="filterTable()">
-            <option value="">상태 전체</option>
-            <option value="완료">완료</option>
-            <option value="임시저장">임시저장</option>
-          </select>
           <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
           <span class="filter-count" id="filterCount"></span>
-          <div style="display:flex; gap:8px; margin-left:auto;">
+          <div style="display:flex; gap:8px;">
             <button class="btn btn-gray" onclick="openBulkModal()">일괄등록</button>
             <a href="edms_진단지_만들기.html" class="btn btn-primary">＋ 진단지 만들기</a>
           </div>
@@ -919,10 +913,9 @@
               <tr>
                 <th>진단지명</th>
                 <th class="center">질문수</th>
-                <th class="center">상태</th>
                 <th>최종 수정일</th>
                 <th class="center">공개 여부</th>
-                <th style="width:130px;"></th>
+                <th style="width:110px;"></th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -936,6 +929,7 @@
             <option value="30">30개</option>
             <option value="50" selected>50개</option>
             <option value="100">100개</option>
+            <option value="200">200개</option>
           </select>
         </div>
         <!-- 페이지네이션 -->
@@ -1106,25 +1100,45 @@
         <div class="bulk-info-title">일괄등록 안내</div>
         엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·질문을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
         시트 구성: <strong>한 행 = 한 질문.</strong> 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
-        질문유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+        질문유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.<br>
+        오류가 있는 경우 등록 버튼이 비활성화됩니다.
       </div>
 
       <!-- Step 1 -->
       <div class="bulk-section">
         <div class="bulk-step-title">Step 1. 업로드 양식 다운로드</div>
-        <a href="진단_일괄등록_템플릿.xlsx" download="진단_일괄등록_템플릿.xlsx" class="btn btn-outline">📥 업로드 양식 다운로드</a>
+        <a href="진단_일괄등록_템플릿.xlsx" download="진단_일괄등록_템플릿.xlsx" style="color:var(--primary); text-decoration:none; font-size:13px; font-weight:600; cursor:pointer;">📥 샘플파일 다운로드</a>
       </div>
 
       <!-- Step 2 -->
       <div class="bulk-section">
-        <div class="bulk-step-title">Step 2. 파일 첨부 및 미리보기</div>
+        <div class="bulk-step-title">Step 2. 파일 첨부</div>
         <div class="bulk-drop-zone" id="bulkDropZone"
           ondragover="bulkDragOver(event)" ondragleave="bulkDragLeave(event)" ondrop="bulkDrop(event)"
           onclick="document.getElementById('bulkFileInput').click()">
           <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
           <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput').click()">파일 선택</button>
-          <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this)">
-          <div id="bulkFileName" style="margin-top:12px; font-size:12px; color:var(--primary); font-weight:600;"></div>
+          <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleBulkFile(this.files[0])">
+        </div>
+        <div id="bulkFileSelected" style="display:none; margin-top:10px; padding:8px 12px; background:#f4f6ff; border:1px solid #c7d8f7; border-radius:6px; font-size:12px; color:#2a3a6a; display:none; align-items:center; gap:8px;">
+          <span id="bulkFileNameText" style="flex:1; font-weight:600;"></span>
+          <button type="button" onclick="bulkClearFile()" style="background:none; border:none; cursor:pointer; color:#888; font-size:15px; line-height:1;">×</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="bulk-section">
+        <div class="bulk-step-title">Step 3. 미리보기 및 등록</div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-outline" id="bulkPreviewBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview()">미리보기</button>
+          <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
+          <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
+        </div>
+        <div id="bulkPreviewResult" style="display:none; margin-top:16px;">
+          <div style="font-size:13px; font-weight:700; margin-bottom:8px;">미리보기 결과</div>
+          <div id="bulkPreviewMessage" style="font-size:12px; margin-bottom:8px;"></div>
+          <div id="bulkPreviewTable"></div>
+          <button id="bulkErrorDownloadBtn" style="display:none; margin-top:8px;" class="btn btn-gray btn-sm" onclick="downloadErrorList()">오류 목록 다운로드</button>
         </div>
       </div>
 
@@ -1152,10 +1166,6 @@
         </table>
       </div>
 
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeBulkModal()">취소</button>
-      <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
     </div>
   </div>
 </div>
@@ -1361,46 +1371,9 @@
 
   // ── 샘플 데이터 ──
   let QSET_DATA = [
-    {
-      id: 'QSET_001',
-      name: '팀장 리더십 역량 진단',
-      target: '팀장급',
-      types: 3, groups: 12, items: 36, questions: 108,
-      isPublic: true, status: '완료',
-      updatedAt: '2025.12.01', updatedBy: '김담당',
-    },
-    {
-      id: 'QSET_002',
-      name: '임원 리더십 역량 진단',
-      target: '임원',
-      types: 3, groups: 12, items: 36, questions: 108,
-      isPublic: true, status: '완료',
-      updatedAt: '2025.11.15', updatedBy: '김담당',
-    },
-    {
-      id: 'QSET_003',
-      name: '중간관리자 리더십 진단',
-      target: '과·차장급',
-      types: 2, groups: 8, items: 24, questions: 72,
-      isPublic: true, status: '완료',
-      updatedAt: '2025.10.20', updatedBy: '이담당',
-    },
-    {
-      id: 'QSET_004',
-      name: '신입사원 온보딩 역량 진단',
-      target: '신입사원',
-      types: 1, groups: 4, items: 12, questions: 24,
-      isPublic: false, status: '임시저장',
-      updatedAt: '2025.12.05', updatedBy: '김담당',
-    },
-    {
-      id: 'QSET_005',
-      name: '직무 역량 자가진단',
-      target: '전 임직원',
-      types: 1, groups: 5, items: 15, questions: 30,
-      isPublic: false, status: '임시저장',
-      updatedAt: '2025.12.08', updatedBy: '박담당',
-    },
+    { id:'QSET_001', name:'팀장 리더십 역량 진단', target:'팀장급', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.12.01', updatedBy:'김담당' },
+    { id:'QSET_002', name:'임원 리더십 역량 진단', target:'임원', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.11.15', updatedBy:'김담당' },
+    { id:'QSET_003', name:'중간관리자 리더십 진단', target:'과·차장급', types:2, groups:8, items:24, questions:72, isPublic:true, updatedAt:'2025.10.20', updatedBy:'이담당' },
   ];
 
   let qsetDeleteTargetId = null;
@@ -1410,7 +1383,7 @@
     const tbody = document.getElementById('tableBody');
     const empty = document.getElementById('emptyMsg');
     const fc = document.getElementById('filterCount');
-    if (fc) fc.textContent = '총 ' + data.length + '건';
+    if (fc) fc.textContent = '전체 ' + data.length + '건';
 
     if (data.length === 0) {
       tbody.innerHTML = '';
@@ -1425,11 +1398,6 @@
           <div class="qset-name" onclick="openEdit('${q.id}')">${escHtml(q.name)}</div>
         </td>
         <td class="center" style="font-weight:700;color:var(--primary);">${q.questions}개</td>
-        <td class="center">
-          <span class="status-badge ${q.status==='완료'?'status-done':'status-draft'}">
-            ${q.status==='완료'?'✓ 완료':'· 임시저장'}
-          </span>
-        </td>
         <td style="font-size:11.5px;color:#888;">${q.updatedAt}</td>
         <td class="center">
           <button class="btn btn-sm ${q.isPublic?'btn-outline':'btn-gray'}" onclick="togglePublic('${q.id}')">
@@ -1454,12 +1422,10 @@
   function filterTable() {
     const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
     const pub     = document.getElementById('filterPublic').value;
-    const status  = document.getElementById('filterStatus').value;
     const filtered = QSET_DATA.filter(q => {
-      const matchName   = !keyword || q.name.toLowerCase().includes(keyword) || q.id.toLowerCase().includes(keyword);
-      const matchPub    = !pub || (pub==='공개'?q.isPublic:!q.isPublic);
-      const matchStatus = !status || q.status === status;
-      return matchName && matchPub && matchStatus;
+      const matchName = !keyword || q.name.toLowerCase().includes(keyword) || q.id.toLowerCase().includes(keyword);
+      const matchPub  = !pub || (pub==='공개'?q.isPublic:!q.isPublic);
+      return matchName && matchPub;
     });
     renderTable(filtered);
   }
@@ -1467,7 +1433,6 @@
   function resetFilter() {
     document.getElementById('searchInput').value = '';
     document.getElementById('filterPublic').value = '';
-    document.getElementById('filterStatus').value = '';
     renderTable(QSET_DATA);
   }
 
@@ -1480,10 +1445,11 @@
     const orig = QSET_DATA.find(q => q.id === id);
     if (!orig) return;
     const newId = 'QSET_' + String(QSET_DATA.length + 1).padStart(3, '0');
-    const copy  = { ...orig, id: newId, name: orig.name + ' (복사본)', status: '임시저장', updatedAt: '2025.12.08', updatedBy: '김담당' };
+    const copy  = { ...orig, id: newId, name: orig.name + ' (복사본)', updatedAt: '2025.12.08', updatedBy: '김담당' };
     QSET_DATA.unshift(copy);
     filterTable();
     showToast('\''+orig.name+'\' 복사본이 생성됐습니다.');
+    document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // ── 공개 토글 ──
@@ -1502,7 +1468,7 @@
     qsetDeleteTargetId = id;
     document.getElementById('deleteModalBody').innerHTML = `
       <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠어요?<br><br>
-      <span style="color:#888;font-size:12px;">이미 생성된 진단은 진단지 구조가 저장되어 있어 영향을 받지 않습니다. 삭제 후 되돌릴 수 없습니다.</span>`;
+      <span style="color:#888;font-size:12px;">삭제 후 되돌릴 수 없습니다.</span>`;
     document.getElementById('deleteModal').classList.add('open');
   }
 
@@ -1536,10 +1502,16 @@
   }
   function closeBulkModal() {
     document.getElementById('bulkModal').classList.remove('open');
-    document.getElementById('bulkFileName').textContent = '';
     document.getElementById('bulkFileInput').value = '';
-    const btn = document.getElementById('bulkSubmitBtn');
-    btn.disabled = true; btn.style.opacity = '.45'; btn.style.cursor = 'not-allowed';
+    const sel = document.getElementById('bulkFileSelected');
+    sel.style.display = 'none';
+    document.getElementById('bulkFileNameText').textContent = '';
+    const previewResult = document.getElementById('bulkPreviewResult');
+    previewResult.style.display = 'none';
+    const previewBtn = document.getElementById('bulkPreviewBtn');
+    previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
+    const submitBtn = document.getElementById('bulkSubmitBtn');
+    submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
   }
   function bulkDragOver(e) { e.preventDefault(); document.getElementById('bulkDropZone').classList.add('drag-active'); }
   function bulkDragLeave() { document.getElementById('bulkDropZone').classList.remove('drag-active'); }
@@ -1549,17 +1521,43 @@
     const file = e.dataTransfer.files[0];
     if (file) handleBulkFile(file);
   }
-  function bulkFileSelected(input) { if (input.files[0]) handleBulkFile(input.files[0]); }
   function handleBulkFile(file) {
-    if (!file.name.match(/\.(xlsx|xls)$/i)) { showToast('❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.'); return; }
+    if (!file || !file.name.match(/\.(xlsx|xls)$/i)) { showToast('❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.'); return; }
     if (file.size > 10 * 1024 * 1024) { showToast('❌ 파일 용량이 10MB를 초과합니다.'); return; }
-    document.getElementById('bulkFileName').textContent = '✓ '+file.name+'  ('+(file.size/1024).toFixed(1)+' KB)';
-    const btn = document.getElementById('bulkSubmitBtn');
-    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+    document.getElementById('bulkFileNameText').textContent = file.name + '  (' + (file.size/1024).toFixed(1) + ' KB)';
+    const sel = document.getElementById('bulkFileSelected');
+    sel.style.display = 'flex';
+    const previewBtn = document.getElementById('bulkPreviewBtn');
+    previewBtn.disabled = false; previewBtn.style.opacity = '1'; previewBtn.style.cursor = 'pointer';
+  }
+  function bulkClearFile() {
+    document.getElementById('bulkFileInput').value = '';
+    document.getElementById('bulkFileSelected').style.display = 'none';
+    document.getElementById('bulkFileNameText').textContent = '';
+    document.getElementById('bulkPreviewResult').style.display = 'none';
+    const previewBtn = document.getElementById('bulkPreviewBtn');
+    previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
+    const submitBtn = document.getElementById('bulkSubmitBtn');
+    submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
+  }
+  function bulkPreview() {
+    document.getElementById('bulkPreviewResult').style.display = 'block';
+    document.getElementById('bulkPreviewMessage').innerHTML = '<span style="color:#2a3a6a;">✓ 총 3건 데이터가 확인됐습니다. 오류가 없습니다.</span>';
+    document.getElementById('bulkPreviewTable').innerHTML = '';
+    document.getElementById('bulkErrorDownloadBtn').style.display = 'none';
+    const submitBtn = document.getElementById('bulkSubmitBtn');
+    submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer';
+  }
+  function downloadErrorList() {
+    showToast('오류 목록을 다운로드합니다.');
   }
   function bulkSubmit() {
     showToast('진단지 일괄등록이 완료됐습니다.');
     closeBulkModal();
+  }
+  function changePageSize() {
+    const size = document.getElementById('pageSizeSelect').value;
+    renderTable(QSET_DATA);
   }
   document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
 
