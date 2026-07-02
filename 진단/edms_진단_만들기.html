@@ -1255,7 +1255,7 @@ body {
               <h2>진단을 생성하기 전에 검토해주세요</h2>
               <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
             </div>
-            <button onclick="window.open('진단_응답_화면.html', '_blank')" style="margin-top:4px;height:34px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">👁 진단지 미리보기</button>
+            <button onclick="openDiagnosisPreview()" style="margin-top:4px;height:34px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">👁 진단지 미리보기</button>
           </div>
           <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
           <div class="wiz-card-foot" id="step7-foot">
@@ -3244,6 +3244,38 @@ function saveDraft() {
   msg.classList.add('show');
   setTimeout(() => msg.classList.remove('show'), 2500);
   showToast('임시저장 되었습니다.');
+}
+
+function openDiagnosisPreview() {
+  // STEP 1에서 선택된 진단지 데이터를 sessionStorage에 저장 후 미리보기 페이지 오픈
+  const q = selectedQuestionnaire;
+  if (!q) {
+    showToast('진단지를 먼저 선택해주세요. (STEP 1)');
+    return;
+  }
+
+  // 미리보기에 필요한 형태로 데이터 가공
+  const payload = {
+    name: q.name,
+    types: q.types.map(t => ({
+      name: t.name,
+      qCount: t.groups.reduce((s, g) => s + g.subs.reduce((ss, sub) => ss + (sub.questions?.length || 0), 0), 0),
+      groups: t.groups.map(g => ({
+        name: g.name,
+        qCount: g.subs.reduce((s, sub) => s + (sub.questions?.length || 0), 0),
+        subs: g.subs.map(sub => ({
+          name: sub.name,
+          scale: sub.scale || '5점 척도',
+          questions: sub.questions || []
+        }))
+      }))
+    }))
+  };
+
+  try {
+    sessionStorage.setItem('previewQuestionnaire', JSON.stringify(payload));
+  } catch(e) {}
+  window.open('edms_진단지_미리보기.html', '_blank');
 }
 
 function generateStep7Review() {

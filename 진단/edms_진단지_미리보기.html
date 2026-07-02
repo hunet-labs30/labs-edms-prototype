@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단지 미리보기</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+  background: #f5f6fa;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+
+/* 헤더 */
+.preview-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #e8eaf0;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.preview-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.preview-badge {
+  flex-shrink: 0;
+  background: #e8f0fe;
+  color: #246CF9;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: .3px;
+}
+.preview-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.preview-close {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 14px;
+  background: #f5f6fa;
+  border: 1px solid #dde1ea;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  font-family: inherit;
+}
+.preview-close:hover { background: #eaecf2; }
+
+/* 진행 탭 */
+.type-tabs {
+  background: #fff;
+  border-bottom: 1px solid #e8eaf0;
+  display: flex;
+  gap: 0;
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.type-tab {
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.type-tab.active {
+  color: #246CF9;
+  border-bottom-color: #246CF9;
+  font-weight: 700;
+}
+.type-tab:hover:not(.active) { color: #444; }
+
+/* 본문 */
+.preview-body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* 유형 안내 */
+.type-intro {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  border: 1px solid #e8eaf0;
+}
+.type-intro-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+.type-intro-meta {
+  font-size: 13px;
+  color: #888;
+}
+
+/* 역량군 섹션 */
+.group-section { margin-bottom: 28px; }
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.group-bar {
+  width: 3px;
+  height: 16px;
+  background: #246CF9;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.group-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.group-qcnt {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* 세부역량 카드 */
+.sub-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e8eaf0;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.sub-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f2f5;
+  background: #fafbff;
+}
+.sub-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.sub-card-scale {
+  font-size: 11px;
+  color: #888;
+  background: #f0f2f5;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.sub-card-scale.ab {
+  background: #fff4ed;
+  color: #f97316;
+}
+
+/* 문항 */
+.q-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f6fa;
+}
+.q-item:last-child { border-bottom: none; }
+.q-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  margin-bottom: 6px;
+  letter-spacing: .3px;
+}
+.q-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* 5점 리커트 */
+.likert-row {
+  display: flex;
+  gap: 0;
+  border: 1px solid #e8eaf0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.likert-opt {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  border-right: 1px solid #f0f2f5;
+  background: #fafbff;
+}
+.likert-opt:last-child { border-right: none; }
+.likert-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #dde1ea;
+  background: #fff;
+  margin-bottom: 6px;
+}
+.likert-lbl {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+/* 6점 AB선택형 */
+.ab-row {
+  display: flex;
+  gap: 8px;
+}
+.ab-opt {
+  flex: 1;
+  border: 1.5px solid #e8eaf0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #fafbff;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ab-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #dde1ea;
+  background: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.ab-text {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.5;
+}
+.ab-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f97316;
+  margin-bottom: 3px;
+}
+
+/* 탭 패널 전환 */
+.type-panel { display: none; }
+.type-panel.active { display: block; }
+
+/* 하단 네비 */
+.preview-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e8eaf0;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-info {
+  font-size: 13px;
+  color: #888;
+}
+.footer-btns {
+  display: flex;
+  gap: 8px;
+}
+.btn-nav {
+  height: 36px;
+  padding: 0 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid #dde1ea;
+  background: #fff;
+  color: #333;
+}
+.btn-nav:hover { background: #f5f6fa; }
+.btn-nav.primary {
+  background: #246CF9;
+  color: #fff;
+  border-color: #246CF9;
+}
+.btn-nav.primary:hover { background: #1a5de0; }
+.btn-nav:disabled { opacity: .4; cursor: default; }
+
+/* 빈 상태 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: #bbb;
+  gap: 12px;
+  font-size: 14px;
+}
+.empty-icon { font-size: 40px; }
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <div class="preview-header-left">
+    <span class="preview-badge">미리보기</span>
+    <span class="preview-title" id="headerTitle">진단지 미리보기</span>
+  </div>
+  <button class="preview-close" onclick="window.close()">✕ 닫기</button>
+</div>
+
+<div class="type-tabs" id="typeTabs"></div>
+
+<div class="preview-body" id="previewBody">
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <div>불러올 진단지 데이터가 없습니다.</div>
+    <div style="font-size:12px;color:#ccc;">진단 만들기 페이지에서 진단지를 선택해주세요.</div>
+  </div>
+</div>
+
+<div class="preview-footer" id="previewFooter" style="display:none;">
+  <span class="footer-info" id="footerInfo"></span>
+  <div class="footer-btns">
+    <button class="btn-nav" id="btnPrev" onclick="changeTab(-1)">← 이전 유형</button>
+    <button class="btn-nav primary" id="btnNext" onclick="changeTab(1)">다음 유형 →</button>
+  </div>
+</div>
+
+<script>
+const LIKERT_5 = ['전혀 그렇지 않다','그렇지 않다','보통이다','그렇다','매우 그렇다'];
+const AB_PAIRS = [
+  ['A. 나는 목표보다 과정을 중시한다.', 'B. 나는 과정보다 목표를 중시한다.'],
+  ['A. 나는 혼자 집중해서 일하는 편이다.', 'B. 나는 팀과 함께 협력하며 일하는 편이다.'],
+  ['A. 나는 계획을 세우고 단계적으로 실행한다.', 'B. 나는 상황에 맞게 유연하게 대응한다.'],
+  ['A. 나는 안정적인 방식을 선호한다.', 'B. 나는 새로운 시도를 즐기는 편이다.'],
+  ['A. 나는 세부 사항에 집중하는 편이다.', 'B. 나는 큰 그림을 보는 편이다.'],
+];
+
+let currentTypeIdx = 0;
+let types = [];
+
+function init() {
+  let q = null;
+  try {
+    const raw = sessionStorage.getItem('previewQuestionnaire');
+    if (raw) q = JSON.parse(raw);
+  } catch(e) {}
+
+  if (!q) return;
+
+  types = q.types || [];
+  document.getElementById('headerTitle').textContent = q.name;
+  document.getElementById('previewFooter').style.display = types.length > 1 ? 'flex' : 'none';
+
+  renderTabs();
+  renderAll();
+  switchTab(0);
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('typeTabs');
+  tabs.innerHTML = types.map((t, i) => `
+    <div class="type-tab${i === 0 ? ' active' : ''}" id="tab-${i}" onclick="switchTab(${i})">${t.name}</div>
+  `).join('');
+}
+
+function renderAll() {
+  const body = document.getElementById('previewBody');
+  body.innerHTML = types.map((type, ti) => `
+    <div class="type-panel" id="panel-${ti}">
+      <div class="type-intro">
+        <div class="type-intro-name">${type.name}</div>
+        <div class="type-intro-meta">${type.qCount}문항 · ${type.groups.length}개 역량군</div>
+      </div>
+      ${renderGroups(type.groups, ti)}
+    </div>
+  `).join('');
+}
+
+function renderGroups(groups, ti) {
+  return groups.map((group, gi) => `
+    <div class="group-section">
+      <div class="group-header">
+        <div class="group-bar"></div>
+        <span class="group-name">${group.name}</span>
+        <span class="group-qcnt">${group.qCount}문항</span>
+      </div>
+      ${group.subs.map((sub, si) => renderSub(sub, ti, gi, si)).join('')}
+    </div>
+  `).join('');
+}
+
+function renderSub(sub, ti, gi, si) {
+  const isAB = (sub.scale || '').includes('AB선택형');
+  const scaleClass = isAB ? 'ab' : '';
+  const scaleLabel = isAB ? '6점 AB선택형' : (sub.scale || '5점 척도');
+
+  const questionsHtml = (sub.questions || []).map((q, qi) => {
+    const num = qi + 1;
+    const answerHtml = isAB
+      ? renderAB(qi)
+      : renderLikert5();
+    return `
+      <div class="q-item">
+        <div class="q-num">Q${num}</div>
+        <div class="q-text">${q}</div>
+        ${answerHtml}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="sub-card">
+      <div class="sub-card-head">
+        <span class="sub-card-name">${sub.name}</span>
+        <span class="sub-card-scale ${scaleClass}">${scaleLabel}</span>
+      </div>
+      ${questionsHtml}
+    </div>`;
+}
+
+function renderLikert5() {
+  return `
+    <div class="likert-row">
+      ${LIKERT_5.map(lbl => `
+        <div class="likert-opt">
+          <div class="likert-circle"></div>
+          <span class="likert-lbl">${lbl}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderAB(qi) {
+  const pair = AB_PAIRS[qi % AB_PAIRS.length];
+  return `
+    <div class="ab-row">
+      <div class="ab-opt">
+        <div class="ab-circle"></div>
+        <div>
+          <div class="ab-label">A</div>
+          <div class="ab-text">${pair[0].replace('A. ','')}</div>
+        </div>
+      </div>
+      <div class="ab-opt">
+        <div class="ab-circle"></div>
+        <div>
+          <div class="ab-label">B</div>
+          <div class="ab-text">${pair[1].replace('B. ','')}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function switchTab(idx) {
+  currentTypeIdx = idx;
+  document.querySelectorAll('.type-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.type-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.getElementById('previewBody').scrollTop = 0;
+  window.scrollTo(0, 0);
+  updateFooter();
+}
+
+function changeTab(dir) {
+  const next = currentTypeIdx + dir;
+  if (next < 0 || next >= types.length) return;
+  switchTab(next);
+}
+
+function updateFooter() {
+  const info = document.getElementById('footerInfo');
+  const prev = document.getElementById('btnPrev');
+  const next = document.getElementById('btnNext');
+  info.textContent = `${currentTypeIdx + 1} / ${types.length} 유형`;
+  prev.disabled = currentTypeIdx === 0;
+  next.disabled = currentTypeIdx === types.length - 1;
+  next.textContent = currentTypeIdx === types.length - 1 ? '마지막 유형' : '다음 유형 →';
+}
+
+init();
+</script>
+</body>
+</html>
