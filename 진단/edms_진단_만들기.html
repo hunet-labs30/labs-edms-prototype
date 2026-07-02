@@ -2296,25 +2296,26 @@ function generateScoreSettings() {
       // AB선택형이 포함된 역량군은 정규화 기준 5점으로 고정
       const scaleMax = hasAB ? 5 : rawMax;
 
-      // AB선택형 안내 + 역량군 평균
-      const groupAvg = group.avg != null ? group.avg : null;
-      const avgPct = groupAvg != null ? (groupAvg / scaleMax * 100).toFixed(1) : null;
+      const abRows = [1,2,3,4,5,6].map(v => {
+        const norm = (v / 6 * 5).toFixed(2);
+        const isMid = v === 3;
+        return `<tr style="${isMid ? 'background:#fef3c7;font-weight:600;' : ''}">
+          <td style="padding:3px 10px;text-align:center;border:1px solid #e5e7eb;">${v}점</td>
+          <td style="padding:3px 10px;text-align:center;border:1px solid #e5e7eb;">${norm}점${isMid ? ' ← 중간값' : ''}</td>
+        </tr>`;
+      }).join('');
 
       const abNotice = hasAB
-        ? `<div style="margin-bottom:10px;padding:8px 12px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#78350f;line-height:1.6;">
-            ⚠ 이 역량군에는 <b>6점 척도(AB선택형)</b> 문항이 포함되어 있습니다. 결과 리포트에서 0~5점으로 정규화하여 표시되며, 아래 기준 점수는 <b>1~5 범위</b>로 입력해주세요.
-           </div>`
-        : '';
-
-      const avgBlock = groupAvg != null
-        ? `<div style="margin-bottom:12px;">
-            <div style="font-size:11px;color:#888;margin-bottom:5px;">역량군 전체 응답 평균</div>
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
-                <div style="height:100%;width:${avgPct}%;background:${hasAB ? '#f59e0b' : '#6366f1'};border-radius:4px;"></div>
-              </div>
-              <span style="font-size:13px;font-weight:700;color:${hasAB ? '#92400e' : '#4338ca'};min-width:40px;text-align:right;">${groupAvg.toFixed(1)}<span style="font-size:10px;font-weight:400;color:#aaa;"> / ${scaleMax}</span></span>
-            </div>
+        ? `<div style="margin-bottom:10px;padding:10px 12px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#78350f;line-height:1.6;">
+            ⚠ 이 역량군에는 <b>6점 척도(AB선택형)</b> 문항이 포함됩니다. 결과 리포트에서 아래 기준으로 <b>5점 정규화</b>하여 표시됩니다.
+            <table style="margin-top:8px;border-collapse:collapse;font-size:11px;">
+              <thead><tr style="background:#fde68a;">
+                <th style="padding:3px 12px;border:1px solid #e5e7eb;">6점 원점수</th>
+                <th style="padding:3px 12px;border:1px solid #e5e7eb;">5점 정규화</th>
+              </tr></thead>
+              <tbody>${abRows}</tbody>
+            </table>
+            <div style="margin-top:6px;font-size:11px;color:#92400e;">아래 기준 점수는 <b>1~5 범위</b>로 입력해주세요.</div>
            </div>`
         : '';
 
