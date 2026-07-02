@@ -188,7 +188,9 @@
   .badge-orange { background: #fff4e0; color: #b35c00; }
   .badge-yellow { background: #fffbe6; color: #8a6400; }
   .badge-gray   { background: #f0f2f5; color: #888; }
-  .badge-draft  { background: #f5f0ff; color: #7c3aed; border: 1px solid #e0d0ff; }
+  .badge-draft    { background: #f5f0ff; color: #7c3aed; border: 1px solid #e0d0ff; }
+  .badge-loading  { background: #fff8e1; color: #b07d00; border: 1px solid #ffe082; }
+  .badge-loading::before { content: '⏳ '; font-size: 10px; }
 
   /* 상태 셀 내부: 배지 + 액션버튼 스택 */
   .status-cell { text-align: center; vertical-align: middle; }
@@ -537,6 +539,7 @@
           <option>임시저장</option>
           <option>대기</option>
           <option>진행중</option>
+          <option>리포트 생성중</option>
           <option>완료</option>
         </select>
         <span class="label-auto" style="margin-left:16px;">진단명</span>
@@ -791,9 +794,30 @@
             <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
           </tr>
 
-          <!-- ④ 마감 -->
-          <tr>
+          <!-- ④ 리포트 생성중 -->
+          <tr id="row-loading-8">
             <td>8</td>
+            <td style="font-size:11px;">2025.03.03 00:00 ~<br>2025.03.28 23:59</td>
+            <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="edms_진단_상세.html?state=after">2025년 2분기 마케팅팀 역량진단</a></td>
+            <td>36</td>
+            <td><a class="diag-link" href="#">52</a></td>
+            <td><a class="diag-link" href="#">52</a></td>
+            <td>
+              <div class="progress-wrap">
+                <div class="progress-bar-bg"><div class="progress-bar-fill done" style="width:100%; background:#f4b65a;"></div></div>
+                <span class="progress-text">52/52 <span style="color:#b35c00;">(100%)</span></span>
+              </div>
+            </td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 2분기 마케팅팀 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-gray" disabled style="opacity:.4;cursor:not-allowed;" title="리포트 생성 완료 후 확인 가능합니다.">확인</button></td>
+            <td class="status-cell"><span class="badge badge-loading">리포트 생성중</span></td>
+            <td style="font-size:11px;">2025.03.28</td>
+            <td><button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button></td>
+          </tr>
+
+          <!-- ⑤ 완료 -->
+          <tr>
+            <td>7</td>
             <td style="font-size:11px;">2025.03.03 00:00 ~<br>2025.03.28 23:59</td>
             <td style="text-align:left; padding-left:10px;"><a class="diag-link" href="edms_진단_상세.html?state=after">2025년 1분기 영업팀 역량진단</a></td>
             <td>36</td>
@@ -1354,9 +1378,25 @@
   function confirmMagam() {
     closeMagamModal();
     if (_magamTargetRow) {
-      _magamTargetRow.querySelector('.status-cell').innerHTML =
-        '<span class="badge badge-green">완료</span>';
+      const row = _magamTargetRow;
       _magamTargetRow = null;
+
+      // 마감 즉시: 리포트 생성중 상태로 전환, 결과 버튼 비활성화
+      row.querySelector('.status-cell').innerHTML =
+        '<span class="badge badge-loading">리포트 생성중</span>';
+      const actionCell = row.querySelector('.action-cell');
+      if (actionCell) {
+        actionCell.innerHTML =
+          '<button class="btn btn-sm btn-gray" onclick="location.href=\'edms_진단_만들기.html\'">진단 관리</button>';
+      }
+      showToast('진단이 마감되었습니다. 리포트를 생성 중입니다.');
+
+      // 3초 후: 완료 상태로 자동 전환
+      setTimeout(() => {
+        row.querySelector('.status-cell').innerHTML =
+          '<span class="badge badge-green">완료</span>';
+        showToast('리포트 생성이 완료되었습니다.');
+      }, 3000);
     }
   }
 
@@ -1368,7 +1408,7 @@
   function _rowReadOnly(tr) {
     const badge = tr ? tr.querySelector('.badge') : null;
     const status = badge ? badge.textContent.trim() : '';
-    return (status === '완료' || status === '마감 가능');
+    return (status === '완료' || status === '마감 가능' || status === '리포트 생성중');
   }
   function _bindDiagCell(cell, rowIdx, type, tr) {
     const readOnly = _rowReadOnly(tr);
