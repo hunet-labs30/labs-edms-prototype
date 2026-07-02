@@ -2767,7 +2767,7 @@ function targetBulkPreview() {
 }
 
 function uploadTargetBulkFile() {
-  showToast('대상자가 일괄 등록되었습니다.');
+  showToast('총 OO명이 등록되었습니다.');
   closeModal('targetBulkModal');
 }
 
@@ -2836,7 +2836,7 @@ function downloadTargetTemplate() {
   wb.SheetNames = ['업로드_템플릿', '코드표'];
 
   XLSX.writeFile(wb, '대상자_일괄등록_템플릿.xlsx');
-  showToast('템플릿이 다운로드됩니다. (시트2는 현재 진단 설정 기반)');
+  showToast('템플릿이 다운로드됩니다.');
 }
 
 function openAddTargetModal(tabIdx) {
@@ -3205,7 +3205,6 @@ function deleteSelectedTargets(tabIdx) {
 }
 
 function exportTargetExcel(tabIdx) {
-  showToast('엑셀 파일이 다운로드됩니다.');
 }
 
 function previewDiagnosis() {
