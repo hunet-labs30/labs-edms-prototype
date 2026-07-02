@@ -3357,7 +3357,7 @@ function nextStep() {
       const rows = document.querySelectorAll(`#targets-${idx} tr`);
       if (rows.length === 0) valid = false;
     });
-    if (!valid) { showToast('각 탭에 대상자를 1명 이상 등록해주세요.'); return; }
+    if (!valid) { showToast('대상자를 1명 이상 등록해주세요.'); return; }
   }
   if (currentStep < 7) {
     maxReachedStep = Math.max(maxReachedStep, currentStep + 1);
