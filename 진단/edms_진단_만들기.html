@@ -2272,25 +2272,22 @@ function generateScoreSettings() {
   container.innerHTML = '';
   const scaleMin = 1;
 
-  // AB선택형 세부역량 목록 수집 → 상단 안내 배너
-  const abSubItems = [];
+  // AB선택형 포함 역량군 목록 수집 → 상단 안내 배너
+  const abGroupNames = [];
   selectedQuestionnaire.types.forEach(type => {
     type.groups.forEach(group => {
-      group.subs.forEach(sub => {
-        if ((parseInt(sub.scale) || 5) === 6) {
-          abSubItems.push({ group: group.name, sub: sub.name });
-        }
-      });
+      const hasABSub = group.subs.some(s => (parseInt(s.scale) || 5) === 6);
+      if (hasABSub) abGroupNames.push(group.name);
     });
   });
-  if (abSubItems.length > 0) {
+  if (abGroupNames.length > 0) {
     const banner = document.createElement('div');
     banner.style.cssText = 'margin-bottom:16px;padding:12px 16px;background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;font-size:12px;color:#78350f;line-height:1.7;';
     banner.innerHTML = `
       <div style="font-weight:700;margin-bottom:4px;">⚠ AB선택형 척도 환산 안내</div>
-      <div>아래 세부역량은 <b>AB선택형(6점 척도)</b>입니다. 결과 리포트에서 원점수 ÷ 6 × 5로 <b>0~5점 정규화</b>하여 표시하므로, 해당 역량군의 기준 점수는 <b>1~5 기준</b>으로 입력해주세요.</div>
-      <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px;">
-        ${abSubItems.map(i => `<div style="display:flex;align-items:center;gap:6px;"><span style="background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;padding:1px 7px;font-size:11px;font-weight:600;">${i.group}</span><span style="font-size:11px;color:#92400e;">›</span><span style="font-size:11px;">${i.sub}</span></div>`).join('')}
+      <div>아래 역량군에 <b>AB선택형(6점 척도)</b> 문항이 포함되어 있습니다. 결과 리포트에서 원점수 ÷ 6 × 5로 <b>0~5점 정규화</b>하여 표시하므로, 해당 역량군의 기준 점수는 <b>1~5 기준</b>으로 입력해주세요.</div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+        ${abGroupNames.map(n => `<span style="display:inline-block;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:2px 8px;font-weight:600;">${n}</span>`).join('')}
       </div>
     `;
     container.appendChild(banner);
