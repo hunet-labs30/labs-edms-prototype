@@ -1249,13 +1249,10 @@ body {
 
         <!-- STEP 7: 검토 및 진단 생성 -->
         <div class="step-content wiz-card" id="step-content-7">
-          <div class="wiz-card-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <div>
-              <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
-              <h2>진단을 생성하기 전에 검토해주세요</h2>
-              <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
-            </div>
-            <button onclick="openDiagnosisPreview()" style="margin-top:4px;height:34px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">👁 진단지 미리보기</button>
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
+            <h2>진단을 생성하기 전에 검토해주세요</h2>
+            <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
           </div>
           <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
           <div class="wiz-card-foot" id="step7-foot">
@@ -1263,6 +1260,7 @@ body {
               <button class="btn btn-gray" onclick="prevStep()" id="step7-prev-btn">← 이전</button>
             </div>
             <div class="foot-right">
+              <button onclick="openDiagnosisPreview()" style="height:36px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;">👁 진단지 미리보기</button>
               <button class="btn btn-primary btn-lg" onclick="createDiagnosis()" id="step7-create-btn">진단 생성</button>
               <button class="btn btn-primary btn-lg" onclick="saveDiagEdit()" id="step7-save-btn" style="display:none;">수정 완료</button>
             </div>
@@ -2867,7 +2865,7 @@ function toggleTabTableSelect(tabIdx, checkbox) {
 }
 
 function addSelectedTargets() {
-  showToast('대상자가 추가되었습니다.');
+  showToast('대상자가 등록되었습니다.');
   closeModal('addTargetModal');
 }
 
