@@ -1045,7 +1045,7 @@ body {
             <div>
               <span class="wiz-step-tag">STEP 1 / 6</span>
               <h2>어떤 역량을 진단할까요?</h2>
-              <p>진단 플랫폼에서 생성된 진단지를 선택하세요.<br>진단지가 없다면 먼저 진단 플랫폼에서 만들어주세요.</p>
+              <p>진단지를 선택하세요. 진단지가 없다면 먼저 진단지를 만들어주세요.</p>
             </div>
             <button class="proto-toggle" onclick="toggleStep1State()" id="step1ToggleBtn" title="프로토타입 전용">📋 빈 상태 보기</button>
           </div>
@@ -1054,23 +1054,7 @@ body {
             <!-- ▸ 빈 상태 뷰 -->
             <div id="step1EmptyView" style="display:none;flex:1;flex-direction:row;gap:0;">
 
-              <!-- A타입 -->
-              <div style="flex:1;display:flex;flex-direction:column;border-right:1px solid var(--border);">
-                <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">A타입</div>
-                <div class="step1-no-data">
-                  <div class="step1-no-data-icon">📋</div>
-                  <h3>아직 등록된 진단지가 없어요</h3>
-                  <p>진단을 시작하려면 먼저 진단 플랫폼에서<br>역량 진단지를 만들어주세요.</p>
-                  <button class="btn-create" onclick="window.open('https://y0i1u2.axshare.com','_blank')">
-                    ✚ 진단 플랫폼에서 진단지 만들기
-                  </button>
-                  <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
-                </div>
-              </div>
-
-              <!-- B타입 -->
               <div style="flex:1;display:flex;flex-direction:column;">
-                <div style="text-align:center;font-size:11px;font-weight:700;color:#bbb;padding:10px 0 0;letter-spacing:0.05em;">B타입</div>
                 <div class="step1-no-data">
                   <div class="step1-no-data-icon">📋</div>
                   <h3>아직 등록된 진단지가 없어요</h3>
