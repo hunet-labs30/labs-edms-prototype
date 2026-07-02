@@ -1145,6 +1145,27 @@
       <!-- 오류 케이스 -->
       <div class="bulk-section">
         <div class="bulk-step-title">오류 케이스 정리</div>
+
+        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">파일 레벨</div>
+        <table class="bulk-error-tbl" style="margin-bottom:16px;">
+          <thead>
+            <tr>
+              <th style="width:110px;">액션</th>
+              <th style="width:180px;">상황</th>
+              <th>메시지</th>
+              <th style="width:90px;">노출 방법</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>파일 첨부 시</td><td>엑셀 외 파일 형식</td><td>❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.</td><td>토스트</td></tr>
+            <tr><td>파일 첨부 시</td><td>파일 용량 10MB 초과</td><td>❌ 파일 용량이 10MB를 초과합니다.</td><td>토스트</td></tr>
+            <tr><td>미리보기 완료</td><td>오류 없음</td><td>—</td><td>등록 버튼 활성화</td></tr>
+            <tr><td>미리보기 완료</td><td>오류 1건 이상</td><td>—</td><td>행 오류 테이블 인라인 표시</td></tr>
+            <tr><td>등록 클릭</td><td>정상 등록</td><td>진단지 일괄등록이 완료됐습니다.</td><td>토스트</td></tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">행(Row) 레벨</div>
         <table class="bulk-error-tbl">
           <thead>
             <tr>
