@@ -2272,22 +2272,25 @@ function generateScoreSettings() {
   container.innerHTML = '';
   const scaleMin = 1;
 
-  // AB선택형 역량군 목록 수집 → 상단 안내 배너
-  const abGroupNames = [];
+  // AB선택형 세부역량 목록 수집 → 상단 안내 배너
+  const abSubItems = [];
   selectedQuestionnaire.types.forEach(type => {
     type.groups.forEach(group => {
-      const maxes = group.subs.map(s => parseInt(s.scale) || 5);
-      if (maxes.some(m => m === 6)) abGroupNames.push(group.name);
+      group.subs.forEach(sub => {
+        if ((parseInt(sub.scale) || 5) === 6) {
+          abSubItems.push({ group: group.name, sub: sub.name });
+        }
+      });
     });
   });
-  if (abGroupNames.length > 0) {
+  if (abSubItems.length > 0) {
     const banner = document.createElement('div');
     banner.style.cssText = 'margin-bottom:16px;padding:12px 16px;background:#fffbeb;border:1px solid #f59e0b;border-radius:8px;font-size:12px;color:#78350f;line-height:1.7;';
     banner.innerHTML = `
       <div style="font-weight:700;margin-bottom:4px;">⚠ AB선택형 척도 환산 안내</div>
-      <div>아래 역량군에는 <b>AB선택형(6점 척도)</b> 문항이 포함되어 있습니다. 결과 리포트에서는 <b>0~5점으로 정규화</b>하여 표시하므로, 기준 점수도 <b>1~5 기준</b>으로 입력해주세요.</div>
-      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
-        ${abGroupNames.map(n => `<span style="display:inline-block;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:2px 8px;font-weight:600;">${n}</span>`).join('')}
+      <div>아래 세부역량은 <b>AB선택형(6점 척도)</b>입니다. 결과 리포트에서 원점수 ÷ 6 × 5로 <b>0~5점 정규화</b>하여 표시하므로, 해당 역량군의 기준 점수는 <b>1~5 기준</b>으로 입력해주세요.</div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px;">
+        ${abSubItems.map(i => `<div style="display:flex;align-items:center;gap:6px;"><span style="background:#fef3c7;border:1px solid #f59e0b;border-radius:3px;padding:1px 7px;font-size:11px;font-weight:600;">${i.group}</span><span style="font-size:11px;color:#92400e;">›</span><span style="font-size:11px;">${i.sub}</span></div>`).join('')}
       </div>
     `;
     container.appendChild(banner);
@@ -2301,20 +2304,29 @@ function generateScoreSettings() {
       const subScaleMaxes = group.subs.map(s => parseInt(s.scale) || 5);
       const rawMax = Math.min(...subScaleMaxes);
       const hasAB = subScaleMaxes.some(m => m === 6);
-      // AB선택형이 있으면 정규화 기준 5점으로 고정
+      // AB선택형이 포함된 역량군은 정규화 기준 5점으로 고정
       const scaleMax = hasAB ? 5 : rawMax;
-      const hasMixedScale = !hasAB && new Set(subScaleMaxes).size > 1;
+      const hasMixedScale = new Set(subScaleMaxes).size > 1;
 
-      const abNote = hasAB
-        ? `<div style="margin-top:8px;padding:6px 10px;background:#fffbeb;border:1px solid #f59e0b;border-radius:5px;font-size:11px;color:#78350f;">
-            이 역량군은 <b>AB선택형(6점 척도)</b>입니다. 결과 리포트에서 원점수 ÷ 6 × 5로 정규화하여 표시합니다. 아래 기준 점수는 <b>정규화 기준(1~5)</b>으로 입력해주세요.
+      // 세부역량별 척도 표 (AB선택형이 하나라도 있거나 혼재인 경우 표시)
+      const subScaleTable = hasMixedScale || hasAB
+        ? `<div style="margin-top:8px;padding:8px 10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:5px;">
+            <div style="font-size:11px;font-weight:600;color:#555;margin-bottom:6px;">세부역량별 문항 척도</div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              ${group.subs.map(sub => {
+                const sMax = parseInt(sub.scale) || 5;
+                const isABSub = sMax === 6;
+                return `<div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+                  <span style="min-width:120px;color:#333;">${sub.name}</span>
+                  <span style="background:${isABSub ? '#fef3c7' : '#f3f4f6'};border:1px solid ${isABSub ? '#f59e0b' : '#d1d5db'};border-radius:3px;padding:1px 7px;font-weight:${isABSub ? '600' : '400'};color:${isABSub ? '#92400e' : '#666'};">${sub.scale || '5점 척도'}</span>
+                  ${isABSub ? `<span style="font-size:10px;color:#92400e;">→ 결과 표시 시 0~5 정규화</span>` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+            ${hasAB ? `<div style="margin-top:6px;padding:5px 8px;background:#fffbeb;border:1px solid #f59e0b;border-radius:4px;font-size:11px;color:#78350f;">아래 기준 점수는 정규화 기준 <b>1~5</b>로 입력하세요.</div>` : ''}
            </div>`
         : '';
-      const mixedNote = hasMixedScale
-        ? `<div style="margin-top:8px;padding:6px 10px;background:#fffbe6;border:1px solid #ffe58f;border-radius:5px;font-size:11px;color:#7d5700;">
-            이 역량군에 척도가 다른 문항이 섞여 있어 강점 기준 최대값이 ${scaleMax}점으로 제한됩니다.
-           </div>`
-        : '';
+      const mixedNote = '';
 
       const defaultStrong = Math.round(scaleMax * 0.7);
       const defaultWeak   = Math.round(scaleMax * 0.5);
@@ -2327,9 +2339,8 @@ function generateScoreSettings() {
           <span style="font-size:12px;color:#888;margin:0 6px;">—</span>
           <span class="score-type-name">${group.name}</span>
           <span class="score-type-qcnt">${group.qCount}문항</span>
-          ${hasAB ? `<span style="margin-left:6px;background:#fef3c7;border:1px solid #f59e0b;border-radius:4px;padding:1px 7px;font-size:11px;color:#92400e;font-weight:600;">AB선택형</span>` : ''}
         </div>
-        ${abNote}${mixedNote}
+        ${subScaleTable}${mixedNote}
         <div class="score-inputs-wrap">
           <div class="score-group">
             <div class="score-group-label strong"><span class="dot"></span> 강점 기준</div>
