@@ -636,8 +636,73 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 </div>
 
 <script>
+/* ===== 미리보기 모드: sessionStorage 주입 ===== */
+(function() {
+  try {
+    const raw = sessionStorage.getItem('previewQuestionnaire');
+    if (!raw) return;
+    const pq = JSON.parse(raw);
+    sessionStorage.removeItem('previewQuestionnaire');
+
+    // 미리보기 배너 추가
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#246CF9;color:#fff;text-align:center;font-size:13px;font-weight:700;padding:7px;letter-spacing:.2px;';
+    banner.innerHTML = '👁 진단지 미리보기 — 실제 응답자에게 보이는 화면입니다 &nbsp;<button onclick="window.close()" style="margin-left:16px;height:24px;padding:0 12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:4px;color:#fff;font-size:12px;cursor:pointer;font-family:inherit;">닫기</button>';
+    document.body.insertBefore(banner, document.body.firstChild);
+
+    // GNB/sidebar를 미리보기 배너 높이만큼 내림
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.gnb').style.top = '36px';
+      document.querySelector('.sidebar').style.top = 'calc(var(--gnb-h) + 36px)';
+      document.querySelector('.app').style.paddingTop = 'calc(var(--gnb-h) + 36px)';
+    });
+
+    // 데이터 변환: types[] → DIAG_INFO tabs[]
+    const tabs = pq.types.map(function(type, ti) {
+      const questions = [];
+      type.groups.forEach(function(group) {
+        questions.push({ groupHeader: group.name, groupDesc: '' });
+        group.subs.forEach(function(sub) {
+          const isAB = (sub.scale || '').includes('AB선택형');
+          if (isAB) {
+            // 2개씩 짝지어 {a, b} 쌍으로 변환
+            var qs = sub.questions || [];
+            for (var i = 0; i < qs.length; i += 2) {
+              questions.push({ a: qs[i], b: qs[i+1] || qs[i] });
+            }
+          } else {
+            (sub.questions || []).forEach(function(q) { questions.push(q); });
+          }
+        });
+      });
+
+      const isABTab = type.groups.some(function(g) {
+        return g.subs.some(function(s) { return (s.scale||'').includes('AB선택형'); });
+      });
+      const tabType = isABTab ? 'ab' : 'likert';
+
+      return {
+        id: 'type_' + ti,
+        label: type.name,
+        type: tabType,
+        guide: tabType === 'ab'
+          ? 'Q. A와 B 두 문항을 읽고, 평상시 모습과 보다 가까운 곳에 체크해주세요.'
+          : 'Q. 각 문장을 읽고, 해당 행동을 얼마나 자주, 강하게 보이는지에 따라 5점 척도로 응답해 주세요.',
+        questions: questions
+      };
+    });
+
+    window.__PREVIEW_DIAG_INFO = {
+      name: pq.name,
+      targetName: '홍길동 (예시)',
+      deadline: '진단 기간 내',
+      tabs: tabs
+    };
+  } catch(e) {}
+})();
+
 /* ===== 데이터 ===== */
-const DIAG_INFO = {
+const DIAG_INFO = window.__PREVIEW_DIAG_INFO || {
   name: '2026년 상반기 리더십역량 진단',
   targetName: '홍길동',
   deadline: '공통규칙',
