@@ -833,6 +833,7 @@ function renderContent() {
     if (q && q.groupHeader) {
       html += `<div class="group-section-card">
         <div class="group-section-name">${q.groupHeader}</div>
+        ${q.groupDesc ? `<div class="group-section-desc">${q.groupDesc}</div>` : ''}
       </div>`;
     } else {
       qNum++;
