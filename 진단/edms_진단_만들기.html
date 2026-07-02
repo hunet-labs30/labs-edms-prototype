@@ -2306,16 +2306,20 @@ function generateScoreSettings() {
       }).join('');
 
       const abNotice = hasAB
-        ? `<div style="margin-bottom:10px;padding:10px 12px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#78350f;line-height:1.6;">
-            ⚠ 이 역량군에는 <b>6점 척도(AB선택형)</b> 문항이 포함됩니다. 결과 리포트에서 아래 기준으로 <b>5점 정규화</b>하여 표시됩니다.
-            <table style="margin-top:8px;border-collapse:collapse;font-size:11px;">
-              <thead><tr style="background:#fde68a;">
-                <th style="padding:3px 12px;border:1px solid #e5e7eb;">6점 원점수</th>
-                <th style="padding:3px 12px;border:1px solid #e5e7eb;">5점 정규화</th>
-              </tr></thead>
-              <tbody>${abRows}</tbody>
-            </table>
-            <div style="margin-top:6px;font-size:11px;color:#92400e;">아래 기준 점수는 <b>1~5 범위</b>로 입력해주세요.</div>
+        ? `<div style="margin-bottom:10px;padding:8px 12px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#78350f;line-height:1.6;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span>⚠ 이 역량군에는 <b>6점 척도(AB선택형)</b> 문항이 포함됩니다. 결과는 <b>5점 정규화</b>하여 표시됩니다. 기준 점수는 <b>1~5 범위</b>로 입력하세요.</span>
+              <button onclick="(function(btn){var t=document.getElementById('ab-table-${groupId}');var open=t.style.display!=='none';t.style.display=open?'none':'block';btn.textContent=open?'변환표 보기':'닫기';})(this)" style="flex-shrink:0;padding:3px 10px;background:#fde68a;border:1px solid #f59e0b;border-radius:4px;font-size:11px;color:#78350f;cursor:pointer;white-space:nowrap;">변환표 보기</button>
+            </div>
+            <div id="ab-table-${groupId}" style="display:none;margin-top:8px;">
+              <table style="border-collapse:collapse;font-size:11px;">
+                <thead><tr style="background:#fde68a;">
+                  <th style="padding:3px 12px;border:1px solid #e5e7eb;">6점 원점수</th>
+                  <th style="padding:3px 12px;border:1px solid #e5e7eb;">5점 정규화</th>
+                </tr></thead>
+                <tbody>${abRows}</tbody>
+              </table>
+            </div>
            </div>`
         : '';
 
