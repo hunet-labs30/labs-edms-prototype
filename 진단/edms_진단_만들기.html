@@ -1249,10 +1249,13 @@ body {
 
         <!-- STEP 7: 검토 및 진단 생성 -->
         <div class="step-content wiz-card" id="step-content-7">
-          <div class="wiz-card-head">
-            <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
-            <h2>진단을 생성하기 전에 검토해주세요</h2>
-            <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
+          <div class="wiz-card-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
+              <h2>진단을 생성하기 전에 검토해주세요</h2>
+              <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
+            </div>
+            <button onclick="window.open('진단_응답_화면.html', '_blank')" style="margin-top:4px;height:34px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;">👁 진단지 미리보기</button>
           </div>
           <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
           <div class="wiz-card-foot" id="step7-foot">
@@ -3274,80 +3277,18 @@ function generateStep7Review() {
     { step: 'STEP 6', label: '응답자 등록',       value: '유형별 응답자 등록됨', target: 6 },
   ];
 
-  // 진단지 미리보기 HTML 생성
-  let previewHtml = '';
-  if (selectedQuestionnaire) {
-    const q = selectedQuestionnaire;
-    const groupCount = q.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
-    const subCount   = q.types.reduce((s, t) => s + (t.groups ? t.groups.reduce((gs, g) => gs + g.subs.length, 0) : 0), 0);
-    const statsHtml = `<span class="stat-chip">유형 ${q.typeCount}개</span><span class="stat-chip">역량군 ${groupCount}개</span><span class="stat-chip">세부역량 ${subCount}개</span><span class="stat-chip">${q.qCount}문항</span>`;
-    const treeHtml = q.types.map((type, ti) => {
-      const groupsHtml = type.groups.map((group, gi) => {
-        const subsHtml = group.subs.map(sub => `
-          <div style="display:flex;align-items:center;gap:6px;padding:5px 0 5px 12px;border-top:1px solid #f5f5f5;">
-            <span style="font-size:12px;color:#555;flex:1;">${sub.name}</span>
-            <span style="font-size:11px;color:#aaa;white-space:nowrap;">${sub.scale || '5점 척도'}</span>
-            <span style="font-size:11px;color:#888;white-space:nowrap;">${sub.qCount}문항</span>
-          </div>`).join('');
-        return `
-          <div class="s7-group" style="margin:0 0 0 12px;">
-            <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.s7-tog').textContent=this.querySelector('.s7-tog').textContent==='▶'?'▼':'▶'"
-                 style="display:flex;align-items:center;gap:6px;padding:7px 0;cursor:pointer;border-top:1px solid #eee;">
-              <span class="s7-tog" style="font-size:10px;color:#aaa;">▶</span>
-              <span style="font-size:12px;font-weight:600;color:#333;flex:1;">${group.name}</span>
-              <span style="font-size:11px;color:#888;">${group.qCount}문항</span>
-            </div>
-            <div style="display:none;">${subsHtml}</div>
-          </div>`;
-      }).join('');
-      return `
-        <div class="s7-type" style="margin-bottom:4px;background:#fafafa;border-radius:6px;overflow:hidden;">
-          <div onclick="const b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.s7-tog').textContent=this.querySelector('.s7-tog').textContent==='▼'?'▶':'▼'"
-               style="display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;background:#f0f2f5;border-radius:6px;">
-            <span class="s7-tog" style="font-size:11px;color:#666;">▼</span>
-            <span style="font-size:13px;font-weight:700;color:#1a1a2e;flex:1;">${type.name}</span>
-            <span style="font-size:12px;color:#888;">${type.qCount}문항</span>
-          </div>
-          <div style="padding:0 4px 4px;">${groupsHtml}</div>
-        </div>`;
-    }).join('');
-    previewHtml = `
-      <div style="border:1px solid #e8eaf0;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;height:100%;">
-        <div style="padding:14px 16px;border-bottom:1px solid #eee;background:#fff;">
-          <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">${q.name}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">${statsHtml}</div>
-        </div>
-        <div style="flex:1;overflow-y:auto;padding:12px;">${treeHtml}</div>
-      </div>`;
-  } else {
-    previewHtml = `
-      <div style="border:1px solid #e8eaf0;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#bbb;gap:8px;">
-        <div style="font-size:28px;">📋</div>
-        <div style="font-size:13px;">선택된 진단지가 없습니다</div>
-      </div>`;
-  }
-
   container.innerHTML = `
-    <div style="display:flex;gap:20px;align-items:flex-start;">
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:10px;letter-spacing:.5px;">설정 요약</div>
-        <table style="width:100%;border-collapse:collapse;">
-          ${rows.map(r => `
-            <tr style="border-bottom:1px solid #f0f2f5;">
-              <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.step}</td>
-              <td style="width:140px;padding:14px 0;font-size:13px;font-weight:700;color:#1a1a2e;">${r.label}</td>
-              <td style="padding:14px 12px;font-size:13px;color:#555;">${r.value}</td>
-              <td style="width:60px;padding:14px 0;text-align:right;">
-                <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">수정</button>
-              </td>
-            </tr>`).join('')}
-        </table>
-      </div>
-      <div style="width:320px;flex-shrink:0;min-height:360px;display:flex;flex-direction:column;">
-        <div style="font-size:12px;font-weight:700;color:#888;margin-bottom:10px;letter-spacing:.5px;">진단지 미리보기</div>
-        ${previewHtml}
-      </div>
-    </div>
+    <table style="width:100%;border-collapse:collapse;">
+      ${rows.map(r => `
+        <tr style="border-bottom:1px solid #f0f2f5;">
+          <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.step}</td>
+          <td style="width:160px;padding:14px 0;font-size:13px;font-weight:700;color:#1a1a2e;">${r.label}</td>
+          <td style="padding:14px 16px;font-size:13px;color:#555;">${r.value}</td>
+          <td style="width:60px;padding:14px 0;text-align:right;">
+            <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">수정</button>
+          </td>
+        </tr>`).join('')}
+    </table>
   `;
 }
 
