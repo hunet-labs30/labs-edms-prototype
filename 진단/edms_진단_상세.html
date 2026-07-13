@@ -431,7 +431,7 @@
         </div>
         <div class="info-cell span4" style="border-right:none;border-bottom:none;">
           <div class="info-label">진단명</div>
-          <div class="info-value">2025년 상반기 리더십 역량진단</div>
+          <div class="info-value" id="diagName">2025년 상반기 리더십 역량진단</div>
         </div>
       </div>
     </div>
@@ -444,6 +444,7 @@
             <div class="action-row-right">
               <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
               <button class="btn btn-danger btn-sm" onclick="deleteBeforeSelected()">삭제</button>
+              <button class="btn btn-primary btn-sm" onclick="openBulkRegModal()">일괄 등록</button>
               <button class="btn btn-primary btn-sm" onclick="openTargetListModal()">대상자 관리</button>
               <button class="btn btn-primary btn-sm" onclick="openRespRegModal()">응답자 관리</button>
             </div>
@@ -573,7 +574,7 @@
             <div class="pg-size-row">
               페이지당
               <select class="select" style="height:26px;font-size:11px;width:58px;">
-                <option>10</option><option>30</option><option>50</option><option>100</option><option>200</option>
+                <option>30</option><option selected>50</option><option>100</option><option>200</option>
               </select>
               건
             </div>
@@ -820,7 +821,7 @@
           <div class="pg-size-row">
             페이지당
             <select class="select" style="height:26px;font-size:11px;width:58px;">
-              <option>10</option><option>30</option><option>50</option><option>100</option><option>200</option>
+              <option>30</option><option selected>50</option><option>100</option><option>200</option>
             </select>
             건
           </div>
@@ -1304,6 +1305,7 @@
   function setupInfoDates(state) {
     const startEl = document.getElementById('diagStartDate');
     const endEl   = document.getElementById('diagEndDate');
+    const nameEl  = document.getElementById('diagName');
     if (state === 'before') {
       startEl.innerHTML =
         '<input type="date" class="input" value="2025-05-01" style="width:130px;">' +
@@ -1311,6 +1313,7 @@
       endEl.innerHTML =
         '<input type="date" class="input" value="2025-05-31" style="width:130px;">' +
         '<input type="time" class="input" value="23:59" style="width:90px;">';
+      if (nameEl) nameEl.innerHTML = '<input type="text" class="input" value="2025년 상반기 리더십 역량진단" style="width:100%;max-width:400px;">';
     } else {
       startEl.textContent = '2025.05.01 00:00';
       endEl.innerHTML =

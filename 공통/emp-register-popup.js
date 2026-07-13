@@ -263,7 +263,6 @@ function _meMbrInjectDOM() {
       <button class="mbr-tab" onclick="meMbrTab('job',this)">직무별</button>
       <button class="mbr-tab" onclick="meMbrTab('jobgroup',this)">직군별</button>
       <button class="mbr-tab" onclick="meMbrTab('target',this)">대상구분별</button>
-      <button class="mbr-tab" onclick="meMbrTab('batch',this)">일괄등록</button>
     </div>
 
     <!-- 바디: 탭패널 + 우측 공통 선택인원 -->
@@ -346,73 +345,6 @@ function _meMbrInjectDOM() {
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- 일괄등록 패널 -->
-    <div id="me-mbr-panel-batch" style="display:none;flex:1;overflow-y:auto;padding:16px 20px;flex-direction:column;gap:12px;">
-      <div style="background:#f8f9fb;border:1px solid #e0e3e8;border-radius:6px;padding:10px 14px;font-size:12px;color:#666;line-height:1.8;">
-        <div style="font-weight:700;color:#444;margin-bottom:2px;">📋 일괄등록 안내</div>
-        <ul style="padding-left:16px;margin:0;">
-          <li>엑셀 파일(.xlsx, .xls)로 대상자 및 응답자를 일괄 등록합니다.</li>
-          <li><strong>미리보기</strong>로 오류 확인 후 <strong>등록</strong> 버튼을 눌러주세요.</li>
-          <li>오류가 있는 경우 등록 버튼이 비활성화됩니다.</li>
-        </ul>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#444;margin-bottom:6px;">Step 1. 업로드 양식 다운로드</div>
-        <a href="#" style="color:var(--primary,#3f61ed);font-size:12px;" onclick="alert('샘플파일을 다운로드합니다.');return false;">📥 샘플파일 다운로드</a>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#444;margin-bottom:6px;">Step 2. 파일 첨부</div>
-        <div id="me-mbr-batch-dropzone" onclick="document.getElementById('me-mbr-batch-file').click()"
-          style="border:2px dashed #ccc;border-radius:4px;padding:18px;text-align:center;cursor:pointer;color:#aaa;font-size:12px;">
-          &#9729; 파일을 등록해주세요 (.xlsx, .xls)
-        </div>
-        <input type="file" id="me-mbr-batch-file" accept=".xlsx,.xls" style="display:none;" onchange="meMbrBatchSetFile(this.files[0])">
-        <div id="me-mbr-batch-fname" style="display:none;font-size:12px;color:#333;margin-top:6px;padding:6px 10px;background:#f8f9fc;border-radius:3px;border:1px solid #e0e3e8;"></div>
-      </div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#444;margin-bottom:6px;">Step 3. 미리보기 및 등록</div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-reset" style="height:30px;padding:0 18px;" onclick="meMbrBatchPreview()">미리보기</button>
-          <button id="me-mbr-batch-regist-btn" class="btn btn-primary" style="height:30px;padding:0 18px;background:#e53935;border-color:#e53935;opacity:0.4;cursor:not-allowed;" onclick="meMbrBatchRegist()">등록</button>
-          <button class="btn btn-reset" style="height:30px;padding:0 18px;" onclick="document.getElementById('me-member-modal').style.display='none'">닫기</button>
-        </div>
-      </div>
-      <div id="me-mbr-batch-preview-result" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-          <div style="font-size:12px;font-weight:700;color:#444;">미리보기 결과</div>
-          <button id="me-mbr-batch-error-down" onclick="alert('오류내용.xlsx를 다운로드합니다.')"
-            style="display:none;height:26px;padding:0 12px;border:1px solid #ccc;border-radius:3px;background:#fff;font-size:11px;color:#555;cursor:pointer;">
-            ⬇ 오류내용 다운로드
-          </button>
-        </div>
-        <div style="border:1px solid #e0e3e8;border-radius:4px;overflow:hidden;max-height:150px;overflow-y:auto;">
-          <table style="width:100%;border-collapse:collapse;font-size:12px;">
-            <thead><tr style="background:#f0f2f5;">
-              <th style="padding:7px 12px;border-bottom:1px solid #e0e3e8;text-align:left;color:#555;width:140px;">아이디</th>
-              <th style="padding:7px 12px;border-bottom:1px solid #e0e3e8;text-align:left;color:#555;">오류 내용</th>
-            </tr></thead>
-            <tbody id="me-mbr-batch-preview-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div style="font-size:12px;font-weight:600;color:#444;margin-top:2px;">오류내용 정리</div>
-      <table class="main-table" style="font-size:12px;">
-        <thead><tr><th style="width:200px;text-align:left;padding:8px 12px;">오류내용</th><th style="text-align:left;padding:8px 12px;">오류케이스</th></tr></thead>
-        <tbody>
-          <tr><td style="padding:8px 12px;">대상자 아이디 미입력</td><td style="padding:8px 12px;">A열 대상자 아이디가 입력되지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">존재하지 않는 대상자 아이디</td><td style="padding:8px 12px;">A열에 입력한 아이디가 시스템에 존재하지 않는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">응답자 아이디 미입력</td><td style="padding:8px 12px;">응답범위가 본인 외 유형인데 B열 응답자 아이디가 입력되지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">존재하지 않는 응답자 아이디</td><td style="padding:8px 12px;">B열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">응답자 중복 오류</td><td style="padding:8px 12px;">특정 대상자에 이미 등록된 응답자가 파일에 포함된 경우</td></tr>
-          <tr><td style="padding:8px 12px;">엑셀파일 내 중복 오류</td><td style="padding:8px 12px;">대상자별 응답자 중복인 경우</td></tr>
-          <tr><td style="padding:8px 12px;">응답범위 미입력</td><td style="padding:8px 12px;">C열 응답범위가 입력되지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">응답범위 코드 불일치</td><td style="padding:8px 12px;">C열 값이 코드표의 응답범위 목록에 없는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">본인 응답범위 불일치</td><td style="padding:8px 12px;">C열 응답범위가 '본인'인데 B열 응답자 아이디가 A열 대상자 아이디와 다른 경우</td></tr>
-          <tr><td style="padding:8px 12px;">응답자 본인 지정 오류</td><td style="padding:8px 12px;">C열 응답범위가 '본인' 외 유형인데 B열 응답자 아이디가 A열 대상자 아이디와 같은 경우</td></tr>
-        </tbody>
-      </table>
     </div>
 
     </div><!-- /탭 패널 래퍼 -->
