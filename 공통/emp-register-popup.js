@@ -353,7 +353,7 @@ function _meMbrInjectDOM() {
       <div style="background:#f8f9fb;border:1px solid #e0e3e8;border-radius:6px;padding:10px 14px;font-size:12px;color:#666;line-height:1.8;">
         <div style="font-weight:700;color:#444;margin-bottom:2px;">📋 일괄등록 안내</div>
         <ul style="padding-left:16px;margin:0;">
-          <li>엑셀 파일(.xlsx, .xls)로 교육인원을 일괄 등록합니다.</li>
+          <li>엑셀 파일(.xlsx, .xls)로 대상자 및 응답자를 일괄 등록합니다.</li>
           <li><strong>미리보기</strong>로 오류 확인 후 <strong>등록</strong> 버튼을 눌러주세요.</li>
           <li>오류가 있는 경우 등록 버튼이 비활성화됩니다.</li>
         </ul>
