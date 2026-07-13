@@ -399,13 +399,18 @@ function _meMbrInjectDOM() {
       </div>
       <div style="font-size:12px;font-weight:600;color:#444;margin-top:2px;">오류내용 정리</div>
       <table class="main-table" style="font-size:12px;">
-        <thead><tr><th style="width:160px;text-align:left;padding:8px 12px;">오류 유형</th><th style="text-align:left;padding:8px 12px;">오류 설명</th></tr></thead>
+        <thead><tr><th style="width:200px;text-align:left;padding:8px 12px;">오류내용</th><th style="text-align:left;padding:8px 12px;">오류케이스</th></tr></thead>
         <tbody>
-          <tr><td style="padding:8px 12px;">아이디 미입력</td>   <td style="padding:8px 12px;">아이디를 입력하지 않은 경우</td></tr>
-          <tr><td style="padding:8px 12px;">아이디 오류</td>     <td style="padding:8px 12px;">아이디가 존재하지 않는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">중복 등록</td>       <td style="padding:8px 12px;">이미 해당 필수교육에 등록된 아이디인 경우</td></tr>
-          <tr><td style="padding:8px 12px;">데이터 없음</td>     <td style="padding:8px 12px;">파일에 등록 가능한 데이터가 없는 경우</td></tr>
-          <tr><td style="padding:8px 12px;">파일 용량 초과</td>  <td style="padding:8px 12px;">업로드 파일 용량이 허용 범위를 초과한 경우</td></tr>
+          <tr><td style="padding:8px 12px;">대상자 아이디 미입력</td><td style="padding:8px 12px;">A열 대상자 아이디가 입력되지 않은 경우</td></tr>
+          <tr><td style="padding:8px 12px;">존재하지 않는 대상자 아이디</td><td style="padding:8px 12px;">A열에 입력한 아이디가 시스템에 존재하지 않는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답자 아이디 미입력</td><td style="padding:8px 12px;">응답범위가 본인 외 유형인데 B열 응답자 아이디가 입력되지 않은 경우</td></tr>
+          <tr><td style="padding:8px 12px;">존재하지 않는 응답자 아이디</td><td style="padding:8px 12px;">B열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답자 중복 오류</td><td style="padding:8px 12px;">특정 대상자에 이미 등록된 응답자가 파일에 포함된 경우</td></tr>
+          <tr><td style="padding:8px 12px;">엑셀파일 내 중복 오류</td><td style="padding:8px 12px;">대상자별 응답자 중복인 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답범위 미입력</td><td style="padding:8px 12px;">C열 응답범위가 입력되지 않은 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답범위 코드 불일치</td><td style="padding:8px 12px;">C열 값이 코드표의 응답범위 목록에 없는 경우</td></tr>
+          <tr><td style="padding:8px 12px;">본인 응답범위 불일치</td><td style="padding:8px 12px;">C열 응답범위가 '본인'인데 B열 응답자 아이디가 A열 대상자 아이디와 다른 경우</td></tr>
+          <tr><td style="padding:8px 12px;">응답자 본인 지정 오류</td><td style="padding:8px 12px;">C열 응답범위가 '본인' 외 유형인데 B열 응답자 아이디가 A열 대상자 아이디와 같은 경우</td></tr>
         </tbody>
       </table>
     </div>
