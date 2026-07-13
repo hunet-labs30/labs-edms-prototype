@@ -209,6 +209,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .group-sum-dot-avg{position:absolute;top:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#9CA3AF;z-index:1;}
 .group-sum-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;}
 .group-sum-lbl{color:var(--text-400);}
+.footnote-area{padding:4px 0 8px;}.footnote-text{font-size:11px;color:var(--text-400);}
 
 /* 보고서 보기 버튼 영역 */
 .report-cta{text-align:center;padding:24px 0 8px;border-top:1px solid var(--border);margin-top:8px;}
@@ -435,6 +436,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             </div>
           </div>
         </div>
+        <div class="footnote-area">
+          <span class="footnote-text">※ 전체 = 나에게 응답한 평가자 전원의 평균</span>
+        </div>
 
         <!-- ① 강점/약점 결과 -->
         <div class="result-section">
@@ -631,7 +635,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.0</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.0</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.8</span></td>
                 </tr>
                 <tr>
@@ -647,7 +651,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.9</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">4.9</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.2</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
@@ -663,7 +667,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.1</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.9</span></td>
                 </tr>
                 <!-- 사람관리 -->
@@ -681,7 +685,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.3</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.3</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
@@ -697,7 +701,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.1</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.1</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.7</span></td>
                 </tr>
                 <tr>
@@ -713,7 +717,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.0</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">5.0</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.0</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+1.0</span></td>
                 </tr>
                 <tr>
@@ -729,7 +733,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--primary)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">4.2</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">4.8</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">4.2</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-plus">+0.6</span></td>
                 </tr>
                 <!-- 성과관리 -->
@@ -747,7 +751,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--orange)">3.6</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.7</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">3.6</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">3.7</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-minus">-0.1</span></td>
                 </tr>
                 <tr>
@@ -763,7 +767,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                       <span class="scale-lbl-edge">5.0</span>
                     </div>
                   </td>
-                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--red)">3.4</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--text-500)">3.9</b></div></div></td>
+                  <td><div class="score-pair"><div class="score-pair-row"><span class="score-pair-lbl">본인</span><b class="score-pair-val" style="color:var(--text-500)">3.4</b></div><div class="score-pair-row"><span class="score-pair-lbl">전체</span><b class="score-pair-val" style="color:var(--primary)">3.9</b></div></div></td>
                   <td style="text-align:center"><span class="cmp-minus">-0.5</span></td>
                 </tr>
               </tbody>
