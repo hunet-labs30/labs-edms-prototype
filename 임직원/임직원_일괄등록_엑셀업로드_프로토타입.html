@@ -1,0 +1,645 @@
+<title>엑셀 업로드 처리 개선 — 프로토타입</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  font-size: 13px; background: #f5f5f5; color: #333; line-height: 1.5;
+}
+
+/* GNB */
+.gnb {
+  height: 46px; background: #222;
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+}
+.gnb-logo { font-size: 15px; font-weight: 700; color: #fff; }
+.gnb-logo span { color: #4DA3FF; }
+.gnb-site { font-size: 12px; color: #aaa; border-left: 1px solid #444; padding-left: 12px; margin-left: 4px; }
+.gnb-badge { font-size: 11px; color: #fff; background: #444; border-radius: 3px; padding: 1px 6px; }
+.gnb-right { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.gnb-user { font-size: 12px; color: #ddd; margin-right: 6px; }
+.gnb-btn { font-size: 12px; color: #ccc; background: none; border: 1px solid #555; border-radius: 3px; padding: 3px 10px; cursor: pointer; font-family: inherit; }
+
+/* Layout */
+.layout { padding-top: 46px; min-height: 100vh; }
+.main { flex: 1; min-height: calc(100vh - 46px); display: flex; flex-direction: column; }
+.page-header {
+  background: #fff; border-bottom: 1px solid #e8e8e8;
+  padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.page-title { font-size: 20px; font-weight: 700; color: #111; }
+.breadcrumb { font-size: 12px; color: #999; display: flex; align-items: center; gap: 6px; }
+.breadcrumb span { color: #bbb; }
+.content-area { padding: 24px 28px; flex: 1; padding-bottom: 60px; }
+
+/* Buttons */
+.btn {
+  font-size: 13px; font-family: inherit;
+  background: #fff; border: 1px solid #ccc;
+  border-radius: 3px; padding: 6px 16px; cursor: pointer; color: #333;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #f5f5f5; }
+.btn:disabled { color: #bbb; border-color: #e0e0e0; cursor: not-allowed; background: #fafafa; }
+.btn.primary { background: #1565C0; color: #fff; border-color: #1565C0; }
+.btn.primary:hover:not(:disabled) { background: #1251A3; }
+.btn.primary:disabled { background: #fafafa; color: #bbb; border-color: #e0e0e0; }
+.btn.sm { font-size: 12px; padding: 5px 13px; }
+
+/* Page section */
+.pg-section { background: #fff; border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 16px; }
+.pg-section-hd { padding: 14px 20px 12px; font-size: 14px; font-weight: 600; color: #222; border-bottom: 1px solid #f0f0f0; }
+.pg-section-bd { padding: 20px; }
+
+/* Checkbox */
+.check-group { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.check-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.check-item input[type=checkbox] { width: 14px; height: 14px; accent-color: #1565C0; cursor: pointer; }
+.check-item label { font-size: 13px; color: #333; cursor: pointer; }
+.check-fixed { color: #aaa; font-size: 12px; }
+
+/* Upload zone */
+.upload-zone {
+  background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 4px;
+  min-height: 100px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center;
+}
+.upload-zone.has-file { background: #EBF2FF; border-color: #1565C0; }
+.upload-zone-hint { font-size: 13px; color: #aaa; line-height: 1.9; }
+.upload-zone-hint .hint-main { color: #999; font-size: 12px; }
+.file-selected { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1565C0; font-weight: 600; }
+
+/* Table */
+.tbl-wrap { border: 1px solid #e0e0e0; border-radius: 3px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: #f7f7f7; padding: 9px 14px; font-weight: 600; color: #555; border-bottom: 1px solid #e0e0e0; border-right: 1px solid #eee; text-align: center; white-space: nowrap; }
+th:last-child { border-right: none; }
+td { padding: 9px 14px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; color: #444; text-align: center; }
+td.left { text-align: left; }
+td:last-child { border-right: none; }
+tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; font-size: 11px; border-radius: 2px; padding: 1px 6px; font-weight: 600; }
+.badge.err { background: #FEF2F2; color: #C0392B; border: 1px solid #F5A9A9; }
+.badge.dup { background: #FFF8E1; color: #B8860B; border: 1px solid #F5DEB3; }
+
+/* Inline result */
+.result-inline { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 3px; font-size: 13px; font-weight: 500; margin-top: 12px; }
+.result-inline.ok { background: #EDF7F1; color: #1B7A3E; border: 1px solid #A3D9B5; }
+.result-inline.err { background: #FEF2F2; color: #C0392B; border: 1px solid #F5A9A9; }
+
+/* Page action bar */
+.page-action-bar { display: flex; justify-content: flex-end; gap: 6px; padding: 14px 20px; background: #fff; border-top: 1px solid #f0f0f0; border-radius: 0 0 4px 4px; margin-top: -1px; }
+
+/* Page overlay */
+.pg-overlay {
+  position: fixed; top: 46px; left: 0; right: 0; bottom: 44px;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.overlay-card { background: #fff; border-radius: 6px; padding: 36px 52px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.18); min-width: 240px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #e0e0e0; border-top-color: #1565C0; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 14px; }
+.overlay-text { font-size: 14px; font-weight: 600; color: #222; }
+.overlay-sub { font-size: 12px; color: #888; margin-top: 4px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; top: 46px; left: 0; right: 0; bottom: 44px;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.modal-box {
+  background: #fff; border-radius: 5px;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.22);
+  width: 740px; max-width: 94%;
+  max-height: calc(100vh - 180px);
+  display: flex; flex-direction: column;
+  animation: slideUp 0.18s ease; position: relative;
+}
+.modal-header { padding: 16px 20px; border-bottom: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.modal-title { font-size: 15px; font-weight: 700; color: #111; }
+.modal-close { width: 28px; height: 28px; background: none; border: none; font-size: 18px; color: #aaa; cursor: pointer; border-radius: 3px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: #f0f0f0; color: #555; }
+.modal-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+.modal-footer { padding: 12px 20px; border-top: 1px solid #e8e8e8; display: flex; justify-content: flex-end; gap: 6px; flex-shrink: 0; background: #fff; border-radius: 0 0 5px 5px; }
+.modal-overlay {
+  position: absolute; inset: 0; border-radius: 5px;
+  background: rgba(255,255,255,0.85);
+  display: flex; align-items: center; justify-content: center; z-index: 10;
+}
+
+/* Notice box */
+.notice-box { background: #f7f8fa; border-radius: 4px; padding: 16px 20px; font-size: 13px; color: #444; line-height: 1.9; }
+.notice-box strong { font-weight: 600; }
+
+/* Step label */
+.step-label { font-size: 14px; font-weight: 600; color: #222; margin-bottom: 12px; }
+
+/* Section subtitle (오류 항목 등) */
+.sub-section-hd { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+
+/* Result popup */
+.rp-backdrop {
+  position: fixed; top: 46px; left: 0; right: 0; bottom: 44px;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; animation: fadeIn 0.18s ease;
+}
+.rp-box { background: #fff; border-radius: 5px; box-shadow: 0 4px 32px rgba(0,0,0,0.22); width: 520px; max-width: 94%; animation: slideUp 0.2s ease; overflow: hidden; }
+.rp-header { padding: 16px 20px; border-bottom: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: space-between; }
+.rp-title { font-size: 15px; font-weight: 700; color: #111; }
+.rp-body { padding: 20px; }
+.rp-footer { padding: 10px 20px 16px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 6px; }
+.summary-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.sum-chip { flex: 1; border-radius: 4px; padding: 10px 14px; text-align: center; border: 1px solid #e0e0e0; }
+.sum-chip.ok { background: #EDF7F1; border-color: #A3D9B5; }
+.sum-chip.fail { background: #FEF2F2; border-color: #F5A9A9; }
+.sum-val { font-size: 22px; font-weight: 700; color: #333; font-variant-numeric: tabular-nums; }
+.sum-chip.ok .sum-val { color: #1B7A3E; }
+.sum-chip.fail .sum-val { color: #C0392B; }
+.sum-label { font-size: 11px; color: #888; margin-top: 2px; }
+
+/* Proto bar */
+.proto-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #1E1E1E; border-top: 1px solid #333;
+  height: 44px; padding: 0 16px;
+  display: flex; align-items: center; gap: 10px; z-index: 500;
+}
+.proto-tabs { display: flex; gap: 2px; }
+.proto-tab { font-size: 12px; padding: 5px 13px; border-radius: 3px; border: 1px solid #333; background: none; color: #888; cursor: pointer; font-family: inherit; }
+.proto-tab.on { background: #333; color: #fff; border-color: #555; }
+.sep { width: 1px; height: 20px; background: #333; }
+.proto-label { font-size: 12px; color: #aaa; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proto-label strong { color: #eee; }
+.pb { font-size: 12px; padding: 5px 13px; border-radius: 3px; border: 1px solid #444; background: #2A2A2A; color: #ccc; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.pb:hover { background: #333; color: #fff; }
+.pb:disabled { opacity: 0.35; cursor: not-allowed; }
+.pb.accent { background: #1565C0; border-color: #1565C0; color: #fff; }
+.pb.accent:hover { background: #1251A3; }
+.pb.alt { color: #FBBF24; border-color: #555; }
+.step-badge { font-size: 11px; color: #888; border: 1px solid #333; border-radius: 3px; padding: 3px 8px; white-space: nowrap; }
+
+.hidden { display: none !important; }
+.mt12 { margin-top: 12px; }
+.mt8 { margin-top: 8px; }
+.flex-end { display: flex; justify-content: flex-end; }
+</style>
+
+<!-- GNB -->
+<div class="gnb">
+  <div class="gnb-logo"><span>LABS</span> New EDMS</div>
+  <div class="gnb-site">Flex26 Basic 기준 연수원(te)</div>
+  <div class="gnb-badge">1000187</div>
+  <div class="gnb-right">
+    <span class="gnb-user">이강은님</span>
+    <button class="gnb-btn">로그아웃</button>
+    <button class="gnb-btn">한국어 ▾</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="main">
+
+    <!-- ======================================================
+         PAGE SCENARIO
+    ====================================================== -->
+    <div id="scene-page">
+      <div class="page-header">
+        <div class="page-title">임직원 일괄등록</div>
+        <div class="breadcrumb">임직원 <span>›</span> 임직원 관리 <span>›</span> 임직원 일괄등록</div>
+      </div>
+      <div class="content-area">
+
+        <!-- 일괄등록 안내 -->
+        <div class="pg-section">
+          <div class="pg-section-hd">일괄등록 안내</div>
+          <div class="pg-section-bd">
+            <div class="notice-box">
+              엑셀 파일(.xlsx, .xls)로 임직원을 일괄 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+              시트 구성: 아래에서 선택한 항목 컬럼만 입력 (코드는 저장 시 자동 부여)<br>
+              미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+            </div>
+          </div>
+        </div>
+
+        <!-- 등록 항목 선택 -->
+        <div class="pg-section">
+          <div class="pg-section-hd">등록하려는 항목 선택</div>
+          <div class="pg-section-bd">
+            <div class="check-group">
+              <div class="check-item"><input type="checkbox" checked disabled><label>이름 <span class="check-fixed">(고정)</span></label></div>
+              <div class="check-item"><input type="checkbox" checked disabled><label>아이디 <span class="check-fixed">(고정)</span></label></div>
+              <div class="check-item"><input type="checkbox" checked disabled><label>휴대번호 <span class="check-fixed">(고정)</span></label></div>
+              <div class="check-item"><input type="checkbox" checked disabled><label>회사 <span class="check-fixed">(고정)</span></label></div>
+              <div class="check-item"><input type="checkbox" checked><label>사번</label></div>
+              <div class="check-item"><input type="checkbox" checked><label>부서/팀</label></div>
+              <div class="check-item"><input type="checkbox" checked><label>직급</label></div>
+              <div class="check-item"><input type="checkbox" checked><label>일반전화번호</label></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="pg-section">
+          <div class="pg-section-hd">Step 1. 업로드 양식 다운로드</div>
+          <div class="pg-section-bd">
+            <div style="font-size:13px;color:#666;margin-bottom:12px">위에서 선택한 항목 기준의 양식 파일을 다운로드하세요.</div>
+            <button class="btn sm">업로드 양식 다운로드</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="pg-section">
+          <div class="pg-section-hd">Step 2. 파일 첨부 및 미리보기</div>
+          <div class="pg-section-bd">
+            <!-- 파일 없음 -->
+            <div id="pg-empty">
+              <div class="upload-zone">
+                <div class="upload-zone-hint">
+                  <div class="hint-main">1회 최대 처리 건수는 3,000건 입니다.</div>
+                  파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
+                </div>
+                <button class="btn sm">파일 선택</button>
+              </div>
+            </div>
+            <!-- 파일 첨부됨 (미리보기 전) -->
+            <div id="pg-has" class="hidden">
+              <div class="upload-zone has-file">
+                <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                <button class="btn sm">파일 변경</button>
+              </div>
+            </div>
+            <!-- 미리보기 정상 -->
+            <div id="pg-ok" class="hidden">
+              <div class="upload-zone has-file">
+                <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                <button class="btn sm">파일 변경</button>
+              </div>
+              <div class="result-inline ok mt12">✔ 미리보기가 완료되었습니다. 총 120건이 정상 확인되었습니다. 등록 버튼을 클릭해 주세요.</div>
+            </div>
+            <!-- 미리보기 오류 -->
+            <div id="pg-err" class="hidden">
+              <div class="upload-zone has-file">
+                <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                <button class="btn sm">파일 변경</button>
+              </div>
+              <div class="result-inline err mt12">✖ 일부 행에서 오류가 발견되었습니다. 오류 내용을 확인하고 수정 후 다시 시도해 주세요.</div>
+            </div>
+          </div>
+          <div class="page-action-bar">
+            <button class="btn" onclick="">목록</button>
+            <button class="btn" id="pg-btn-preview" disabled>미리보기</button>
+            <button class="btn primary" id="pg-btn-reg" disabled>등록</button>
+          </div>
+        </div>
+
+        <!-- 오류 항목 (오류 발생 시만 노출) -->
+        <div class="pg-section hidden" id="pg-err-section">
+          <div class="pg-section-hd" style="color:#C0392B">오류 항목</div>
+          <div class="tbl-wrap" style="border:none;border-radius:0">
+            <table>
+              <thead>
+                <tr><th>행</th><th>아이디</th><th style="text-align:left">오류 내용</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>5</td><td>minjun.kim</td><td class="left">아이디 미입력</td></tr>
+                <tr><td>12</td><td>seoyeon.lee</td><td class="left">휴대번호 형식 오류</td></tr>
+                <tr><td>18</td><td>—</td><td class="left">이름 미입력</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex-end" style="padding:12px 20px"><button class="btn sm">오류내용 다운</button></div>
+        </div>
+
+        <!-- 오류 케이스 정리 -->
+        <div class="pg-section">
+          <div class="pg-section-hd">오류 케이스 정리</div>
+          <div class="tbl-wrap" style="border:none;border-radius:0">
+            <table>
+              <thead><tr><th style="text-align:left;padding-left:20px;width:40%">오류내용 표시방법</th><th style="text-align:left;padding-left:20px">오류케이스 정리</th></tr></thead>
+              <tbody>
+                <tr><td class="left" style="padding-left:20px">아이디 미입력</td><td class="left" style="padding-left:20px">아이디를 입력하지 않은 경우</td></tr>
+                <tr><td class="left" style="padding-left:20px">아이디 중복</td><td class="left" style="padding-left:20px">이미 사용 중인 아이디인 경우</td></tr>
+                <tr><td class="left" style="padding-left:20px">이름 미입력</td><td class="left" style="padding-left:20px">이름을 입력하지 않은 경우</td></tr>
+                <tr><td class="left" style="padding-left:20px">휴대번호 미입력</td><td class="left" style="padding-left:20px">휴대번호를 입력하지 않은 경우</td></tr>
+                <tr><td class="left" style="padding-left:20px">휴대번호 형식 오류</td><td class="left" style="padding-left:20px">숫자 외 문자 포함, 자릿수 불일치 등</td></tr>
+                <tr><td class="left" style="padding-left:20px">행 레벨 검증 오류</td><td class="left" style="padding-left:20px">각 서비스 기능에 맞춰 구성</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 페이지 로딩 오버레이 -->
+      <div class="pg-overlay hidden" id="pg-overlay">
+        <div class="overlay-card">
+          <div class="spinner"></div>
+          <div class="overlay-text" id="pg-overlay-txt">파일을 검증하고 있습니다.</div>
+          <div class="overlay-sub">잠시 기다려 주세요.</div>
+        </div>
+      </div>
+
+      <!-- 등록 결과 팝업 -->
+      <div class="rp-backdrop hidden" id="pg-rp">
+        <div class="rp-box">
+          <div class="rp-header">
+            <div class="rp-title">등록 결과</div>
+            <button class="modal-close" onclick="document.getElementById('pg-rp').classList.add('hidden')">✕</button>
+          </div>
+          <div class="rp-body">
+            <div class="summary-row">
+              <div class="sum-chip"><div class="sum-val">120</div><div class="sum-label">총 건수</div></div>
+              <div class="sum-chip ok"><div class="sum-val">117</div><div class="sum-label">등록 완료</div></div>
+              <div class="sum-chip fail"><div class="sum-val">3</div><div class="sum-label">실패</div></div>
+            </div>
+            <div class="result-inline err" style="margin-top:0">시스템 오류로 인해 일부 건이 등록되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
+          </div>
+          <div class="rp-footer">
+            <button class="btn sm">실패내용 다운(.xlsx)</button>
+            <button class="btn sm primary" onclick="document.getElementById('pg-rp').classList.add('hidden')">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================
+         MODAL SCENARIO
+    ====================================================== -->
+    <div id="scene-modal" class="hidden">
+      <div class="page-header">
+        <div class="page-title">임직원 관리</div>
+        <div class="breadcrumb">임직원 <span>›</span> 임직원 관리</div>
+      </div>
+      <div class="content-area">
+        <div class="pg-section">
+          <div class="pg-section-hd" style="display:flex;justify-content:space-between;align-items:center">
+            <span>임직원 목록</span>
+            <button class="btn sm primary" onclick="mdOpen()">+ 일괄 등록</button>
+          </div>
+          <div class="tbl-wrap" style="border:none;border-radius:0">
+            <table>
+              <thead><tr><th>사번</th><th>이름</th><th>부서</th><th>직급</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td>2023001</td><td>김민준</td><td>개발팀</td><td>대리</td><td>재직</td></tr>
+                <tr><td>2023002</td><td>이서연</td><td>인사팀</td><td>과장</td><td>재직</td></tr>
+                <tr><td>2023003</td><td>박지호</td><td>영업팀</td><td>사원</td><td>재직</td></tr>
+                <tr><td>2023004</td><td>최수빈</td><td>기획팀</td><td>대리</td><td>재직</td></tr>
+                <tr><td>2023005</td><td>강도윤</td><td>마케팅팀</td><td>사원</td><td>재직</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 팝업 -->
+      <div class="modal-backdrop hidden" id="md-backdrop">
+        <div class="modal-box">
+          <div class="modal-header">
+            <div class="modal-title">임직원 일괄등록</div>
+            <button class="modal-close" onclick="mdClose()">✕</button>
+          </div>
+          <div class="modal-body">
+
+            <!-- 일괄등록 안내 -->
+            <div>
+              <div class="step-label">일괄등록 안내</div>
+              <div class="notice-box">
+                엑셀 파일(.xlsx, .xls)로 임직원을 일괄 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+                미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+              </div>
+            </div>
+
+            <!-- Step 1 -->
+            <div>
+              <div class="step-label">Step 1. 업로드 양식 다운로드</div>
+              <button class="btn sm">업로드 양식 다운로드</button>
+            </div>
+
+            <!-- Step 2 -->
+            <div>
+              <div class="step-label">Step 2. 파일 첨부 및 미리보기</div>
+              <!-- 파일 없음 -->
+              <div id="md-empty">
+                <div class="upload-zone">
+                  <div class="upload-zone-hint">
+                    <div class="hint-main">1회 최대 처리 건수는 3,000건 입니다.</div>
+                    파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
+                  </div>
+                  <button class="btn sm">파일 선택</button>
+                </div>
+              </div>
+              <!-- 파일 첨부됨 -->
+              <div id="md-has" class="hidden">
+                <div class="upload-zone has-file">
+                  <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                  <button class="btn sm">파일 변경</button>
+                </div>
+              </div>
+              <!-- 미리보기 정상 -->
+              <div id="md-ok" class="hidden">
+                <div class="upload-zone has-file">
+                  <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                  <button class="btn sm">파일 변경</button>
+                </div>
+                <div class="result-inline ok mt12">✔ 미리보기가 완료되었습니다. 총 120건이 정상 확인되었습니다. 등록 버튼을 클릭해 주세요.</div>
+              </div>
+              <!-- 미리보기 오류 -->
+              <div id="md-err" class="hidden">
+                <div class="upload-zone has-file">
+                  <div class="file-selected">📄 임직원_등록_2026_07.xlsx</div>
+                  <button class="btn sm">파일 변경</button>
+                </div>
+                <div class="result-inline err mt12">✖ 일부 행에서 오류가 발견되었습니다. 오류 내용을 확인하고 수정 후 다시 시도해 주세요.</div>
+              </div>
+            </div>
+
+            <!-- 오류 항목 (오류 발생 시만) -->
+            <div class="hidden" id="md-err-section">
+              <div class="step-label" style="color:#C0392B;margin-bottom:10px">오류 항목</div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>행</th><th>아이디</th><th style="text-align:left">오류 내용</th></tr></thead>
+                  <tbody>
+                    <tr><td>5</td><td>minjun.kim</td><td class="left">아이디 미입력</td></tr>
+                    <tr><td>12</td><td>seoyeon.lee</td><td class="left">휴대번호 형식 오류</td></tr>
+                    <tr><td>18</td><td>—</td><td class="left">이름 미입력</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex-end mt8"><button class="btn sm">오류내용 다운</button></div>
+            </div>
+
+            <!-- 오류 케이스 정리 -->
+            <div>
+              <div class="step-label" style="margin-bottom:10px">오류 케이스 정리</div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th style="text-align:left;width:42%">오류내용 표시방법</th><th style="text-align:left">오류케이스 정리</th></tr></thead>
+                  <tbody>
+                    <tr><td class="left">아이디 미입력</td><td class="left">아이디를 입력하지 않은 경우</td></tr>
+                    <tr><td class="left">아이디 중복</td><td class="left">이미 사용 중인 아이디인 경우</td></tr>
+                    <tr><td class="left">이름 미입력</td><td class="left">이름을 입력하지 않은 경우</td></tr>
+                    <tr><td class="left">휴대번호 미입력</td><td class="left">휴대번호를 입력하지 않은 경우</td></tr>
+                    <tr><td class="left">휴대번호 형식 오류</td><td class="left">숫자 외 문자 포함, 자릿수 불일치 등</td></tr>
+                    <tr><td class="left">행 레벨 검증 오류</td><td class="left">각 서비스 기능에 맞춰 구성</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button class="btn" onclick="mdClose()">닫기</button>
+            <button class="btn" id="md-btn-preview" disabled>미리보기</button>
+            <button class="btn primary" id="md-btn-reg" disabled>등록</button>
+          </div>
+
+          <!-- 팝업 내 로딩 오버레이 -->
+          <div class="modal-overlay hidden" id="md-overlay">
+            <div class="overlay-card" style="padding:28px 40px">
+              <div class="spinner"></div>
+              <div class="overlay-text" id="md-overlay-txt">파일을 검증하고 있습니다.</div>
+              <div class="overlay-sub">잠시 기다려 주세요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 팝업 등록 결과 팝업 -->
+      <div class="rp-backdrop hidden" id="md-rp">
+        <div class="rp-box">
+          <div class="rp-header">
+            <div class="rp-title">등록 결과</div>
+            <button class="modal-close" onclick="document.getElementById('md-rp').classList.add('hidden')">✕</button>
+          </div>
+          <div class="rp-body">
+            <div class="summary-row">
+              <div class="sum-chip"><div class="sum-val">120</div><div class="sum-label">총 건수</div></div>
+              <div class="sum-chip ok"><div class="sum-val">117</div><div class="sum-label">등록 완료</div></div>
+              <div class="sum-chip fail"><div class="sum-val">3</div><div class="sum-label">실패</div></div>
+            </div>
+            <div class="result-inline err" style="margin-top:0">시스템 오류로 인해 일부 건이 등록되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
+          </div>
+          <div class="rp-footer">
+            <button class="btn sm primary" onclick="document.getElementById('md-rp').classList.add('hidden')">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Proto bar -->
+<div class="proto-bar">
+  <div class="proto-tabs">
+    <button class="proto-tab on" id="tb-page" onclick="switchScen('page')">📄 페이지 형태</button>
+    <button class="proto-tab" id="tb-modal" onclick="switchScen('modal')">🪟 팝업 형태</button>
+  </div>
+  <div class="sep"></div>
+  <div class="proto-label" id="proto-lbl"><strong>Step 1</strong> — 초기 상태</div>
+  <button class="pb alt hidden" id="pb-alt" onclick="toggleAlt()">🔀 오류 결과</button>
+  <button class="pb" onclick="prevStep()">← 이전</button>
+  <button class="pb accent" onclick="nextStep()" id="pb-next">다음 단계 →</button>
+  <div class="step-badge" id="pb-badge">1 / 6</div>
+</div>
+
+<script>
+var scen = 'page', pgStep = 0, pgAlt = false, mdStep = 0, mdAlt = false;
+
+var PG = [
+  { lbl: '초기 상태 — 파일 미첨부, 버튼 비활성', state: 'empty', overlay: false, result: false, previewDis: true, regDis: true, alt: false },
+  { lbl: '파일 첨부 완료 — [미리보기] 버튼 활성', state: 'has', overlay: false, result: false, previewDis: false, regDis: true, alt: false },
+  { lbl: '[미리보기] 클릭 → 페이지 전체 로딩 오버레이 (파일 검증 중)', state: 'has', overlay: true, overlayTxt: '파일을 검증하고 있습니다.', result: false, previewDis: true, regDis: true, alt: false },
+  { lbl: '미리보기 완료 — 인라인 결과 노출 (오류 발생 시 오류 항목 테이블 노출)', state: 'ok', overlay: false, result: false, previewDis: true, regDis: false, alt: true },
+  { lbl: '[등록] 클릭 → 페이지 전체 로딩 오버레이 (등록 처리 중)', state: 'ok', overlay: true, overlayTxt: '등록하고 있습니다.', result: false, previewDis: true, regDis: true, alt: false },
+  { lbl: '등록 완료 → 오버레이 제거 → 결과 팝업 노출', state: 'ok', overlay: false, result: true, previewDis: true, regDis: true, alt: false },
+];
+
+function renderPg() {
+  var s = PG[pgStep];
+  var isErr = (s.state === 'ok' && pgAlt);
+  var state = isErr ? 'err' : s.state;
+  ['empty','has','ok','err'].forEach(function(k){ document.getElementById('pg-'+k).classList.toggle('hidden', state!==k); });
+  document.getElementById('pg-err-section').classList.toggle('hidden', !isErr);
+  document.getElementById('pg-overlay').classList.toggle('hidden', !s.overlay);
+  if (s.overlay) document.getElementById('pg-overlay-txt').textContent = s.overlayTxt;
+  document.getElementById('pg-rp').classList.toggle('hidden', !s.result);
+  document.getElementById('pg-btn-preview').disabled = s.previewDis;
+  document.getElementById('pg-btn-reg').disabled = s.regDis || pgAlt;
+  setProtoBar(pgStep+1, PG.length, s.lbl, s.alt);
+}
+
+var MD = [
+  { lbl: '임직원 관리 목록 — [+ 일괄 등록] 클릭 → 팝업 오픈', modal: false, mstate: null, overlay: false, result: false, footer: 'init', alt: false },
+  { lbl: '팝업 열림 — 초기 상태 (파일 미첨부)', modal: true, mstate: 'empty', overlay: false, result: false, footer: 'init', alt: false },
+  { lbl: '파일 첨부 완료 — [미리보기] 버튼 활성', modal: true, mstate: 'has', overlay: false, result: false, footer: 'preview', alt: false },
+  { lbl: '[미리보기] 클릭 → 팝업 내 로딩 오버레이 (파일 검증 중)', modal: true, mstate: 'has', overlay: true, overlayTxt: '파일을 검증하고 있습니다.', result: false, footer: 'none', alt: false },
+  { lbl: '미리보기 완료 — 인라인 결과 노출 (오류 발생 시 오류 항목 테이블 노출)', modal: true, mstate: 'ok', overlay: false, result: false, footer: 'reg', alt: true },
+  { lbl: '[등록] 클릭 → 팝업 내 로딩 오버레이 (등록 처리 중)', modal: true, mstate: 'ok', overlay: true, overlayTxt: '등록하고 있습니다.', result: false, footer: 'none', alt: false },
+  { lbl: '등록 완료 → 팝업 닫힘 → 결과 팝업 노출', modal: false, mstate: null, overlay: false, result: true, footer: 'none', alt: false },
+];
+
+function renderMd() {
+  var s = MD[mdStep];
+  document.getElementById('md-backdrop').classList.toggle('hidden', !s.modal);
+  var isErr = (s.mstate === 'ok' && mdAlt);
+  var mstate = isErr ? 'err' : s.mstate;
+  ['empty','has','ok','err'].forEach(function(k){ document.getElementById('md-'+k).classList.add('hidden'); });
+  if (mstate) document.getElementById('md-'+mstate).classList.remove('hidden');
+  document.getElementById('md-err-section').classList.toggle('hidden', !isErr);
+  document.getElementById('md-overlay').classList.toggle('hidden', !s.overlay);
+  if (s.overlay) document.getElementById('md-overlay-txt').textContent = s.overlayTxt;
+  var fp = document.getElementById('md-btn-preview'), fr = document.getElementById('md-btn-reg');
+  fp.classList.remove('hidden'); fr.classList.remove('hidden');
+  if (s.footer === 'init')    { fp.disabled = true;  fr.disabled = true;  fr.classList.add('hidden'); }
+  if (s.footer === 'preview') { fp.disabled = false; fr.disabled = true;  fr.classList.add('hidden'); }
+  if (s.footer === 'reg')     { fp.disabled = true;  fp.classList.add('hidden'); fr.disabled = isErr; }
+  if (s.footer === 'none')    { fp.disabled = true;  fr.disabled = true; }
+  document.getElementById('md-rp').classList.toggle('hidden', !s.result);
+  setProtoBar(mdStep+1, MD.length, s.lbl, s.alt);
+}
+
+function mdOpen() { mdStep = 1; renderMd(); }
+function mdClose() { document.getElementById('md-backdrop').classList.add('hidden'); }
+
+function setProtoBar(cur, total, lbl, altBtn) {
+  document.getElementById('proto-lbl').innerHTML = '<strong>Step '+cur+'</strong> — '+lbl;
+  document.getElementById('pb-badge').textContent = cur+' / '+total;
+  document.getElementById('pb-next').disabled = (scen==='page' ? pgStep>=PG.length-1 : mdStep>=MD.length-1);
+  document.getElementById('pb-alt').classList.toggle('hidden', !altBtn);
+  var altLabel = (scen==='page' ? pgAlt : mdAlt);
+  if (altBtn) document.getElementById('pb-alt').textContent = altLabel ? '✓ 정상 결과' : '🔀 오류 결과';
+}
+
+function toggleAlt() {
+  if (scen === 'page') { pgAlt = !pgAlt; renderPg(); }
+  else { mdAlt = !mdAlt; renderMd(); }
+}
+
+function nextStep() {
+  if (scen==='page') { if (pgStep<PG.length-1) { pgStep++; renderPg(); } }
+  else { if (mdStep<MD.length-1) { mdStep++; renderMd(); } }
+}
+function prevStep() {
+  if (scen==='page') { if (pgStep>0) { pgStep--; pgAlt=false; renderPg(); } }
+  else { if (mdStep>0) { mdStep--; mdAlt=false; renderMd(); } }
+}
+function switchScen(s) {
+  scen = s;
+  document.getElementById('scene-page').classList.toggle('hidden', s!=='page');
+  document.getElementById('scene-modal').classList.toggle('hidden', s!=='modal');
+  document.getElementById('tb-page').classList.toggle('on', s==='page');
+  document.getElementById('tb-modal').classList.toggle('on', s==='modal');
+  pgAlt = false; mdAlt = false;
+  if (s==='page') { pgStep=0; renderPg(); }
+  else { mdStep=0; renderMd(); }
+}
+
+renderPg();
+</script>
