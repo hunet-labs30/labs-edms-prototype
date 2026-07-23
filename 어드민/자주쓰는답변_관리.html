@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS 연수원 Admin - 자주 쓰는 답변 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --bg: #f1f5f9;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #94a3b8;
+    --sidebar-hover: #334155;
+    --header-bg: #0f172a;
+    --admin-red: #dc2626;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px; background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }
+  .top-header {
+    background: var(--header-bg); color: #fff; height: 48px;
+    display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    flex-shrink: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; letter-spacing: -.3px; }
+  .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; }
+  .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── 사이드바 ── */
+  .sidebar { width: 200px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; transition: background .15s, color .15s; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-label { flex: 1; }
+  .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+  .nav-group.open > .nav-sub { max-height: 1200px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; transition: background .12s, color .12s; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-group-sub > .nav-group-header { padding-left: 22px; font-size: 11px; font-weight: 600; color: #475569; border-left-color: transparent; background: transparent; }
+  .nav-group-sub.open > .nav-group-header { color: #94a3b8; background: transparent; border-left-color: transparent; }
+  .nav-group-sub > .nav-sub .nav-item { padding-left: 34px; }
+
+  /* ── 메인 ── */
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .main::-webkit-scrollbar { width: 5px; }
+  .main::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+
+  /* ── 검색 ── */
+  .search-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; gap: 0; }
+  .search-row:last-of-type { border-bottom: none; }
+  .search-label { width: 80px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .search-actions { padding: 12px 20px 14px; display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid #f1f5f9; }
+  .input, .select {
+    height: 34px; border: 1px solid #cbd5e1; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
+    background: #fff; outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .select {
+    cursor: pointer; padding-right: 28px; appearance: none; flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+
+  /* ── 버튼 ── */
+  .btn { height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; font-family: inherit; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-reset { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-reset:hover { background: #f1f5f9; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+  .btn-outline:hover { background: #f9fafb; }
+  .btn-sm { height: 28px; padding: 0 12px; font-size: 12px; border-radius: 5px; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-ghost { background: transparent; color: #475569; border: 1px solid #e2e8f0; }
+  .btn-ghost:hover { background: #f8fafc; }
+
+  /* ── 결과 테이블 ── */
+  .result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
+  .result-count { font-size: 13px; color: var(--text-muted); }
+  .result-count strong { color: var(--primary); font-weight: 700; }
+  .result-actions { display: flex; gap: 6px; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; font-weight: 600; color: #475569; text-align: center; white-space: nowrap; }
+  .main-table td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; text-align: center; color: var(--text); }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .link-cell { color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; text-align: left; }
+  .link-cell:hover { color: #1d4ed8; }
+  .content-preview { color: #64748b; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; text-align: left; font-size: 12px; }
+  .action-btns { display: flex; gap: 4px; justify-content: center; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+  .pagination { display: flex; align-items: center; gap: 3px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #e2e8f0; background: #fff; border-radius: 5px; font-size: 12px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .empty-row td { padding: 40px 0; color: #94a3b8; font-size: 13px; }
+  .per-page-select { height: 28px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 12px; padding: 0 20px 0 8px; color: #475569; cursor: pointer; appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 6px center; }
+
+  /* ── 모달 (등록/수정) ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.2); width: 680px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+  .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: #f8fafc; flex-shrink: 0; }
+  .modal-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+  .btn-modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: #64748b; line-height: 1; padding: 2px 4px; }
+  .btn-modal-close:hover { color: #0f172a; }
+  .modal-body { flex: 1; overflow-y: auto; padding: 0; }
+  .modal-body::-webkit-scrollbar { width: 3px; }
+  .modal-body::-webkit-scrollbar-thumb { background: #e2e8f0; }
+  .modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; background: #f8fafc; flex-shrink: 0; }
+
+  /* 정보 테이블 (모달 내) */
+  .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .info-table th { background: #f8fafc; width: 120px; padding: 12px 16px; font-weight: 600; color: #475569; text-align: left; border-bottom: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; vertical-align: top; white-space: nowrap; }
+  .info-table td { padding: 10px 16px; color: var(--text); border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  .info-table tr:last-child th, .info-table tr:last-child td { border-bottom: none; }
+  .req { color: #dc2626; margin-left: 2px; }
+  .input-full { width: 100%; }
+  .field-error { font-size: 11px; color: #dc2626; display: none; margin-top: 4px; }
+  .field-error.show { display: block; }
+
+  /* 에디터 mock */
+  .editor-wrap { border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+  .editor-wrap:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .editor-toolbar { display: flex; gap: 2px; padding: 6px 8px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+  .toolbar-btn { height: 26px; min-width: 26px; padding: 0 6px; background: transparent; border: 1px solid transparent; border-radius: 4px; font-size: 12px; cursor: pointer; color: #475569; font-family: inherit; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .toolbar-btn:hover { background: #e2e8f0; border-color: #cbd5e1; }
+  .toolbar-sep { width: 1px; background: #e2e8f0; margin: 2px 4px; align-self: stretch; }
+  .editor-body { min-height: 200px; max-height: 320px; overflow-y: auto; padding: 12px 14px; font-size: 13px; line-height: 1.8; color: #374151; outline: none; }
+  .editor-body:empty::before { content: attr(data-placeholder); color: #94a3b8; }
+  .char-count { text-align: right; font-size: 11px; color: #94a3b8; padding: 4px 10px 6px; background: #f8fafc; border-top: 1px solid #f1f5f9; }
+
+  /* 확인 모달 */
+  .confirm-modal { width: 360px; }
+  .confirm-modal .modal-body { padding: 24px 24px 20px; }
+  .confirm-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: #475569; line-height: 1.6; }
+
+  /* 토스트 */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: #15803d; }
+
+  /* 안내 배너 */
+  .info-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #1e40af; line-height: 1.6; }
+  .info-banner-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo">LABS <span>연수원</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">연수원 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+
+  <!-- ━━━ 사이드바 ━━━ -->
+  <nav class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">학습관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정 관리</a>
+        <a class="nav-item" href="#">수강신청 관리</a>
+        <a class="nav-item" href="#">학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 조회</a>
+        <a class="nav-item" href="#">부서 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub open">
+          <div class="nav-group-header" onclick="toggleNavSub(this)"><span class="nav-group-label">상담 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="1대1_문의_관리.html">1:1 문의 관리</a>
+            <a class="nav-item active">자주 쓰는 답변 관리</a>
+          </div>
+        </div>
+        <div class="nav-group nav-group-sub">
+          <div class="nav-group-header" onclick="toggleNavSub(this)"><span class="nav-group-label">FAQ 관리</span><span class="nav-arrow">▶</span></div>
+          <div class="nav-sub">
+            <a class="nav-item" href="FAQ_관리.html">공통 FAQ 관리</a>
+            <a class="nav-item" href="FAQ_관리.html">기업별 FAQ 관리</a>
+          </div>
+        </div>
+        <a class="nav-item" href="#">공지사항 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">기본 정보</a>
+        <a class="nav-item" href="#">메뉴 관리</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════
+       자주 쓰는 답변 관리 — 목록
+  ════════════════════════════════════ -->
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title">자주 쓰는 답변 관리</div>
+      <div class="breadcrumb">고객행복센터 &gt; 상담 관리 &gt; 자주 쓰는 답변 관리</div>
+    </div>
+
+    <!-- 안내 -->
+    <div class="info-banner">
+      <span class="info-banner-icon">ℹ️</span>
+      <span>1:1 문의 답변 작성 시 사용할 답변 템플릿을 미리 등록해 두는 메뉴입니다. 등록된 답변은 1:1 문의 상세 화면의 <strong>자주 쓰는 답변</strong> 패널에서 바로 활용할 수 있습니다.</span>
+    </div>
+
+    <!-- 검색 -->
+    <div class="card">
+      <div class="search-row">
+        <div class="search-label">검색어</div>
+        <div class="search-body">
+          <input class="input" id="s-keyword" type="text" placeholder="제목 또는 내용으로 검색" style="width:300px;"
+            onkeydown="if(event.key==='Enter') doSearch()">
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-reset" onclick="resetSearch()">초기화</button>
+        <button class="btn btn-primary" onclick="doSearch()">검색</button>
+      </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="card">
+      <div class="result-header">
+        <div class="result-count">전체 <strong id="total-count">8</strong>건</div>
+        <div class="result-actions">
+          <button class="btn btn-sm btn-primary" onclick="openWriteModal(null)">+ 등록</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="main-table" id="main-table">
+          <thead>
+            <tr>
+              <th style="width:52px;">NO</th>
+              <th style="min-width:240px; text-align:left; padding-left:12px;">제목</th>
+              <th style="min-width:280px; text-align:left; padding-left:12px;">내용 미리보기</th>
+              <th style="width:80px;">작성자</th>
+              <th style="width:120px;">등록일</th>
+              <th style="width:120px;">수정일</th>
+              <th style="width:100px;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- JS 렌더링 -->
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <select class="per-page-select" id="per-page" onchange="doSearch()">
+          <option value="20">20개씩</option>
+          <option value="50" selected>50개씩</option>
+          <option value="100">100개씩</option>
+        </select>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════
+     등록/수정 모달
+════════════════════════════════════ -->
+<div class="modal-overlay" id="write-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-text">자주 쓰는 답변 등록</span>
+      <button class="btn-modal-close" onclick="closeWriteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <table class="info-table">
+        <tr>
+          <th>제목 <span class="req">*</span></th>
+          <td>
+            <input class="input input-full" id="f-title" type="text" placeholder="답변 제목을 입력하세요" maxlength="100">
+            <div class="field-error" id="err-title">제목을 입력해주세요.</div>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top; padding-top:14px;">내용 <span class="req">*</span></th>
+          <td style="padding:10px 16px;">
+            <div class="editor-wrap">
+              <div class="editor-toolbar">
+                <button class="toolbar-btn" title="굵게" onclick="execCmd('bold')"><b>B</b></button>
+                <button class="toolbar-btn" title="기울임" onclick="execCmd('italic')"><i>I</i></button>
+                <button class="toolbar-btn" title="밑줄" onclick="execCmd('underline')"><u>U</u></button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" title="순서없는 목록" onclick="execCmd('insertUnorderedList')">≡</button>
+                <button class="toolbar-btn" title="순서있는 목록" onclick="execCmd('insertOrderedList')">1.</button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" title="링크" onclick="insertLink()">🔗</button>
+                <div class="toolbar-sep"></div>
+                <button class="toolbar-btn" title="서식 지우기" onclick="execCmd('removeFormat')">✕</button>
+              </div>
+              <div class="editor-body" id="f-content" contenteditable="true"
+                data-placeholder="답변 내용을 입력하세요."
+                oninput="updateCharCount()"></div>
+              <div class="char-count"><span id="char-count">0</span>자</div>
+            </div>
+            <div class="field-error" id="err-content">내용을 입력해주세요.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeWriteModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveAnswer()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     삭제 확인 모달
+════════════════════════════════════ -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal confirm-modal">
+    <div class="modal-header">
+      <span class="modal-title">삭제 확인</span>
+      <button class="btn-modal-close" onclick="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:24px 24px 20px;">
+      <div class="confirm-title">답변을 삭제하시겠습니까?</div>
+      <div class="confirm-msg">
+        삭제된 답변은 복구할 수 없습니다.<br>
+        1:1 문의 답변 작성 화면의 자주 쓰는 답변 목록에서도 즉시 제거됩니다.
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:flex-end; gap:8px;">
+      <button class="btn btn-outline" onclick="closeDeleteModal()">취소</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── 샘플 데이터 ── */
+let answers = [
+  { id: 1, category:'학습내용', title:'학습 진도 관련 안내', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n학습 진도는 콘텐츠를 끝까지 수강하시면 자동으로 반영됩니다. 진도가 반영되지 않는 경우, 브라우저 캐시를 초기화하신 후 다시 시도해보시기 바랍니다.', author:'이강은', createdAt:'2026.01.10 09:22:14', updatedAt:'2026.01.10 09:22:14' },
+  { id: 2, category:'학습내용', title:'수료 기준 안내', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n수료 기준은 진도율 80% 이상, 평가 60점 이상을 충족하셔야 합니다. 자세한 수료 조건은 해당 과정 상세 페이지에서 확인하실 수 있습니다.', author:'이강은', createdAt:'2026.01.12 14:05:33', updatedAt:'2026.02.03 11:10:22' },
+  { id: 3, category:'학습장애', title:'영상이 재생되지 않을 때', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n영상 재생 오류 시 아래 방법을 시도해보세요.\n1. 브라우저를 최신 버전으로 업데이트\n2. 크롬 브라우저 사용 권장\n3. 캐시 및 쿠키 삭제 후 재접속', author:'박민준', createdAt:'2026.01.15 10:30:00', updatedAt:'2026.01.15 10:30:00' },
+  { id: 4, category:'학습장애', title:'로그인이 안 될 때', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n로그인 오류가 발생한 경우 아이디/비밀번호를 다시 확인해 주세요. 비밀번호를 잊으셨다면 "비밀번호 찾기"를 이용하시거나 고객행복센터로 연락주시기 바랍니다.', author:'이강은', createdAt:'2026.02.01 09:00:00', updatedAt:'2026.02.01 09:00:00' },
+  { id: 5, category:'수강신청', title:'수강 취소 방법 안내', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n수강 취소는 수강신청 페이지 > 내 신청 내역에서 취소하실 수 있습니다. 단, 학습 시작 후에는 취소가 제한될 수 있으니 참고해 주세요.', author:'박민준', createdAt:'2026.02.10 13:45:00', updatedAt:'2026.03.05 16:20:00' },
+  { id: 6, category:'수강신청', title:'수강 기간 연장 안내', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n수강 기간 연장은 소속 연수원의 정책에 따라 다를 수 있습니다. 연장이 필요하신 경우, 연수원 담당자에게 직접 문의해 주시기 바랍니다.', author:'이강은', createdAt:'2026.02.20 10:00:00', updatedAt:'2026.02.20 10:00:00' },
+  { id: 7, category:'기타', title:'기본 답변 템플릿', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n문의해 주신 내용을 확인 후 빠르게 답변드리겠습니다. 추가 문의 사항은 고객행복센터 1644-1941로 연락주시기 바랍니다.', author:'이강은', createdAt:'2026.03.01 08:30:00', updatedAt:'2026.03.01 08:30:00' },
+  { id: 8, category:'기타', title:'운영시간 안내', content:'안녕하세요. {문의자이름}님.\n휴넷 고객행복센터입니다.\n\n고객행복센터 운영시간을 안내드립니다.\n· 평일 08:00~18:00\n· 주말·공휴일 09:00~18:00 (점심 12:00~13:00 제외)\n· 전화 1644-1941', author:'박민준', createdAt:'2026.03.10 11:00:00', updatedAt:'2026.04.02 14:30:00' },
+];
+
+let filteredData = [...answers];
+let editingId = null;
+let deletingId = null;
+let currentPage = 1;
+
+/* ── 검색 ── */
+function doSearch() {
+  const kw = document.getElementById('s-keyword').value.trim().toLowerCase();
+  filteredData = answers.filter(a => {
+    if (kw && !a.title.toLowerCase().includes(kw) && !a.content.toLowerCase().includes(kw)) return false;
+    return true;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function resetSearch() {
+  document.getElementById('s-keyword').value = '';
+  filteredData = [...answers];
+  currentPage = 1;
+  renderTable();
+}
+
+/* ── 테이블 렌더링 ── */
+function renderTable() {
+  const perPage = parseInt(document.getElementById('per-page').value);
+  const total = filteredData.length;
+  document.getElementById('total-count').textContent = total;
+
+  const start = (currentPage - 1) * perPage;
+  const pageData = filteredData.slice(start, start + perPage);
+
+  const tbody = document.getElementById('table-body');
+  if (total === 0) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">조회된 데이터가 없습니다.</td></tr>`;
+  } else {
+    tbody.innerHTML = pageData.map((a, i) => {
+      const no = total - start - i;
+      const preview = a.content.replace(/\n/g, ' ').substring(0, 60) + (a.content.length > 60 ? '…' : '');
+      return `<tr>
+        <td>${no}</td>
+        <td style="text-align:left; padding-left:12px;"><span class="link-cell" onclick="openWriteModal(${a.id})" title="${a.title}">${a.title}</span></td>
+        <td style="text-align:left; padding-left:12px;"><span class="content-preview" title="${a.content.replace(/\n/g,' ')}">${preview}</span></td>
+        <td>${a.author}</td>
+        <td>${a.createdAt.split(' ')[0]}</td>
+        <td>${a.updatedAt.split(' ')[0]}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn btn-sm btn-outline" onclick="openWriteModal(${a.id})">수정</button>
+            <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${a.id})">삭제</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPagination(total, perPage);
+}
+
+function renderPagination(total, perPage) {
+  const totalPages = Math.ceil(total / perPage) || 1;
+  const pg = document.getElementById('pagination');
+  let html = `<button class="pg-btn" onclick="goPage(${currentPage-1})">‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="pg-btn" onclick="goPage(${currentPage+1})">›</button>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const perPage = parseInt(document.getElementById('per-page').value);
+  const total = filteredData.length;
+  const totalPages = Math.ceil(total / perPage) || 1;
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  renderTable();
+}
+
+/* ── 등록/수정 모달 ── */
+function openWriteModal(id) {
+  editingId = id;
+  clearErrors();
+  if (id === null) {
+    document.getElementById('modal-title-text').textContent = '자주 쓰는 답변 등록';
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-content').innerHTML = '';
+  } else {
+    const a = answers.find(x => x.id === id);
+    document.getElementById('modal-title-text').textContent = '자주 쓰는 답변 수정';
+    document.getElementById('f-title').value = a.title;
+    document.getElementById('f-content').innerHTML = a.content.replace(/\n/g, '<br>');
+  }
+  updateCharCount();
+  document.getElementById('write-modal').classList.add('open');
+  setTimeout(() => document.getElementById('f-title').focus(), 100);
+}
+
+function closeWriteModal() {
+  document.getElementById('write-modal').classList.remove('open');
+  editingId = null;
+}
+
+function clearErrors() {
+  ['title','content'].forEach(k => {
+    document.getElementById('err-'+k).classList.remove('show');
+  });
+}
+
+function saveAnswer() {
+  clearErrors();
+  const title = document.getElementById('f-title').value.trim();
+  const content = document.getElementById('f-content').innerText.trim();
+
+  let valid = true;
+  if (!title) { document.getElementById('err-title').classList.add('show'); valid = false; }
+  if (!content) { document.getElementById('err-content').classList.add('show'); valid = false; }
+  if (!valid) return;
+
+  const now = new Date();
+  const ts = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+  if (editingId === null) {
+    const newId = Math.max(...answers.map(a=>a.id)) + 1;
+    answers.unshift({ id: newId, title, content, author:'이강은', createdAt: ts, updatedAt: ts });
+    showToast('등록되었습니다.', 'success');
+  } else {
+    const idx = answers.findIndex(a => a.id === editingId);
+    answers[idx] = { ...answers[idx], title, content, updatedAt: ts };
+    showToast('수정되었습니다.', 'success');
+  }
+  filteredData = [...answers];
+  renderTable();
+  closeWriteModal();
+}
+
+/* ── 삭제 모달 ── */
+function openDeleteModal(id) {
+  deletingId = id;
+  document.getElementById('delete-modal').classList.add('open');
+}
+
+function closeDeleteModal() {
+  document.getElementById('delete-modal').classList.remove('open');
+  deletingId = null;
+}
+
+function confirmDelete() {
+  answers = answers.filter(a => a.id !== deletingId);
+  filteredData = filteredData.filter(a => a.id !== deletingId);
+  if (currentPage > Math.ceil(filteredData.length / parseInt(document.getElementById('per-page').value))) {
+    currentPage = Math.max(1, currentPage - 1);
+  }
+  renderTable();
+  closeDeleteModal();
+  showToast('삭제되었습니다.');
+}
+
+/* ── 에디터 유틸 ── */
+function execCmd(cmd) {
+  document.getElementById('f-content').focus();
+  document.execCommand(cmd, false, null);
+}
+
+function insertLink() {
+  const url = prompt('링크 URL을 입력하세요:');
+  if (url) {
+    document.getElementById('f-content').focus();
+    document.execCommand('createLink', false, url);
+  }
+}
+
+function updateCharCount() {
+  const len = document.getElementById('f-content').innerText.length;
+  document.getElementById('char-count').textContent = len;
+}
+
+/* ── 사이드바 토글 ── */
+function toggleNav(el) {
+  el.parentElement.classList.toggle('open');
+}
+function toggleNavSub(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+/* ── 토스트 ── */
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ── 초기 렌더 ── */
+doSearch();
+</script>
+</body>
+</html>
