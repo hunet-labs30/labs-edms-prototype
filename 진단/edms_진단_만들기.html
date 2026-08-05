@@ -2645,19 +2645,13 @@ function generateStep4Tabs() {
 
     const paneEl = document.createElement('div');
     paneEl.className = `tab-pane ${idx === 0 ? 'active' : ''}`;
-    const draftLockAttrs = hasDraftSaved ? '' : 'disabled style="opacity:.45;cursor:not-allowed;" title="임시저장을 먼저 진행해주세요."';
     paneEl.innerHTML = `
-      ${!hasDraftSaved ? `
-      <div class="info-box" style="margin-bottom:10px;">
-        <span class="info-icon">ℹ️</span>
-        <span>대상자 등록은 임시저장을 먼저 진행해야 사용할 수 있습니다.</span>
-      </div>` : ''}
       <div class="toolbar">
         <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">${MK_DIAG_TARGETS.length}</strong>명 등록됨</div>
         <div class="spacer"></div>
         <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
-        <button class="btn btn-gray btn-sm" ${draftLockAttrs} onclick="openTargetBulkModal(${idx})">일괄 등록</button>
-        <button class="btn btn-primary btn-sm" ${draftLockAttrs} onclick="openAddTargetModal(${idx})">대상자 등록</button>
+        <button class="btn btn-gray btn-sm" onclick="openTargetBulkModal(${idx})">일괄 등록</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">대상자 등록</button>
       </div>
       <div style="overflow-x:auto;flex:1;">
         <table class="data-table">
@@ -3242,16 +3236,11 @@ function saveDraft() {
     showToast('진단지를 선택해야 임시저장할 수 있습니다.');
     return;
   }
-  const wasFirstSave = !hasDraftSaved;
   hasDraftSaved = true;
   const msg = document.getElementById('draftSavedMsg');
   msg.classList.add('show');
   setTimeout(() => msg.classList.remove('show'), 2500);
   showToast('임시저장 되었습니다.');
-  // STEP 6가 이미 렌더링된 상태라면 대상자 등록 잠금 배너/버튼 상태를 즉시 갱신
-  if (wasFirstSave && document.getElementById('step4TabGroup') && document.getElementById('step4TabGroup').children.length) {
-    generateStep4Tabs();
-  }
 }
 
 function openDiagnosisPreview() {
@@ -3537,9 +3526,6 @@ function setDiagStatus(status) {
   /* ── after/expired/completed는 이미 생성(임시저장 완료)된 진단이므로 대상자 등록 잠금 해제 ── */
   /*    before는 데모용 초기 상태로, 아직 한 번도 임시저장하지 않은 신규 생성 흐름을 재현 ── */
   hasDraftSaved = (status !== 'before');
-  if (document.getElementById('step4TabGroup') && document.getElementById('step4TabGroup').children.length) {
-    generateStep4Tabs();
-  }
 
   /* ── 수정/보기 모드에서는 모든 STEP 자유 이동 허용 ── */
   if (status !== 'before') {
