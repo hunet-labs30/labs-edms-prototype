@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단지 만들기(가변 계층) — LABS New EDMS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #1a73e8;
+  --primary-dark: #1557b0;
+  --bg: #f5f6fa;
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #3d5166;
+  --header-bg: #1e2b37;
+  --white: #ffffff;
+  --border: #dde1e7;
+  --text: #333;
+}
+body {
+  font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+  font-size: 13px; background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ── HEADER ── */
+.top-header { background: var(--header-bg); color: #fff; height: 46px; display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; z-index: 200; }
+.top-header .logo { font-size: 15px; font-weight: 700; color: #fff; }
+.top-header .logo span { color: #7eb8f7; }
+.top-header .subtitle { font-size: 12px; color: #aab; }
+.top-header .spacer { flex: 1; }
+.top-header .user-name { font-size: 13px; color: #ccc; }
+.top-header .btn-header { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar { width: 180px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+.nav-group-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; cursor: pointer; user-select: none; color: #b8c4ce; font-size: 12px; font-weight: 700; border-left: 3px solid transparent; }
+.nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-group.open > .nav-group-header { color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7; }
+.nav-group-label { flex: 1; }
+.nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; }
+.nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+.nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.nav-group.open > .nav-sub { max-height: 500px; padding: 2px 0 6px; }
+.nav-item { display: block; padding: 5px 12px 5px 22px; color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; }
+.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+.nav-flat { display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+.nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+/* ── MAIN (wizard) ── */
+.main { flex: 1; overflow: hidden; padding: 0; display: flex; flex-direction: column; }
+.wiz-layout { display: flex; flex: 1; overflow: hidden; }
+
+.wiz-aside {
+  width: 220px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.wiz-aside-head { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+.wiz-aside-head .wiz-aside-title { font-size: 14px; font-weight: 800; color: #1a1a2e; }
+.wiz-aside-head .wiz-aside-sub { font-size: 11px; color: #999; margin-top: 3px; }
+.wiz-step-list { padding: 8px 10px; flex: 1; }
+.wiz-step-connector { width: 1.5px; height: 12px; background: #e0e3e8; margin: 0 auto 0 20px; }
+.wiz-step-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 8px; border-radius: 8px; cursor: pointer;
+  transition: background .12s;
+}
+.wiz-step-item:hover { background: #f5f6f8; }
+.wiz-step-item.is-active { background: #eef2ff; }
+.wiz-step-badge {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  background: #e0e3e8; color: #999; margin-top: 1px;
+  transition: background .2s, color .2s;
+}
+.wiz-step-item.is-active .wiz-step-badge { background: var(--primary); color: #fff; }
+.wiz-step-item.is-done .wiz-step-badge { background: #1a7a4a; color: #fff; font-size: 13px; }
+.wiz-step-meta { flex: 1; }
+.wiz-step-title { font-size: 12px; font-weight: 700; color: #bbb; line-height: 1.3; }
+.wiz-step-item.is-active .wiz-step-title { color: var(--primary); }
+.wiz-step-item.is-done .wiz-step-title { color: #333; }
+.wiz-step-desc { font-size: 10.5px; color: #ccc; margin-top: 3px; line-height: 1.4; }
+.wiz-step-item.is-active .wiz-step-desc { color: #7aaaf7; }
+.wiz-step-item.is-done .wiz-step-desc { color: #999; }
+.wiz-aside-foot { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+.wiz-content { flex: 1; min-width: 0; overflow-y: auto; background: var(--bg); padding: 20px; }
+
+.wiz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-direction: column; overflow: hidden;
+  min-height: calc(100vh - 130px);
+}
+.wiz-card-head {
+  padding: 22px 28px 18px; background: #fafbfc;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.wiz-step-tag {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  background: #e8f0fe; padding: 3px 10px; border-radius: 12px;
+  margin-bottom: 10px;
+}
+.wiz-card-head h2 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; letter-spacing: -.3px; }
+.wiz-card-head p { font-size: 13px; color: #888; margin: 0; line-height: 1.65; }
+.wiz-card-body { flex: 1; padding: 20px 24px; }
+.wiz-card-foot {
+  flex-shrink: 0; padding: 14px 28px;
+  border-top: 1px solid var(--border); background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wiz-card-foot .foot-left { display: flex; align-items: center; gap: 8px; }
+.wiz-card-foot .foot-right { display: flex; align-items: center; gap: 8px; }
+
+.step-content { display: none; }
+.step-content.active { display: flex; flex-direction: column; }
+
+.wiz-breadcrumb { font-size: 11px; color: #999; margin-bottom: 8px; }
+
+/* ── BUTTONS ── */
+.btn { height: 32px; padding: 0 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; font-weight: 700; }
+.btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); font-weight: 600; }
+.btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+.btn-danger { background: #fff; color: #c0392b; border: 1px solid #e8c4bf; }
+.btn-sm { height: 26px; padding: 0 10px; font-size: 11px; }
+.btn-xs { height: 22px; padding: 0 8px; font-size: 11px; gap: 3px; }
+.btn-lg { height: 38px; padding: 0 22px; font-size: 14px; font-weight: 700; }
+
+/* ── 안내 배너(쉬운 설명) ── */
+.guide-banner {
+  background: linear-gradient(120deg, #e8f0fe 0%, #f0e9ff 100%);
+  border: 1px solid #c7d8f7; border-radius: 8px; padding: 16px 20px;
+  display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px;
+}
+.guide-banner-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 21px;
+}
+.guide-banner-text { flex: 1; line-height: 1.75; font-size: 13px; color: #1a3a7a; }
+.guide-banner-text strong { color: #0a1e4a; }
+
+.depth-explainer { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.depth-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; background: #fff; border-radius: 14px;
+  font-size: 11.5px; font-weight: 700;
+}
+.depth-chip .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink:0; }
+.depth-arrow { color: #999; font-size: 12px; }
+
+/* ── 단계 구성 (STEP1 전용, 하이라키 형태) ── */
+.level-bar { display:flex; flex-direction:column; gap:4px; }
+.level-row { display:flex; align-items:center; gap:6px; }
+.level-connector { color:#ccd3dc; font-size:15px; font-family:monospace; flex-shrink:0; }
+.level-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.level-chip { display:flex; align-items:center; gap:8px; background:#fff; border:1.5px solid var(--border); border-radius:9px; padding:8px 10px 8px 14px; }
+.level-chip-idx { font-size:10px; color:#aaa; font-weight:800; }
+.level-chip-label { font-size:13px; font-weight:700; color:#1a1a2e; white-space:nowrap; max-width:130px; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.level-chip-label { border-bottom:1px dashed #bbb; padding-bottom:1px; }
+.level-chip-label:hover { border-bottom-color:var(--primary); color:var(--primary); }
+.level-edit-icon { font-size:11px; color:#bbb; cursor:pointer; }
+.level-chip:hover .level-edit-icon { color:var(--primary); }
+.level-del-btn { background:none; border:none; color:#ccc; font-size:16px; cursor:pointer; line-height:1; padding:0 1px; }
+.level-del-btn:hover { color:#c00; }
+.level-add-btn { height:36px; padding:0 14px; border:1.5px dashed #b3c8f0; background:#f8faff; color:var(--primary); border-radius:9px; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.level-add-btn:hover { background:#eaf2fd; }
+.level-edit-input { height:28px; border:1px solid var(--primary); border-radius:5px; padding:0 8px; font-size:13px; font-family:inherit; outline:none; width:100px; }
+
+/* ── 판정/매핑 선택 카드 (STEP3, STEP4 전용) ── */
+.jm-list { display:flex; flex-direction:column; gap:10px; max-width:560px; }
+.jm-card { display:flex; align-items:flex-start; gap:14px; cursor:pointer; padding:16px 18px; border:2px solid var(--border); border-radius:10px; transition:all .12s; background:#fff; }
+.jm-card:hover { border-color:var(--primary); background:#f8faff; }
+.jm-card.selected { border-color:#1a7a4a; background:#eefaf1; }
+.jm-card.disabled { opacity:.5; cursor:not-allowed; background:#f7f7f8; }
+.jm-card.disabled:hover { border-color:var(--border); background:#f7f7f8; }
+.jm-card-disabled-note { font-size:11px; color:#c00; margin-top:6px; }
+.jm-card-dot { width:20px; height:20px; min-width:20px; border:2px solid var(--border); border-radius:50%; margin-top:2px; flex-shrink:0; }
+.jm-card.selected .jm-card-dot { border-color:#1a7a4a; background:#1a7a4a; box-shadow: inset 0 0 0 4px #fff; }
+.jm-card-body { flex:1; min-width:0; }
+.jm-card-title { font-size:14px; font-weight:800; color:#1a1a2e; display:flex; align-items:center; gap:8px; }
+.jm-card-depth-badge { font-size:11px; font-weight:700; color:#fff; padding:2px 9px; border-radius:9px; flex-shrink:0; }
+.jm-card-example { font-size:12px; color:#888; margin-top:5px; line-height:1.6; }
+
+/* ── 본문 2-pane ── */
+.workspace { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 16px; align-items: start; }
+
+/* ── 카드 ── */
+.card { background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.card-head { padding: 13px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-head-title { font-size: 14px; font-weight: 700; color: #1a1a2e; flex: 1; }
+.card-head-sub { font-size: 11px; color: #888; }
+.card-body { padding: 14px 18px; }
+.card-body.p0 { padding: 0; }
+
+/* ── 빈 상태 ── */
+.empty-state { padding: 56px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.empty-icon { font-size: 44px; opacity: 0.8; }
+.empty-title { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+.empty-desc { font-size: 13px; color: #666; line-height: 1.7; max-width: 480px; }
+.empty-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* ── 트리 ── */
+.tree { padding: 6px 0; }
+.tree-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid #f0f2f5; position: relative; }
+.tree-row:hover { background: #f8faff; }
+.tree-row.editing { background: #fff8e1; flex-wrap:wrap; align-items:flex-start; }
+.toggle-btn {
+  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #666; cursor: pointer; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.toggle-btn.open { transform: rotate(90deg); }
+.toggle-btn.invisible { visibility: hidden; }
+.depth-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 20px; padding: 0 8px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.row-name { font-size: 13px; font-weight: 600; color: #1a1a2e; flex: 1; }
+.row-meta { font-size: 11px; color: #999; flex-shrink: 0; }
+.row-meta.warn { color: #c00; font-weight: 700; }
+.row-actions { display: flex; gap: 4px; }
+.drag-handle { cursor: grab; color: #ccc; font-size: 16px; flex-shrink: 0; display: flex; align-items: center; padding: 0 2px; user-select: none; }
+.drag-handle:hover { color: #999; }
+.tree-row.drag-over { background: #f0f7ff; border-left: 3px solid var(--primary); }
+.inline-input { height: 26px; border: 1px solid var(--primary); border-radius: 3px; padding: 0 8px; font-size: 12px; font-family: inherit; outline: none; flex: 1; }
+.edit-row-top { display: flex; align-items: center; gap: 8px; width: 100%; }
+.desc-textarea { width: 100%; margin-top: 6px; border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; font-size: 12px; font-family: inherit; resize: vertical; color: var(--text); min-height: 52px; line-height: 1.5; }
+.desc-textarea:focus { outline: none; border-color: var(--primary); }
+.row-name-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.row-desc-preview { font-size: 11px; color: #999; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 우측 패널 ── */
+.summary-stat { display: flex; align-items: baseline; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #f0f2f5; }
+.summary-stat:last-of-type { border-bottom: none; }
+.stat-label { font-size: 11px; color: #666; flex: 1; display: flex; align-items: center; gap: 6px; }
+.stat-num { font-size: 20px; font-weight: 800; }
+.stat-suffix { font-size: 11px; color: #888; }
+
+.next-step-card { background: #f8faff; border: 1px solid #c7d8f7; }
+.next-step-card .card-body { padding: 14px 16px; font-size: 12px; line-height: 1.7; color: #1a3a7a; }
+.next-step-card strong { color: #0a1e4a; }
+
+/* ── 모달 ── */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; border-radius: 8px; width: 600px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; border-bottom: 1px solid var(--border); }
+.modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; font-size: 13px; line-height: 1.7; color: #333; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+.preset-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 12px 14px; cursor: pointer; margin-bottom: 10px; transition: all 0.15s; }
+.preset-card:hover { border-color: var(--primary); background: #f8faff; }
+.preset-card.selected { border-color: var(--primary); background: #eaf2fd; }
+.preset-title { font-weight: 700; font-size: 13px; color: #1a1a2e; margin-bottom: 4px; }
+.preset-desc { font-size: 11.5px; color: #666; margin-bottom: 6px; }
+.preset-stats { font-size: 11px; color: var(--primary); font-weight: 600; }
+
+/* 토스트 */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 11px 18px; border-radius: 5px; font-size: 12.5px; z-index: 9999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+/* ── 점수 설정 & 미리보기 (질문 등록 모달) ── */
+.scale-label-row { display:flex;align-items:center;gap:8px;padding:5px 4px;border-bottom:1px solid #f5f6f8; }
+.scale-label-num { width:24px;height:24px;border-radius:50%;background:#e8f0fe;color:var(--primary);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.scale-label-input { flex:1;height:28px;border:1px solid var(--border);border-radius:4px;padding:0 8px;font-size:12px;font-family:inherit;outline:none; }
+.scale-label-input:focus { border-color:var(--primary); }
+.scale-label-score { font-size:10px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:2px 6px;border-radius:4px;flex-shrink:0;min-width:32px;text-align:center; }
+.q-preview-section { margin-top:12px;border-top:1px dashed var(--border);padding-top:10px; }
+.q-preview-toggle { display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#888;user-select:none;background:none;border:1px solid var(--border);padding:5px 10px;border-radius:4px;font-family:inherit; }
+.q-preview-toggle:hover { color:var(--primary);border-color:var(--primary);background:#f8faff; }
+.pv-arrow { font-size:9px;transition:transform .15s; }
+.qpv-area { margin-top:10px; }
+.qpv-card { background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:16px 18px; }
+.qpv-num { font-size:10px;font-weight:700;color:var(--primary);background:#e8f0fe;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:10px; }
+.qpv-text { font-size:13px;color:#1a1a2e;line-height:1.7;margin-bottom:14px;font-weight:500; }
+.qpv-likert { display:flex;gap:4px; }
+.qpv-likert-opt { flex:1;text-align:center; }
+.qpv-circle { width:28px;height:28px;border:2px solid var(--border);border-radius:50%;margin:0 auto 5px; }
+.qpv-likert-label { font-size:10px;color:#888;line-height:1.3;word-break:keep-all; }
+.qpv-score-label { font-size:10px;color:var(--primary);font-weight:700;margin-top:3px; }
+.qpv-ab-wrap { display:flex;gap:8px;margin-bottom:10px; }
+.qpv-ab-box { flex:1;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:#444;line-height:1.5; }
+.qpv-ab-tag { font-weight:800;color:var(--primary);font-size:14px;margin-right:5px; }
+.qpv-ab-scale { display:flex;gap:3px; }
+.qpv-ab-btn { flex:1;text-align:center;font-size:9px;padding:5px 2px;border:1px solid var(--border);border-radius:4px;color:#888;background:#fafbfc;line-height:1.4; }
+.qpv-ab-btn.side { background:#e8f0fe;color:var(--primary);font-weight:700; }
+.qpv-textarea-mock { min-height:56px;border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:12px;color:#bbb;background:#fafbfc; }
+
+/* ── 마지막 STEP: 기본 정보 ── */
+.s3-grid { display:grid;grid-template-columns:1fr 270px;gap:24px;align-items:start; }
+.s3-radio-card { display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px 14px;border:1.5px solid var(--border);border-radius:7px;transition:all .12s; }
+.s3-radio-card:hover { border-color:var(--primary);background:#f8faff; }
+.s3-radio-card.selected { border-color:var(--primary);background:#e8f0fe; }
+.s3-radio-dot { width:16px;height:16px;min-width:16px;border:2px solid var(--border);border-radius:50%;margin-top:2px;flex-shrink:0;transition:all .12s; }
+.s3-radio-card.selected .s3-radio-dot { border-color:var(--primary);background:var(--primary);box-shadow:inset 0 0 0 3px #fff; }
+.s3-summary-box { background:#f8faff;border:1.5px solid #c7d8f7;border-radius:8px;padding:16px;position:sticky;top:0; }
+.s3-summary-title { font-size:12px;font-weight:700;color:#0a1e4a;margin-bottom:10px;display:flex;align-items:center;gap:6px; }
+.s3-summary-row { display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #dde8f8;font-size:12px; }
+.s3-summary-row:last-of-type { border-bottom:none; }
+.s3-summary-label { color:#555; }
+.s3-summary-val { font-weight:700;color:var(--primary); }
+.s3-summary-section-title { font-size:11px;font-weight:700;color:#0a1e4a;margin:10px 0 4px;padding-top:8px;border-top:1px solid #dde8f8; }
+
+/* ── 질문 유형 카드 ── */
+.qtype-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.qtype-card {
+  border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 8px;
+  cursor: pointer; text-align: center; transition: all .15s; background: #fff; user-select: none;
+}
+.qtype-card:hover { border-color: var(--primary); background: #f0f7ff; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(26,115,232,.1); }
+.qtype-icon { font-size: 26px; margin-bottom: 4px; line-height: 1; }
+.qtype-name { font-size: 12px; font-weight: 700; color: #1a1a2e; margin: 2px 0; }
+.qtype-desc { font-size: 10px; color: #888; line-height: 1.4; }
+.qtype-preview-tag { font-size: 10px; color: var(--primary); background: #e8f0fe; padding: 2px 7px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+.qtype-selected-label { display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:#e8f0fe;color:var(--primary);padding:4px 10px;border-radius:12px; }
+.back-btn { background:none;border:none;cursor:pointer;font-size:11px;color:#999;padding:0;display:inline-flex;align-items:center;gap:3px; }
+.back-btn:hover { color:var(--primary); }
+
+.form-row { display:flex;flex-direction:column;gap:4px;margin-bottom:8px; }
+.form-row label { font-size:11px;font-weight:700;color:#555; }
+.form-row .form-input { border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;width:100%; }
+.form-row .form-input:focus { border-color:var(--primary); }
+.form-row textarea.form-input { resize:vertical; }
+.form-hint { font-size:10.5px;color:#bbb; }
+
+.q-type-badge { font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap; }
+.q-type-badge.scale { background:#e8f0fe;color:#1a73e8; }
+.q-type-badge.ab    { background:#ede9fe;color:#7c3aed; }
+.q-type-badge.essay { background:#f0fdf4;color:#16a34a; }
+
+/* ── 질문 등록 ── */
+.s2-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.s2-nav { width: 270px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; background: #fafbfc; }
+.s2-nav::-webkit-scrollbar { width: 4px; }
+.s2-nav::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.s2-nav-head { padding: 12px 14px; font-size: 11px; font-weight: 700; color: #999; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .05em; background: #fff; }
+
+.s2-node-header { display:flex; align-items:center; gap:6px; padding:8px 12px; cursor:pointer; user-select:none; font-size:12px; font-weight:700; color:#1a1a2e; border-top:1px solid #f0f2f5; }
+.s2-node-header:hover { background:#f0f4ff; }
+.s2-node-toggle { font-size:9px; color:#999; transition:transform .15s; flex-shrink:0; }
+.s2-node-toggle.open { transform:rotate(90deg); }
+.s2-node-badge { color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; flex-shrink:0; }
+.s2-node-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.s2-node-body { display:none; }
+.s2-node-body.open { display:block; }
+
+.s2-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 12px; cursor: pointer;
+  font-size: 12px; color: #444; border-top: 1px solid #f5f6f8;
+  transition: background .1s;
+}
+.s2-item:hover { background: #f0f4ff; }
+.s2-item.active { background: #e8f0fe; color: var(--primary); font-weight: 700; }
+.s2-item-name { flex: 1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.s2-item-badge {
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px;
+  background: #eee; color: #888; flex-shrink:0;
+}
+.s2-item.active .s2-item-badge { background: #c7d8f7; color: var(--primary); }
+.s2-item-badge.has-q { background: #d4edda; color: #1a7a4a; }
+.s2-item-badge.no-q { background: #fde8e8; color: #c0392b; }
+
+.s2-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.s2-main::-webkit-scrollbar { width: 5px; }
+.s2-main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+.s2-no-select {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: #999; padding: 40px;
+}
+.s2-no-select-icon { font-size: 40px; opacity: 0.5; }
+.s2-no-select-title { font-size: 14px; font-weight: 700; color: #aaa; }
+.s2-no-select-desc { font-size: 12px; color: #bbb; text-align: center; line-height: 1.7; }
+.s2-empty-struct { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px; text-align: center; }
+.s2-empty-struct-icon { font-size: 44px; opacity: 0.5; }
+
+.s2-q-header { padding: 14px 20px; border-bottom: 1px solid var(--border); background: #fff; flex-shrink: 0; }
+.s2-q-breadcrumb { font-size: 11px; color: #999; margin-bottom: 5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.s2-q-breadcrumb .bc-sep { color: #ccc; }
+.s2-q-breadcrumb .bc-seg { font-weight: 700; }
+.s2-q-title { font-size: 15px; font-weight: 800; color: #1a1a2e; display: flex; align-items: center; gap: 8px; }
+.s2-q-count { font-size: 11px; color: #888; font-weight: 400; margin-left: 4px; }
+.s2-q-list { flex: 1; padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+.s2-q-row {
+  border: 1px solid var(--border); border-radius: 7px; padding: 12px 14px;
+  background: #fff; display: flex; gap: 10px; align-items: flex-start;
+  transition: border-color .15s, box-shadow .15s;
+}
+.s2-q-row:hover { border-color: #b3c8f0; box-shadow: 0 1px 4px rgba(26,115,232,.07); }
+.s2-q-row.drag-over { border: 2px dashed var(--primary); background: #f0f7ff; }
+.s2-q-num {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; background: #e8f0fe; color: var(--primary);
+}
+.s2-q-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.s2-q-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: #fafbfc; flex-shrink: 0; }
+
+#s2AddBtn {
+  width:100%; height:48px;
+  border: 2px dashed var(--primary);
+  background: #f0f7ff; color: var(--primary);
+  font-size: 14px; font-weight: 700;
+  border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .15s; font-family: inherit; letter-spacing: -.2px;
+}
+#s2AddBtn:hover { background: #e8f0fe; border-style: solid; box-shadow: 0 2px 8px rgba(26,115,232,.12); }
+
+.qrow-preview { flex: 1; min-width: 0; }
+.qrow-q-text { font-size: 13px; color: #1a1a2e; line-height: 1.65; margin-bottom: 8px; font-weight: 500; }
+.qrow-likert-wrap { display: flex; gap: 4px; flex-wrap:wrap; }
+.qrow-likert-opt { flex:1; min-width:44px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.qrow-likert-circle { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #dde1e7; }
+.qrow-likert-lbl { font-size: 10px; color: #888; text-align: center; line-height: 1.3; word-break: keep-all; }
+.qrow-ab-wrap { display: flex; gap: 8px; margin-bottom: 8px; }
+.qrow-ab-card { flex: 1; border: 1.5px dashed #dde1e7; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #555; line-height: 1.5; }
+.qrow-ab-tag-lbl { display: inline-block; font-size: 11px; font-weight: 700; color: #999; background: #f3f4f6; border: 1px solid #dde1e7; border-radius: 3px; padding: 1px 6px; margin-bottom: 5px; }
+.qrow-ab-btns { display: flex; gap: 3px; }
+.qrow-ab-scale-btn { flex: 1; text-align: center; font-size: 9px; padding: 5px 2px; border: 1px solid #dde1e7; border-radius: 4px; color: #aaa; background: #fafbfc; line-height: 1.3; }
+.qrow-essay-mock { border: 1.5px solid #dde1e7; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #bbb; min-height: 48px; margin-top: 6px; }
+
+.s2-progress-bar { height: 4px; background: #e0e3e8; border-radius: 2px; margin: 0 20px 0; overflow: hidden; flex-shrink: 0; }
+.s2-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #6f42c1); border-radius: 2px; transition: width .3s; }
+.s2-progress-label { padding: 6px 20px 10px; font-size: 11px; color: #999; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">교육담당자 · 휴넷 <span style="color:#f7c67e;">— 가변 계층 구조 실험안 v4 (한 화면 한 질문)</span></div>
+  <div class="spacer"></div>
+  <span class="user-name">김 담당</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item active" href="edms_역량진단_관리.html#qset">진단 관리</a>
+        <a class="nav-item" href="#">IDP 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="wiz-layout">
+
+      <aside class="wiz-aside">
+        <div class="wiz-aside-head">
+          <div class="wiz-aside-title">진단지 만들기</div>
+          <div class="wiz-aside-sub">한 화면에 하나씩, 순서대로</div>
+        </div>
+        <div class="wiz-step-list">
+          <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
+            <div class="wiz-step-badge">1</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">단계 정하기</div><div class="wiz-step-desc">몇 단계로 나눌지 정해요</div></div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
+            <div class="wiz-step-badge">2</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">내용 채우기</div><div class="wiz-step-desc">실제 항목을 넣어요</div></div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">강점·약점 확인</div><div class="wiz-step-desc">어느 단계에서 볼지</div></div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
+            <div class="wiz-step-badge">4</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">추천과정 연결</div><div class="wiz-step-desc">어느 단계에 붙일지</div></div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-5" onclick="goToStep(5)">
+            <div class="wiz-step-badge">5</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">질문 등록</div><div class="wiz-step-desc">진짜 질문을 만들어요</div></div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
+            <div class="wiz-step-badge">6</div>
+            <div class="wiz-step-meta"><div class="wiz-step-title">기본 정보</div><div class="wiz-step-desc">이름 짓고 저장해요</div></div>
+          </div>
+        </div>
+        <div class="wiz-aside-foot">
+          <a href="edms_역량진단_관리.html#qset"
+             style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;"
+             onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
+             onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
+            ← 진단지 목록
+          </a>
+        </div>
+      </aside>
+
+      <div class="wiz-content">
+
+        <!-- STEP 1: 단계 정하기 -->
+        <div class="step-content active wiz-card" id="step-content-1">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기 <span style="color:#e26a00;font-weight:700;">(가변 계층 실험안)</span></div>
+            <span class="wiz-step-tag">STEP 1 / 6</span>
+            <h2>몇 단계로 나눌까요?</h2>
+            <p>단계를 나누면, 질문은 가장 세부적인 단계에 붙이고 강점·약점·추천과정은 그보다 상위 단계로 묶어서 보여줄 수 있어요. 이후 단계에서 어느 단위로 볼지 각각 고르게 되니, 그 전에 먼저 몇 단계로 나눌지 정해주세요. 기본은 3단계이고, 필요하면 늘리거나 줄일 수 있어요.</p>
+          </div>
+          <div class="wiz-card-body">
+
+            <div class="guide-banner">
+              <div class="guide-banner-icon">🔧</div>
+              <div class="guide-banner-text">
+                <strong>지금 정한 단계 구성</strong> — 아래에서 이름을 바꾸거나, 단계를 추가·삭제할 수 있어요. 다음 단계에서 여기서 정한 이름에 맞춰 실제 내용을 채우게 됩니다.
+                <div class="depth-explainer" id="depthExplainer"></div>
+              </div>
+            </div>
+
+            <div class="card" style="max-width:640px;">
+              <div class="card-head">
+                <div class="card-head-title">단계 이름 정하기</div>
+                <button class="btn btn-xs btn-outline" onclick="openPresetModal()">📋 기존 구조 가져오기</button>
+              </div>
+              <div class="card-body">
+                <div class="level-bar" id="levelBar"></div>
+              </div>
+            </div>
+
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 내용 채우기 (구조 만들기) -->
+        <div class="step-content wiz-card" id="step-content-2">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 2 / 6</span>
+            <h2>실제 내용을 채워주세요</h2>
+            <p>여기서 등록하는 항목이 실제 진단 결과 화면에 그대로 표시되고, 다음 단계들에서 질문·강점약점 기준·추천과정을 연결하는 대상이 돼요. 1단계에서 정한 이름에 맞춰 실제 항목을 채워주세요.</p>
+          </div>
+          <div class="wiz-card-body">
+
+            <div class="guide-banner">
+              <div class="guide-banner-icon">🌳</div>
+              <div class="guide-banner-text">
+                <strong>지금 이 진단지의 단계 순서</strong> (이름을 바꾸려면 1단계로 돌아가세요)
+                <div class="depth-explainer" id="depthExplainer2"></div>
+              </div>
+            </div>
+
+            <div class="workspace">
+              <div class="card">
+                <div class="card-head">
+                  <div class="card-head-title">구조 만들기</div>
+                  <span class="card-head-sub" id="treeMeta"></span>
+                  <button class="btn btn-xs btn-gray" onclick="resetAll()">🗑 초기화</button>
+                </div>
+                <div style="padding:7px 18px;font-size:11px;color:#999;background:#fafbfc;border-bottom:1px solid var(--border);">
+                  ⠿ 드래그로 순서 변경 가능 · 같은 부모 아래 같은 단계 항목끼리만 이동됩니다.
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                  <div class="empty-icon">🌳</div>
+                  <div class="empty-title" id="emptyTitle">아직 등록된 항목이 없어요</div>
+                  <div class="empty-desc" id="emptyDesc"></div>
+                  <div class="empty-actions">
+                    <button class="btn btn-primary btn-lg" onclick="addRootNode()">＋ 첫 항목 추가하기</button>
+                  </div>
+                </div>
+
+                <div class="tree" id="tree" style="display:none;"></div>
+
+                <div id="treeFoot" style="display:none; padding: 12px 14px; border-top: 1px solid var(--border); background:#fafbfc; text-align:center;">
+                  <button class="btn btn-outline btn-sm" onclick="addRootNode()" id="treeFootBtn"></button>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="card">
+                  <div class="card-head"><div class="card-head-title">한눈에 보기</div></div>
+                  <div class="card-body p0" id="statsList"></div>
+                </div>
+                <div class="card next-step-card">
+                  <div class="card-head" style="background:#eaf2fd;border-bottom:1px solid #c7d8f7;">
+                    <div class="card-head-title" style="color:#0a1e4a;">📍 다음 단계 안내</div>
+                  </div>
+                  <div class="card-body">다 채웠으면, 다음 단계에서 <strong>강점·약점을 어느 단계에서 확인할지</strong> 딱 하나만 골라주세요.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 강점·약점 확인 단계 (하나만 고르기) -->
+        <div class="step-content wiz-card" id="step-content-3">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 3 / 6</span>
+            <h2>강점 · 약점은 어디서 확인할까요?</h2>
+            <p>점수를 보고 "잘하고 있어요(강점)" 또는 "더 연습이 필요해요(약점)"를 알려드리려면, 어느 단위로 점수를 묶어서 보여줄지 정해야 해요. 어느 단계를 기준으로 볼지 <strong>딱 하나만</strong> 골라주세요.</p>
+          </div>
+          <div class="wiz-card-body" style="padding:24px 28px;">
+            <div id="scoreOnlyList" class="jm-list"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 4: 추천과정 연결 단계 (하나만 고르기) -->
+        <div class="step-content wiz-card" id="step-content-4">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 4 / 6</span>
+            <h2>추천 과정은 어디로 연결할까요?</h2>
+            <p>찾아낸 약점에 맞는 교육 과정을 자동으로 추천해드리려면, 어느 단위로 과정을 연결할지 정해야 해요. <strong>3단계에서 고른 단계와 같거나, 그보다 더 하위(자세한) 단계</strong> 중에서 딱 하나만 골라주세요. 더 상위 단계는 고를 수 없어요 — 그 안에 서로 다른 강점·약점이 섞여 있어서, 무엇이 약한지와 상관없이 뭉뚱그려 추천하게 되기 때문이에요.</p>
+          </div>
+          <div class="wiz-card-body" style="padding:24px 28px;">
+            <div id="mapOnlyList" class="jm-list"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 5: 질문 등록 -->
+        <div class="step-content wiz-card" id="step-content-5">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 5 / 6</span>
+            <h2>질문을 등록해주세요</h2>
+            <p>응답자가 실제로 답하는 문항이 바로 여기서 등록하는 질문이고, 그 답변이 모여 앞서 고른 단계의 강점·약점 점수가 됩니다. 왼쪽에서 <strong>가장 하위 단계</strong> 항목을 선택해 질문을 추가·편집하세요.</p>
+          </div>
+
+          <div class="s2-progress-bar" id="s2ProgressBar" style="margin-top:12px;">
+            <div class="s2-progress-fill" id="s2ProgressFill" style="width:0%"></div>
+          </div>
+          <div class="s2-progress-label" id="s2ProgressLabel"></div>
+
+          <div class="s2-layout">
+            <div class="s2-nav" id="s2Nav">
+              <div class="s2-nav-head" id="s2NavHead"></div>
+              <div id="s2NavTree"></div>
+            </div>
+
+            <div class="s2-main" id="s2Main">
+              <div class="s2-empty-struct" id="s2EmptyStruct" style="display:none;">
+                <div class="s2-empty-struct-icon">🌳</div>
+                <div class="empty-title" style="font-size:14px;">STEP 2에서 구조를 먼저 등록해주세요</div>
+                <div class="empty-desc">단계별 항목을 등록해야<br>이 단계에서 질문을 매핑할 수 있습니다.</div>
+                <button class="btn btn-outline" onclick="goToStep(2)">← STEP 2로 돌아가기</button>
+              </div>
+              <div class="s2-no-select" id="s2NoSelect">
+                <div class="s2-no-select-icon">👈</div>
+                <div class="s2-no-select-title" id="s2NoSelectTitle">항목을 선택하세요</div>
+                <div class="s2-no-select-desc">왼쪽 목록에서 가장 하위 단계 항목을 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.</div>
+              </div>
+              <div id="s2QPanel" style="display:none; flex-direction:column; flex:1;">
+                <div class="s2-q-header">
+                  <div class="s2-q-breadcrumb" id="s2QBreadcrumb"></div>
+                  <div class="s2-q-title">
+                    <span id="s2QTitle"></span>
+                    <span class="s2-q-count" id="s2QCount"></span>
+                  </div>
+                </div>
+                <div class="s2-q-list" id="s2QList"></div>
+                <div class="s2-q-footer">
+                  <button id="s2AddBtn" onclick="openAddForm()">＋ 질문 추가</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 6: 기본 정보 -->
+        <div class="step-content wiz-card" id="step-content-6">
+          <div class="wiz-card-head">
+            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
+            <span class="wiz-step-tag">STEP 6 / 6</span>
+            <h2>마지막으로, 기본 정보를 입력해주세요</h2>
+            <p>여기서 입력하는 진단지명·설명은 목록에서 이 진단지를 찾아볼 때 그대로 보이고, 공개 여부에 따라 다른 담당자도 이 진단지를 가져다 쓸 수 있어요. 입력을 마치면 저장해주세요.</p>
+          </div>
+          <div class="wiz-card-body" style="padding:24px 28px;">
+            <div class="s3-grid">
+              <div style="display:flex;flex-direction:column;gap:16px;">
+                <div class="form-row">
+                  <label>진단지명 <span style="color:#c00;">*</span></label>
+                  <input type="text" class="form-input" id="s3Name"
+                    placeholder="예: 팀장 리더십 역량 진단 (2025)" maxlength="1000" style="font-size:14px;">
+                </div>
+                <div class="form-row">
+                  <label>설명 <span style="font-size:10px;color:#aaa;font-weight:400;">(선택사항)</span></label>
+                  <textarea class="form-input" id="s3Desc" rows="3"
+                    placeholder="이 진단지에 대한 간단한 설명을 입력하세요."></textarea>
+                </div>
+                <div class="form-row">
+                  <label>공개 여부</label>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="s3-radio-card selected" id="s3card_public" onclick="setS3Visibility(true)">
+                      <div class="s3-radio-dot"></div>
+                      <div>
+                        <div style="font-size:13px;font-weight:600;color:#1a1a2e;">공개</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px;">진단 생성 시 이 진단지를 선택할 수 있습니다.</div>
+                      </div>
+                    </div>
+                    <div class="s3-radio-card" id="s3card_private" onclick="setS3Visibility(false)">
+                      <div class="s3-radio-dot"></div>
+                      <div>
+                        <div style="font-size:13px;font-weight:600;color:#1a1a2e;">비공개</div>
+                        <div style="font-size:11px;color:#888;margin-top:2px;">진단 생성 시 해당 진단지는 미노출됩니다.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="s3-summary-box">
+                <div class="s3-summary-title">📋 구성 요약</div>
+                <div id="s3SummaryContent">
+                  <div style="color:#bbb;font-size:12px;text-align:center;padding:12px 0;">STEP 6에 진입하면 자동으로 집계됩니다.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="saveAll()">✓ 진단지 완료 저장</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 질문 추가/편집 모달 -->
+<div class="modal-overlay" id="qAddModal">
+  <div class="modal-box" style="width:700px;max-height:88vh;display:flex;flex-direction:column;">
+    <div class="modal-header">
+      <h3 id="qModalTitle" style="display:flex;align-items:center;gap:8px;">📝 질문 추가</h3>
+      <button class="modal-close" onclick="closeAddForm()">×</button>
+    </div>
+    <div id="s2AddForm" style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:8px;min-height:0;"></div>
+  </div>
+</div>
+
+<!-- 기존 구조 가져오기 모달 -->
+<div class="modal-overlay" id="presetModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>기존 진단지 구조 가져오기</h3>
+      <button class="modal-close" onclick="closeModal('presetModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:#666;margin-bottom:12px;">
+        완료된 진단지의 계층 구조를 그대로 가져옵니다. 가져온 뒤 자유롭게 수정할 수 있습니다.
+      </div>
+      <div class="preset-card" onclick="selectPreset('qset001')" data-preset="qset001">
+        <div class="preset-title">팀장 리더십 역량 진단 <span style="font-weight:400;color:#999;">— 3단계</span></div>
+        <div class="preset-stats">유형 1개 · 역량군 3개 · 세부역량 9개 <span style="color:#bbb;margin-left:6px;">2025.12.01</span></div>
+      </div>
+      <div class="preset-card" onclick="selectPreset('qset002')" data-preset="qset002">
+        <div class="preset-title">임원 리더십 역량 진단 <span style="font-weight:400;color:#999;">— 5단계 예시</span></div>
+        <div class="preset-stats">대분류 → 영역 → 역량군 → 세부역량군 → 세부역량 (🎯 3단계 · 📚 5단계)</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('presetModal')">취소</button>
+      <button class="btn btn-primary" onclick="applyPreset()">선택한 구조 가져오기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toggleNav(el) { el.parentElement.classList.toggle('open'); }
+
+// ── Wizard ──
+let currentStep = 1;
+const TOTAL_STEPS = 6;
+function goToStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
+  closeAddForm();
+  closeModal('presetModal');
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-content-' + n).classList.add('active');
+  document.querySelectorAll('.wiz-step-item').forEach((el, i) => {
+    el.classList.toggle('is-active', i + 1 === n);
+    el.classList.toggle('is-done', i + 1 < n);
+    const badge = el.querySelector('.wiz-step-badge');
+    badge.textContent = (i + 1 < n) ? '✓' : String(i + 1);
+  });
+  currentStep = n;
+  document.querySelector('.wiz-content').scrollTop = 0;
+  if (n === 1) initLevelStep();
+  if (n === 2) initStructureStep();
+  if (n === 3) renderScoreOnlyStep();
+  if (n === 4) renderMapOnlyStep();
+  if (n === 5) initQuestionsStep();
+  if (n === 6) initBasicInfoStep();
+}
+function nextStep() {
+  if (currentStep === 2) {
+    if (state.nodes.length === 0) { toast(`${levelLabel(1)}을(를) 1개 이상 등록해주세요`); return; }
+    const empties = findEmptyBranches();
+    if (empties.length > 0) {
+      const first = empties[0];
+      const found = findNodeById(first.node.id);
+      if (found) found.path.forEach(n => { n._open = true; });
+      renderTree();
+      const label = first.node.name || levelLabel(first.depth);
+      const plural = empties.length > 1 ? ` 등 ${empties.length}곳` : '';
+      toast(`'${label}' 아래에 ${levelLabel(first.depth + 1)}이(가) 하나도 없어요${plural}. 최소 1개씩 등록해야 다음 단계로 갈 수 있어요.`);
+      setTimeout(() => {
+        document.querySelector(`.tree-row[data-node-id="${first.node.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 30);
+      return;
+    }
+  }
+  if (currentStep < TOTAL_STEPS) goToStep(currentStep + 1);
+}
+function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
+
+// ─────────────────────────────────────────
+// 상태 모델 (가변 계층, 기본값 = 기존과 동일한 3단계)
+// ─────────────────────────────────────────
+let seq = 1, levelSeq = 1;
+function makeId() { return 'id_' + (seq++); }
+
+const DEFAULT_PLACEHOLDER = { '유형': '예: 리더십 역량 진단', '역량군': '예: Self', '세부역량': '예: 자기인식' };
+
+function defaultLevels() {
+  return [
+    { id: 'lvl_' + (levelSeq++), label: '유형',     scoreLevel: false, mapLevel: false },
+    { id: 'lvl_' + (levelSeq++), label: '역량군',   scoreLevel: true,  mapLevel: false },
+    { id: 'lvl_' + (levelSeq++), label: '세부역량', scoreLevel: false, mapLevel: true  },
+  ];
+}
+
+const state = { levels: defaultLevels(), nodes: [] };
+
+const COLOR_PALETTE = ['#1a73e8', '#6f42c1', '#e26a00', '#0f9d58', '#c2185b', '#00838f', '#8d6e63', '#5c6bc0'];
+function colorForDepth(depth) { return COLOR_PALETTE[(depth - 1) % COLOR_PALETTE.length]; }
+function leafDepth() { return state.levels.length; }
+
+// 추천과정 연결 단계는 강점·약점 판정 단계와 같거나 더 하위(자세한) 단계여야 한다.
+// 그렇지 않으면 판정 단계 안에 서로 다른 결과가 섞여 있는데 그보다 상위 단계로 과정을
+// 추천하게 되어, 정작 무엇이 약점인지와 무관하게 뭉뚱그린 추천이 나가버린다.
+function enforceScoreMapOrder() {
+  const scoreIdx = state.levels.findIndex(l => l.scoreLevel);
+  const mapIdx = state.levels.findIndex(l => l.mapLevel);
+  if (scoreIdx === -1 || mapIdx === -1 || mapIdx >= scoreIdx) return false;
+  state.levels[mapIdx].mapLevel = false;
+  state.levels[scoreIdx].mapLevel = true;
+  return true;
+}
+function levelLabel(depth) { return state.levels[depth - 1]?.label || `${depth}단계`; }
+function isLeafDepth(depth) { return depth === leafDepth(); }
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── 트리 순회 헬퍼 ──
+function walkNodes(nodes, depth, cb) {
+  nodes.forEach(n => {
+    cb(n, depth);
+    if (n.children) walkNodes(n.children, depth + 1, cb);
+  });
+}
+function findNodeById(id, nodes = state.nodes, path = [], depth = 1) {
+  for (const n of nodes) {
+    const p = [...path, n];
+    if (n.id === id) return { node: n, path: p, depth };
+    if (n.children) {
+      const found = findNodeById(id, n.children, p, depth + 1);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+function peersOf(node) {
+  const found = findNodeById(node.id);
+  if (!found) return state.nodes;
+  const parentPath = found.path.slice(0, -1);
+  const parent = parentPath[parentPath.length - 1];
+  return parent ? parent.children : state.nodes;
+}
+function countDataTotal() {
+  let n = 0, q = 0;
+  walkNodes(state.nodes, 1, (node) => { n++; q += (node.questions || []).length; });
+  return { n, q };
+}
+
+// 하위 단계가 하나도 없는 중간 단계 항목(구멍)을 모두 찾는다.
+// 예: '역량군' 아래 '세부역량'이 하나도 없으면 그 역량군은 실제로 점수를 매길 데이터가 없다.
+function findEmptyBranches() {
+  const empties = [];
+  walkNodes(state.nodes, 1, (node, depth) => {
+    if (!isLeafDepth(depth) && (node.children || []).length === 0) empties.push({ node, depth });
+  });
+  return empties;
+}
+
+// ─────────────────────────────────────────
+// STEP 1: 단계 정하기
+// ─────────────────────────────────────────
+function initLevelStep() {
+  renderLevelBar();
+}
+
+function renderLevelBar() {
+  const bar = document.getElementById('levelBar');
+  bar.innerHTML = '';
+  const single = state.levels.length === 1;
+
+  state.levels.forEach((lvl, idx) => {
+    const depth = idx + 1;
+
+    const row = document.createElement('div');
+    row.className = 'level-row';
+    row.style.paddingLeft = ((depth - 1) * 22) + 'px';
+
+    if (depth > 1) {
+      const connector = document.createElement('span');
+      connector.className = 'level-connector';
+      connector.textContent = '└';
+      row.appendChild(connector);
+    }
+
+    const dot = document.createElement('span');
+    dot.className = 'level-dot';
+    dot.style.background = colorForDepth(depth);
+    row.appendChild(dot);
+
+    const chip = document.createElement('div');
+    chip.className = 'level-chip';
+
+    if (lvl._editing) {
+      const input = document.createElement('input');
+      input.className = 'level-edit-input';
+      input.value = lvl.label;
+      input.placeholder = `${depth}단계 이름`;
+      chip.appendChild(input);
+
+      const ok = document.createElement('button');
+      ok.className = 'btn btn-xs btn-primary';
+      ok.textContent = '저장';
+      chip.appendChild(ok);
+
+      ok.onclick = () => {
+        const v = input.value.trim();
+        if (!v) { toast('단계 이름을 입력해주세요'); return; }
+        lvl.label = v;
+        lvl._editing = false; lvl._isNew = false;
+        renderLevelBar();
+      };
+      input.onkeydown = e => { if (e.key === 'Enter') ok.onclick(); if (e.key === 'Escape') { if (lvl._isNew) { state.levels.pop(); } else lvl._editing = false; renderLevelBar(); } };
+      setTimeout(() => input.focus(), 0);
+    } else {
+      const idxTag = document.createElement('span');
+      idxTag.className = 'level-chip-idx';
+      idxTag.textContent = `${depth}단계`;
+      chip.appendChild(idxTag);
+
+      const label = document.createElement('span');
+      label.className = 'level-chip-label';
+      label.textContent = lvl.label;
+      label.title = '클릭하여 이름 변경';
+      label.onclick = () => { lvl._editing = true; renderLevelBar(); };
+      chip.appendChild(label);
+
+      const editIcon = document.createElement('span');
+      editIcon.className = 'level-edit-icon';
+      editIcon.textContent = '✏️';
+      editIcon.title = '클릭하여 이름 변경';
+      editIcon.onclick = () => { lvl._editing = true; renderLevelBar(); };
+      chip.appendChild(editIcon);
+
+      if (!single) {
+        const del = document.createElement('button');
+        del.className = 'level-del-btn';
+        del.textContent = '×';
+        del.title = '이 단계 삭제';
+        del.onclick = () => removeLevel(idx);
+        chip.appendChild(del);
+      }
+    }
+
+    row.appendChild(chip);
+    bar.appendChild(row);
+  });
+
+  const addRow = document.createElement('div');
+  addRow.className = 'level-row';
+  addRow.style.paddingLeft = (state.levels.length * 22) + 'px';
+  const addConnector = document.createElement('span');
+  addConnector.className = 'level-connector';
+  addConnector.textContent = '└';
+  addRow.appendChild(addConnector);
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'level-add-btn';
+  addBtn.textContent = '+ 하위 단계 추가';
+  addBtn.onclick = () => addLevel();
+  addRow.appendChild(addBtn);
+  bar.appendChild(addRow);
+
+  renderDepthExplainer();
+}
+
+function renderDepthExplainer() {
+  const html = state.levels.map((lvl, i) => {
+    const depth = i + 1;
+    const chip = `<span class="depth-chip"><span class="dot" style="background:${colorForDepth(depth)}"></span>${depth}단계 · ${escHtml(lvl.label)}</span>`;
+    return i < state.levels.length - 1 ? chip + '<span class="depth-arrow">→</span>' : chip;
+  }).join('');
+  const el1 = document.getElementById('depthExplainer'); if (el1) el1.innerHTML = html;
+  const el2 = document.getElementById('depthExplainer2'); if (el2) el2.innerHTML = html;
+}
+
+function addLevel() {
+  const { n, q } = countDataTotal();
+  const doAdd = () => {
+    state.levels.push({ id: 'lvl_' + (levelSeq++), label: '', scoreLevel: false, mapLevel: false, _editing: true, _isNew: true });
+    // 새로 생긴 리프를 기본 매핑 단계로 지정 (기존 매핑 단계는 해제) — 강점·약점 확인 단계는 사용자가 지정한 값 유지
+    state.levels.forEach((l, i) => { l.mapLevel = (i === state.levels.length - 1); });
+    // 기존 가장 하위 단계였던 항목은 branch로 바뀌고, 거기 있던 질문은 그대로 잃지 않도록
+    // 같은 이름의 새 하위 항목을 하나 만들어 그 안으로 옮겨준다.
+    walkNodes(state.nodes, 1, (node, depth) => {
+      if (depth === state.levels.length - 1) {
+        const oldQuestions = node.questions || [];
+        node.children = node.children || [];
+        if (oldQuestions.length > 0) {
+          node.children.push({ id: makeId(), name: node.name, description: '', questions: oldQuestions, _open: true });
+        }
+        delete node.questions;
+      }
+    });
+    renderLevelBar(); renderTree();
+  };
+  if (n > 0 || q > 0) {
+    if (!confirm('단계를 추가하면 지금 가장 하위 단계 항목 아래에 같은 이름의 하위 항목이 자동으로 생기고, 등록된 질문은 그리로 옮겨갑니다. 계속할까요?')) return;
+  }
+  doAdd();
+}
+
+function countFromDepth(minDepth) {
+  let n = 0, q = 0;
+  walkNodes(state.nodes, 1, (node, depth) => {
+    if (depth >= minDepth) { n++; q += (node.questions || []).length; }
+  });
+  return { n, q };
+}
+function countAtDepth(depth) {
+  let n = 0;
+  walkNodes(state.nodes, 1, (node, d) => { if (d === depth) n++; });
+  return n;
+}
+
+// idx: 0-based 위치의 단계를 삭제. 삭제된 단계보다 아래(더 깊은) 단계들은
+// 배열에서 한 칸씩 당겨지며 자동으로 단계 번호가 재조정된다.
+// 어떤 단계를 지우든 그 단계 자체(항목 이름·구분)만 사라지고, 그 안에 있던 내용(하위 항목
+// 또는 질문)은 통째로 한 단계 위로 승격된다. 형제가 여러 개면 한 부모 아래로 합쳐진다.
+function removeLevel(idx) {
+  if (state.levels.length <= 1) return;
+  const removed = state.levels[idx];
+  const d = idx + 1; // 삭제할 단계의 1-based 깊이
+  const isFirst = d === 1;
+  const isLast = d === state.levels.length;
+
+  if (isLast) {
+    const n = countAtDepth(d);
+    const { q } = countFromDepth(d);
+    if (n > 0) {
+      let msg = `'${removed.label || d + '단계'}' 단계를 삭제할까요?\n\n이 단계의 항목 ${n}개는 사라지지만`;
+      msg += q > 0 ? `, 등록된 질문 ${q}개는 한 단계 위 항목으로 합쳐집니다.` : '.';
+      if (!confirm(msg)) return;
+    }
+    walkNodes(state.nodes, 1, (node, depth) => {
+      if (depth === d - 1) {
+        node.questions = (node.children || []).flatMap(child => child.questions || []);
+        delete node.children;
+      }
+    });
+  } else {
+    const n = countAtDepth(d);
+    if (n > 0) {
+      const msg = `'${removed.label || d + '단계'}' 단계를 삭제할까요?\n\n이 단계의 항목 ${n}개는 사라지지만, 그 안에 등록된 하위 항목들은 한 단계 위로 올라갑니다.`;
+      if (!confirm(msg)) return;
+    }
+    if (isFirst) {
+      state.nodes = state.nodes.flatMap(node => node.children || []);
+    } else {
+      walkNodes(state.nodes, 1, (node, depth) => {
+        if (depth === d - 1) { node.children = (node.children || []).flatMap(child => child.children || []); }
+      });
+    }
+  }
+
+  state.levels.splice(idx, 1);
+  if (removed.scoreLevel) state.levels[state.levels.length - 1].scoreLevel = true;
+  if (removed.mapLevel) state.levels[state.levels.length - 1].mapLevel = true;
+  enforceScoreMapOrder();
+  renderLevelBar(); renderTree();
+}
+
+// ─────────────────────────────────────────
+// STEP 2: 내용 채우기 (트리)
+// ─────────────────────────────────────────
+function initStructureStep() {
+  renderDepthExplainer();
+  renderTree();
+}
+
+let treeDragSrc = null;
+
+function renderTree() {
+  const tree = document.getElementById('tree');
+  const empty = document.getElementById('emptyState');
+  const foot = document.getElementById('treeFoot');
+  const isEmpty = state.nodes.length === 0;
+
+  document.getElementById('emptyTitle').textContent = `아직 등록된 ${levelLabel(1)}이(가) 없어요`;
+  document.getElementById('emptyDesc').innerHTML = (state.levels.length > 1
+    ? `${escHtml(levelLabel(1))} 생성 후 그 안에 <b>${escHtml(levelLabel(2))}</b>을(를) 만들고, 가장 하위 단계까지 등록한 뒤 다음 단계로 넘어가세요.`
+    : `${escHtml(levelLabel(1))}을(를) 등록하면 바로 다음 단계로 넘어갈 수 있어요. (현재 1단계 구조)`)
+    + `<br><span style="color:#aaa;">예시로 시작하려면 <a href="#" onclick="goToStep(1);return false;" style="color:var(--primary);">1단계로 돌아가</a> 기존 구조를 가져오세요.</span>`;
+  document.getElementById('treeFootBtn').textContent = `＋ ${levelLabel(1)} 추가`;
+
+  empty.style.display = isEmpty ? '' : 'none';
+  tree.style.display = isEmpty ? 'none' : '';
+  foot.style.display = isEmpty ? 'none' : '';
+
+  tree.innerHTML = '';
+  renderNodeList(state.nodes, 1, tree);
+
+  renderStats();
+}
+
+function renderNodeList(nodes, depth, container) {
+  nodes.forEach(node => {
+    container.appendChild(rowEl(depth, node));
+    if (!isLeafDepth(depth) && node._open !== false) {
+      renderNodeList(node.children || [], depth + 1, container);
+      container.appendChild(addRow(depth + 1, () => addChildNode(node, depth + 1)));
+    }
+  });
+}
+
+function rowEl(depth, obj) {
+  const row = document.createElement('div');
+  row.className = 'tree-row';
+  row.dataset.nodeId = obj.id;
+  row.style.paddingLeft = (14 + (depth - 1) * 26) + 'px';
+
+  const toggle = document.createElement('span');
+  toggle.className = 'toggle-btn ' + (obj._open !== false ? 'open' : '') + (isLeafDepth(depth) ? ' invisible' : '');
+  toggle.textContent = '▶';
+  toggle.onclick = () => { obj._open = obj._open === false ? true : false; renderTree(); };
+  row.appendChild(toggle);
+
+  const badge = document.createElement('span');
+  badge.className = 'depth-badge';
+  badge.style.background = colorForDepth(depth);
+  badge.textContent = levelLabel(depth);
+  row.appendChild(badge);
+
+  if (obj._editing) {
+    const topRow = document.createElement('div');
+    topRow.className = 'edit-row-top';
+
+    const nameInput = document.createElement('input');
+    nameInput.className = 'inline-input';
+    nameInput.value = obj.name || '';
+    nameInput.placeholder = DEFAULT_PLACEHOLDER[levelLabel(depth)] || `예: ${levelLabel(depth)} 이름`;
+    topRow.appendChild(nameInput);
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn btn-xs btn-primary';
+    saveBtn.textContent = '저장';
+    topRow.appendChild(saveBtn);
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-xs btn-gray';
+    cancelBtn.textContent = '취소';
+    cancelBtn.onclick = () => cancelEdit(obj);
+    topRow.appendChild(cancelBtn);
+
+    row.appendChild(topRow);
+
+    let descInput = null;
+    if (!isLeafDepth(depth)) {
+      descInput = document.createElement('textarea');
+      descInput.className = 'desc-textarea';
+      descInput.value = obj.description || '';
+      descInput.placeholder = `${levelLabel(depth)} 설명 (선택사항)`;
+      descInput.rows = 2;
+      row.appendChild(descInput);
+    }
+
+    nameInput.onkeydown = e => { if (e.key === 'Enter') saveEdit(obj, nameInput, descInput); if (e.key === 'Escape') cancelEdit(obj); };
+    saveBtn.onclick = () => saveEdit(obj, nameInput, descInput);
+    row.classList.add('editing');
+    setTimeout(() => nameInput.focus(), 0);
+  } else {
+    const nameWrap = document.createElement('span');
+    nameWrap.className = 'row-name-wrap';
+    const name = document.createElement('span');
+    name.className = 'row-name';
+    name.textContent = obj.name;
+    nameWrap.appendChild(name);
+    if (!isLeafDepth(depth) && obj.description) {
+      const descPrev = document.createElement('span');
+      descPrev.className = 'row-desc-preview';
+      descPrev.textContent = obj.description;
+      nameWrap.appendChild(descPrev);
+    }
+    row.appendChild(nameWrap);
+
+    if (!isLeafDepth(depth)) {
+      const childCount = (obj.children || []).length;
+      const meta = document.createElement('span');
+      meta.className = 'row-meta' + (childCount === 0 ? ' warn' : '');
+      meta.textContent = childCount === 0 ? `⚠ ${levelLabel(depth + 1)} 없음` : `${childCount} ${levelLabel(depth + 1)}`;
+      row.appendChild(meta);
+    }
+
+    const actions = document.createElement('span');
+    actions.className = 'row-actions';
+    actions.innerHTML = `<button class="btn btn-xs btn-gray" title="수정">✎</button><button class="btn btn-xs btn-danger" title="삭제">×</button>`;
+    actions.children[0].onclick = () => { obj._editing = true; renderTree(); };
+    actions.children[1].onclick = () => deleteNode(obj);
+    row.appendChild(actions);
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.title = '드래그하여 순서 변경';
+    row.insertBefore(handle, row.firstChild);
+
+    row.setAttribute('draggable', 'true');
+    row.addEventListener('dragstart', e => { treeDragSrc = obj; e.dataTransfer.effectAllowed = 'move'; setTimeout(() => row.style.opacity = '0.4', 0); });
+    row.addEventListener('dragend', () => { row.style.opacity = ''; document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over')); });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      if (peersOf(treeDragSrc) !== peersOf(obj)) return;
+      document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over'));
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      const arr = peersOf(treeDragSrc);
+      if (arr !== peersOf(obj)) { toast('같은 부모 아래 같은 단계 항목끼리만 이동할 수 있어요'); return; }
+      const fromIdx = arr.indexOf(treeDragSrc), toIdx = arr.indexOf(obj);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, moved);
+      treeDragSrc = null;
+      renderTree();
+    });
+  }
+
+  return row;
+}
+
+function addRow(depth, onAdd) {
+  const div = document.createElement('div');
+  div.className = 'tree-row';
+  div.style.background = 'transparent';
+  div.style.borderBottom = 'none';
+  div.style.padding = '6px 14px 10px ' + (14 + (depth - 1) * 26 + 24) + 'px';
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-xs btn-outline';
+  btn.textContent = `＋ ${levelLabel(depth)} 추가`;
+  btn.onclick = onAdd;
+  div.appendChild(btn);
+  return div;
+}
+
+function saveEdit(obj, nameInput, descInput) {
+  const name = nameInput.value.trim();
+  if (!name) { toast('이름을 입력해주세요'); return; }
+  obj.name = name;
+  if (descInput != null) obj.description = descInput.value.trim();
+  obj._editing = false;
+  obj._isNew = false;
+  renderTree();
+}
+function cancelEdit(obj) {
+  if (obj._isNew) deleteNode(obj, true);
+  else { obj._editing = false; renderTree(); }
+}
+
+function deleteNode(obj, silent) {
+  const found = findNodeById(obj.id);
+  const depth = found ? found.depth : 1;
+  if (!silent) {
+    const label = levelLabel(depth);
+    let childCount = 0, totalQ = 0;
+    if (obj.children) walkNodes(obj.children, depth + 1, (n) => { childCount++; totalQ += (n.questions || []).length; });
+    if (obj.questions) totalQ += obj.questions.length;
+    let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠어요?`;
+    if (childCount > 0) msg += `\n\n하위 항목 ${childCount}개도 함께 삭제됩니다.`;
+    if (totalQ > 0) msg += `\n연결된 질문 ${totalQ}개도 함께 삭제됩니다.`;
+    if (!confirm(msg)) return;
+  }
+  const arr = peersOf(obj);
+  const idx = arr.indexOf(obj);
+  if (idx >= 0) arr.splice(idx, 1);
+  renderTree();
+}
+
+function addRootNode() { addChildNode(null, 1); }
+function addChildNode(parent, depth) {
+  const newNode = { id: makeId(), name: '', description: '', _open: true, _editing: true, _isNew: true };
+  if (isLeafDepth(depth)) newNode.questions = [];
+  else newNode.children = [];
+  if (parent) { parent.children = parent.children || []; parent.children.push(newNode); parent._open = true; }
+  else state.nodes.push(newNode);
+  renderTree();
+}
+
+function renderStats() {
+  const el = document.getElementById('statsList');
+  const counts = new Array(state.levels.length).fill(0);
+  walkNodes(state.nodes, 1, (n, d) => { counts[d - 1]++; });
+  el.innerHTML = state.levels.map((lvl, i) => `
+    <div class="summary-stat">
+      <div class="stat-label"><span class="depth-chip"><span class="dot" style="background:${colorForDepth(i + 1)}"></span>${escHtml(lvl.label)}</span></div>
+      <div class="stat-num" style="color:${colorForDepth(i + 1)}">${counts[i]}</div><span class="stat-suffix">개</span>
+    </div>`).join('');
+  document.getElementById('treeMeta').textContent = state.levels.map((lvl, i) => `${lvl.label} ${counts[i]}`).join(' · ');
+}
+
+// ── 예시 모달 ──
+let selectedPreset = null;
+function openPresetModal() { document.getElementById('presetModal').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function selectPreset(key) {
+  selectedPreset = key;
+  document.querySelectorAll('.preset-card').forEach(c => c.classList.toggle('selected', c.dataset.preset === key));
+}
+
+const PRESETS = {
+  qset001: {
+    levels: [ { label: '유형' }, { label: '역량군' }, { label: '세부역량' } ],
+    scoreDepth: 2, mapDepth: 3,
+    tree: [
+      { name: '리더십', children: [
+        { name: '조직관리', children: [ {name:'방향설정'},{name:'가치전파'},{name:'변화관리'} ] },
+        { name: '사람관리', children: [ {name:'신뢰형성'},{name:'의사소통'},{name:'팀원육성'} ] },
+        { name: '성과관리', children: [ {name:'문제해결'},{name:'전략적 의사결정'},{name:'실행력'} ] }
+      ]}
+    ]
+  },
+  qset002: {
+    levels: [ { label: '대분류' }, { label: '영역' }, { label: '역량군' }, { label: '세부역량군' }, { label: '세부역량' } ],
+    scoreDepth: 3, mapDepth: 5,
+    tree: [
+      { name: '임원 리더십', children: [
+        { name: 'Future', children: [
+          { name: '비즈니스 통찰', children: [
+            { name: '트렌드 분석력', children: [ {name:'산업동향 파악'},{name:'인사이트 도출'} ] }
+          ]}
+        ]},
+        { name: 'Organization', children: [
+          { name: '조직 시너지', children: [
+            { name: '협업 촉진력', children: [ {name:'부서간 조정'},{name:'공동목표 설정'} ] }
+          ]}
+        ]}
+      ]}
+    ]
+  }
+};
+
+function instantiateTree(list, depth, maxDepth) {
+  return list.map(item => {
+    const node = { id: makeId(), name: item.name, description: '', _open: true };
+    if (depth === maxDepth) node.questions = [];
+    else node.children = instantiateTree(item.children || [], depth + 1, maxDepth);
+    return node;
+  });
+}
+
+function applyPreset() {
+  if (!selectedPreset) { toast('예시를 선택해주세요'); return; }
+  const { n } = countDataTotal();
+  if ((n > 0) && !confirm('현재 등록한 내용이 모두 지워지고 예시로 교체됩니다. 계속할까요?')) return;
+
+  const preset = PRESETS[selectedPreset];
+  state.levels = preset.levels.map(l => ({ id: 'lvl_' + (levelSeq++), label: l.label, scoreLevel: false, mapLevel: false }));
+  state.levels[preset.scoreDepth - 1].scoreLevel = true;
+  state.levels[preset.mapDepth - 1].mapLevel = true;
+  state.nodes = instantiateTree(preset.tree, 1, preset.levels.length);
+
+  closeModal('presetModal');
+  renderLevelBar();
+  renderTree();
+  toast('예시가 적용됐어요. 자유롭게 수정하세요.');
+}
+
+function resetAll() {
+  const { n } = countDataTotal();
+  const isDefault = state.levels.length === 3 && state.levels[0].label === '유형' && state.levels[1].label === '역량군' && state.levels[2].label === '세부역량';
+  if (n === 0 && isDefault) return;
+  if (!confirm('모든 구조를 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
+  state.levels = defaultLevels();
+  state.nodes = [];
+  renderLevelBar();
+  renderTree();
+}
+
+// ─────────────────────────────────────────
+// STEP 3 / STEP 4: 강점·약점 확인 단계 / 추천과정 연결 단계 (각각 하나씩만)
+// ─────────────────────────────────────────
+function exampleNamesForDepth(depth) {
+  const names = [];
+  walkNodes(state.nodes, 1, (n, d) => { if (d === depth && n.name?.trim() && names.length < 3 && !names.includes(n.name.trim())) names.push(n.name.trim()); });
+  return names.length ? names.join(', ') : '(아직 등록된 항목이 없어요)';
+}
+
+function renderScoreOnlyStep() {
+  const list = document.getElementById('scoreOnlyList');
+  list.innerHTML = '';
+  state.levels.forEach((lvl, idx) => {
+    const depth = idx + 1;
+    const card = document.createElement('div');
+    card.className = 'jm-card' + (lvl.scoreLevel ? ' selected' : '');
+    card.innerHTML = `<div class="jm-card-dot"></div><div class="jm-card-body">
+      <div class="jm-card-title"><span class="jm-card-depth-badge" style="background:${colorForDepth(depth)}">${depth}단계</span>${escHtml(lvl.label)}</div>
+      <div class="jm-card-example">예: ${escHtml(exampleNamesForDepth(depth))}</div></div>`;
+    card.onclick = () => {
+      state.levels.forEach((l, i) => l.scoreLevel = (i === idx));
+      if (enforceScoreMapOrder()) {
+        toast(`추천과정 연결 단계도 '${lvl.label}'(${depth}단계)로 자동 조정됐어요. 강점·약점보다 상위 단계에는 과정을 연결할 수 없어요.`);
+      }
+      renderScoreOnlyStep();
+    };
+    list.appendChild(card);
+  });
+}
+function renderMapOnlyStep() {
+  const list = document.getElementById('mapOnlyList');
+  list.innerHTML = '';
+  const scoreIdx = state.levels.findIndex(l => l.scoreLevel);
+  state.levels.forEach((lvl, idx) => {
+    const depth = idx + 1;
+    const disabled = scoreIdx !== -1 && idx < scoreIdx;
+    const card = document.createElement('div');
+    card.className = 'jm-card' + (lvl.mapLevel ? ' selected' : '') + (disabled ? ' disabled' : '');
+    card.innerHTML = `<div class="jm-card-dot"></div><div class="jm-card-body">
+      <div class="jm-card-title"><span class="jm-card-depth-badge" style="background:${colorForDepth(depth)}">${depth}단계</span>${escHtml(lvl.label)}</div>
+      <div class="jm-card-example">예: ${escHtml(exampleNamesForDepth(depth))}</div>
+      ${disabled ? `<div class="jm-card-disabled-note">강점·약점 기준(${escHtml(state.levels[scoreIdx].label)}, ${scoreIdx + 1}단계)보다 상위 단계라 고를 수 없어요</div>` : ''}
+      </div>`;
+    if (disabled) {
+      card.onclick = () => toast('강점·약점을 확인하는 단계보다 상위 단계에는 추천과정을 연결할 수 없어요');
+    } else {
+      card.onclick = () => { state.levels.forEach((l, i) => l.mapLevel = (i === idx)); renderMapOnlyStep(); };
+    }
+    list.appendChild(card);
+  });
+}
+
+// ─────────────────────────────────────────
+// STEP 6: 기본 정보
+// ─────────────────────────────────────────
+let s3IsPublic = true;
+function initBasicInfoStep() { setS3Visibility(s3IsPublic); renderS3Summary(); }
+function setS3Visibility(isPublic) {
+  s3IsPublic = isPublic;
+  document.getElementById('s3card_public')?.classList.toggle('selected', isPublic);
+  document.getElementById('s3card_private')?.classList.toggle('selected', !isPublic);
+}
+function renderS3Summary() {
+  const el = document.getElementById('s3SummaryContent');
+  if (!el) return;
+  const counts = new Array(state.levels.length).fill(0);
+  let questions = 0;
+  const qByType = {};
+  walkNodes(state.nodes, 1, (n, d) => {
+    counts[d - 1]++;
+    (n.questions || []).forEach(q => {
+      questions++;
+      const cfg = QTYPE_CONFIG[q.type] || QTYPE_CONFIG.scale;
+      const key = `${cfg.emoji} ${cfg.name}`;
+      qByType[key] = (qByType[key] || 0) + 1;
+    });
+  });
+  const leafCount = counts[counts.length - 1] || 0;
+
+  const levelRows = state.levels.map((lvl, i) => `
+    <div class="s3-summary-row"><span class="s3-summary-label">${escHtml(lvl.label)}</span><span class="s3-summary-val">${counts[i]}개</span></div>`).join('');
+  const qTypeRows = Object.entries(qByType).map(([name, count]) =>
+    `<div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">${name}</span><span class="s3-summary-val">${count}개</span></div>`).join('');
+  const warnHtml = leafCount > 0 && questions === 0
+    ? `<div style="margin-top:10px;padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;font-size:11px;color:#a16207;">⚠️ 등록된 질문이 없습니다. STEP 5로 돌아가 질문을 추가해주세요.</div>` : '';
+
+  const scoreLvl = state.levels.findIndex(l => l.scoreLevel) + 1;
+  const mapLvl = state.levels.findIndex(l => l.mapLevel) + 1;
+
+  el.innerHTML = `
+    ${levelRows}
+    <div class="s3-summary-row"><span class="s3-summary-label">총 질문</span><span class="s3-summary-val" style="color:${questions > 0 ? 'var(--primary)' : '#c0392b'}">${questions}개</span></div>
+    ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
+    <div class="s3-summary-section-title">🎯📚 확인 · 연결 단계</div>
+    <div class="s3-summary-row"><span class="s3-summary-label">🎯 강점·약점 확인</span><span class="s3-summary-val">${scoreLvl}단계 · ${escHtml(levelLabel(scoreLvl))}</span></div>
+    <div class="s3-summary-row"><span class="s3-summary-label">📚 추천과정 연결</span><span class="s3-summary-val">${mapLvl}단계 · ${escHtml(levelLabel(mapLvl))}</span></div>
+    ${warnHtml}`;
+}
+
+function saveAll() {
+  const name = document.getElementById('s3Name')?.value?.trim();
+  if (!name) { toast('진단지명을 입력해주세요'); document.getElementById('s3Name')?.focus(); return; }
+
+  let emptyName = false;
+  walkNodes(state.nodes, 1, (n) => { if (!n.name?.trim()) emptyName = true; });
+  if (emptyName) { toast('이름이 비어 있는 항목이 있어요. 확인 후 다시 저장해주세요'); goToStep(2); return; }
+
+  const counts = new Array(state.levels.length).fill(0);
+  let questions = 0;
+  walkNodes(state.nodes, 1, (n, d) => { counts[d - 1]++; questions += (n.questions || []).length; });
+
+  for (let i = 0; i < state.levels.length; i++) {
+    if (counts[i] === 0) { toast(`${levelLabel(i + 1)}을(를) 1개 이상 등록해주세요`); goToStep(2); return; }
+  }
+  if (questions === 0) { toast('질문을 1개 이상 등록해주세요'); goToStep(5); return; }
+
+  toast(`'${name}' 진단지가 저장됐습니다!`);
+  setTimeout(() => { window.location.href = 'edms_역량진단_관리.html#qset'; }, 1200);
+}
+
+// ─────────────────────────────────────────
+// STEP 5: 질문 등록
+// ─────────────────────────────────────────
+const QTYPE_CONFIG = {
+  scale: { emoji:'⭐', name:'척도형',       desc:'단계·라벨 조정 / 기본 5점',    preview:'① ② ③ ④ ⑤ 척도' },
+  ab:    { emoji:'🔀', name:'A/B 강제선택', desc:'A·B 사이 6단계 척도로 선택',  preview:'A ①②③④⑤⑥ B' },
+  essay: { emoji:'📝', name:'서술형',       desc:'자유 텍스트 서술 (단답·장문)', preview:'[ 자유 서술 ]' },
+};
+const SCALE_DEFAULT_LABELS = {
+  5: ['매우 그렇다','그렇다','보통이다','그렇지 않다','전혀 그렇지 않다'],
+};
+
+let s2SelectedId = null;
+let s2QSeq = 1, s2AddQType = null, s2EditQId = null;
+const s2ScaleSteps = 5;
+let s2ScaleLabels = [...SCALE_DEFAULT_LABELS[5]];
+let s2ScaleReversed = false;
+function makeQId() { return 'q_' + (s2QSeq++); }
+
+function initQuestionsStep() {
+  let hasStruct = false;
+  walkNodes(state.nodes, 1, (n, d) => { if (isLeafDepth(d)) hasStruct = true; });
+
+  document.getElementById('s2EmptyStruct').style.display = hasStruct ? 'none' : '';
+  document.getElementById('s2NoSelect').style.display = hasStruct ? '' : 'none';
+  document.getElementById('s2QPanel').style.display = 'none';
+  document.getElementById('s2NoSelectTitle').textContent = `${levelLabel(leafDepth())}을(를) 선택하세요`;
+  document.getElementById('s2NavHead').textContent = state.levels.map(l => l.label).join(' · ');
+
+  const barEl = document.getElementById('s2ProgressBar');
+  const lblEl = document.getElementById('s2ProgressLabel');
+  if (barEl) barEl.style.display = hasStruct ? '' : 'none';
+  if (lblEl) lblEl.style.display = hasStruct ? '' : 'none';
+
+  if (!hasStruct) { document.getElementById('s2NavTree').innerHTML = ''; return; }
+
+  s2SelectedId = null;
+  renderS2Nav();
+  updateS2Progress();
+
+  let firstLeaf = null;
+  walkNodes(state.nodes, 1, (n, d) => { if (!firstLeaf && isLeafDepth(d)) firstLeaf = n; });
+  if (firstLeaf) selectS2Item(firstLeaf.id);
+}
+
+function renderS2Nav() {
+  const container = document.getElementById('s2NavTree');
+  container.innerHTML = '';
+  renderS2Level(state.nodes, 1, container);
+}
+function renderS2Level(nodes, depth, container) {
+  nodes.forEach(node => {
+    if (isLeafDepth(depth)) {
+      const qCount = (node.questions || []).length;
+      const item = document.createElement('div');
+      item.className = 's2-item' + (s2SelectedId === node.id ? ' active' : '');
+      item.id = 's2item_' + node.id;
+      item.style.paddingLeft = (12 + (depth - 1) * 14) + 'px';
+      item.innerHTML = `<span class="s2-item-name">${escHtml(node.name)}</span><span class="s2-item-badge ${qCount > 0 ? 'has-q' : 'no-q'}" id="s2badge_${node.id}">${qCount}개</span>`;
+      item.onclick = () => selectS2Item(node.id);
+      container.appendChild(item);
+    } else {
+      const wrap = document.createElement('div');
+      const header = document.createElement('div');
+      header.className = 's2-node-header';
+      header.style.paddingLeft = (12 + (depth - 1) * 14) + 'px';
+      header.innerHTML = `<span class="s2-node-toggle ${node._navOpen !== false ? 'open' : ''}">▶</span>
+        <span class="s2-node-badge" style="background:${colorForDepth(depth)}">${escHtml(levelLabel(depth))}</span>
+        <span class="s2-node-name">${escHtml(node.name)}</span>`;
+      const body = document.createElement('div');
+      body.className = 's2-node-body' + (node._navOpen !== false ? ' open' : '');
+      header.onclick = () => { node._navOpen = node._navOpen === false ? true : false; renderS2Nav(); };
+      wrap.appendChild(header);
+      wrap.appendChild(body);
+      renderS2Level(node.children || [], depth + 1, body);
+      container.appendChild(wrap);
+    }
+  });
+}
+
+function selectS2Item(id) {
+  s2SelectedId = id;
+  document.querySelectorAll('.s2-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('s2item_' + id);
+  if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+
+  document.getElementById('s2NoSelect').style.display = 'none';
+  document.getElementById('s2EmptyStruct').style.display = 'none';
+  document.getElementById('s2QPanel').style.display = 'flex';
+
+  const found = findNodeById(id);
+  document.getElementById('s2QBreadcrumb').innerHTML = found.path.map((n, i) =>
+    `<span class="bc-seg" style="color:${colorForDepth(i + 1)}">${escHtml(n.name)}</span>`
+  ).join('<span class="bc-sep">›</span>');
+  document.getElementById('s2QTitle').textContent = found.node.name;
+
+  closeAddForm();
+  renderQuestions();
+}
+
+function renderQuestions() {
+  if (!s2SelectedId) return;
+  const found = findNodeById(s2SelectedId);
+  const it = found.node;
+  const qs = it.questions || [];
+
+  document.getElementById('s2QCount').textContent = `(질문 ${qs.length}개)`;
+  const badge = document.getElementById('s2badge_' + it.id);
+  if (badge) { badge.textContent = `${qs.length}개`; badge.className = `s2-item-badge ${qs.length > 0 ? 'has-q' : 'no-q'}`; }
+  updateS2Progress();
+
+  const list = document.getElementById('s2QList');
+  list.innerHTML = '';
+  if (qs.length === 0) {
+    list.innerHTML = `<div style="padding:28px 0;text-align:center;color:#bbb;font-size:12px;line-height:2;">아직 등록된 질문이 없어요.<br>아래 <b>＋ 질문 추가</b> 버튼을 눌러보세요.</div>`;
+    return;
+  }
+  qs.forEach((q, idx) => {
+    const row = document.createElement('div');
+    row.className = 's2-q-row';
+    row.setAttribute('draggable', 'true');
+    row.dataset.qid = q.id;
+    const tkey = q.type || 'scale';
+    const tcfg = QTYPE_CONFIG[tkey] || QTYPE_CONFIG.scale;
+    row.innerHTML = `
+      <div class="drag-handle" title="드래그하여 순서 변경">⠿</div>
+      <div class="s2-q-num">${idx + 1}</div>
+      <div class="qrow-preview">
+        <div style="margin-bottom:7px;"><span class="q-type-badge ${tkey}">${tcfg.emoji} ${tcfg.name}</span></div>
+        ${buildQRowPreviewHTML(q)}
+      </div>
+      <div class="s2-q-actions">
+        <button class="btn btn-xs btn-gray" title="수정" onclick="startEditQ('${q.id}')">✎</button>
+        <button class="btn btn-xs btn-danger" title="삭제" onclick="deleteQ('${q.id}')">×</button>
+      </div>`;
+    row.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', q.id); setTimeout(() => row.style.opacity = '0.4', 0); });
+    row.addEventListener('dragend', () => { row.style.opacity = ''; document.querySelectorAll('.s2-q-row').forEach(r => r.classList.remove('drag-over')); });
+    row.addEventListener('dragover', e => { e.preventDefault(); document.querySelectorAll('.s2-q-row').forEach(r => r.classList.remove('drag-over')); row.classList.add('drag-over'); });
+    row.addEventListener('drop', e => {
+      e.preventDefault(); row.classList.remove('drag-over');
+      const fromId = e.dataTransfer.getData('text/plain');
+      if (fromId === q.id || !s2SelectedId) return;
+      const qs2 = findNodeById(s2SelectedId).node.questions;
+      const fromIdx = qs2.findIndex(x => x.id === fromId), toIdx = qs2.findIndex(x => x.id === q.id);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = qs2.splice(fromIdx, 1); qs2.splice(toIdx, 0, moved);
+      renderQuestions();
+    });
+    list.appendChild(row);
+  });
+}
+
+function buildQRowPreviewHTML(q) {
+  const t = q.type || 'scale';
+  if (t === 'scale') {
+    const labels = q.labels || SCALE_DEFAULT_LABELS[5];
+    const cols = labels.map(lbl => `<div class="qrow-likert-opt"><div class="qrow-likert-circle"></div><div class="qrow-likert-lbl">${escHtml(lbl)}</div></div>`).join('');
+    return `<div class="qrow-q-text">${escHtml(q.text || '')}</div><div class="qrow-likert-wrap">${cols}</div>`;
+  }
+  if (t === 'ab') {
+    const ABL = ['A','A에 더 가깝다','A에 좀 더 가깝다','B에 좀 더 가깝다','B에 더 가깝다','B'];
+    const scores = q.abReversed ? [6,5,4,3,2,1] : [1,2,3,4,5,6];
+    const btns = ABL.map((lbl,i) => `<div class="qrow-ab-scale-btn">${lbl}<br><span style="font-size:9px;color:var(--primary);font-weight:700;">${scores[i]}점</span></div>`).join('');
+    return `<div class="qrow-ab-wrap"><div class="qrow-ab-card"><div class="qrow-ab-tag-lbl">A</div><br>${escHtml(q.a||'')}</div><div class="qrow-ab-card"><div class="qrow-ab-tag-lbl">B</div><br>${escHtml(q.b||'')}</div></div><div class="qrow-ab-btns">${btns}</div>`;
+  }
+  if (t === 'essay') return `<div class="qrow-q-text">${escHtml(q.text||'')}</div><div class="qrow-essay-mock">자유롭게 서술해 주세요.</div>`;
+  return `<div class="qrow-q-text">${escHtml(q.text||'')}</div>`;
+}
+
+function openAddForm() {
+  s2AddQType = null; s2EditQId = null;
+  document.getElementById('qModalTitle').innerHTML = '📝 질문 추가';
+  document.getElementById('qAddModal').classList.add('open');
+  renderAddFormTypeSelect();
+}
+function closeAddForm() {
+  document.getElementById('qAddModal').classList.remove('open');
+  const form = document.getElementById('s2AddForm'); if (form) form.innerHTML = '';
+  s2AddQType = null; s2EditQId = null;
+}
+function startEditQ(qId) {
+  if (!s2SelectedId) return;
+  const q = findNodeById(s2SelectedId).node.questions.find(q => q.id === qId);
+  if (!q) return;
+  s2EditQId = qId; s2AddQType = q.type || 'scale';
+  if (s2AddQType === 'scale') { s2ScaleLabels = q.labels ? [...q.labels] : [...SCALE_DEFAULT_LABELS[5]]; s2ScaleReversed = q.reversed || false; }
+  const tcfg = QTYPE_CONFIG[s2AddQType] || QTYPE_CONFIG.scale;
+  document.getElementById('qModalTitle').innerHTML = `✎ 질문 수정 <span style="font-size:12px;font-weight:400;color:#aaa;">— ${tcfg.emoji} ${tcfg.name}</span>`;
+  document.getElementById('qAddModal').classList.add('open');
+  renderDetailForm(q);
+}
+function renderAddFormTypeSelect() {
+  document.getElementById('s2AddForm').innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;">📌 어떤 유형의 질문인가요?</div>
+    <div class="qtype-grid">${Object.entries(QTYPE_CONFIG).map(([key,cfg]) => `
+      <div class="qtype-card" onclick="selectQType('${key}')">
+        <div class="qtype-icon">${cfg.emoji}</div><div class="qtype-name">${cfg.name}</div>
+        <div class="qtype-desc">${cfg.desc}</div><div class="qtype-preview-tag">${cfg.preview}</div>
+      </div>`).join('')}</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px;"><button class="btn btn-gray btn-sm" onclick="closeAddForm()">취소</button></div>`;
+}
+function selectQType(type) {
+  s2AddQType = type;
+  if (type === 'scale') { s2ScaleLabels = [...SCALE_DEFAULT_LABELS[5]]; s2ScaleReversed = false; }
+  renderDetailForm(null);
+}
+function backToTypeSelect() { s2AddQType = null; s2EditQId = null; renderAddFormTypeSelect(); }
+
+function renderDetailForm(existingData) {
+  const cfg = QTYPE_CONFIG[s2AddQType]||QTYPE_CONFIG.scale, d = existingData||{}, isEdit = !!s2EditQId;
+  if (s2AddQType==='scale' && existingData) { s2ScaleLabels = d.labels ? [...d.labels] : [...SCALE_DEFAULT_LABELS[5]]; s2ScaleReversed = d.reversed || false; }
+  document.getElementById('s2AddForm').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      ${!isEdit?`<button class="back-btn" onclick="backToTypeSelect()">← 유형 변경</button>`:''}
+      <span class="qtype-selected-label">${cfg.emoji} ${cfg.name}</span>
+      ${isEdit?`<span style="font-size:11px;color:#999;">수정 중</span>`:''}
+    </div>
+    ${buildDetailFormHTML(d)}
+    <div class="q-preview-section">
+      <button class="q-preview-toggle" onclick="toggleQPreview(this)">👁 미리보기 <span class="pv-arrow">▶</span></button>
+      <div id="qPreviewArea" class="qpv-area" style="display:none;"></div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <span></span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gray" onclick="closeAddForm()">취소</button>
+        <button class="btn btn-primary" onclick="saveNewQuestion()">${isEdit?'✓ 수정 완료':'저장'}</button>
+      </div>
+    </div>`;
+  const first = document.getElementById('s2AddForm').querySelector('textarea.form-input, input.form-input:not([type=number])');
+  if (first) setTimeout(() => first.focus(), 0);
+}
+
+function buildDetailFormHTML(d) {
+  const t = s2AddQType;
+  if (t === 'scale') {
+    const reversed = s2ScaleReversed;
+    const labelRows = s2ScaleLabels.map((lbl, i) => {
+      const score = reversed ? i+1 : 5-i;
+      return `<div class="scale-label-row"><div class="scale-label-num">${i+1}</div>
+        <input class="scale-label-input" id="sc_lbl_${i}" type="text" value="${escHtml(lbl)}" placeholder="보기 ${i+1} 라벨" oninput="saveScaleLabels();updateQPreview()">
+        <span class="scale-label-score">${score}점</span></div>`;
+    }).join('');
+    return `
+      <div class="form-row"><label>질문 내용 <span style="color:#c00;">*</span></label>
+        <textarea class="form-input" id="df_text" rows="3" placeholder="예: 팀원들에게 명확한 목표와 방향을 제시한다." oninput="updateQPreview()">${escHtml(d.text||'')}</textarea></div>
+      <div class="form-row"><label>보기 라벨 <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">(시스템 기본값 — 수정 가능)</span></label>
+        <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">${labelRows}</div>
+        <div style="display:flex;gap:6px;margin-top:5px;">
+          <button type="button" class="btn btn-gray btn-xs" onclick="toggleScaleReverse()">${reversed?'↺ 정방향으로 변경':'↺ 역방향 점수 적용'}</button>
+          <button type="button" class="btn btn-gray btn-xs" onclick="resetScaleLabels()">⟳ 기본값으로 리셋</button>
+        </div></div>`;
+  }
+  if (t === 'ab') return `
+    <div class="form-row"><label>🅰️ A 문구 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_a" rows="2" placeholder="예: 자율성을 최대한 부여하여 스스로 결정하게 한다." oninput="updateQPreview()">${escHtml(d.a||'')}</textarea></div>
+    <div class="form-row"><label>🅱️ B 문구 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_b" rows="2" placeholder="예: 구체적인 방향을 제시하고 함께 실행을 지원한다." oninput="updateQPreview()">${escHtml(d.b||'')}</textarea></div>
+    <div class="form-row"><label>점수 방향</label>
+      <div style="display:flex;gap:20px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;"><input type="radio" name="abDir" value="normal" ${!d.abReversed?'checked':''} onchange="updateQPreview()">A = 1점 → B = 6점 <span style="color:#aaa;">(기본)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;"><input type="radio" name="abDir" value="reversed" ${d.abReversed?'checked':''} onchange="updateQPreview()">A = 6점 → B = 1점</label>
+      </div><span class="form-hint">응답자가 A ~ B 사이 6단계 중 하나를 선택합니다.</span></div>`;
+  if (t === 'essay') return `
+    <div class="form-row"><label>질문 내용 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_text" rows="3" placeholder="예: 진단대상자의 리더십 강점에 대해 자유롭게 서술해 주세요." oninput="updateQPreview()">${escHtml(d.text||'')}</textarea>
+      <span class="form-hint">응답자가 단답·장문 형태로 자유롭게 서술합니다. 별도 점수 없음.</span></div>`;
+  return '';
+}
+
+function saveScaleLabels() {
+  s2ScaleLabels = Array.from({length: s2ScaleSteps}, (_,i) => { const el = document.getElementById(`sc_lbl_${i}`); return el ? el.value : (s2ScaleLabels[i]||''); });
+}
+function toggleScaleReverse() {
+  saveScaleLabels();
+  const pvWasOpen = document.getElementById('qPreviewArea')?.style.display !== 'none';
+  s2ScaleReversed = !s2ScaleReversed;
+  const cur = { text: document.getElementById('df_text')?.value||'', labels:s2ScaleLabels, reversed:s2ScaleReversed };
+  renderDetailForm(cur);
+  if (pvWasOpen) {
+    const pvArea = document.getElementById('qPreviewArea'); const pvBtn  = document.querySelector('.q-preview-toggle');
+    if (pvArea) pvArea.style.display = ''; if (pvBtn) { const arrow = pvBtn.querySelector('.pv-arrow'); if (arrow) arrow.style.transform = 'rotate(90deg)'; }
+    updateQPreview();
+  }
+}
+function resetScaleLabels() {
+  s2ScaleLabels = [...SCALE_DEFAULT_LABELS[5]];
+  s2ScaleLabels.forEach((lbl,i) => { const el=document.getElementById(`sc_lbl_${i}`); if(el) el.value=lbl; });
+  updateQPreview(); toast('기본 라벨로 초기화됐어요');
+}
+function gatherCurrentFormData() {
+  const t = s2AddQType, data = {};
+  if (t === 'scale') { saveScaleLabels(); data.text = document.getElementById('df_text')?.value||''; data.labels = [...s2ScaleLabels]; data.reversed = s2ScaleReversed; }
+  else if (t === 'ab') { data.a = document.getElementById('df_a')?.value||''; data.b = document.getElementById('df_b')?.value||''; data.abReversed = document.querySelector('input[name="abDir"]:checked')?.value === 'reversed'; }
+  else if (t === 'essay') { data.text = document.getElementById('df_text')?.value||''; }
+  return data;
+}
+function saveNewQuestion() {
+  if (!s2SelectedId||!s2AddQType) { toast('질문 유형을 먼저 선택해주세요'); return; }
+  if (s2AddQType === 'scale') saveScaleLabels();
+  const data = gatherCurrentFormData(), t = s2AddQType;
+  if (t === 'scale' || t === 'essay') { if (!data.text?.trim()) { toast('질문 내용을 입력해주세요'); return; } }
+  else if (t === 'ab') { if (!data.a?.trim()||!data.b?.trim()) { toast('A·B 문구를 모두 입력해주세요'); return; } }
+  const it = findNodeById(s2SelectedId).node;
+  if (!it.questions) it.questions = [];
+  if (s2EditQId) {
+    const q = it.questions.find(q=>q.id===s2EditQId);
+    if (q) { Object.keys(q).forEach(k=>{if(k!=='id')delete q[k];}); Object.assign(q,{type:t,...data}); }
+    toast('질문이 수정됐어요');
+  } else { it.questions.push({id:makeQId(), type:t, ...data}); toast('질문이 추가됐어요'); }
+  closeAddForm(); renderQuestions();
+}
+function toggleQPreview(btn) {
+  const area = document.getElementById('qPreviewArea'); if (!area) return;
+  const isOpen = area.style.display !== 'none';
+  area.style.display = isOpen ? 'none' : '';
+  const arrow = btn?.querySelector('.pv-arrow'); if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(90deg)';
+  if (!isOpen) updateQPreview();
+}
+function updateQPreview() {
+  const area = document.getElementById('qPreviewArea'); if (!area||area.style.display==='none') return;
+  if (s2AddQType==='scale') saveScaleLabels();
+  area.innerHTML = buildQPreviewHTML(gatherCurrentFormData());
+}
+function buildQPreviewHTML(d) {
+  const t = s2AddQType; let body = '';
+  if (t === 'scale') {
+    const labels = d.labels || SCALE_DEFAULT_LABELS[5]; const reversed = d.reversed || false;
+    const text = d.text?.trim()||'(질문 내용을 입력해주세요)';
+    const cols = labels.map((lbl,i) => { const score = reversed ? i+1 : 5-i;
+      return `<div class="qpv-likert-opt"><div class="qpv-circle"></div><div class="qpv-likert-label">${escHtml(lbl)||`보기 ${i+1}`}</div><div class="qpv-score-label">${score}점</div></div>`; }).join('');
+    body = `<div class="qpv-text">${escHtml(text)}</div><div class="qpv-likert">${cols}</div>`;
+  } else if (t === 'ab') {
+    const aT = escHtml(d.a?.trim()||'(A 문구 입력 중...)'), bT = escHtml(d.b?.trim()||'(B 문구 입력 중...)');
+    const ABL = ['A','A에 더<br>가깝다','A에 좀<br>더 가깝다','B에 좀<br>더 가깝다','B에 더<br>가깝다','B'];
+    const abScores = (d.abReversed?[6,5,4,3,2,1]:[1,2,3,4,5,6]);
+    const btns = ABL.map((lbl,i) => `<div class="qpv-ab-btn ${i===0||i===5?'side':''}">${lbl}<div style="font-size:8px;color:#aaa;margin-top:1px;">${abScores[i]}점</div></div>`).join('');
+    body = `<div class="qpv-ab-wrap"><div class="qpv-ab-box"><span class="qpv-ab-tag">A</span>${aT}</div><div class="qpv-ab-box"><span class="qpv-ab-tag">B</span>${bT}</div></div><div class="qpv-ab-scale">${btns}</div>`;
+  } else if (t === 'essay') {
+    body = `<div class="qpv-text">${escHtml(d.text?.trim()||'(질문 내용을 입력해주세요)')}</div><div class="qpv-textarea-mock">자유롭게 서술해 주세요.</div>`;
+  }
+  return `<div class="qpv-card"><div class="qpv-num">💡 실제 질문지 미리보기</div>${body}</div>`;
+}
+function deleteQ(qId) {
+  if (!s2SelectedId) return;
+  if (!confirm('이 질문을 삭제할까요?')) return;
+  const it = findNodeById(s2SelectedId).node;
+  it.questions = it.questions.filter(q => q.id !== qId);
+  renderQuestions(); toast('질문이 삭제됐어요');
+}
+function updateS2Progress() {
+  let total = 0, filled = 0;
+  walkNodes(state.nodes, 1, (n, d) => { if (isLeafDepth(d)) { total++; if ((n.questions||[]).length > 0) filled++; } });
+  const pct = total === 0 ? 0 : Math.round(filled / total * 100);
+  const fillEl = document.getElementById('s2ProgressFill'); const lblEl = document.getElementById('s2ProgressLabel');
+  if (fillEl) fillEl.style.width = pct + '%';
+  if (lblEl) lblEl.textContent = `${levelLabel(leafDepth())} ${total}개 중 ${filled}개에 질문 등록됨 (${pct}%)`;
+}
+
+// ── 토스트 ──
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// 초기 렌더
+renderLevelBar();
+renderTree();
+
+document.getElementById('qAddModal').addEventListener('click', function(e) { if (e.target === this) closeAddForm(); });
+document.getElementById('presetModal').addEventListener('click', function(e) { if (e.target === this) closeModal('presetModal'); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (document.getElementById('qAddModal').classList.contains('open')) closeAddForm();
+    else if (document.getElementById('presetModal').classList.contains('open')) closeModal('presetModal');
+  }
+});
+</script>
+</body>
+</html>

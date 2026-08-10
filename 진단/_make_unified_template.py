@@ -28,6 +28,7 @@ FILL_SUBHEAD_PARENT = PatternFill("solid", start_color="DDEBF7")
 FILL_SUBHEAD_Q = PatternFill("solid", start_color="DCEEDC")
 FILL_SUBHEAD_SCALE_OPT = PatternFill("solid", start_color="EFE4F5")
 FILL_SUBHEAD_AB = PatternFill("solid", start_color="FDE6E2")
+FILL_SYSTEM = PatternFill("solid", start_color="E7E6E6")  # 시스템 자동 생성 컬럼(입력 불가) 표시용
 
 # 질문유형별 행 색상 (3종)
 FILL_QTYPE = {
@@ -68,6 +69,9 @@ COLS = [
     # 질문
     ("★ 질문유형",      14, "q",      "척도형 / A/B 강제선택 / 서술형"),
     ("★ 질문내용",      48, "q",      "사용자에게 노출되는 질문 텍스트"),
+    # 시스템 자동 생성(입력/수정 불가) — 개발팀 요청으로 추가된 참고용 컬럼
+    ("문항유형코드",     12, "system", "시스템 자동 생성 값입니다. 질문유형에 따라 자동 매핑되며 사용자가 입력/수정할 수 없습니다."),
+    ("가중치",           10, "system", "시스템 자동 생성 값입니다. 채점 로직에서 내부적으로 사용되며 사용자가 입력/수정할 수 없습니다."),
     # 척도형 전용: 보기 1~5
     ("보기1 내용",       18, "scale", "척도형 전용. 기본 '매우 그렇다' — 다른 값으로 수정 가능"),
     ("점수1",             6, "scale", "기본 5"),
@@ -130,10 +134,11 @@ def merge_group(label, fill, start_col, end_col):
 
 merge_group("소속 (자동 매핑 기준)", FILL_SUBHEAD_PARENT, 1, 3)
 merge_group("질문", FILL_SUBHEAD_Q, 4, 5)
-merge_group("척도형 보기 1~5 (기본값 채워져 있고 수정 가능)", FILL_SUBHEAD_SCALE_OPT, 6, 15)
-merge_group("A/B 강제선택 전용", FILL_SUBHEAD_AB, 16, 17)
-merge_group("척도형 단계", FILL_SUBHEAD_SCALE_OPT, 18, 18)
-merge_group("기타", FILL_GUIDE, 19, 19)
+merge_group("시스템 자동 생성 (입력 불가)", FILL_SYSTEM, 6, 7)
+merge_group("척도형 보기 1~5 (기본값 채워져 있고 수정 가능)", FILL_SUBHEAD_SCALE_OPT, 8, 17)
+merge_group("A/B 강제선택 전용", FILL_SUBHEAD_AB, 18, 19)
+merge_group("척도형 단계", FILL_SUBHEAD_SCALE_OPT, 20, 20)
+merge_group("기타", FILL_GUIDE, 21, 21)
 ws.row_dimensions[GROUP_ROW].height = 22
 
 for i, (h, w, g, tip) in enumerate(COLS, start=1):
@@ -215,8 +220,15 @@ SAMPLES = [
      ""),
 ]
 
+# 문항유형코드/가중치는 시스템이 질문유형을 보고 자동으로 채우는 값 — 사용자 입력란이 아니므로
+# 샘플 행에도 항상 자동 계산된 값만 들어간다.
+QTYPE_CODE = {"척도형": 1, "A/B 강제선택": 2, "서술형": 3}
+DEFAULT_WEIGHT = 1
+SAMPLES = [row[:5] + (QTYPE_CODE[row[3]], DEFAULT_WEIGHT) + row[5:] for row in SAMPLES]
+
 DATA_START = HEADER_ROW + 1
-LEFT_COLS = {1, 2, 3, 5, 6, 8, 10, 12, 14, 16, 17, 19}
+LEFT_COLS = {1, 2, 3, 5, 8, 10, 12, 14, 16, 18, 19, 21}
+SYSTEM_COLS = {6, 7}
 
 for ri, row in enumerate(SAMPLES, start=DATA_START):
     qtype = row[3]
@@ -226,7 +238,9 @@ for ri, row in enumerate(SAMPLES, start=DATA_START):
         cell.font = font(10)
         cell.alignment = LEFT if ci in LEFT_COLS else CENTER
         cell.border = BORDER
-        if fill:
+        if ci in SYSTEM_COLS:
+            cell.fill = FILL_SYSTEM
+        elif fill:
             cell.fill = fill
     ws.row_dimensions[ri].height = 26
 
@@ -239,6 +253,8 @@ for ri in range(SAMPLE_END + 1, EMPTY_END + 1):
         cell.font = font(10)
         cell.alignment = LEFT if ci in LEFT_COLS else CENTER
         cell.border = BORDER
+        if ci in SYSTEM_COLS:
+            cell.fill = FILL_SYSTEM
 
 # ── 데이터 유효성 ──
 dv_qtype = DataValidation(type="list", formula1=f'"{",".join(QTYPES)}"', allow_blank=True)
@@ -248,7 +264,7 @@ dv_qtype.errorTitle = "잘못된 질문유형"
 ws.add_data_validation(dv_qtype)
 
 dv_scale = DataValidation(type="whole", operator="between", formula1=2, formula2=10, allow_blank=True)
-dv_scale.add(f"R{DATA_START}:R{EMPTY_END}")
+dv_scale.add(f"T{DATA_START}:T{EMPTY_END}")
 ws.add_data_validation(dv_scale)
 
 ws.freeze_panes = f"D{DATA_START}"
