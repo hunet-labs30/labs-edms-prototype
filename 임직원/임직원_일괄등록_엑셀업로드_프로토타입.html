@@ -260,7 +260,6 @@ tr:last-child td { border-bottom: none; }
             <div id="pg-empty">
               <div class="upload-zone">
                 <div class="upload-zone-hint">
-                  <div class="hint-main">1회 최대 처리 건수는 3,000건 입니다.</div>
                   파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
                 </div>
                 <button class="btn sm">파일 선택</button>
@@ -327,7 +326,6 @@ tr:last-child td { border-bottom: none; }
                 <tr><td class="left" style="padding-left:20px">이름 미입력</td><td class="left" style="padding-left:20px">이름을 입력하지 않은 경우</td></tr>
                 <tr><td class="left" style="padding-left:20px">휴대번호 미입력</td><td class="left" style="padding-left:20px">휴대번호를 입력하지 않은 경우</td></tr>
                 <tr><td class="left" style="padding-left:20px">휴대번호 형식 오류</td><td class="left" style="padding-left:20px">숫자 외 문자 포함, 자릿수 불일치 등</td></tr>
-                <tr><td class="left" style="padding-left:20px">행 레벨 검증 오류</td><td class="left" style="padding-left:20px">각 서비스 기능에 맞춰 구성</td></tr>
               </tbody>
             </table>
           </div>
@@ -427,7 +425,6 @@ tr:last-child td { border-bottom: none; }
               <div id="md-empty">
                 <div class="upload-zone">
                   <div class="upload-zone-hint">
-                    <div class="hint-main">1회 최대 처리 건수는 3,000건 입니다.</div>
                     파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
                   </div>
                   <button class="btn sm">파일 선택</button>
@@ -486,7 +483,6 @@ tr:last-child td { border-bottom: none; }
                     <tr><td class="left">이름 미입력</td><td class="left">이름을 입력하지 않은 경우</td></tr>
                     <tr><td class="left">휴대번호 미입력</td><td class="left">휴대번호를 입력하지 않은 경우</td></tr>
                     <tr><td class="left">휴대번호 형식 오류</td><td class="left">숫자 외 문자 포함, 자릿수 불일치 등</td></tr>
-                    <tr><td class="left">행 레벨 검증 오류</td><td class="left">각 서비스 기능에 맞춰 구성</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -526,6 +522,7 @@ tr:last-child td { border-bottom: none; }
             <div class="result-inline err" style="margin-top:0">시스템 오류로 인해 일부 건이 등록되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
           </div>
           <div class="rp-footer">
+            <button class="btn sm">실패내용 다운(.xlsx)</button>
             <button class="btn sm primary" onclick="document.getElementById('md-rp').classList.add('hidden')">닫기</button>
           </div>
         </div>
@@ -597,9 +594,9 @@ function renderMd() {
   if (s.overlay) document.getElementById('md-overlay-txt').textContent = s.overlayTxt;
   var fp = document.getElementById('md-btn-preview'), fr = document.getElementById('md-btn-reg');
   fp.classList.remove('hidden'); fr.classList.remove('hidden');
-  if (s.footer === 'init')    { fp.disabled = true;  fr.disabled = true;  fr.classList.add('hidden'); }
-  if (s.footer === 'preview') { fp.disabled = false; fr.disabled = true;  fr.classList.add('hidden'); }
-  if (s.footer === 'reg')     { fp.disabled = true;  fp.classList.add('hidden'); fr.disabled = isErr; }
+  if (s.footer === 'init')    { fp.disabled = true;  fr.disabled = true; }
+  if (s.footer === 'preview') { fp.disabled = false; fr.disabled = true; }
+  if (s.footer === 'reg')     { fp.disabled = true;  fr.disabled = isErr; }
   if (s.footer === 'none')    { fp.disabled = true;  fr.disabled = true; }
   document.getElementById('md-rp').classList.toggle('hidden', !s.result);
   setProtoBar(mdStep+1, MD.length, s.lbl, s.alt);

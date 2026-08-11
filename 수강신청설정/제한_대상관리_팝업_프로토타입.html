@@ -1,0 +1,696 @@
+<title>제한 대상관리 — 스텝 마법사 구조 (최종)</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  font-size: 13px; background: #f5f5f5; color: #333; line-height: 1.5;
+}
+
+.gnb {
+  height: 46px; background: #222;
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+}
+.gnb-logo { font-size: 15px; font-weight: 700; color: #fff; }
+.gnb-logo span { color: #4DA3FF; }
+.gnb-site { font-size: 12px; color: #aaa; border-left: 1px solid #444; padding-left: 12px; margin-left: 4px; }
+
+.layout { padding-top: 86px; min-height: 100vh; display:flex; flex-direction:column; align-items:center; padding-bottom: 60px; }
+
+.btn {
+  font-size: 13px; font-family: inherit;
+  background: #fff; border: 1px solid #ccc;
+  border-radius: 3px; padding: 6px 16px; cursor: pointer; color: #333;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { background: #f5f5f5; }
+.btn:disabled { color: #bbb; border-color: #e0e0e0; cursor: not-allowed; background: #fafafa; }
+.btn.primary { background: #1565C0; color: #fff; border-color: #1565C0; }
+.btn.primary:hover:not(:disabled) { background: #1251A3; }
+.btn.primary:disabled { background: #fafafa; color: #bbb; border-color: #e0e0e0; }
+.btn.sm { font-size: 12px; padding: 5px 13px; }
+
+/* Modal */
+.modal-box {
+  background: #fff; border-radius: 6px;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.22);
+  width: 860px; max-width: 96%;
+  max-height: calc(100vh - 160px);
+  display: flex; flex-direction: column;
+  animation: slideUp 0.18s ease;
+  position: relative;
+}
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.modal-header { padding: 16px 22px; border-bottom: 1px solid #e8e8e8; display: flex; align-items: center; justify-content: space-between; flex-shrink:0; }
+.modal-title { font-size: 16px; font-weight: 700; color: #111; }
+.modal-close { width: 28px; height: 28px; background: none; border: none; font-size: 18px; color: #aaa; cursor: pointer; border-radius: 3px; }
+.modal-close:hover { background: #f0f0f0; color: #555; }
+.modal-body { overflow-y: auto; flex:1; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid #e8e8e8; display: flex; justify-content: flex-end; gap: 6px; flex-shrink:0; }
+
+.tab-row { display: flex; gap: 2px; border-bottom: 1px solid #e0e0e0; }
+.tab-btn { padding: 9px 16px; font-size: 13px; background: none; border: none; border-bottom: 2px solid transparent; color: #777; cursor: pointer; font-family: inherit; font-weight: 500; }
+.tab-btn:hover { color: #1565C0; }
+.tab-btn.on { color: #1565C0; border-bottom-color: #1565C0; font-weight: 700; }
+.tab-body { padding-top:14px; }
+.tab-panel.hidden { display: none; }
+
+.notice-box { background: #f7f8fa; border-radius: 4px; padding: 12px 14px; font-size: 13px; color: #444; line-height: 1.8; }
+.section-sub { font-size:12px; color:#888; margin: 0 0 14px; line-height:1.7; }
+.step-label { font-size: 13px; font-weight: 700; color: #222; margin: 0 0 10px; }
+.step-label.err { color: #C0392B; }
+
+.check-list { border: 1px solid #e0e0e0; border-radius: 4px; max-height: 260px; overflow-y: auto; }
+.check-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.check-row:last-child { border-bottom: none; }
+.check-row input[type=checkbox] { width: 14px; height: 14px; accent-color: #1565C0; cursor: pointer; }
+.check-row label { cursor: pointer; flex: 1; }
+.check-count { font-size: 12px; color: #888; margin-top: 8px; }
+
+.upload-zone {
+  background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 4px;
+  min-height: 84px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; padding: 18px; text-align: center;
+  position: relative;
+}
+.upload-zone.has-file { background: #EBF2FF; border-color: #1565C0; }
+.upload-zone-hint { font-size: 13px; color: #aaa; }
+.file-selected { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1565C0; font-weight: 600; }
+.upload-row { display:flex; justify-content:space-between; align-items:center; }
+
+.result-inline { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 3px; font-size: 13px; font-weight: 500; margin-top: 10px; }
+.result-inline.ok { background: #EDF7F1; color: #1B7A3E; border: 1px solid #A3D9B5; }
+.result-inline.err { background: #FEF2F2; color: #C0392B; border: 1px solid #F5A9A9; }
+
+.err-tbl-wrap { border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+.err-tbl-wrap table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.err-tbl-wrap th { background: #f7f7f7; padding: 8px 12px; font-weight: 600; color: #555; border-bottom: 1px solid #e0e0e0; border-right: 1px solid #eee; text-align: center; white-space: nowrap; }
+.err-tbl-wrap th:last-child, .err-tbl-wrap td:last-child { border-right: none; }
+.err-tbl-wrap td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; color: #444; text-align: center; }
+.err-tbl-wrap td.left { text-align: left; }
+.err-tbl-wrap tr:last-child td { border-bottom: none; }
+.err-dl-row { display:flex; justify-content:flex-end; margin-top:8px; }
+
+.err-case-toggle { background:none; border:none; padding:0; font-size:12px; color:#1565C0; cursor:pointer; font-family:inherit; font-weight:600; }
+.err-case-toggle:hover { text-decoration:underline; }
+
+.wz-modal-overlay {
+  position: absolute; inset: 0; border-radius: 6px;
+  background: rgba(255,255,255,0.88);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.overlay-card { background:#fff; border-radius:6px; padding:28px 40px; text-align:center; box-shadow: 0 4px 24px rgba(0,0,0,0.18); }
+.spinner { width: 32px; height: 32px; border: 3px solid #e0e0e0; border-top-color: #1565C0; border-radius: 50%; animation: spin 0.75s linear infinite; margin: 0 auto 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.overlay-text { font-size: 13px; font-weight: 600; color: #222; text-align:center; }
+.overlay-sub { font-size: 12px; color: #888; margin-top: 4px; }
+
+.add-row { display:flex; justify-content:flex-end; margin-top:12px; }
+
+.summary-box { margin-top: 14px; border:1px solid #e0e0e0; border-radius:4px; padding:12px 14px; background:#fafcff; }
+.summary-empty { font-size:12px; color:#aaa; text-align:center; padding: 6px 0; }
+.target-group { margin-bottom: 12px; }
+.target-group:last-child { margin-bottom: 0; }
+.target-group-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; background: #eef2f7; color: #333; border-radius: 14px; padding: 4px 8px 4px 12px; font-size: 12px; }
+.chip.exclude-chip { background:#FDEDEC; color:#C0392B; }
+.chip-x { cursor: pointer; color: #999; font-size: 11px; line-height: 1; }
+.chip-x:hover { color: #C0392B; }
+
+.hidden { display: none !important; }
+
+.proto-note { width: 860px; max-width: 96%; margin: 0 auto 10px; font-size: 12px; color: #888; background:#fff; border:1px dashed #ccc; border-radius:4px; padding:10px 16px; }
+.proto-note b { color:#1565C0; }
+
+/* 스텝 마법사 */
+.wz-steps { display:flex; align-items:center; padding: 18px 22px 4px; gap: 6px; flex-shrink:0; }
+.wz-step-dot { display:flex; align-items:center; gap:8px; font-size:12px; color:#aaa; font-weight:600; }
+.wz-step-dot .num { width:22px; height:22px; border-radius:50%; background:#eee; color:#999; display:flex; align-items:center; justify-content:center; font-size:11px; }
+.wz-step-dot.on { color:#1565C0; }
+.wz-step-dot.on .num { background:#1565C0; color:#fff; }
+.wz-step-dot.done .num { background:#1B7A3E; color:#fff; }
+.wz-step-line { flex:1; height:1px; background:#e0e0e0; margin: 0 4px; }
+.wz-panel { padding: 8px 22px 20px; }
+.wz-panel.hidden { display:none; }
+.wz-review-box { border:1px solid #e0e0e0; border-radius:4px; padding:14px; margin-top:10px; }
+.wz-review-hd { font-size:13px; font-weight:700; color:#222; margin-bottom:10px; }
+
+/* 설정 영역(좌) - 설정된 조건 요약(우) 배치 */
+.wz-step-layout { display:flex; gap:20px; align-items:flex-start; }
+.wz-step-main { flex:1.3; min-width:0; }
+.wz-step-side { flex:1; min-width:0; border-left:1px solid #e8e8e8; padding-left:20px; }
+.wz-step-side-hd { font-size:13px; font-weight:700; color:#222; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.wz-step-side-hd .ref-tag { font-size:10px; font-weight:600; color:#888; background:#f0f0f0; border-radius:3px; padding:1px 6px; }
+.wz-step-side .summary-box { margin-top:0; min-height:64px; }
+.summary-box.readonly { background:#f7f8fa; }
+.summary-box.readonly .chip { opacity:0.85; }
+
+/* 하단 시나리오 진행바 (임직원 일괄등록 프로토타입과 동일 패턴) */
+.proto-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #1E1E1E; border-top: 1px solid #333;
+  height: 44px; padding: 0 16px;
+  display: flex; align-items: center; gap: 10px; z-index: 500;
+}
+.sep { width: 1px; height: 20px; background: #333; }
+.proto-label { font-size: 12px; color: #aaa; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proto-label strong { color: #eee; }
+.pb { font-size: 12px; padding: 5px 13px; border-radius: 3px; border: 1px solid #444; background: #2A2A2A; color: #ccc; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.pb:hover { background: #333; color: #fff; }
+.pb:disabled { opacity: 0.35; cursor: not-allowed; }
+.pb.accent { background: #1565C0; border-color: #1565C0; color: #fff; }
+.pb.accent:hover { background: #1251A3; }
+.step-badge { font-size: 11px; color: #888; border: 1px solid #333; border-radius: 3px; padding: 3px 8px; white-space: nowrap; }
+</style>
+
+<div class="gnb">
+  <div class="gnb-logo"><span>LABS</span> New EDMS</div>
+  <div class="gnb-site">수강신청 설정 &gt; 수강신청 제한</div>
+</div>
+
+<div class="layout">
+  <div class="proto-note">
+    <b>개편안(확정)</b> — 신청/제외 대상자를 좌우 병렬 리스트로 각자 채우는 방식 대신, <b>① 신청 대상자 정의 → ② 제외 대상자 정의 → ③ 확인</b> 3단계 스텝 구조로 변경. 각 단계가 화면 전체를 사용해 회사/직급 목록이 길어져도 스크롤 부담이 적음. 실제 업무 흐름(신청 대상자를 정하고 일부를 제외한다)과 화면 구조를 일치시킴. 제외 단계에는 '전체' 탭 없음(전체 제외는 의미 없는 조합이라 제거).
+  </div>
+
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">제한 대상관리</div>
+      <button class="modal-close" onclick="">✕</button>
+    </div>
+
+    <div class="wz-steps">
+      <div class="wz-step-dot on" id="wz-dot-1"><span class="num">1</span>신청 대상자</div>
+      <div class="wz-step-line"></div>
+      <div class="wz-step-dot" id="wz-dot-2"><span class="num">2</span>제외 대상자</div>
+      <div class="wz-step-line"></div>
+      <div class="wz-step-dot" id="wz-dot-3"><span class="num">3</span>확인</div>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- STEP 1: 신청 대상자 -->
+      <div class="wz-panel" id="wz-panel-1">
+        <div class="section-sub">이 제한을 적용할 기본 대상을 설정하세요. 아래에서 선택한 조건에 해당하는 임직원이 신청 대상자가 됩니다.</div>
+
+        <div class="wz-step-layout">
+        <div class="wz-step-main">
+        <div class="tab-row">
+          <button class="tab-btn on" id="apply-tab-all" onclick="switchTab('apply','all')">전체</button>
+          <button class="tab-btn" id="apply-tab-company" onclick="switchTab('apply','company')">회사</button>
+          <button class="tab-btn" id="apply-tab-rank" onclick="switchTab('apply','rank')">직급</button>
+          <button class="tab-btn" id="apply-tab-excel" onclick="switchTab('apply','excel')">엑셀업로드</button>
+        </div>
+
+        <div class="tab-body">
+          <div class="tab-panel" id="apply-panel-all">
+            <div class="check-list">
+              <div class="check-row"><input type="checkbox" id="apply-chk-all" onchange="updateAllChecked('apply')"><label for="apply-chk-all">전체 재직 임직원 선택</label></div>
+            </div>
+            <div class="check-count">현재 재직 임직원 1,248명</div>
+          </div>
+
+          <div class="tab-panel hidden" id="apply-panel-company">
+            <div class="check-list">
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>LABS 연수원</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷 본사</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷에듀</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷HRD</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷잡스</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷CS</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷글로벌</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','company')"><label>휴넷파트너스</label></div>
+            </div>
+            <div class="check-count" id="apply-count-company">0개 선택됨</div>
+          </div>
+
+          <div class="tab-panel hidden" id="apply-panel-rank">
+            <div class="check-list">
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>사원</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>주임</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>대리</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>과장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>차장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>부장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>수석</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('apply','rank')"><label>이사</label></div>
+            </div>
+            <div class="check-count" id="apply-count-rank">0개 선택됨</div>
+          </div>
+
+          <div class="tab-panel hidden" id="apply-panel-excel">
+            <div class="step-label">안내</div>
+            <div class="notice-box" style="margin-bottom:14px">
+              엑셀 파일(.xlsx, .xls)로 신청 대상자를 일괄 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+              미리보기로 오류 확인 후 조건 추가 버튼을 눌러주세요.
+            </div>
+
+            <div class="step-label">Step 1. 업로드 양식 다운로드</div>
+            <div class="section-sub" style="margin:0 0 10px">첫 번째 열에 이메일을 입력한 양식 파일을 다운로드하세요.</div>
+            <button class="btn sm" style="margin-bottom:14px">업로드 양식 다운로드</button>
+
+            <div class="step-label">Step 2. 파일 첨부 및 미리보기</div>
+            <div id="apply-excel-empty">
+              <div class="upload-zone">
+                <div class="upload-zone-hint">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+                <button class="btn sm" onclick="excelAttach('apply')">파일 선택</button>
+              </div>
+            </div>
+            <div id="apply-excel-has" class="hidden">
+              <div class="upload-zone has-file">
+                <div class="file-selected">📄 제한대상_2026_07.xlsx</div>
+                <button class="btn sm" onclick="excelReset('apply')">파일 변경</button>
+              </div>
+              <div id="apply-excel-result"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="btn sm" id="apply-excel-preview-btn" onclick="excelPreview('apply')" disabled>미리보기</button>
+            </div>
+
+            <div class="hidden" id="apply-excel-err-section" style="margin-top:14px">
+              <div class="step-label err">오류 항목</div>
+              <div class="err-tbl-wrap" id="apply-excel-err-table"></div>
+              <div class="err-dl-row"><button class="btn sm">오류내용 다운</button></div>
+            </div>
+
+            <div style="margin-top:14px;border-top:1px solid #f0f0f0;padding-top:12px">
+              <button class="err-case-toggle" id="apply-errcase-toggle" onclick="toggleErrCase('apply')">오류 케이스 정리 보기 ▾</button>
+              <div class="hidden" id="apply-errcase-body" style="margin-top:10px">
+                <div class="err-tbl-wrap">
+                  <table>
+                    <thead><tr><th style="text-align:left;padding-left:12px;width:42%">오류내용 표시방법</th><th style="text-align:left;padding-left:12px">오류케이스 정리</th></tr></thead>
+                    <tbody>
+                      <tr><td class="left" style="padding-left:12px">이메일 미입력</td><td class="left" style="padding-left:12px">이메일을 입력하지 않은 경우</td></tr>
+                      <tr><td class="left" style="padding-left:12px">존재하지 않는 이메일</td><td class="left" style="padding-left:12px">가입되지 않았거나 탈퇴한 임직원인 경우</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-row"><button class="btn sm primary" onclick="addCondition('apply')">신청 대상자 조건 추가</button></div>
+        </div>
+        <div class="wz-step-side">
+          <div class="wz-step-side-hd">신청 대상자 조건</div>
+          <div class="summary-box" id="apply-summary"><div class="summary-empty">설정된 조건이 없습니다. (미설정 시 다음 단계로 진행 불가)</div></div>
+        </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: 제외 대상자 -->
+      <div class="wz-panel hidden" id="wz-panel-2">
+        <div class="section-sub">위 신청 대상자 중 이 제한에서 제외할 인원이 있다면 조건을 추가하세요. 설정하지 않으면 신청 대상자 전원에게 적용됩니다.</div>
+
+        <div class="wz-step-layout">
+        <div class="wz-step-main">
+        <div class="tab-row">
+          <button class="tab-btn on" id="exclude-tab-company" onclick="switchTab('exclude','company')">회사</button>
+          <button class="tab-btn" id="exclude-tab-rank" onclick="switchTab('exclude','rank')">직급</button>
+          <button class="tab-btn" id="exclude-tab-excel" onclick="switchTab('exclude','excel')">엑셀업로드</button>
+        </div>
+
+        <div class="tab-body">
+          <div class="tab-panel" id="exclude-panel-company">
+            <div class="check-list">
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>LABS 연수원</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷 본사</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷에듀</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷HRD</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷잡스</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷CS</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷글로벌</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','company')"><label>휴넷파트너스</label></div>
+            </div>
+            <div class="check-count" id="exclude-count-company">0개 선택됨</div>
+          </div>
+
+          <div class="tab-panel hidden" id="exclude-panel-rank">
+            <div class="check-list">
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>사원</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>주임</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>대리</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>과장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>차장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>부장</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>수석</label></div>
+              <div class="check-row"><input type="checkbox" onchange="updateCount('exclude','rank')"><label>이사</label></div>
+            </div>
+            <div class="check-count" id="exclude-count-rank">0개 선택됨</div>
+          </div>
+
+          <div class="tab-panel hidden" id="exclude-panel-excel">
+            <div class="step-label">안내</div>
+            <div class="notice-box" style="margin-bottom:14px">
+              엑셀 파일(.xlsx, .xls)로 제외 대상자를 일괄 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+              미리보기로 오류 확인 후 조건 추가 버튼을 눌러주세요.
+            </div>
+
+            <div class="step-label">Step 1. 업로드 양식 다운로드</div>
+            <div class="section-sub" style="margin:0 0 10px">첫 번째 열에 이메일을 입력한 양식 파일을 다운로드하세요.</div>
+            <button class="btn sm" style="margin-bottom:14px">업로드 양식 다운로드</button>
+
+            <div class="step-label">Step 2. 파일 첨부 및 미리보기</div>
+            <div id="exclude-excel-empty">
+              <div class="upload-zone">
+                <div class="upload-zone-hint">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+                <button class="btn sm" onclick="excelAttach('exclude')">파일 선택</button>
+              </div>
+            </div>
+            <div id="exclude-excel-has" class="hidden">
+              <div class="upload-zone has-file">
+                <div class="file-selected">📄 제외대상_2026_07.xlsx</div>
+                <button class="btn sm" onclick="excelReset('exclude')">파일 변경</button>
+              </div>
+              <div id="exclude-excel-result"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="btn sm" id="exclude-excel-preview-btn" onclick="excelPreview('exclude')" disabled>미리보기</button>
+            </div>
+
+            <div class="hidden" id="exclude-excel-err-section" style="margin-top:14px">
+              <div class="step-label err">오류 항목</div>
+              <div class="err-tbl-wrap" id="exclude-excel-err-table"></div>
+              <div class="err-dl-row"><button class="btn sm">오류내용 다운</button></div>
+            </div>
+
+            <div style="margin-top:14px;border-top:1px solid #f0f0f0;padding-top:12px">
+              <button class="err-case-toggle" id="exclude-errcase-toggle" onclick="toggleErrCase('exclude')">오류 케이스 정리 보기 ▾</button>
+              <div class="hidden" id="exclude-errcase-body" style="margin-top:10px">
+                <div class="err-tbl-wrap">
+                  <table>
+                    <thead><tr><th style="text-align:left;padding-left:12px;width:42%">오류내용 표시방법</th><th style="text-align:left;padding-left:12px">오류케이스 정리</th></tr></thead>
+                    <tbody>
+                      <tr><td class="left" style="padding-left:12px">이메일 미입력</td><td class="left" style="padding-left:12px">이메일을 입력하지 않은 경우</td></tr>
+                      <tr><td class="left" style="padding-left:12px">존재하지 않는 이메일</td><td class="left" style="padding-left:12px">가입되지 않았거나 탈퇴한 임직원인 경우</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-row"><button class="btn sm" onclick="addCondition('exclude')">제외 대상자 조건 추가</button></div>
+        </div>
+        <div class="wz-step-side">
+          <div class="wz-step-side-hd">① 신청 대상자 조건 <span class="ref-tag">참고</span></div>
+          <div class="summary-box readonly" id="wz-apply-ref"></div>
+          <div class="wz-step-side-hd" style="margin-top:18px">② 제외 대상자 조건</div>
+          <div class="summary-box" id="exclude-summary"><div class="summary-empty">설정된 조건이 없습니다.</div></div>
+        </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: 확인 -->
+      <div class="wz-panel hidden" id="wz-panel-3">
+        <div class="section-sub">저장 전 최종 확인하세요.</div>
+        <div class="wz-review-box">
+          <div class="wz-review-hd">① 신청 대상자</div>
+          <div id="wz-review-apply"></div>
+        </div>
+        <div class="wz-review-box">
+          <div class="wz-review-hd">② 제외 대상자</div>
+          <div id="wz-review-exclude"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="wz-btn-prev" onclick="wzPrev()" disabled>이전</button>
+      <button class="btn primary" id="wz-btn-next" onclick="wzNext()">다음</button>
+    </div>
+
+    <div class="wz-modal-overlay hidden" id="wz-overlay">
+      <div class="overlay-card">
+        <div class="spinner"></div>
+        <div class="overlay-text" id="wz-overlay-txt">파일을 검증하고 있습니다.</div>
+        <div class="overlay-sub">잠시 기다려 주세요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 하단 시나리오 진행바 -->
+<div class="proto-bar">
+  <div class="proto-label" id="proto-lbl"><strong>Step 1</strong> — 초기 상태</div>
+  <div class="sep"></div>
+  <button class="pb" id="pb-prev" onclick="scenPrev()">← 이전</button>
+  <button class="pb accent" id="pb-next" onclick="scenNext()">다음 단계 →</button>
+  <div class="step-badge" id="pb-badge">1 / 10</div>
+</div>
+
+<script>
+var state = {
+  apply:   { activeTab:'all', allChecked:false, excelState:'empty', t:{ all:false, company:[], rank:[], excel:null } },
+  exclude: { activeTab:'company', allChecked:false, excelState:'empty', t:{ all:false, company:[], rank:[], excel:null } }
+};
+var TABS = { apply: ['all','company','rank','excel'], exclude: ['company','rank','excel'] };
+
+function switchTab(scope, t) {
+  state[scope].activeTab = t;
+  TABS[scope].forEach(function(k){
+    document.getElementById(scope+'-tab-'+k).classList.toggle('on', k===t);
+    document.getElementById(scope+'-panel-'+k).classList.toggle('hidden', k!==t);
+  });
+}
+
+function updateAllChecked(scope) {
+  state[scope].allChecked = document.getElementById(scope+'-chk-all').checked;
+}
+
+function getCheckedLabels(panelId) {
+  var labels = [];
+  document.querySelectorAll('#'+panelId+' .check-row').forEach(function(row){
+    var cb = row.querySelector('input[type=checkbox]');
+    if (cb && cb.checked) labels.push(row.querySelector('label').textContent);
+  });
+  return labels;
+}
+function updateCount(scope, kind) {
+  var n = getCheckedLabels(scope+'-panel-'+kind).length;
+  document.getElementById(scope+'-count-'+kind).textContent = n+'개 선택됨';
+}
+
+function excelAttach(scope) {
+  state[scope].excelState = 'attached';
+  document.getElementById(scope+'-excel-empty').classList.add('hidden');
+  document.getElementById(scope+'-excel-has').classList.remove('hidden');
+  document.getElementById(scope+'-excel-result').innerHTML = '';
+  document.getElementById(scope+'-excel-preview-btn').disabled = false;
+  document.getElementById(scope+'-excel-err-section').classList.add('hidden');
+}
+function excelReset(scope) {
+  state[scope].excelState = 'empty';
+  document.getElementById(scope+'-excel-empty').classList.remove('hidden');
+  document.getElementById(scope+'-excel-has').classList.add('hidden');
+  document.getElementById(scope+'-excel-preview-btn').disabled = true;
+  document.getElementById(scope+'-excel-err-section').classList.add('hidden');
+}
+function applyPreviewResult(scope, hasErr) {
+  var resultBox = document.getElementById(scope+'-excel-result');
+  var errSection = document.getElementById(scope+'-excel-err-section');
+  var errTable = document.getElementById(scope+'-excel-err-table');
+  if (hasErr) {
+    state[scope].excelState = 'err';
+    resultBox.innerHTML = '<div class="result-inline err">✖ 일부 행에서 오류가 발견되었습니다. 오류 내용을 확인하고 수정 후 다시 시도해 주세요.</div>';
+    errTable.innerHTML =
+      '<table><thead><tr><th>행</th><th>이메일</th><th style="text-align:left">오류 내용</th></tr></thead><tbody>' +
+      '<tr><td>3</td><td>minjun.k@test.com</td><td class="left">존재하지 않는 이메일</td></tr>' +
+      '<tr><td>7</td><td>—</td><td class="left">이메일 미입력</td></tr>' +
+      '</tbody></table>';
+    errSection.classList.remove('hidden');
+  } else {
+    state[scope].excelState = 'ok';
+    resultBox.innerHTML = '<div class="result-inline ok">✔ 미리보기가 완료되었습니다. 총 42건이 정상 확인되었습니다. 조건 추가 버튼을 클릭해 주세요.</div>';
+    errSection.classList.add('hidden');
+  }
+}
+
+function excelPreview(scope) {
+  var overlay = document.getElementById('wz-overlay');
+  var btn = document.getElementById(scope+'-excel-preview-btn');
+  var resultBox = document.getElementById(scope+'-excel-result');
+  document.getElementById('wz-overlay-txt').textContent = '파일을 검증하고 있습니다.';
+  overlay.classList.remove('hidden');
+  btn.disabled = true;
+  setTimeout(function(){
+    overlay.classList.add('hidden');
+    var hasErr = resultBox.dataset.next === 'err';
+    resultBox.dataset.next = hasErr ? 'ok' : 'err';
+    applyPreviewResult(scope, hasErr);
+    btn.disabled = false;
+  }, 700);
+}
+
+function toggleErrCase(scope) {
+  var body = document.getElementById(scope+'-errcase-body');
+  var btn = document.getElementById(scope+'-errcase-toggle');
+  var willOpen = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !willOpen);
+  btn.textContent = willOpen ? '오류 케이스 정리 접기 ▴' : '오류 케이스 정리 보기 ▾';
+}
+
+function addCondition(scope) {
+  var s = state[scope];
+  var t = s.t;
+  if (s.activeTab === 'all') {
+    if (!s.allChecked) { alert('전체 재직 임직원을 선택해주세요.'); return; }
+    t.all = true;
+  } else if (s.activeTab === 'company') {
+    var companies = getCheckedLabels(scope+'-panel-company');
+    if (!companies.length) { alert('회사를 하나 이상 선택해주세요.'); return; }
+    companies.forEach(function(c){ if (t.company.indexOf(c)===-1) t.company.push(c); });
+  } else if (s.activeTab === 'rank') {
+    var ranks = getCheckedLabels(scope+'-panel-rank');
+    if (!ranks.length) { alert('직급을 하나 이상 선택해주세요.'); return; }
+    ranks.forEach(function(r){ if (t.rank.indexOf(r)===-1) t.rank.push(r); });
+  } else if (s.activeTab === 'excel') {
+    if (s.excelState !== 'ok') { alert('엑셀 미리보기를 완료해주세요.'); return; }
+    t.excel = '엑셀업로드 42건';
+  }
+  renderConditions(scope);
+}
+
+function renderConditions(scope) {
+  var t = state[scope].t;
+  var box = document.getElementById(scope+'-summary');
+  var chipCls = scope === 'exclude' ? ' exclude-chip' : '';
+  var groups = [];
+  if (t.all) groups.push({ label:'전체', chips:[{ text:'전체 재직 임직원', rm:"removeCondition('"+scope+"','all')" }] });
+  if (t.company.length) groups.push({ label:'회사', chips:t.company.map(function(c){ return { text:c, rm:"removeCondition('"+scope+"','company','"+c+"')" }; }) });
+  if (t.rank.length) groups.push({ label:'직급', chips:t.rank.map(function(r){ return { text:r, rm:"removeCondition('"+scope+"','rank','"+r+"')" }; }) });
+  if (t.excel) groups.push({ label:'엑셀업로드', chips:[{ text:t.excel, rm:"removeCondition('"+scope+"','excel')" }] });
+
+  if (groups.length === 0) {
+    box.innerHTML = '<div class="summary-empty">설정된 조건이 없습니다.'+(scope==='apply' ? ' (미설정 시 다음 단계로 진행 불가)' : '')+'</div>';
+    return;
+  }
+  box.innerHTML = groups.map(function(g){
+    var chipsHtml = g.chips.map(function(c){
+      return '<span class="chip'+chipCls+'">'+c.text+'<span class="chip-x" onclick="'+c.rm+'">✕</span></span>';
+    }).join('');
+    return '<div class="target-group"><div class="target-group-label">'+g.label+'</div><div class="chip-row">'+chipsHtml+'</div></div>';
+  }).join('');
+}
+
+function renderApplyReference() {
+  var t = state.apply.t;
+  var box = document.getElementById('wz-apply-ref');
+  var groups = [];
+  if (t.all) groups.push({ label:'전체', chips:['전체 재직 임직원'] });
+  if (t.company.length) groups.push({ label:'회사', chips:t.company });
+  if (t.rank.length) groups.push({ label:'직급', chips:t.rank });
+  if (t.excel) groups.push({ label:'엑셀업로드', chips:[t.excel] });
+
+  if (groups.length === 0) {
+    box.innerHTML = '<div class="summary-empty">설정된 조건이 없습니다.</div>';
+    return;
+  }
+  box.innerHTML = groups.map(function(g){
+    var chipsHtml = g.chips.map(function(c){ return '<span class="chip">'+c+'</span>'; }).join('');
+    return '<div class="target-group"><div class="target-group-label">'+g.label+'</div><div class="chip-row">'+chipsHtml+'</div></div>';
+  }).join('');
+}
+
+function removeCondition(scope, category, value) {
+  var t = state[scope].t;
+  if (category === 'all') t.all = false;
+  else if (category === 'excel') t.excel = null;
+  else if (category === 'company') t.company = t.company.filter(function(x){ return x!==value; });
+  else if (category === 'rank') t.rank = t.rank.filter(function(x){ return x!==value; });
+  renderConditions(scope);
+}
+
+/* 스텝 네비게이션 */
+var wzStep = 1;
+function wzGoto(step) {
+  wzStep = step;
+  [1,2,3].forEach(function(n){
+    document.getElementById('wz-panel-'+n).classList.toggle('hidden', n!==step);
+    var dot = document.getElementById('wz-dot-'+n);
+    dot.classList.toggle('on', n===step);
+    dot.classList.toggle('done', n<step);
+  });
+  document.getElementById('wz-btn-prev').disabled = (step===1);
+  document.getElementById('wz-btn-next').textContent = (step===3) ? '저장' : '다음';
+  if (step === 2) {
+    renderApplyReference();
+  }
+  if (step === 3) {
+    document.getElementById('wz-review-apply').innerHTML = document.getElementById('apply-summary').innerHTML;
+    document.getElementById('wz-review-exclude').innerHTML = document.getElementById('exclude-summary').innerHTML;
+  }
+}
+function wzNext() {
+  var t = state.apply.t;
+  if (wzStep === 1 && !t.all && !t.company.length && !t.rank.length && !t.excel) {
+    alert('신청 대상자 조건을 먼저 추가해주세요.');
+    return;
+  }
+  if (wzStep < 3) wzGoto(wzStep+1);
+  else alert('저장되었습니다. (프로토타입)');
+}
+function wzPrev() {
+  if (wzStep > 1) wzGoto(wzStep-1);
+}
+
+/* ======================================================
+   하단 시나리오 진행바 — 임직원 일괄등록 프로토타입과 동일하게
+   전체 흐름을 스텝 단위로 스냅샷 재생 (다음/이전 단계)
+====================================================== */
+function setExcelVisual(scope, mode) {
+  document.getElementById(scope+'-excel-empty').classList.toggle('hidden', mode !== 'empty');
+  document.getElementById(scope+'-excel-has').classList.toggle('hidden', mode === 'empty');
+  document.getElementById(scope+'-excel-preview-btn').disabled = (mode === 'empty');
+  if (mode === 'ok') applyPreviewResult(scope, false);
+  else if (mode === 'err') applyPreviewResult(scope, true);
+  else {
+    document.getElementById(scope+'-excel-result').innerHTML = '';
+    document.getElementById(scope+'-excel-err-section').classList.add('hidden');
+  }
+}
+
+var SCEN = [
+  { lbl: '팝업 열림 — Step 1. 신청 대상자, 엑셀업로드 탭 선택', wzStep:1, tab:'apply', applyExcel:'empty', excludeExcel:'empty', applyCond:null, excludeCond:null, overlay:false },
+  { lbl: '파일 첨부 완료 — [미리보기] 버튼 활성', wzStep:1, tab:'apply', applyExcel:'attached', excludeExcel:'empty', applyCond:null, excludeCond:null, overlay:false },
+  { lbl: '[미리보기] 클릭 → 팝업 전체 로딩 오버레이', wzStep:1, tab:'apply', applyExcel:'attached', excludeExcel:'empty', applyCond:null, excludeCond:null, overlay:true },
+  { lbl: '미리보기 완료 — 오류 발생 시 오류 항목 표 노출', wzStep:1, tab:'apply', applyExcel:'err', excludeExcel:'empty', applyCond:null, excludeCond:null, overlay:false },
+  { lbl: '미리보기 완료 — 정상 결과, 조건 추가 버튼 클릭 유도', wzStep:1, tab:'apply', applyExcel:'ok', excludeExcel:'empty', applyCond:null, excludeCond:null, overlay:false },
+  { lbl: '[신청 대상자 조건 추가] 클릭 → 우측 조건 요약 반영', wzStep:1, tab:'apply', applyExcel:'ok', excludeExcel:'empty', applyCond:'엑셀업로드 42건', excludeCond:null, overlay:false },
+  { lbl: '[다음] 클릭 → Step 2. 제외 대상자 (신청 대상자 조건 참고 노출)', wzStep:2, tab:'exclude', applyExcel:'ok', excludeExcel:'empty', applyCond:'엑셀업로드 42건', excludeCond:null, overlay:false },
+  { lbl: '파일 첨부 → 미리보기 완료(정상)', wzStep:2, tab:'exclude', applyExcel:'ok', excludeExcel:'ok', applyCond:'엑셀업로드 42건', excludeCond:null, overlay:false },
+  { lbl: '[제외 대상자 조건 추가] 클릭 → 조건 요약 반영', wzStep:2, tab:'exclude', applyExcel:'ok', excludeExcel:'ok', applyCond:'엑셀업로드 42건', excludeCond:'엑셀업로드 5건', overlay:false },
+  { lbl: '[다음] 클릭 → Step 3. 확인 — 최종 검토', wzStep:3, tab:'exclude', applyExcel:'ok', excludeExcel:'ok', applyCond:'엑셀업로드 42건', excludeCond:'엑셀업로드 5건', overlay:false },
+];
+var scenStep = 0;
+
+function renderScen() {
+  var s = SCEN[scenStep];
+
+  state.apply.t = { all:false, company:[], rank:[], excel: s.applyCond };
+  state.exclude.t = { all:false, company:[], rank:[], excel: s.excludeCond };
+  renderConditions('apply');
+  renderConditions('exclude');
+
+  switchTab('apply', s.tab === 'apply' ? 'excel' : 'all');
+  switchTab('exclude', s.tab === 'exclude' ? 'excel' : 'company');
+
+  setExcelVisual('apply', s.applyExcel);
+  setExcelVisual('exclude', s.excludeExcel);
+
+  wzGoto(s.wzStep);
+
+  document.getElementById('wz-overlay').classList.toggle('hidden', !s.overlay);
+
+  document.getElementById('proto-lbl').innerHTML = '<strong>Step '+(scenStep+1)+'</strong> — '+s.lbl;
+  document.getElementById('pb-badge').textContent = (scenStep+1)+' / '+SCEN.length;
+  document.getElementById('pb-prev').disabled = (scenStep===0);
+  document.getElementById('pb-next').disabled = (scenStep===SCEN.length-1);
+}
+function scenNext() { if (scenStep < SCEN.length-1) { scenStep++; renderScen(); } }
+function scenPrev() { if (scenStep > 0) { scenStep--; renderScen(); } }
+renderScen();
+</script>
