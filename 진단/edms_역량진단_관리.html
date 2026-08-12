@@ -1507,7 +1507,7 @@
     if (!q) return;
     qsetDeleteTargetId = id;
     document.getElementById('deleteModalBody').innerHTML = `
-      <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠어요?<br>
+      <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠습니까?<br>
       연결된 진단이 있을 수 있습니다.`;
     document.getElementById('deleteModal').classList.add('open');
   }
