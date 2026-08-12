@@ -105,6 +105,21 @@
   /* CARD */
   .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
 
+  /* 요약 정보 (진단 진행 전) */
+  .summary-stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 14px 20px 16px; }
+  .summary-stat-title { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+  .summary-stat-table { width: 100%; border-collapse: collapse; }
+  .summary-stat-table th {
+    background: var(--table-header); border: 1px solid var(--border);
+    padding: 8px 6px; font-size: 12px; font-weight: 600; color: #555; text-align: center; white-space: nowrap;
+  }
+  .summary-stat-table td {
+    border: 1px solid var(--border); padding: 12px 6px; text-align: center;
+  }
+  .summary-stat-table .stat-num { font-size: 18px; font-weight: 800; color: #1a1a2e; }
+  .summary-stat-table .stat-num.accent { color: var(--primary); }
+  .summary-stat-table .stat-sub { font-size: 11px; color: #999; margin-left: 3px; font-weight: 500; }
+
   /* TABS */
   .type-tab-bar { display: flex; border-bottom: 2px solid #e0e3e8; }
   .type-tab-btn {
@@ -149,16 +164,6 @@
   .badge-gray   { background: #f0f2f5; color: #888; }
   .badge-red    { background: #fff0f0; color: #e53935; }
   .badge-purple { background: #f3e8ff; color: #7c3aed; }
-
-  /* STAT BADGES */
-  .stat-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap;
-  }
-  .stat-badge-total { background: #f0f2f5; color: #444; }
-  .stat-badge-active { background: #e6f7ee; color: #1a7a4a; }
-  .stat-badge-stopped { background: #fff0f0; color: #e53935; }
-  .stat-badge .num { font-size: 14px; font-weight: 800; }
 
   /* SEARCH */
   .search-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -414,26 +419,62 @@
       </div>
     </div>
 
-    <!-- 진단 기본 정보 카드 -->
-    <div class="info-card">
-      <div class="info-card-header">
-        <span class="info-card-header-title">진단 기본 정보</span>
-        <a class="btn btn-gray btn-sm" href="edms_진단_만들기.html">진단 관리</a>
-      </div>
-      <div class="info-grid">
-        <div class="info-cell span2" style="border-bottom:1px solid var(--border);">
-          <div class="info-label">진단시작일</div>
-          <div class="info-value" id="diagStartDate">2025.05.01 00:00</div>
-        </div>
-        <div class="info-cell span2" style="border-right:none;border-bottom:1px solid var(--border);">
-          <div class="info-label">진단종료일</div>
-          <div class="info-value" id="diagEndDate">2025.05.31 23:59</div>
-        </div>
-        <div class="info-cell span4" style="border-right:none;border-bottom:none;">
-          <div class="info-label">진단명</div>
-          <div class="info-value" id="diagName">2025년 상반기 리더십 역량진단</div>
-        </div>
-      </div>
+    <!-- 진단 기본 정보 (텍스트만 노출, 카드/박스 없음) -->
+    <div style="display:flex;align-items:baseline;gap:28px;padding:2px 2px 4px;">
+      <span style="font-size:13px;color:#333;"><span style="color:#888;font-weight:600;margin-right:6px;">진단명</span><span id="diagName" style="font-weight:700;color:#1a1a2e;">2025년 상반기 리더십 역량진단</span></span>
+      <span style="font-size:13px;color:#333;"><span style="color:#888;font-weight:600;margin-right:6px;">진단 기간</span><span style="font-weight:700;color:#1a1a2e;"><span id="diagStartDate">2025.05.01 00:00</span> ~ <span id="diagEndDate">2025.05.31 23:59</span></span></span>
+    </div>
+
+    <!-- 검색 필터 (진단 진행 전은 해당 컬럼이 없어 미노출, 진행중/마감전/완료에서만 노출) -->
+    <div id="afterFilterRow" class="search-row" style="margin-bottom:16px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
+      <select id="after-filter-mail" class="select" style="width:110px;">
+        <option value="">전체</option>
+        <option>발송완료</option>
+        <option>미발송</option>
+      </select>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
+      <select id="after-filter-status" class="select" style="width:110px;">
+        <option value="">전체</option>
+        <option>진행 전</option>
+        <option>진행중</option>
+        <option>완료</option>
+        <option>중단</option>
+      </select>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
+      <select id="after-filter-search-type" class="select" style="width:80px;">
+        <option value="name">이름</option>
+        <option value="empno">사번</option>
+        <option value="loginId">아이디</option>
+      </select>
+      <input id="after-filter-keyword" class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
+      <button class="btn btn-primary btn-sm">검색</button>
+      <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
+    </div>
+
+    <!-- 요약 정보 (모든 상태 공통 노출) -->
+    <div class="summary-stat-card" style="margin-bottom:16px;">
+      <div class="summary-stat-title">요약 정보</div>
+      <table class="summary-stat-table">
+        <thead>
+          <tr>
+            <th>진단진행율</th>
+            <th>총 대상자</th>
+            <th>총 응답자</th>
+            <th>응답완료</th>
+            <th>중단(탈퇴인원)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="stat-num accent" id="sumRate">0%</span><span class="stat-sub" id="sumRateSub">(0 / 70)</span></td>
+            <td><span class="stat-num" id="sumTarget">12</span><span class="stat-sub">명</span></td>
+            <td><span class="stat-num" id="sumResp">70</span><span class="stat-sub">명</span></td>
+            <td><span class="stat-num" id="sumDone">0</span><span class="stat-sub">명</span></td>
+            <td><span class="stat-num" id="sumStopped">0</span><span class="stat-sub">명</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- ====== BEFORE STATE ====== -->
@@ -596,54 +637,24 @@
     <div id="state-after" style="display:none;">
       <div class="card" style="padding:16px 20px;">
 
-        <!-- 상태 요약 + 액션 버튼 -->
+        <!-- 선택/작업 + 액션 버튼 -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
-            <span class="stat-badge stat-badge-total">총 대상자 <span class="num">10</span></span>
-            <span class="stat-badge stat-badge-active">활성 <span class="num">8</span></span>
-            <span class="stat-badge stat-badge-stopped">중단(탈퇴) <span class="num">2</span></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <!-- 진단 진행 후 전용: 선택+작업+대상자등록 -->
+            <!-- 진단 진행 후 전용: 선택+작업 -->
             <span class="sel-count-text" id="selCountText" style="display:none;">선택 0건</span>
             <select id="afterWorkSelect" class="select" style="height:28px;font-size:12px;display:none;" onchange="handleWorkSelect(this)">
               <option value="">작업 선택 ▼</option>
               <option value="mail">메일 발송</option>
               <option value="datechange">종료일 변경</option>
             </select>
-<button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 관리</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="btn btn-outline btn-sm" id="btnAfterAddTarget" style="display:none;" onclick="openTargetListModal()">대상자 관리</button>
             <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 관리</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
             <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
           </div>
-        </div>
-
-        <!-- 검색 필터 -->
-        <div class="search-row" style="margin-bottom:12px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
-          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
-          <select id="after-filter-mail" class="select" style="width:110px;">
-            <option value="">전체</option>
-            <option>발송완료</option>
-            <option>미발송</option>
-          </select>
-          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
-          <select id="after-filter-status" class="select" style="width:110px;">
-            <option value="">전체</option>
-            <option>진행 전</option>
-            <option>진행중</option>
-            <option>완료</option>
-            <option>중단</option>
-          </select>
-          <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
-          <select id="after-filter-search-type" class="select" style="width:80px;">
-            <option value="name">이름</option>
-            <option value="empno">사번</option>
-            <option value="loginId">아이디</option>
-          </select>
-          <input id="after-filter-keyword" class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
-          <button class="btn btn-primary btn-sm">검색</button>
-          <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
         </div>
 
         <div style="overflow-x:auto;">
@@ -1221,7 +1232,9 @@
 
     document.getElementById('state-before').style.display = (state === 'before') ? '' : 'none';
     document.getElementById('state-after').style.display  = (state === 'after')  ? '' : 'none';
+    document.getElementById('afterFilterRow').style.display = (state === 'before') ? 'none' : '';
     setupInfoDates(state);
+    updateSummaryStats(state, isExpired, isCompleted);
 
     // ── BEFORE 응답자 컬럼 노출 제어 (진단 설정 기반) ──
     // URL ?types=self,boss,member,peer (기본값: 모두 표시)
@@ -1301,25 +1314,35 @@
     }
   }
 
-  // ── 진단 날짜 필드: 상태에 따라 편집 가능 여부 설정 (날짜+시간) ──
+  // ── 진단 기본 정보(진단명/진단 기간)는 모든 상태에서 텍스트로만 노출, 수정 불가 ──
   function setupInfoDates(state) {
     const startEl = document.getElementById('diagStartDate');
     const endEl   = document.getElementById('diagEndDate');
     const nameEl  = document.getElementById('diagName');
+    startEl.textContent = '2025.05.01 00:00';
+    endEl.textContent   = '2025.05.31 23:59';
+    if (nameEl) nameEl.textContent = '2025년 상반기 리더십 역량진단';
+  }
+
+  // ── 요약 정보(모든 상태 공통 카드)의 통계값을 상태별로 갱신 ──
+  function updateSummaryStats(state, isExpired, isCompleted) {
+    let s;
     if (state === 'before') {
-      startEl.innerHTML =
-        '<input type="date" class="input" value="2025-05-01" style="width:130px;">' +
-        '<input type="time" class="input" value="00:00" style="width:90px;">';
-      endEl.innerHTML =
-        '<input type="date" class="input" value="2025-05-31" style="width:130px;">' +
-        '<input type="time" class="input" value="23:59" style="width:90px;">';
-      if (nameEl) nameEl.innerHTML = '<input type="text" class="input" value="2025년 상반기 리더십 역량진단" style="width:100%;max-width:400px;">';
+      s = { target: 12, resp: 70, done: 0,  stopped: 0 };
+    } else if (isCompleted) {
+      s = { target: 10, resp: 13, done: 11, stopped: 2 };
+    } else if (isExpired) {
+      s = { target: 10, resp: 13, done: 9,  stopped: 2 };
     } else {
-      startEl.textContent = '2025.05.01 00:00';
-      endEl.innerHTML =
-        '<input type="date" class="input" value="2025-05-31" min="2025-05-31" style="width:130px;" title="종료일은 현재 날짜 이전으로 변경할 수 없습니다.">' +
-        '<input type="time" class="input" value="23:59" style="width:90px;">';
+      s = { target: 10, resp: 13, done: 4,  stopped: 2 };
     }
+    const rate = s.resp ? Math.round(s.done / s.resp * 100) : 0;
+    document.getElementById('sumRate').textContent    = rate + '%';
+    document.getElementById('sumRateSub').textContent = '(' + s.done + ' / ' + s.resp + ')';
+    document.getElementById('sumTarget').textContent  = s.target;
+    document.getElementById('sumResp').textContent    = s.resp;
+    document.getElementById('sumDone').textContent    = s.done;
+    document.getElementById('sumStopped').textContent = s.stopped;
   }
 
   initState();
