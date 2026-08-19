@@ -193,6 +193,8 @@
   }
   .badge-type-on    { background: #dbeafe; color: #1d4ed8; }
   .badge-type-micro { background: #f3e8ff; color: #7e22ce; }
+  .badge-type-hybrid { background: #d1fae5; color: #065f46; }
+  .badge-type-off   { background: #fef3c7; color: #b45309; }
   .num { text-align: right; padding-right: 12px !important; }
   .table-footer {
     display: flex; align-items: center; justify-content: space-between;
@@ -618,19 +620,27 @@ function getThisMonthRange() {
 const COMPANIES = ['LABS 연수원', '휴넷', 'ABC마트', '건강보험공단', '국민연금공단', '포스코', '삼성전자'];
 
 // ── 연수원 데이터 (단일 선택) ──
+// 과정유형은 전 연수원 공통 4종(온라인/마이크로러닝/하이브리드러닝/오프라인), 과정분류만 연수원별로 상이
+const YEONSUWAN_TYPES = [
+  { value:'online',  label:'온라인' },
+  { value:'micro',   label:'마이크로러닝' },
+  { value:'hybrid',  label:'하이브리드러닝' },
+  { value:'offline', label:'오프라인' },
+];
 const YEONSUWAN_LIST = [
-  { id:'labs',    label:'LABS 연수원',      types:[{value:'online',label:'온라인'},{value:'micro',label:'마이크로러닝'}], cats:['외국어','자격/공인','자기개발','전문직무','직무공통'] },
-  { id:'hunet',   label:'휴넷 아카데미',    types:[{value:'online',label:'온라인'},{value:'offline',label:'오프라인'}],   cats:['전문직무','직무공통','자기개발'] },
-  { id:'global',  label:'글로벌 연수원',    types:[{value:'offline',label:'오프라인'},{value:'hybrid',label:'하이브리드'}], cats:['외국어','자기개발','전문직무'] },
-  { id:'digital', label:'디지털 혁신 연수원', types:[{value:'online',label:'온라인'},{value:'micro',label:'마이크로러닝'},{value:'hybrid',label:'하이브리드'}], cats:['자기개발','전문직무','직무공통'] },
-  { id:'inno',    label:'이노베이션 연수원', types:[{value:'online',label:'온라인'},{value:'offline',label:'오프라인'}],   cats:['자기개발','직무공통'] },
-  { id:'leader',  label:'리더십 연수원',    types:[{value:'offline',label:'오프라인'},{value:'hybrid',label:'하이브리드'}], cats:['전문직무','직무공통','자기개발'] },
+  { id:'labs',    label:'LABS 연수원',      types: YEONSUWAN_TYPES, cats:['외국어','자격/공인','자기개발','전문직무','직무공통'] },
+  { id:'hunet',   label:'휴넷 아카데미',    types: YEONSUWAN_TYPES, cats:['전문직무','직무공통','자기개발'] },
+  { id:'global',  label:'글로벌 연수원',    types: YEONSUWAN_TYPES, cats:['외국어','자기개발','전문직무'] },
+  { id:'digital', label:'디지털 혁신 연수원', types: YEONSUWAN_TYPES, cats:['자기개발','전문직무','직무공통'] },
+  { id:'inno',    label:'이노베이션 연수원', types: YEONSUWAN_TYPES, cats:['자기개발','직무공통'] },
+  { id:'leader',  label:'리더십 연수원',    types: YEONSUWAN_TYPES, cats:['전문직무','직무공통','자기개발'] },
 ];
 
-// 고객상품유형 확정 전 임시 적용 (온라인/마이크로러닝)
 const COURSE_TYPES = [
-  { code: 'online', label: '온라인',      badge: 'badge-type-on' },
-  { code: 'micro',  label: '마이크로러닝', badge: 'badge-type-micro' },
+  { code: 'online',  label: '온라인',        badge: 'badge-type-on' },
+  { code: 'micro',   label: '마이크로러닝',   badge: 'badge-type-micro' },
+  { code: 'hybrid',  label: '하이브리드러닝', badge: 'badge-type-hybrid' },
+  { code: 'offline', label: '오프라인',      badge: 'badge-type-off' },
 ];
 const CATS = ['외국어', '자격/공인', '자기개발', '전문직무', '직무공통'];
 
@@ -668,7 +678,7 @@ const COURSE_DIVS = ['단과', '단과', '단과', '단과', '종합'];
 const OPS_TYPES   = ['일반', '일반', '일반', '러닝메이커'];
 
 const ALL_DATA = COURSE_DEFS.map((name, i) => {
-  const type = COURSE_TYPES[i % 2];
+  const type = COURSE_TYPES[i % COURSE_TYPES.length];
   const cat  = CATS[i % CATS.length];
   const code = `C${String(2026001 + i).slice(-6)}`;
   const courseDiv = COURSE_DIVS[i % COURSE_DIVS.length];
