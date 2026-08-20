@@ -70,6 +70,15 @@ body {
 .upload-zone-hint .hint-main { color: #999; font-size: 12px; }
 .file-selected { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #1565C0; font-weight: 600; }
 
+/* File-level error card (파일 선택/드롭 즉시 노출) */
+.file-card-err { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #F5A9A9; border-radius: 6px; padding: 10px 14px; position: relative; }
+.file-card-err .ico { width: 30px; height: 30px; border-radius: 50%; background: #E74C3C; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.file-card-err .info { flex: 1; text-align: left; }
+.file-card-err .fname { font-size: 13px; font-weight: 600; color: #333; }
+.file-card-err .ftype { font-size: 11px; color: #999; margin-top: 2px; }
+.file-card-err .close-x { width: 20px; height: 20px; border-radius: 50%; background: #eee; border: none; color: #888; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.file-err-msg { color: #C0392B; font-size: 12px; margin-top: 6px; text-align: left; }
+
 /* Table */
 .tbl-wrap { border: 1px solid #e0e0e0; border-radius: 3px; overflow: hidden; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -265,6 +274,24 @@ tr:last-child td { border-bottom: none; }
                 <button class="btn sm">파일 선택</button>
               </div>
             </div>
+            <!-- 엑셀 외 파일 첨부 시 — 파일 카드에 즉시 오류 노출 -->
+            <div id="pg-fileerr" class="hidden">
+              <div class="upload-zone">
+                <div class="upload-zone-hint">
+                  파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
+                </div>
+                <button class="btn sm">파일 선택</button>
+              </div>
+              <div class="file-card-err mt12">
+                <div class="ico">!</div>
+                <div class="info">
+                  <div class="fname">image_2026_08.png</div>
+                  <div class="ftype">ETC</div>
+                </div>
+                <button class="close-x">✕</button>
+              </div>
+              <div class="file-err-msg">허용되지 않은 파일 형식입니다: png</div>
+            </div>
             <!-- 파일 첨부됨 (미리보기 전) -->
             <div id="pg-has" class="hidden">
               <div class="upload-zone has-file">
@@ -430,6 +457,24 @@ tr:last-child td { border-bottom: none; }
                   <button class="btn sm">파일 선택</button>
                 </div>
               </div>
+              <!-- 엑셀 외 파일 첨부 시 — 파일 카드에 즉시 오류 노출 -->
+              <div id="md-fileerr" class="hidden">
+                <div class="upload-zone">
+                  <div class="upload-zone-hint">
+                    파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.
+                  </div>
+                  <button class="btn sm">파일 선택</button>
+                </div>
+                <div class="file-card-err mt12">
+                  <div class="ico">!</div>
+                  <div class="info">
+                    <div class="fname">image_2026_08.png</div>
+                    <div class="ftype">ETC</div>
+                  </div>
+                  <button class="close-x">✕</button>
+                </div>
+                <div class="file-err-msg">허용되지 않은 파일 형식입니다: png</div>
+              </div>
               <!-- 파일 첨부됨 -->
               <div id="md-has" class="hidden">
                 <div class="upload-zone has-file">
@@ -551,6 +596,7 @@ var scen = 'page', pgStep = 0, pgAlt = false, mdStep = 0, mdAlt = false;
 
 var PG = [
   { lbl: '초기 상태 — 파일 미첨부, 버튼 비활성', state: 'empty', overlay: false, result: false, previewDis: true, regDis: true, alt: false },
+  { lbl: '엑셀 외 파일 첨부 시 — 파일 카드에 즉시 오류 노출 (미리보기 클릭 전, 오버레이 없음)', state: 'fileerr', overlay: false, result: false, previewDis: true, regDis: true, alt: false },
   { lbl: '파일 첨부 완료 — [미리보기] 버튼 활성', state: 'has', overlay: false, result: false, previewDis: false, regDis: true, alt: false },
   { lbl: '[미리보기] 클릭 → 페이지 전체 로딩 오버레이 (파일 검증 중)', state: 'has', overlay: true, overlayTxt: '파일을 검증하고 있습니다.', result: false, previewDis: true, regDis: true, alt: false },
   { lbl: '미리보기 완료 — 인라인 결과 노출 (오류 발생 시 오류 항목 테이블 노출)', state: 'ok', overlay: false, result: false, previewDis: true, regDis: false, alt: true },
@@ -562,7 +608,7 @@ function renderPg() {
   var s = PG[pgStep];
   var isErr = (s.state === 'ok' && pgAlt);
   var state = isErr ? 'err' : s.state;
-  ['empty','has','ok','err'].forEach(function(k){ document.getElementById('pg-'+k).classList.toggle('hidden', state!==k); });
+  ['empty','fileerr','has','ok','err'].forEach(function(k){ document.getElementById('pg-'+k).classList.toggle('hidden', state!==k); });
   document.getElementById('pg-err-section').classList.toggle('hidden', !isErr);
   document.getElementById('pg-overlay').classList.toggle('hidden', !s.overlay);
   if (s.overlay) document.getElementById('pg-overlay-txt').textContent = s.overlayTxt;
@@ -575,6 +621,7 @@ function renderPg() {
 var MD = [
   { lbl: '임직원 관리 목록 — [+ 일괄 등록] 클릭 → 팝업 오픈', modal: false, mstate: null, overlay: false, result: false, footer: 'init', alt: false },
   { lbl: '팝업 열림 — 초기 상태 (파일 미첨부)', modal: true, mstate: 'empty', overlay: false, result: false, footer: 'init', alt: false },
+  { lbl: '엑셀 외 파일 첨부 시 — 파일 카드에 즉시 오류 노출 (미리보기 클릭 전, 오버레이 없음)', modal: true, mstate: 'fileerr', overlay: false, result: false, footer: 'init', alt: false },
   { lbl: '파일 첨부 완료 — [미리보기] 버튼 활성', modal: true, mstate: 'has', overlay: false, result: false, footer: 'preview', alt: false },
   { lbl: '[미리보기] 클릭 → 팝업 내 로딩 오버레이 (파일 검증 중)', modal: true, mstate: 'has', overlay: true, overlayTxt: '파일을 검증하고 있습니다.', result: false, footer: 'none', alt: false },
   { lbl: '미리보기 완료 — 인라인 결과 노출 (오류 발생 시 오류 항목 테이블 노출)', modal: true, mstate: 'ok', overlay: false, result: false, footer: 'reg', alt: true },
@@ -587,7 +634,7 @@ function renderMd() {
   document.getElementById('md-backdrop').classList.toggle('hidden', !s.modal);
   var isErr = (s.mstate === 'ok' && mdAlt);
   var mstate = isErr ? 'err' : s.mstate;
-  ['empty','has','ok','err'].forEach(function(k){ document.getElementById('md-'+k).classList.add('hidden'); });
+  ['empty','fileerr','has','ok','err'].forEach(function(k){ document.getElementById('md-'+k).classList.add('hidden'); });
   if (mstate) document.getElementById('md-'+mstate).classList.remove('hidden');
   document.getElementById('md-err-section').classList.toggle('hidden', !isErr);
   document.getElementById('md-overlay').classList.toggle('hidden', !s.overlay);
