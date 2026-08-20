@@ -419,33 +419,6 @@
       </div>
     </div>
 
-    <!-- 검색 필터 (진단 진행 전은 해당 컬럼이 없어 미노출, 진행중/마감전/완료에서만 노출) -->
-    <div id="afterFilterRow" class="search-row" style="margin-bottom:16px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
-      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
-      <select id="after-filter-mail" class="select" style="width:110px;">
-        <option value="">전체</option>
-        <option>발송완료</option>
-        <option>미발송</option>
-      </select>
-      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
-      <select id="after-filter-status" class="select" style="width:110px;">
-        <option value="">전체</option>
-        <option>진행 전</option>
-        <option>진행중</option>
-        <option>완료</option>
-        <option>중단</option>
-      </select>
-      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
-      <select id="after-filter-search-type" class="select" style="width:80px;">
-        <option value="name">이름</option>
-        <option value="empno">사번</option>
-        <option value="loginId">아이디</option>
-      </select>
-      <input id="after-filter-keyword" class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
-      <button class="btn btn-primary btn-sm">검색</button>
-      <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
-    </div>
-
     <!-- 기본 정보 (모든 상태 공통 노출) -->
     <div class="summary-stat-card" style="margin-bottom:16px;">
       <div class="summary-stat-title">기본 정보</div>
@@ -473,6 +446,33 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- 검색 필터 (진단 진행 전은 해당 컬럼이 없어 미노출, 진행중/마감전/완료에서만 노출) -->
+    <div id="afterFilterRow" class="search-row" style="margin-bottom:16px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
+      <select id="after-filter-mail" class="select" style="width:110px;">
+        <option value="">전체</option>
+        <option>발송완료</option>
+        <option>미발송</option>
+      </select>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">진단진행상태</span>
+      <select id="after-filter-status" class="select" style="width:110px;">
+        <option value="">전체</option>
+        <option>진행 전</option>
+        <option>진행중</option>
+        <option>완료</option>
+        <option>중단</option>
+      </select>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
+      <select id="after-filter-search-type" class="select" style="width:80px;">
+        <option value="name">이름</option>
+        <option value="empno">사번</option>
+        <option value="loginId">아이디</option>
+      </select>
+      <input id="after-filter-keyword" class="input" type="text" placeholder="검색어를 입력하세요" style="width:160px;">
+      <button class="btn btn-primary btn-sm">검색</button>
+      <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
     </div>
 
     <!-- ====== BEFORE STATE ====== -->
