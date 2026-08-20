@@ -283,7 +283,7 @@ tbody td.center { text-align:center; }
           <thead>
             <tr>
               <th>진단지명</th>
-              <th class="center">질문수</th>
+              <th class="center">문항 수</th>
               <th>최종 수정일</th>
               <th class="center">공개 여부</th>
               <th style="width:110px;"></th>
@@ -331,9 +331,9 @@ tbody td.center { text-align:center; }
       <!-- 안내 박스 -->
       <div class="bulk-info-box">
         <div class="bulk-info-title">일괄등록 안내</div>
-        엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·질문을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        시트 구성: <strong>한 행 = 한 질문.</strong> 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
-        질문유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.<br>
+        엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·문항을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        시트 구성: <strong>한 행 = 한 문항.</strong> 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
+        문항 유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요.<br>
         오류가 있는 경우 등록 버튼이 비활성화됩니다.<br>
         <span style="color:#888;">양식 내 <strong>문항유형코드·가중치</strong> 열은 시스템이 자동으로 채우는 값으로, 사용자가 입력/수정할 수 없습니다.</span>
       </div>
@@ -438,10 +438,10 @@ tbody td.center { text-align:center; }
           <tbody>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우 (헤더 행 이후 데이터 없음)</td></tr>
             <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
-            <tr><td>필수값 누락</td><td>유형명·역량군명·세부역량명·질문유형·질문내용 중 비어 있는 항목이 있는 경우</td></tr>
-            <tr><td>질문유형 오류</td><td>'척도형', 'A/B 강제선택', '서술형' 외의 값이 입력된 경우</td></tr>
-            <tr><td>척도형 보기 누락</td><td>질문유형이 '척도형'인데 보기1 내용(F열)이 비어 있는 경우</td></tr>
-            <tr><td>A/B 문구 누락</td><td>질문유형이 'A/B 강제선택'인데 A 문구(P열) 또는 B 문구(Q열)가 없는 경우</td></tr>
+            <tr><td>필수값 누락</td><td>유형명·역량군명·세부역량명·문항 유형·문항 내용 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>문항 유형 오류</td><td>'척도형', 'A/B 강제선택', '서술형' 외의 값이 입력된 경우</td></tr>
+            <tr><td>척도형 보기 누락</td><td>문항 유형이 '척도형'인데 보기1 내용(F열)이 비어 있는 경우</td></tr>
+            <tr><td>A/B 문구 누락</td><td>문항 유형이 'A/B 강제선택'인데 A 문구(P열) 또는 B 문구(Q열)가 없는 경우</td></tr>
             <tr><td>점수 형식 오류</td><td>척도형 점수값이 숫자가 아니거나 동일한 점수가 중복 입력된 경우</td></tr>
           </tbody>
         </table>
@@ -781,7 +781,7 @@ function renderBulkPreviewResult() {
     downloadBtn.style.display = '';
     tableEl.querySelector('tbody').innerHTML = `
       <tr><td style="text-align:center;">3</td><td>필수값 누락 — 유형명이 비어 있습니다.</td></tr>
-      <tr><td style="text-align:center;">7</td><td>질문유형 오류 — 허용되지 않는 값입니다.</td></tr>
+      <tr><td style="text-align:center;">7</td><td>문항 유형 오류 — 허용되지 않는 값입니다.</td></tr>
     `;
     submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
   }
