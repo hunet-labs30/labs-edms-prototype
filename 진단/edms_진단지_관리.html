@@ -144,7 +144,7 @@ tbody td.center { text-align:center; }
 .modal-footer { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
 
 /* ── 일괄등록 모달 ── */
-.bulk-modal-box { width:800px; max-height:88vh; display:flex; flex-direction:column; }
+.bulk-modal-box { width:800px; max-height:88vh; display:flex; flex-direction:column; position:relative; }
 .bulk-modal-body { flex:1; overflow-y:auto; padding:22px 26px; }
 .bulk-info-box { background:#f8faff; border:1px solid #c7d8f7; border-radius:8px; padding:14px 18px; margin-bottom:22px; font-size:12.5px; line-height:1.9; color:#2a3a6a; }
 .bulk-info-title { font-size:13px; font-weight:700; color:#0a1e4a; margin-bottom:6px; }
@@ -157,6 +157,34 @@ tbody td.center { text-align:center; }
 .bulk-error-tbl th { background:#f5f6fa; padding:9px 14px; text-align:center; font-size:11.5px; font-weight:700; color:#555; border:1px solid var(--border); }
 .bulk-error-tbl td { padding:10px 14px; border:1px solid #f0f2f5; vertical-align:middle; }
 .bulk-error-tbl td:first-child { font-weight:600; color:#1a1a2e; background:#fafbfc; text-align:center; white-space:nowrap; }
+
+/* ── 파일 레벨 오류 카드 ── */
+.bulk-file-card-err { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; margin-top:14px; position:relative; }
+.bulk-file-card-err .ico { width:28px; height:28px; border-radius:50%; background:#e74c3c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.bulk-file-card-err .info { flex:1; }
+.bulk-file-card-err .fname { font-size:13px; font-weight:600; color:#1a1a2e; }
+.bulk-file-card-err .ftype { font-size:11px; color:#999; margin-top:2px; }
+.bulk-file-card-err .close-x { width:20px; height:20px; border-radius:50%; background:#eee; border:none; color:#888; font-size:11px; cursor:pointer; flex-shrink:0; }
+.bulk-file-err-msg { color:#c0392b; font-size:12px; margin-top:6px; }
+
+/* ── 로딩 오버레이 (팝업 전체) ── */
+.bulk-loading-overlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,.9); border-radius:8px; align-items:center; justify-content:center; z-index:10; }
+.bulk-loading-overlay.show { display:flex; }
+.bulk-spinner { width:34px; height:34px; border:3px solid #e0e0e0; border-top-color:var(--primary); border-radius:50%; animation:bulkspin .75s linear infinite; margin:0 auto 12px; }
+@keyframes bulkspin { to { transform:rotate(360deg); } }
+.bulk-loading-text { font-size:13px; font-weight:600; color:#222; text-align:center; }
+.bulk-loading-sub { font-size:11.5px; color:#888; margin-top:4px; text-align:center; }
+
+/* ── 등록 결과 팝업 ── */
+.result-summary-row { display:flex; gap:10px; margin-bottom:14px; }
+.result-chip { flex:1; border:1px solid var(--border); border-radius:6px; padding:10px 14px; text-align:center; }
+.result-chip.ok { background:#edf7f1; border-color:#a3d9b5; }
+.result-chip.fail { background:#fef2f2; border-color:#f5a9a9; }
+.result-val { font-size:20px; font-weight:700; color:#333; }
+.result-chip.ok .result-val { color:#1b7a3e; }
+.result-chip.fail .result-val { color:#c0392b; }
+.result-label { font-size:11px; color:#888; margin-top:2px; }
+.result-fail-msg { background:#fef2f2; color:#c0392b; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; font-size:12.5px; }
 </style>
 </head>
 <body>
@@ -336,6 +364,18 @@ tbody td.center { text-align:center; }
           </div>
           <button class="btn btn-xs" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile()">× 삭제</button>
         </div>
+        <!-- 파일 형식 오류 카드 (파일 선택/드롭 즉시 노출, 미리보기 클릭 전) -->
+        <div id="bulkFileErrCard" style="display:none;">
+          <div class="bulk-file-card-err">
+            <div class="ico">!</div>
+            <div class="info">
+              <div class="fname" id="bulkErrFileName"></div>
+              <div class="ftype">ETC</div>
+            </div>
+            <button class="close-x" onclick="bulkClearFileErr()">✕</button>
+          </div>
+          <div class="bulk-file-err-msg" id="bulkErrFileMsg"></div>
+        </div>
       </div>
 
       <!-- Step 3 -->
@@ -370,22 +410,20 @@ tbody td.center { text-align:center; }
       <div class="bulk-section">
         <div class="bulk-step-title">오류 케이스 정리</div>
 
-        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px; display:none;">파일 레벨</div>
-        <table class="bulk-error-tbl" style="margin-bottom:16px; display:none;">
+        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">파일 레벨</div>
+        <table class="bulk-error-tbl" style="margin-bottom:16px;">
           <thead>
             <tr>
-              <th style="width:110px;">액션</th>
-              <th style="width:180px;">상황</th>
+              <th style="width:100px;">액션</th>
+              <th style="width:200px;">상황</th>
               <th>메시지</th>
-              <th style="width:90px;">노출 방법</th>
+              <th style="width:110px;">노출 방법</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>파일 첨부 시</td><td>엑셀 외 파일 형식</td><td>❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.</td><td>토스트</td></tr>
-            <tr><td>파일 첨부 시</td><td>파일 용량 10MB 초과</td><td>❌ 파일 용량이 10MB를 초과합니다.</td><td>토스트</td></tr>
-            <tr><td>미리보기 완료</td><td>오류 없음</td><td>—</td><td>등록 버튼 활성화</td></tr>
-            <tr><td>미리보기 완료</td><td>오류 1건 이상</td><td>—</td><td>행 오류 테이블 인라인 표시</td></tr>
-            <tr><td>등록 클릭</td><td>정상 등록</td><td>진단지 일괄등록이 완료됐습니다.</td><td>토스트</td></tr>
+            <tr><td>파일 선택/드롭</td><td>엑셀 외 파일 형식</td><td>허용되지 않은 파일 형식입니다: {확장자}</td><td>파일 카드 인라인 오류</td></tr>
+            <tr><td>파일 선택/드롭</td><td>엑셀 파일이지만 확인 불가(손상/암호화 등)</td><td>정상적인 엑셀파일을 등록해주세요.</td><td>알림</td></tr>
+            <tr><td>파일 선택/드롭</td><td>파일 용량 10MB 초과</td><td>파일 용량이 10MB를 초과합니다.</td><td>알림</td></tr>
           </tbody>
         </table>
 
@@ -399,18 +437,47 @@ tbody td.center { text-align:center; }
           </thead>
           <tbody>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우 (헤더 행 이후 데이터 없음)</td></tr>
+            <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
             <tr><td>필수값 누락</td><td>유형명·역량군명·세부역량명·질문유형·질문내용 중 비어 있는 항목이 있는 경우</td></tr>
             <tr><td>질문유형 오류</td><td>'척도형', 'A/B 강제선택', '서술형' 외의 값이 입력된 경우</td></tr>
             <tr><td>척도형 보기 누락</td><td>질문유형이 '척도형'인데 보기1 내용(F열)이 비어 있는 경우</td></tr>
             <tr><td>A/B 문구 누락</td><td>질문유형이 'A/B 강제선택'인데 A 문구(P열) 또는 B 문구(Q열)가 없는 경우</td></tr>
             <tr><td>점수 형식 오류</td><td>척도형 점수값이 숫자가 아니거나 동일한 점수가 중복 입력된 경우</td></tr>
-            <tr><td>파일 용량 초과</td><td>업로드 파일이 10MB를 초과한 경우</td></tr>
-            <tr><td>컬럼값 오류</td><td>샘플 파일의 컬럼명을 변경하거나 컬럼 순서 등을 변경한 경우</td></tr>
-            <tr><td>파일 형식 오류</td><td>.xlsx, .xls 외의 파일 형식을 업로드한 경우</td></tr>
           </tbody>
         </table>
       </div>
 
+    </div>
+
+    <!-- 팝업 전체 로딩 오버레이 -->
+    <div class="bulk-loading-overlay" id="bulkLoadingOverlay">
+      <div>
+        <div class="bulk-spinner"></div>
+        <div class="bulk-loading-text" id="bulkLoadingText">파일을 검증하고 있습니다.</div>
+        <div class="bulk-loading-sub">잠시 기다려 주세요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 일괄등록 결과 팝업 -->
+<div class="modal-overlay" id="bulkResultModal">
+  <div class="modal-box" style="width:440px;">
+    <div class="modal-header">
+      <h3>등록 결과</h3>
+      <button class="modal-close" onclick="closeBulkResultModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="result-summary-row">
+        <div class="result-chip"><div class="result-val" id="rTotal">0</div><div class="result-label">총 건수</div></div>
+        <div class="result-chip ok"><div class="result-val" id="rOk">0</div><div class="result-label">등록 완료</div></div>
+        <div class="result-chip fail"><div class="result-val" id="rFail">0</div><div class="result-label">실패</div></div>
+      </div>
+      <div class="result-fail-msg" id="rFailMsg" style="display:none;">시스템 오류로 인해 일부 건이 등록되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm btn-gray" id="rDownloadBtn" style="display:none;" onclick="toast('실패 목록이 다운로드됩니다. (프로토타입)')">실패내용 다운(.xlsx)</button>
+      <button class="btn btn-sm btn-primary" onclick="closeBulkResultModal()">닫기</button>
     </div>
   </div>
 </div>
@@ -618,11 +685,29 @@ function closeBulkModal() {
   document.getElementById('bulkFileSelected').style.display = 'none';
   document.getElementById('bulkDropZone').style.display = '';
   document.getElementById('bulkPreviewResult').style.display = 'none';
+  hideBulkFileErr();
+  hideBulkLoading();
   const previewBtn = document.getElementById('bulkPreviewBtn');
   const submitBtn = document.getElementById('bulkSubmitBtn');
   previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
   submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
 }
+function showBulkFileErr(name, msg) {
+  document.getElementById('bulkFileErrCard').style.display = '';
+  document.getElementById('bulkErrFileName').textContent = name;
+  document.getElementById('bulkErrFileMsg').textContent = msg;
+  document.getElementById('bulkFileSelected').style.display = 'none';
+  document.getElementById('bulkDropZone').style.display = '';
+  const previewBtn = document.getElementById('bulkPreviewBtn');
+  previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
+}
+function hideBulkFileErr() { document.getElementById('bulkFileErrCard').style.display = 'none'; }
+function bulkClearFileErr() { hideBulkFileErr(); document.getElementById('bulkFileInput').value = ''; }
+function showBulkLoading(text) {
+  document.getElementById('bulkLoadingText').textContent = text;
+  document.getElementById('bulkLoadingOverlay').classList.add('show');
+}
+function hideBulkLoading() { document.getElementById('bulkLoadingOverlay').classList.remove('show'); }
 function bulkDragOver(e) { e.preventDefault(); document.getElementById('bulkDropZone').classList.add('drag-active'); }
 function bulkDragLeave() { document.getElementById('bulkDropZone').classList.remove('drag-active'); }
 function bulkDrop(e) {
@@ -633,8 +718,13 @@ function bulkDrop(e) {
 }
 function bulkFileSelected(input) { if (input.files[0]) handleBulkFile(input.files[0]); }
 function handleBulkFile(file) {
-  if (!file.name.match(/\.(xlsx|xls)$/i)) { toast('❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.'); return; }
-  if (file.size > 10 * 1024 * 1024) { toast('❌ 파일 용량이 10MB를 초과합니다.'); return; }
+  hideBulkFileErr();
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    const ext = (file.name.match(/\.([^.]+)$/) || [,'?'])[1];
+    showBulkFileErr(file.name, `허용되지 않은 파일 형식입니다: ${ext}`);
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) { toast('파일 용량이 10MB를 초과합니다.'); return; }
   bulkCurrentFile = file;
   document.getElementById('bulkDropZone').style.display = 'none';
   document.getElementById('bulkFileSelected').style.display = 'flex';
@@ -649,6 +739,7 @@ function bulkClearFile() {
   document.getElementById('bulkFileSelected').style.display = 'none';
   document.getElementById('bulkDropZone').style.display = '';
   document.getElementById('bulkPreviewResult').style.display = 'none';
+  hideBulkFileErr();
   const previewBtn = document.getElementById('bulkPreviewBtn');
   const submitBtn = document.getElementById('bulkSubmitBtn');
   previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
@@ -656,25 +747,36 @@ function bulkClearFile() {
 }
 function bulkPreview() {
   if (!bulkCurrentFile) return;
+  showBulkLoading('파일을 검증하고 있습니다.');
+  document.getElementById('bulkPreviewBtn').disabled = true;
+  document.getElementById('bulkSubmitBtn').disabled = true;
+  setTimeout(() => {
+    hideBulkLoading();
+    renderBulkPreviewResult();
+  }, 900);
+}
+function renderBulkPreviewResult() {
   // 파일명에 "샘플" 또는 "템플릿"을 포함하면 오류 없음, 그 외엔 오류 있음
   const hasError = !bulkCurrentFile.name.toLowerCase().includes('샘플') && !bulkCurrentFile.name.toLowerCase().includes('템플릿');
   const msgEl = document.getElementById('bulkPreviewMessage');
   const tableEl = document.getElementById('bulkPreviewTable');
   const downloadBtn = document.getElementById('bulkErrorDownloadBtn');
+  const previewBtn = document.getElementById('bulkPreviewBtn');
   const submitBtn = document.getElementById('bulkSubmitBtn');
   document.getElementById('bulkPreviewResult').style.display = '';
+  previewBtn.disabled = false; previewBtn.style.opacity = '1'; previewBtn.style.cursor = 'pointer';
 
   if (!hasError) {
     msgEl.style.background = '#dcfce7';
     msgEl.style.color = '#16a34a';
-    msgEl.textContent = '오류가 없습니다. 등록 버튼을 눌러 진행하세요.';
+    msgEl.textContent = '✔ 미리보기가 완료되었습니다. 총 128건이 정상 확인되었습니다. 등록 버튼을 클릭해 주세요.';
     tableEl.style.display = 'none';
     downloadBtn.style.display = 'none';
     submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer';
   } else {
-    msgEl.style.background = '#fff3cd';
-    msgEl.style.color = '#856404';
-    msgEl.textContent = '오류가 있습니다. 아래 내용을 확인하세요.';
+    msgEl.style.background = '#fef2f2';
+    msgEl.style.color = '#c0392b';
+    msgEl.textContent = '✖ 일부 행에서 오류가 발견되었습니다. 오류 내용을 확인하고 수정 후 다시 시도해 주세요.';
     tableEl.style.display = '';
     downloadBtn.style.display = '';
     tableEl.querySelector('tbody').innerHTML = `
@@ -688,10 +790,24 @@ function downloadErrorList() {
   toast('오류 목록이 다운로드됩니다. (프로토타입)');
 }
 function bulkSubmit() {
-  toast('진단지 일괄등록이 완료됐습니다.');
-  closeBulkModal();
+  showBulkLoading('등록하고 있습니다.');
+  setTimeout(() => {
+    hideBulkLoading();
+    closeBulkModal();
+    showBulkResult(128, 125, 3);
+  }, 1200);
 }
+function showBulkResult(total, ok, fail) {
+  document.getElementById('rTotal').textContent = total;
+  document.getElementById('rOk').textContent = ok;
+  document.getElementById('rFail').textContent = fail;
+  document.getElementById('rFailMsg').style.display = fail > 0 ? '' : 'none';
+  document.getElementById('rDownloadBtn').style.display = fail > 0 ? '' : 'none';
+  document.getElementById('bulkResultModal').classList.add('open');
+}
+function closeBulkResultModal() { document.getElementById('bulkResultModal').classList.remove('open'); }
 document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
+document.getElementById('bulkResultModal').addEventListener('click', function(e) { if (e.target === this) closeBulkResultModal(); });
 </script>
 </body>
 </html>
