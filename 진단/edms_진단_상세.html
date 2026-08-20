@@ -419,12 +419,6 @@
       </div>
     </div>
 
-    <!-- 진단 기본 정보 (텍스트만 노출, 카드/박스 없음) -->
-    <div style="display:flex;align-items:baseline;gap:28px;padding:2px 2px 4px;">
-      <span style="font-size:13px;color:#333;"><span style="color:#888;font-weight:600;margin-right:6px;">진단명</span><span id="diagName" style="font-weight:700;color:#1a1a2e;">2025년 상반기 리더십 역량진단</span></span>
-      <span style="font-size:13px;color:#333;"><span style="color:#888;font-weight:600;margin-right:6px;">진단 기간</span><span style="font-weight:700;color:#1a1a2e;"><span id="diagStartDate">2025.05.01 00:00</span> ~ <span id="diagEndDate">2025.05.31 23:59</span></span></span>
-    </div>
-
     <!-- 검색 필터 (진단 진행 전은 해당 컬럼이 없어 미노출, 진행중/마감전/완료에서만 노출) -->
     <div id="afterFilterRow" class="search-row" style="margin-bottom:16px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
       <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
@@ -452,12 +446,14 @@
       <button class="btn btn-reset btn-sm" onclick="resetAfterFilter()">초기화</button>
     </div>
 
-    <!-- 요약 정보 (모든 상태 공통 노출) -->
+    <!-- 기본 정보 (모든 상태 공통 노출) -->
     <div class="summary-stat-card" style="margin-bottom:16px;">
-      <div class="summary-stat-title">요약 정보</div>
+      <div class="summary-stat-title">기본 정보</div>
       <table class="summary-stat-table">
         <thead>
           <tr>
+            <th style="text-align:left;">진단명</th>
+            <th>진단 기간</th>
             <th>진단진행율</th>
             <th>총 대상자</th>
             <th>총 응답자</th>
@@ -467,6 +463,8 @@
         </thead>
         <tbody>
           <tr>
+            <td style="text-align:left;"><span id="diagName" style="font-weight:700;color:#1a1a2e;">2025년 상반기 리더십 역량진단</span></td>
+            <td style="white-space:nowrap;font-weight:700;color:#1a1a2e;"><span id="diagStartDate">2025.05.01 00:00</span> ~ <span id="diagEndDate">2025.05.31 23:59</span></td>
             <td><span class="stat-num accent" id="sumRate">0%</span><span class="stat-sub" id="sumRateSub">(0 / 70)</span></td>
             <td><span class="stat-num" id="sumTarget">12</span><span class="stat-sub">명</span></td>
             <td><span class="stat-num" id="sumResp">70</span><span class="stat-sub">명</span></td>
