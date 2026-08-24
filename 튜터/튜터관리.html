@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>튜터관리 — LABS New EDMS</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --primary:#1a73e8; --primary-dark:#1557b0;
+  --bg:#f5f6fa; --sidebar-bg:#2c3e50; --sidebar-hover:#3d5166;
+  --header-bg:#1e2b37; --white:#ffffff; --border:#dde1e7; --text:#333;
+}
+body { font-family:'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; font-size:13px; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+
+/* ── Header ── */
+.top-header { background:var(--header-bg); color:#fff; height:46px; display:flex; align-items:center; padding:0 20px; gap:16px; flex-shrink:0; z-index:200; }
+.top-header .logo { font-size:15px; font-weight:700; color:#fff; }
+.top-header .logo span { color:#7eb8f7; }
+.top-header .subtitle { font-size:12px; color:#aab; }
+.top-header .spacer { flex:1; }
+.top-header .user-name { font-size:13px; color:#ccc; }
+.top-header .btn-header { background:#3a4f63; border:1px solid #556; color:#ccc; padding:4px 12px; border-radius:3px; font-size:12px; cursor:pointer; }
+
+/* ── Layout ── */
+.layout { display:flex; flex:1; overflow:hidden; }
+
+/* ── Sidebar ── */
+.sidebar { width:180px; background:var(--sidebar-bg); overflow-y:auto; flex-shrink:0; padding:6px 0 20px; }
+.sidebar::-webkit-scrollbar { width:4px; }
+.sidebar::-webkit-scrollbar-thumb { background:#455; border-radius:4px; }
+.nav-group-header { display:flex; align-items:center; gap:6px; padding:10px 14px; cursor:pointer; user-select:none; color:#b8c4ce; font-size:12px; font-weight:700; border-left:3px solid transparent; }
+.nav-group-header:hover { background:var(--sidebar-hover); color:#fff; }
+.nav-group.open > .nav-group-header { color:#7eb8f7; background:rgba(126,184,247,.07); border-left-color:#7eb8f7; }
+.nav-group-label { flex:1; }
+.nav-arrow { font-size:9px; color:#556; transition:transform .2s; }
+.nav-group.open > .nav-group-header .nav-arrow { transform:rotate(90deg); color:#7eb8f7; }
+.nav-sub { max-height:0; overflow:hidden; transition:max-height .25s ease; }
+.nav-group.open > .nav-sub { max-height:500px; padding:2px 0 6px; }
+.nav-item { display:block; padding:5px 12px 5px 22px; color:#8da0b0; font-size:12px; text-decoration:none; cursor:pointer; }
+.nav-item:hover { background:var(--sidebar-hover); color:#fff; }
+.nav-item.active { background:var(--primary); color:#fff; font-weight:600; }
+.nav-flat { display:block; padding:10px 14px; color:#b8c4ce; font-size:12px; font-weight:700; text-decoration:none; cursor:pointer; border-left:3px solid transparent; }
+.nav-flat:hover { background:var(--sidebar-hover); color:#fff; }
+
+/* ── Main ── */
+.main { flex:1; overflow-y:auto; padding:20px 24px; display:flex; flex-direction:column; gap:14px; }
+.main::-webkit-scrollbar { width:6px; }
+.main::-webkit-scrollbar-thumb { background:#ccc; border-radius:4px; }
+.screen { display:none; flex-direction:column; gap:14px; }
+.screen.active { display:flex; }
+
+/* ── Page Header ── */
+.page-header-row { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.page-title-area { display:flex; flex-direction:column; gap:4px; }
+.page-header-title { font-size:18px; font-weight:700; color:#1a1a2e; }
+.breadcrumb { font-size:11px; color:#999; }
+.page-header-actions { display:flex; gap:8px; flex-shrink:0; }
+
+/* ── Buttons ── */
+.btn { height:32px; padding:0 16px; border-radius:4px; font-size:13px; cursor:pointer; border:none; font-family:inherit; transition:opacity .15s; display:inline-flex; align-items:center; gap:6px; }
+.btn:hover { opacity:.88; }
+.btn-primary { background:var(--primary); color:#fff; font-weight:700; }
+.btn-outline { background:#fff; color:var(--primary); border:1px solid var(--primary); font-weight:600; }
+.btn-gray { background:#f0f2f5; color:#444; border:1px solid #ccc; }
+.btn-danger { background:#fff; color:#c0392b; border:1px solid #e8c4bf; }
+.btn-sm { height:26px; padding:0 10px; font-size:11px; }
+.btn-xs { height:22px; padding:0 8px; font-size:11px; gap:3px; }
+
+/* ── Card ── */
+.card { background:#fff; border:1px solid var(--border); border-radius:8px; }
+.card-head { padding:12px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.card-head-title { font-size:14px; font-weight:700; color:#1a1a2e; flex:1; }
+.card-body { padding:14px 18px; }
+
+/* ── Filter Bar ── */
+.filter-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 18px; background:#fafbfc; border-bottom:1px solid var(--border); }
+.filter-input { height:30px; border:1px solid var(--border); border-radius:4px; padding:0 10px; font-size:12px; font-family:inherit; outline:none; }
+.filter-input:focus { border-color:var(--primary); }
+.filter-input.search { width:200px; }
+.filter-select { height:30px; border:1px solid var(--border); border-radius:4px; padding:0 8px; font-size:12px; font-family:inherit; outline:none; background:#fff; cursor:pointer; }
+.filter-select:focus { border-color:var(--primary); }
+.filter-count { font-size:12px; color:#888; margin-left:auto; }
+
+/* ── 검색결과 요약 ── */
+.kpi-row { display:flex; gap:0; border-bottom:1px solid var(--border); }
+.kpi-chip { flex:1; text-align:center; padding:14px 0; border-right:1px solid var(--border); }
+.kpi-chip:last-child { border-right:none; }
+.kpi-val { font-size:20px; font-weight:700; color:var(--primary); }
+.kpi-label { font-size:11.5px; color:#888; margin-top:3px; }
+
+/* ── Table ── */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+thead th { background:#f5f6fa; padding:9px 14px; text-align:left; font-size:11.5px; font-weight:700; color:#555; border-bottom:1px solid var(--border); white-space:nowrap; }
+thead th.center { text-align:center; }
+tbody tr { border-bottom:1px solid #f0f2f5; transition:background .1s; }
+tbody tr:hover { background:#f8faff; }
+tbody td { padding:11px 14px; vertical-align:middle; }
+tbody td.center { text-align:center; }
+
+/* ── 상태 뱃지 ── */
+.status-badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; }
+.status-y { background:#e8f0fe; color:#1a73e8; }
+.status-n { background:#f3f4f6; color:#888; }
+.course-badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; white-space:nowrap; }
+.course-scheduled { background:#f3f4f6; color:#888; }
+.course-ongoing { background:#e8f0fe; color:#1a73e8; }
+.course-ended { background:#eef7ee; color:#2e8b4f; }
+
+/* ── 이름/코드 ── */
+.tutor-name { font-size:13px; font-weight:700; color:#1a1a2e; cursor:pointer; }
+.tutor-name:hover { color:var(--primary); text-decoration:underline; }
+
+/* ── Empty ── */
+.tbl-empty { text-align:center; padding:48px 24px; color:#bbb; font-size:13px; }
+
+/* ── Pagination ── */
+.pagination { display:flex; align-items:center; justify-content:center; gap:4px; padding:14px; border-top:1px solid var(--border); }
+.page-btn { width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:4px; font-size:12px; color:#555; cursor:pointer; background:#fff; transition:all .12s; }
+.page-btn:hover { border-color:var(--primary); color:var(--primary); }
+.page-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); font-weight:700; }
+
+/* ── 토스트 ── */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1a1a2e; color:#fff; padding:11px 18px; border-radius:5px; font-size:12.5px; z-index:9999; opacity:0; transition:opacity .2s; pointer-events:none; }
+.toast.show { opacity:1; }
+
+/* ── 모달 ── */
+.modal-overlay { display:none; position:fixed; inset:0; z-index:9000; background:rgba(0,0,0,.45); align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:#fff; border-radius:8px; width:440px; box-shadow:0 8px 32px rgba(0,0,0,.2); }
+.modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); }
+.modal-header h3 { font-size:14px; font-weight:700; color:#1a1a2e; }
+.modal-close { background:none; border:none; font-size:22px; color:#999; cursor:pointer; line-height:1; }
+.modal-body { padding:20px; font-size:13px; line-height:1.7; color:#444; }
+.modal-footer { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+
+/* ── 폼 ── */
+.form-row { display:flex; border-bottom:1px solid #f0f2f5; }
+.form-row:last-child { border-bottom:none; }
+.form-row th { width:130px; flex-shrink:0; background:#f8f9fb; font-size:12.5px; font-weight:600; color:#444; padding:12px 14px; text-align:left; }
+.form-row td { flex:1; padding:10px 14px; }
+.form-table { border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+.form-table .form-row { display:flex; }
+.form-input { height:32px; border:1px solid var(--border); border-radius:4px; padding:0 10px; font-size:12.5px; width:100%; font-family:inherit; }
+.form-input:focus { outline:none; border-color:var(--primary); }
+.form-input:disabled { background:#f5f6f8; color:#888; }
+.req { color:#e03030; margin-left:2px; }
+.form-hint { font-size:11px; color:#888; margin-top:4px; }
+.form-inline { display:flex; align-items:center; gap:6px; }
+
+/* ── 상세 화면 정보 표 ── */
+.info-table { width:100%; border-collapse:collapse; }
+.info-table tr { border-bottom:1px solid #f0f2f5; }
+.info-table tr:last-child { border-bottom:none; }
+.info-table th { width:140px; background:#f8f9fb; font-size:12px; font-weight:600; color:#555; padding:11px 16px; text-align:left; border-right:1px solid #f0f2f5; white-space:nowrap; }
+.info-table td { padding:11px 16px; font-size:12.5px; color:#333; text-align:left; }
+
+/* ── 모달 탭 (일괄 배정/삭제) ── */
+.modal-tab-wrap { display:flex; border-bottom:2px solid var(--border); margin-bottom:18px; }
+.modal-tab { padding:9px 18px; font-size:13.5px; font-weight:700; color:#aaa; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; }
+.modal-tab:hover { color:var(--primary); }
+.modal-tab.active { color:#1a1a2e; border-bottom-color:var(--primary); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── 일괄등록 공통 (엑셀 업로드 공통정책) ── */
+.bulk-modal-box { width:820px; max-height:88vh; display:flex; flex-direction:column; position:relative; }
+.bulk-modal-body { flex:1; overflow-y:auto; padding:22px 26px; }
+.bulk-info-box { background:#f8faff; border:1px solid #c7d8f7; border-radius:8px; padding:14px 18px; margin-bottom:20px; font-size:12.5px; line-height:1.9; color:#2a3a6a; }
+.bulk-info-title { font-size:13px; font-weight:700; color:#0a1e4a; margin-bottom:6px; }
+.bulk-section { margin-bottom:20px; }
+.bulk-step-title { font-size:13px; font-weight:700; color:#1a1a2e; margin-bottom:10px; }
+.bulk-drop-zone { border:1.5px dashed #cdd2d9; border-radius:6px; background:#fafbfc; padding:30px 20px; text-align:center; cursor:pointer; transition:border-color .2s, background .2s; }
+.bulk-drop-zone:hover, .bulk-drop-zone.drag-active { border-color:var(--primary); background:#f0f5ff; }
+.bulk-drop-text { font-size:12.5px; color:#888; margin-bottom:10px; }
+.bulk-error-tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.bulk-error-tbl th { background:#f5f6fa; padding:9px 14px; text-align:center; font-size:11.5px; font-weight:700; color:#555; border:1px solid var(--border); }
+.bulk-error-tbl td { padding:10px 14px; border:1px solid #f0f2f5; vertical-align:middle; }
+.bulk-error-tbl td:first-child { font-weight:600; color:#1a1a2e; background:#fafbfc; text-align:center; white-space:nowrap; }
+
+/* ── 파일 레벨 오류 카드 ── */
+.bulk-file-card-err { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; margin-top:14px; position:relative; }
+.bulk-file-card-err .ico { width:28px; height:28px; border-radius:50%; background:#e74c3c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.bulk-file-card-err .info { flex:1; }
+.bulk-file-card-err .fname { font-size:13px; font-weight:600; color:#1a1a2e; }
+.bulk-file-card-err .ftype { font-size:11px; color:#999; margin-top:2px; }
+.bulk-file-card-err .close-x { width:20px; height:20px; border-radius:50%; background:#eee; border:none; color:#888; font-size:11px; cursor:pointer; flex-shrink:0; }
+.bulk-file-err-msg { color:#c0392b; font-size:12px; margin-top:6px; }
+
+/* ── 로딩 오버레이 (팝업 전체) ── */
+.bulk-loading-overlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,.9); border-radius:8px; align-items:center; justify-content:center; z-index:10; }
+.bulk-loading-overlay.show { display:flex; }
+.bulk-spinner { width:34px; height:34px; border:3px solid #e0e0e0; border-top-color:var(--primary); border-radius:50%; animation:bulkspin .75s linear infinite; margin:0 auto 12px; }
+@keyframes bulkspin { to { transform:rotate(360deg); } }
+.bulk-loading-text { font-size:13px; font-weight:600; color:#222; text-align:center; }
+.bulk-loading-sub { font-size:11.5px; color:#888; margin-top:4px; text-align:center; }
+
+/* ── 결과 팝업 ── */
+.result-summary-row { display:flex; gap:10px; margin-bottom:14px; }
+.result-chip { flex:1; border:1px solid var(--border); border-radius:6px; padding:10px 14px; text-align:center; }
+.result-chip.ok { background:#edf7f1; border-color:#a3d9b5; }
+.result-chip.fail { background:#fef2f2; border-color:#f5a9a9; }
+.result-val { font-size:20px; font-weight:700; color:#333; }
+.result-chip.ok .result-val { color:#1b7a3e; }
+.result-chip.fail .result-val { color:#c0392b; }
+.result-label { font-size:11px; color:#888; margin-top:2px; }
+.result-fail-msg { background:#fef2f2; color:#c0392b; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; font-size:12.5px; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">교육담당자 · 휴넷</div>
+  <div class="spacer"></div>
+  <span class="user-name">김 담당</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <a class="nav-flat" href="#">대시보드</a>
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">러닝메이커</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">과정관리</a>
+        <a class="nav-item" href="#">신청관리</a>
+        <a class="nav-item" href="#">학습관리</a>
+        <a class="nav-item" href="#">강사관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">튜터</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item active" href="튜터관리.html">튜터관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">진단 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item" href="#">계정 권한</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- ① 목록 화면 -->
+    <div id="screen-list" class="screen active">
+      <div class="page-header-row">
+        <div class="page-title-area">
+          <div class="breadcrumb">튜터 › 튜터관리</div>
+          <h1 class="page-header-title">튜터관리</h1>
+        </div>
+        <div class="page-header-actions"></div>
+      </div>
+
+      <div class="card">
+        <!-- 필터 바 -->
+        <div class="filter-bar">
+          <select class="filter-select" id="searchType">
+            <option value="name">튜터명</option>
+            <option value="email">이메일</option>
+          </select>
+          <input type="text" class="filter-input search" id="searchInput" placeholder="검색어를 입력해주세요." onkeydown="if(event.key==='Enter')filterTable()">
+          <select class="filter-select" id="filterStatus" onchange="filterTable()">
+            <option value="">상태 전체</option>
+            <option value="Y">활성</option>
+            <option value="N">비활성</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="filterTable()">검색</button>
+          <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
+          <span class="filter-count" id="filterCount"></span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-gray" onclick="toast('현재 검색 결과가 엑셀로 다운로드됩니다. (프로토타입)')">엑셀 다운로드</button>
+            <button class="btn btn-gray" onclick="openBulkModal()">일괄 배정/삭제</button>
+            <button class="btn btn-primary" onclick="openRegisterModal()">＋ 튜터 등록</button>
+          </div>
+        </div>
+
+        <!-- 검색결과 요약 -->
+        <div class="kpi-row">
+          <div class="kpi-chip"><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-label">전체 튜터</div></div>
+          <div class="kpi-chip"><div class="kpi-val" id="kpiActive">0</div><div class="kpi-label">활성</div></div>
+          <div class="kpi-chip"><div class="kpi-val" id="kpiInactive">0</div><div class="kpi-label">비활성</div></div>
+        </div>
+
+        <!-- 테이블 -->
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:48px;">No.</th>
+                <th>튜터명</th>
+                <th>이메일</th>
+                <th>연락처</th>
+                <th class="center" style="width:100px;">담당 과정 수</th>
+                <th class="center" style="width:80px;">활성여부</th>
+                <th class="center" style="width:100px;">등록일</th>
+                <th class="center" style="width:90px;">메일발송</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <div class="tbl-empty" id="emptyMsg" style="display:none;">검색 결과가 없습니다.</div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination">
+          <div class="page-btn">‹</div>
+          <div class="page-btn active">1</div>
+          <div class="page-btn">›</div>
+        </div>
+      </div>
+    </div><!-- /screen-list -->
+
+    <!-- ② 튜터 상세 -->
+    <div id="screen-view" class="screen">
+      <div class="page-header-row">
+        <div class="page-title-area">
+          <div class="breadcrumb">튜터 › 튜터관리 › 튜터 상세</div>
+          <h1 class="page-header-title">튜터 상세</h1>
+        </div>
+        <div class="page-header-actions"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-head-title">기본 정보</span></div>
+        <table class="info-table" id="viewBasicInfo"></table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-head-title">담당 과정</span>
+          <span style="font-size:12px; color:#888;" id="viewCourseCount"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:48px;">No.</th>
+                <th style="width:120px;">과정코드</th>
+                <th>과정명</th>
+                <th class="center" style="width:90px;">과정 상태</th>
+                <th class="center" style="width:110px;">담당 학습자 수</th>
+                <th class="center" style="width:100px;">배정 등록일</th>
+              </tr>
+            </thead>
+            <tbody id="viewCourseBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:8px; padding-bottom:8px;">
+        <button class="btn btn-gray" onclick="showScreen('list')">목록</button>
+        <button class="btn btn-gray" onclick="openEditModal()">수정</button>
+        <button class="btn btn-gray" onclick="openPwResetModal()">비밀번호 초기화</button>
+      </div>
+    </div><!-- /screen-view -->
+
+  </main>
+</div>
+
+<!-- ── 모달: 튜터 등록 ── -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal-box" style="width:480px;">
+    <div class="modal-header">
+      <h3>튜터 등록</h3>
+      <button class="modal-close" onclick="closeModal('registerModal')">×</button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <div style="padding:18px 20px 0;">
+        <div class="bulk-info-box" style="margin-bottom:16px;">튜터 정보를 입력하고 등록하세요. 계정 안내 메일은 등록 후 목록에서 별도로 발송할 수 있습니다.</div>
+      </div>
+      <table class="form-table" style="border:none; border-radius:0; margin:0 20px 20px; width:calc(100% - 40px);">
+        <tr class="form-row">
+          <th>이름<span class="req">*</span></th>
+          <td><input id="regName" class="form-input" type="text" placeholder="이름을 입력해주세요."></td>
+        </tr>
+        <tr class="form-row">
+          <th>이메일(아이디)<span class="req">*</span></th>
+          <td>
+            <input id="regEmail" class="form-input" type="email" placeholder="이메일을 입력해주세요.">
+            <div class="form-hint">로그인 아이디로 사용됩니다. 시스템 전체 기준으로 중복 여부를 확인합니다.</div>
+          </td>
+        </tr>
+        <tr class="form-row">
+          <th>연락처</th>
+          <td>
+            <div class="form-inline">
+              <span style="font-size:12px; color:#555;">010</span><span style="color:#cdd2d9;">-</span>
+              <input id="regPhone1" class="form-input" type="text" placeholder="0000" style="width:80px;" maxlength="4">
+              <span style="color:#cdd2d9;">-</span>
+              <input id="regPhone2" class="form-input" type="text" placeholder="0000" style="width:80px;" maxlength="4">
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('registerModal')">취소</button>
+      <button class="btn btn-primary" onclick="registerTutor()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 모달: 튜터 정보 수정 ── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="width:480px;">
+    <div class="modal-header">
+      <h3>튜터 정보 수정</h3>
+      <button class="modal-close" onclick="closeModal('editModal')">×</button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <table class="form-table" style="border:none; border-radius:0; margin:20px; width:calc(100% - 40px);">
+        <tr class="form-row">
+          <th>이름</th>
+          <td><input id="editName" class="form-input" type="text" disabled></td>
+        </tr>
+        <tr class="form-row">
+          <th>이메일(아이디)</th>
+          <td><input id="editEmail" class="form-input" type="email" disabled></td>
+        </tr>
+        <tr class="form-row">
+          <th>연락처</th>
+          <td>
+            <div class="form-inline">
+              <span style="font-size:12px; color:#555;">010</span><span style="color:#cdd2d9;">-</span>
+              <input id="editPhone1" class="form-input" type="text" style="width:80px;" maxlength="4">
+              <span style="color:#cdd2d9;">-</span>
+              <input id="editPhone2" class="form-input" type="text" style="width:80px;" maxlength="4">
+            </div>
+          </td>
+        </tr>
+        <tr class="form-row">
+          <th>활성여부</th>
+          <td>
+            <select id="editStatus" class="filter-select" style="width:120px;">
+              <option value="Y">Y</option>
+              <option value="N">N</option>
+            </select>
+            <div class="form-hint">N 설정 시 튜터사이트 접근이 즉시 차단됩니다. 기존 채점 데이터는 유지됩니다.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('editModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 모달: 비밀번호 초기화 ── -->
+<div class="modal-overlay" id="pwResetModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-header">
+      <h3>비밀번호 초기화</h3>
+      <button class="modal-close" onclick="closeModal('pwResetModal')">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:24px 20px;">
+      <p style="font-size:14px; color:#333; line-height:1.9;">
+        <strong id="pwResetName"></strong> 튜터의 비밀번호를 초기화하시겠습니까?<br>
+        <span style="font-size:12px; color:#888;">임시 비밀번호가 담긴 안내 메일이 발송됩니다.</span>
+      </p>
+    </div>
+    <div class="modal-footer" style="justify-content:center;">
+      <button class="btn btn-gray" onclick="closeModal('pwResetModal')">취소</button>
+      <button class="btn btn-primary" onclick="confirmPwReset()">초기화</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 모달: 계정 안내 메일 발송 ── -->
+<div class="modal-overlay" id="mailModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-header">
+      <h3>계정 안내 메일 발송</h3>
+      <button class="modal-close" onclick="closeModal('mailModal')">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center; padding:24px 20px;">
+      <p style="font-size:14px; color:#333; line-height:1.9;">
+        <strong id="mailTargetName"></strong> 튜터에게 계정 안내 메일을 발송하시겠습니까?<br>
+        <span style="font-size:12px; color:#888;">초기 아이디/임시 비밀번호가 담긴 안내 메일이 발송됩니다.</span>
+      </p>
+    </div>
+    <div class="modal-footer" style="justify-content:center;">
+      <button class="btn btn-gray" onclick="closeModal('mailModal')">취소</button>
+      <button class="btn btn-primary" onclick="confirmMailSend()">발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 모달: 일괄 배정/삭제 (엑셀 업로드 공통정책 적용) ── -->
+<div class="modal-overlay" id="bulkModal">
+  <div class="modal-box bulk-modal-box">
+    <div class="modal-header">
+      <h3>일괄 배정/삭제</h3>
+      <button class="modal-close" onclick="closeBulkModal()">×</button>
+    </div>
+    <div class="bulk-modal-body">
+
+      <div class="modal-tab-wrap">
+        <div class="modal-tab active" id="tabBtn-assign" onclick="switchModalTab('assign')">일괄 배정</div>
+        <div class="modal-tab" id="tabBtn-delete" onclick="switchModalTab('delete')">일괄 삭제</div>
+      </div>
+
+      <!-- 일괄 배정 탭 -->
+      <div class="tab-content active" id="tab-assign">
+        <div class="bulk-info-box">
+          <div class="bulk-info-title">일괄 배정 안내</div>
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. <strong>1회 최대 1,000건</strong>, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정코드 / 튜터ID / 학습자ID</strong><br>
+          미리보기로 오류 확인 후 실행 버튼을 눌러주세요. 오류가 있는 행이 있어도 정상 행은 배정 처리됩니다.
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 1. 업로드 양식 다운로드</div>
+          <a href="튜터_일괄배정_템플릿.xlsx" download style="color:var(--primary); text-decoration:none; font-size:13px; font-weight:600;">📥 양식 다운로드</a>
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 2. 파일 첨부</div>
+          <div class="bulk-drop-zone" id="bulkDropZone-assign"
+            ondragover="bulkDragOver(event,'assign')" ondragleave="bulkDragLeave('assign')" ondrop="bulkDrop(event,'assign')"
+            onclick="document.getElementById('bulkFileInput-assign').click()">
+            <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+            <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput-assign').click()">파일 선택</button>
+            <input type="file" id="bulkFileInput-assign" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this,'assign')">
+          </div>
+          <div id="bulkFileSelected-assign" style="display:none; margin-top:14px; border:1px solid #dde1e7; border-radius:6px; padding:12px 14px; background:#f9fafb; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">📎</span>
+              <div>
+                <div id="bulkFileNameText-assign" style="font-size:13px; font-weight:600; color:#1a1a2e;"></div>
+                <div id="bulkFileSizeText-assign" style="font-size:11px; color:#888; margin-top:2px;"></div>
+              </div>
+            </div>
+            <button class="btn btn-xs" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile('assign')">× 삭제</button>
+          </div>
+          <div id="bulkFileErrCard-assign" style="display:none;">
+            <div class="bulk-file-card-err">
+              <div class="ico">!</div>
+              <div class="info"><div class="fname" id="bulkErrFileName-assign"></div><div class="ftype">ETC</div></div>
+              <button class="close-x" onclick="bulkClearFileErr('assign')">✕</button>
+            </div>
+            <div class="bulk-file-err-msg" id="bulkErrFileMsg-assign"></div>
+          </div>
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 3. 미리보기 및 실행</div>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button class="btn btn-outline" id="bulkPreviewBtn-assign" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview('assign')">미리보기</button>
+            <button class="btn btn-primary" id="bulkSubmitBtn-assign" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit('assign')">실행</button>
+            <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
+          </div>
+        </div>
+
+        <div id="bulkPreviewResult-assign" style="display:none; margin-top:4px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #eee;">
+            <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">미리보기 결과</h4>
+            <button class="btn btn-sm btn-gray" id="bulkErrorDownloadBtn-assign" style="display:none;" onclick="downloadErrorList('assign')">↓ 오류내용 다운로드</button>
+          </div>
+          <div id="bulkPreviewMessage-assign" style="padding:12px 14px; border-radius:6px; font-size:13px; margin-bottom:14px;"></div>
+          <table id="bulkPreviewTable-assign" class="bulk-error-tbl" style="display:none;">
+            <thead><tr><th style="width:100px;">행 번호</th><th>오류 내용</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 일괄 삭제 탭 -->
+      <div class="tab-content" id="tab-delete">
+        <div class="bulk-info-box">
+          <div class="bulk-info-title">일괄 삭제 안내</div>
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. <strong>1회 최대 1,000건</strong>, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정코드 / 튜터ID / 학습자ID</strong><br>
+          삭제되는 것은 튜터-학습자 배정 정보이며, <strong>기존 채점 데이터는 유지</strong>됩니다.
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 1. 업로드 양식 다운로드</div>
+          <a href="튜터_일괄삭제_템플릿.xlsx" download style="color:var(--primary); text-decoration:none; font-size:13px; font-weight:600;">📥 양식 다운로드</a>
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 2. 파일 첨부</div>
+          <div class="bulk-drop-zone" id="bulkDropZone-delete"
+            ondragover="bulkDragOver(event,'delete')" ondragleave="bulkDragLeave('delete')" ondrop="bulkDrop(event,'delete')"
+            onclick="document.getElementById('bulkFileInput-delete').click()">
+            <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+            <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput-delete').click()">파일 선택</button>
+            <input type="file" id="bulkFileInput-delete" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this,'delete')">
+          </div>
+          <div id="bulkFileSelected-delete" style="display:none; margin-top:14px; border:1px solid #dde1e7; border-radius:6px; padding:12px 14px; background:#f9fafb; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:16px;">📎</span>
+              <div>
+                <div id="bulkFileNameText-delete" style="font-size:13px; font-weight:600; color:#1a1a2e;"></div>
+                <div id="bulkFileSizeText-delete" style="font-size:11px; color:#888; margin-top:2px;"></div>
+              </div>
+            </div>
+            <button class="btn btn-xs" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile('delete')">× 삭제</button>
+          </div>
+          <div id="bulkFileErrCard-delete" style="display:none;">
+            <div class="bulk-file-card-err">
+              <div class="ico">!</div>
+              <div class="info"><div class="fname" id="bulkErrFileName-delete"></div><div class="ftype">ETC</div></div>
+              <button class="close-x" onclick="bulkClearFileErr('delete')">✕</button>
+            </div>
+            <div class="bulk-file-err-msg" id="bulkErrFileMsg-delete"></div>
+          </div>
+        </div>
+
+        <div class="bulk-section">
+          <div class="bulk-step-title">Step 3. 미리보기 및 실행</div>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button class="btn btn-outline" id="bulkPreviewBtn-delete" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview('delete')">미리보기</button>
+            <button class="btn btn-primary" id="bulkSubmitBtn-delete" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit('delete')">실행</button>
+            <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
+          </div>
+        </div>
+
+        <div id="bulkPreviewResult-delete" style="display:none; margin-top:4px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #eee;">
+            <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">미리보기 결과</h4>
+            <button class="btn btn-sm btn-gray" id="bulkErrorDownloadBtn-delete" style="display:none;" onclick="downloadErrorList('delete')">↓ 오류내용 다운로드</button>
+          </div>
+          <div id="bulkPreviewMessage-delete" style="padding:12px 14px; border-radius:6px; font-size:13px; margin-bottom:14px;"></div>
+          <table id="bulkPreviewTable-delete" class="bulk-error-tbl" style="display:none;">
+            <thead><tr><th style="width:100px;">행 번호</th><th>오류 내용</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 오류 케이스 정리 (공통) -->
+      <div class="bulk-section" style="margin-top:4px;">
+        <div class="bulk-step-title">오류 케이스 정리</div>
+
+        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">파일 레벨</div>
+        <table class="bulk-error-tbl" style="margin-bottom:16px;">
+          <thead><tr><th style="width:100px;">액션</th><th style="width:200px;">상황</th><th>메시지</th><th style="width:110px;">노출 방법</th></tr></thead>
+          <tbody>
+            <tr><td>파일 선택/드롭</td><td>엑셀 외 파일 형식</td><td>허용되지 않은 파일 형식입니다: {확장자}</td><td>파일 카드 인라인 오류</td></tr>
+            <tr><td>파일 선택/드롭</td><td>엑셀 파일이지만 확인 불가(손상/암호화 등)</td><td>정상적인 엑셀파일을 등록해주세요.</td><td>알림</td></tr>
+            <tr><td>파일 선택/드롭</td><td>파일 용량 10MB 초과</td><td>파일 용량이 10MB를 초과합니다.</td><td>알림</td></tr>
+            <tr><td>미리보기 클릭</td><td>1회 최대 처리 건수(1,000건) 초과</td><td>최대 1,000건까지 처리할 수 있습니다. 파일을 나눠서 업로드해주세요.</td><td>알림</td></tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">행(Row) 레벨</div>
+        <table class="bulk-error-tbl">
+          <thead><tr><th style="width:140px;">구분</th><th>오류케이스 정리</th></tr></thead>
+          <tbody>
+            <tr><td>공통</td><td>데이터 없음 — 엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
+            <tr><td>공통</td><td>샘플 양식 불일치 — 업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
+            <tr><td>공통</td><td>필수값 누락 — 과정코드·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>공통</td><td>존재하지 않는 과정코드 — 시스템에 등록되지 않은 과정코드인 경우</td></tr>
+            <tr><td>공통</td><td>존재하지 않거나 비활성 상태인 튜터ID</td></tr>
+            <tr><td>공통</td><td>존재하지 않는 학습자ID(해당 과정 미신청자 포함)</td></tr>
+            <tr><td>일괄 배정 전용</td><td>이미 동일하게 배정된 조합 — 중복 배정 요청인 경우</td></tr>
+            <tr><td>일괄 삭제 전용</td><td>배정 이력이 없는 조합 — 삭제할 배정 건이 존재하지 않는 경우</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- 팝업 전체 로딩 오버레이 -->
+    <div class="bulk-loading-overlay" id="bulkLoadingOverlay">
+      <div>
+        <div class="bulk-spinner"></div>
+        <div class="bulk-loading-text" id="bulkLoadingText">처리하고 있습니다.</div>
+        <div class="bulk-loading-sub">잠시 기다려 주세요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 일괄 배정/삭제 결과 팝업 -->
+<div class="modal-overlay" id="bulkResultModal">
+  <div class="modal-box" style="width:440px;">
+    <div class="modal-header">
+      <h3 id="bulkResultTitle">처리 결과</h3>
+      <button class="modal-close" onclick="closeBulkResultModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="result-summary-row">
+        <div class="result-chip"><div class="result-val" id="rTotal">0</div><div class="result-label">총 건수</div></div>
+        <div class="result-chip ok"><div class="result-val" id="rOk">0</div><div class="result-label" id="rOkLabel">처리 완료</div></div>
+        <div class="result-chip fail"><div class="result-val" id="rFail">0</div><div class="result-label">실패</div></div>
+      </div>
+      <div class="result-fail-msg" id="rFailMsg" style="display:none;">시스템 오류로 인해 일부 건이 처리되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sm btn-gray" id="rDownloadBtn" style="display:none;" onclick="toast('실패 목록이 다운로드됩니다. (프로토타입)')">실패내용 다운(.xlsx)</button>
+      <button class="btn btn-sm btn-primary" onclick="closeBulkResultModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 사이드바 ──
+function toggleNav(el) { el.parentElement.classList.toggle('open'); }
+
+// ── 샘플 데이터 ──
+let DATA = [
+  { id:'T012', name:'김*현', email:'kh***@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, active:true, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
+    courses:[
+      { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:12, assignedAt:'2026.03.11' },
+      { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:8, assignedAt:'2026.03.11' },
+      { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
+      { code:'LM-2024005', name:'AI 활용 실무 (마이크로러닝)', status:'ended', learners:5, assignedAt:'2026.01.05' },
+    ] },
+  { id:'T011', name:'이*진', email:'lj***@gmail.com', phone:'010-5678-3342', courseCnt:2, active:true, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
+    courses:[
+      { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:6, assignedAt:'2026.03.06' },
+      { code:'LM-2024006', name:'신규입사자 온보딩', status:'ended', learners:14, assignedAt:'2026.02.01' },
+    ] },
+  { id:'T010', name:'박*영', email:'py***@naver.com', phone:'010-9012-7790', courseCnt:3, active:true, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
+    courses:[
+      { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
+      { code:'LM-2024007', name:'재무제표 이해하기', status:'ongoing', learners:9, assignedAt:'2026.03.02' },
+      { code:'LM-2024008', name:'프레젠테이션 스킬업', status:'ended', learners:11, assignedAt:'2026.01.10' },
+    ] },
+  { id:'T009', name:'최*수', email:'cs***@kakao.com', phone:'010-3456-1108', courseCnt:0, active:true, regDate:'2026.02.14', lastLogin:'-',
+    courses:[] },
+  { id:'T008', name:'정*호', email:'jh***@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, active:false, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
+    courses:[
+      { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:3, assignedAt:'2026.02.01' },
+    ] },
+  { id:'T007', name:'강*민', email:'km***@outlook.com', phone:'010-2345-4415', courseCnt:2, active:true, regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
+    courses:[
+      { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:5, assignedAt:'2026.01.23' },
+      { code:'LM-2024009', name:'컴플라이언스 필수교육', status:'ended', learners:20, assignedAt:'2025.12.01' },
+    ] },
+];
+
+const COURSE_STATUS_LABEL = { scheduled:'예정', ongoing:'학습중', ended:'종료' };
+const COURSE_STATUS_CLASS = { scheduled:'course-scheduled', ongoing:'course-ongoing', ended:'course-ended' };
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── 렌더 ──
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyMsg');
+  document.getElementById('filterCount').textContent = `검색결과 ${data.length}건`;
+  document.getElementById('kpiTotal').textContent = DATA.length;
+  document.getElementById('kpiActive').textContent = DATA.filter(t => t.active).length;
+  document.getElementById('kpiInactive').textContent = DATA.filter(t => !t.active).length;
+
+  if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = data.map((t, i) => `
+    <tr>
+      <td class="center">${data.length - i}</td>
+      <td><span class="tutor-name" onclick="openView('${t.id}')">${escHtml(t.name)}</span></td>
+      <td>${escHtml(t.email)}</td>
+      <td>${escHtml(t.phone)}</td>
+      <td class="center" style="font-weight:700; color:var(--primary);">${t.courseCnt}</td>
+      <td class="center"><span class="status-badge ${t.active?'status-y':'status-n'}">${t.active?'Y':'N'}</span></td>
+      <td class="center" style="font-size:11.5px; color:#888;">${t.regDate}</td>
+      <td class="center"><button class="btn btn-sm btn-gray" onclick="openMailModal('${t.id}')">발송</button></td>
+    </tr>`).join('');
+}
+
+function filterTable() {
+  const type = document.getElementById('searchType').value;
+  const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  const status = document.getElementById('filterStatus').value;
+  const filtered = DATA.filter(t => {
+    const field = type === 'email' ? t.email : t.name;
+    const matchKeyword = !keyword || field.toLowerCase().includes(keyword);
+    const matchStatus = !status || (status === 'Y' ? t.active : !t.active);
+    return matchKeyword && matchStatus;
+  });
+  renderTable(filtered);
+}
+
+function resetFilter() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchType').value = 'name';
+  document.getElementById('filterStatus').value = '';
+  renderTable(DATA);
+}
+
+// ── 화면 전환 ──
+let currentTutorId = null;
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function openView(id) {
+  const t = DATA.find(x => x.id === id);
+  if (!t) return;
+  currentTutorId = id;
+  document.getElementById('viewBasicInfo').innerHTML = `
+    <tr><th>튜터명</th><td>${escHtml(t.name)}</td><th>등록일</th><td>${t.regDate}</td></tr>
+    <tr><th>이메일(아이디)</th><td>${escHtml(t.email)}</td><th>최근 로그인</th><td>${t.lastLogin}</td></tr>
+    <tr><th>연락처</th><td>${escHtml(t.phone)}</td><th>담당 과정 수</th><td style="color:var(--primary); font-weight:700;">${t.courseCnt}</td></tr>
+    <tr><th>활성여부</th><td colspan="3"><span class="status-badge ${t.active?'status-y':'status-n'}">${t.active?'Y':'N'}</span></td></tr>
+  `;
+  document.getElementById('viewCourseCount').textContent = `총 ${t.courses.length}건`;
+  document.getElementById('viewCourseBody').innerHTML = t.courses.length ? t.courses.map((c,i) => `
+    <tr>
+      <td class="center">${i+1}</td>
+      <td>${c.code}</td>
+      <td>${escHtml(c.name)}</td>
+      <td class="center"><span class="course-badge ${COURSE_STATUS_CLASS[c.status]}">${COURSE_STATUS_LABEL[c.status]}</span></td>
+      <td class="center" style="color:var(--primary); font-weight:700;">${c.learners}명</td>
+      <td class="center" style="font-size:11.5px; color:#888;">${c.assignedAt}</td>
+    </tr>`).join('') : `<tr><td colspan="6" class="tbl-empty">배정된 과정이 없습니다.</td></tr>`;
+  showScreen('view');
+}
+
+// ── 튜터 등록 ──
+function openRegisterModal() {
+  document.getElementById('regName').value = '';
+  document.getElementById('regEmail').value = '';
+  document.getElementById('regPhone1').value = '';
+  document.getElementById('regPhone2').value = '';
+  document.getElementById('registerModal').classList.add('open');
+}
+function registerTutor() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  if (!name) { alert('이름을 입력해주세요.'); return; }
+  if (!email) { alert('이메일을 입력해주세요.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('올바른 이메일 형식으로 입력해주세요.'); return; }
+  if (DATA.some(t => t.email.toLowerCase() === email.toLowerCase())) { alert('중복된 이메일이 존재합니다. 이메일을 확인해주세요.'); return; }
+  const p1 = document.getElementById('regPhone1').value.trim();
+  const p2 = document.getElementById('regPhone2').value.trim();
+  const phone = (p1 && p2) ? `010-${p1}-${p2}` : '-';
+  const newTutor = { id:'T' + String(DATA.length + 13).padStart(3,'0'), name, email, phone, courseCnt:0, active:true, regDate:'2026.08.24', lastLogin:'-', courses:[] };
+  DATA.unshift(newTutor);
+  filterTable();
+  closeModal('registerModal');
+  toast('튜터가 등록되었습니다.');
+}
+
+// ── 튜터 수정 ──
+function openEditModal() {
+  const t = DATA.find(x => x.id === currentTutorId);
+  if (!t) return;
+  document.getElementById('editName').value = t.name;
+  document.getElementById('editEmail').value = t.email;
+  const [p1, p2] = (t.phone.match(/^010-(\d{4})-(\d{4})$/) || [,'','']).slice(1);
+  document.getElementById('editPhone1').value = p1 || '';
+  document.getElementById('editPhone2').value = p2 || '';
+  document.getElementById('editStatus').value = t.active ? 'Y' : 'N';
+  document.getElementById('editModal').classList.add('open');
+}
+function saveEdit() {
+  const t = DATA.find(x => x.id === currentTutorId);
+  if (!t) return;
+  const p1 = document.getElementById('editPhone1').value.trim();
+  const p2 = document.getElementById('editPhone2').value.trim();
+  t.phone = (p1 && p2) ? `010-${p1}-${p2}` : t.phone;
+  t.active = document.getElementById('editStatus').value === 'Y';
+  closeModal('editModal');
+  openView(t.id);
+  filterTable();
+  toast('튜터 정보가 저장되었습니다.');
+}
+
+// ── 비밀번호 초기화 ──
+function openPwResetModal() {
+  const t = DATA.find(x => x.id === currentTutorId);
+  if (!t) return;
+  document.getElementById('pwResetName').textContent = t.name;
+  document.getElementById('pwResetModal').classList.add('open');
+}
+function confirmPwReset() {
+  closeModal('pwResetModal');
+  toast('임시 비밀번호가 발급되고 안내 메일이 발송되었습니다.');
+}
+
+// ── 계정 안내 메일 ──
+let mailTargetId = null;
+function openMailModal(id) {
+  const t = DATA.find(x => x.id === id);
+  if (!t) return;
+  mailTargetId = id;
+  document.getElementById('mailTargetName').textContent = t.name;
+  document.getElementById('mailModal').classList.add('open');
+}
+function confirmMailSend() {
+  closeModal('mailModal');
+  toast('계정 안내 메일이 발송되었습니다.');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── 토스트 ──
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── 초기 렌더 ──
+renderTable(DATA);
+
+/* ══════════════════════════════════════════════
+   일괄 배정/삭제 — 엑셀 업로드 공통정책 (탭별 독립 상태)
+   ══════════════════════════════════════════════ */
+const bulkState = { assign: { file:null }, delete: { file:null } };
+
+function switchModalTab(type) {
+  ['assign','delete'].forEach(k => {
+    document.getElementById('tabBtn-' + k).classList.toggle('active', k === type);
+    document.getElementById('tab-' + k).classList.toggle('active', k === type);
+  });
+}
+
+function openBulkModal() {
+  switchModalTab('assign');
+  document.getElementById('bulkModal').classList.add('open');
+}
+function closeBulkModal() {
+  document.getElementById('bulkModal').classList.remove('open');
+  ['assign','delete'].forEach(resetBulkTab);
+  hideBulkLoading();
+}
+function resetBulkTab(type) {
+  bulkState[type].file = null;
+  document.getElementById('bulkFileInput-' + type).value = '';
+  document.getElementById('bulkFileSelected-' + type).style.display = 'none';
+  document.getElementById('bulkDropZone-' + type).style.display = '';
+  document.getElementById('bulkPreviewResult-' + type).style.display = 'none';
+  hideBulkFileErr(type);
+  setBtnDisabled('bulkPreviewBtn-' + type, true);
+  setBtnDisabled('bulkSubmitBtn-' + type, true);
+}
+function setBtnDisabled(id, disabled) {
+  const btn = document.getElementById(id);
+  btn.disabled = disabled;
+  btn.style.opacity = disabled ? '.45' : '1';
+  btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+}
+function showBulkFileErr(type, name, msg) {
+  document.getElementById('bulkFileErrCard-' + type).style.display = '';
+  document.getElementById('bulkErrFileName-' + type).textContent = name;
+  document.getElementById('bulkErrFileMsg-' + type).textContent = msg;
+  document.getElementById('bulkFileSelected-' + type).style.display = 'none';
+  document.getElementById('bulkDropZone-' + type).style.display = '';
+  setBtnDisabled('bulkPreviewBtn-' + type, true);
+}
+function hideBulkFileErr(type) { document.getElementById('bulkFileErrCard-' + type).style.display = 'none'; }
+function bulkClearFileErr(type) { hideBulkFileErr(type); document.getElementById('bulkFileInput-' + type).value = ''; }
+function showBulkLoading(text) {
+  document.getElementById('bulkLoadingText').textContent = text;
+  document.getElementById('bulkLoadingOverlay').classList.add('show');
+}
+function hideBulkLoading() { document.getElementById('bulkLoadingOverlay').classList.remove('show'); }
+
+function bulkDragOver(e, type) { e.preventDefault(); document.getElementById('bulkDropZone-' + type).classList.add('drag-active'); }
+function bulkDragLeave(type) { document.getElementById('bulkDropZone-' + type).classList.remove('drag-active'); }
+function bulkDrop(e, type) {
+  e.preventDefault();
+  document.getElementById('bulkDropZone-' + type).classList.remove('drag-active');
+  const file = e.dataTransfer.files[0];
+  if (file) handleBulkFile(file, type);
+}
+function bulkFileSelected(input, type) { if (input.files[0]) handleBulkFile(input.files[0], type); }
+
+function handleBulkFile(file, type) {
+  hideBulkFileErr(type);
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    const ext = (file.name.match(/\.([^.]+)$/) || [,'?'])[1];
+    showBulkFileErr(type, file.name, `허용되지 않은 파일 형식입니다: ${ext}`);
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) { alert('파일 용량이 10MB를 초과합니다.'); return; }
+  bulkState[type].file = file;
+  document.getElementById('bulkDropZone-' + type).style.display = 'none';
+  const sel = document.getElementById('bulkFileSelected-' + type);
+  sel.style.display = 'flex';
+  document.getElementById('bulkFileNameText-' + type).textContent = file.name;
+  document.getElementById('bulkFileSizeText-' + type).textContent = `(${(file.size/1024).toFixed(1)}KB)`;
+  setBtnDisabled('bulkPreviewBtn-' + type, false);
+}
+function bulkClearFile(type) {
+  bulkState[type].file = null;
+  document.getElementById('bulkFileInput-' + type).value = '';
+  document.getElementById('bulkFileSelected-' + type).style.display = 'none';
+  document.getElementById('bulkDropZone-' + type).style.display = '';
+  document.getElementById('bulkPreviewResult-' + type).style.display = 'none';
+  hideBulkFileErr(type);
+  setBtnDisabled('bulkPreviewBtn-' + type, true);
+  setBtnDisabled('bulkSubmitBtn-' + type, true);
+}
+
+function bulkPreview(type) {
+  const file = bulkState[type].file;
+  if (!file) return;
+  const fname = file.name.toLowerCase();
+  if (fname.includes('초과')) {
+    alert('최대 1,000건까지 처리할 수 있습니다. 파일을 나눠서 업로드해주세요.');
+    return;
+  }
+  showBulkLoading('파일을 검증하고 있습니다.');
+  setBtnDisabled('bulkPreviewBtn-' + type, true);
+  setBtnDisabled('bulkSubmitBtn-' + type, true);
+  setTimeout(() => { hideBulkLoading(); renderBulkPreviewResult(type); }, 900);
+}
+
+function renderBulkPreviewResult(type) {
+  const file = bulkState[type].file;
+  const hasError = !file.name.toLowerCase().includes('샘플') && !file.name.toLowerCase().includes('템플릿');
+  const msgEl = document.getElementById('bulkPreviewMessage-' + type);
+  const tableEl = document.getElementById('bulkPreviewTable-' + type);
+  const downloadBtn = document.getElementById('bulkErrorDownloadBtn-' + type);
+  document.getElementById('bulkPreviewResult-' + type).style.display = '';
+  setBtnDisabled('bulkPreviewBtn-' + type, false);
+
+  if (!hasError) {
+    msgEl.style.background = '#dcfce7'; msgEl.style.color = '#16a34a';
+    const verb = type === 'assign' ? '배정' : '삭제';
+    msgEl.textContent = `✔ 미리보기가 완료되었습니다. 총 46건이 정상 확인되었습니다. 실행 버튼을 클릭해 ${verb} 처리해 주세요.`;
+    tableEl.style.display = 'none'; downloadBtn.style.display = 'none';
+    setBtnDisabled('bulkSubmitBtn-' + type, false);
+  } else {
+    msgEl.style.background = '#fef2f2'; msgEl.style.color = '#c0392b';
+    msgEl.textContent = '✖ 일부 행에서 오류가 발견되었습니다. 오류 없는 정상 행은 실행 시 처리되고, 오류 행은 제외됩니다.';
+    tableEl.style.display = ''; downloadBtn.style.display = '';
+    const rows = type === 'assign'
+      ? `<tr><td style="text-align:center;">4</td><td>존재하지 않는 과정코드입니다.</td></tr>
+         <tr><td style="text-align:center;">9</td><td>이미 동일하게 배정된 조합입니다.</td></tr>
+         <tr><td style="text-align:center;">15</td><td>존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
+      : `<tr><td style="text-align:center;">2</td><td>배정 이력이 없는 조합입니다.</td></tr>
+         <tr><td style="text-align:center;">11</td><td>존재하지 않는 학습자ID입니다.</td></tr>`;
+    tableEl.querySelector('tbody').innerHTML = rows;
+    setBtnDisabled('bulkSubmitBtn-' + type, false);
+  }
+}
+
+function downloadErrorList(type) { toast('오류 목록이 다운로드됩니다. (프로토타입)'); }
+
+function bulkSubmit(type) {
+  const verb = type === 'assign' ? '배정' : '삭제';
+  showBulkLoading(`${verb} 처리하고 있습니다.`);
+  setTimeout(() => {
+    hideBulkLoading();
+    closeBulkModal();
+    showBulkResult(type, 46, 43, 3);
+  }, 1200);
+}
+function showBulkResult(type, total, ok, fail) {
+  const verb = type === 'assign' ? '배정' : '삭제';
+  document.getElementById('bulkResultTitle').textContent = `일괄 ${verb} 결과`;
+  document.getElementById('rOkLabel').textContent = `${verb} 완료`;
+  document.getElementById('rTotal').textContent = total;
+  document.getElementById('rOk').textContent = ok;
+  document.getElementById('rFail').textContent = fail;
+  document.getElementById('rFailMsg').style.display = fail > 0 ? '' : 'none';
+  document.getElementById('rFailMsg').textContent = `시스템 오류로 인해 일부 건이 ${verb} 처리되지 않았습니다. 잠시 후 다시 시도해 주세요.`;
+  document.getElementById('rDownloadBtn').style.display = fail > 0 ? '' : 'none';
+  document.getElementById('bulkResultModal').classList.add('open');
+}
+function closeBulkResultModal() { document.getElementById('bulkResultModal').classList.remove('open'); }
+
+document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
+document.getElementById('bulkResultModal').addEventListener('click', function(e) { if (e.target === this) closeBulkResultModal(); });
+['registerModal','editModal','pwResetModal','mailModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) closeModal(id); });
+});
+</script>
+</body>
+</html>
