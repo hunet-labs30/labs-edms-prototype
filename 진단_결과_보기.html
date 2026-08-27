@@ -211,6 +211,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .group-sum-lbl{color:var(--text-400);}
 .footnote-area{padding:4px 0 8px;}.footnote-text{font-size:11px;color:var(--text-400);}
 
+/* 주관식 응답 아코디언 */
+.qa-list{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.qa-item{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;}
+.qa-head{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;background:var(--white);user-select:none;}
+.qa-head:hover{background:var(--bg);}
+.qa-num{width:22px;height:22px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qa-question-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.qa-cmp{font-size:11px;font-weight:700;color:var(--text-400);}
+.qa-question{font-size:13px;font-weight:600;color:var(--text-900);}
+.qa-count{font-size:11.5px;color:var(--text-500);font-weight:600;flex-shrink:0;white-space:nowrap;}
+.qa-chevron{width:16px;height:16px;color:var(--text-400);flex-shrink:0;transition:transform .2s;}
+.qa-item.open .qa-chevron{transform:rotate(180deg);}
+.qa-body{display:none;padding:2px 16px 14px;border-top:1px solid var(--border-light);}
+.qa-item.open .qa-body{display:block;}
+.qa-answer{padding:12px 0;border-bottom:1px solid var(--border-light);}
+.qa-answer:last-child{border-bottom:none;}
+.qa-answer-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.qa-respondent{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:var(--gray-bg);color:var(--text-500);flex-shrink:0;}
+.qa-respondent.me{background:var(--blue-bg);color:var(--blue);}
+.qa-answer-text{font-size:13px;color:var(--text-700);line-height:1.65;white-space:pre-wrap;}
+.qa-empty{text-align:center;padding:28px 0;color:var(--text-400);font-size:12.5px;}
+
 /* 보고서 보기 버튼 영역 */
 .report-cta{text-align:center;padding:24px 0 8px;border-top:1px solid var(--border);margin-top:8px;}
 .btn-primary{background:var(--primary);color:#fff;border:none;}
@@ -942,6 +964,111 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           </div>
         </div>
 
+        <!-- ⑥ 주관식 응답 -->
+        <div class="result-section">
+          <div class="rs-head">
+            <span class="rs-head-dot"></span>
+            <span class="rs-title">주관식 응답</span>
+            <span class="scale-hint" style="margin-left:auto">총 3문항</span>
+          </div>
+          <div class="rs-body">
+            <div class="qa-list">
+
+              <!-- Q1 : 기본 열림 상태로 예시 노출 -->
+              <div class="qa-item open">
+                <div class="qa-head" onclick="toggleQA(this)">
+                  <span class="qa-num">1</span>
+                  <div class="qa-question-col">
+                    <span class="qa-cmp">조직관리 &rsaquo; 변화관리</span>
+                    <span class="qa-question">본인의 강점을 가장 잘 보여주는 사례를 한 가지 소개해 주세요.</span>
+                  </div>
+                  <span class="qa-count">응답 4건</span>
+                  <svg class="qa-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="qa-body">
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent me">나</span></div>
+                    <div class="qa-answer-text">팀 내에서 이해관계가 다른 두 파트가 부딪혔을 때, 양쪽의 입장을 각각 청취하고 공통의 목표를 다시 세워 합의를 이끌어낸 경험이 있습니다. 갈등을 피하지 않고 정면으로 다루면서도 감정적으로 치우치지 않으려 노력했습니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">상사</span></div>
+                    <div class="qa-answer-text">신규 조직 개편 과정에서 구성원들의 불안감을 먼저 살피고, 변화의 배경과 방향을 투명하게 공유해 연착륙시킨 점이 인상 깊었습니다. 변화관리 역량이 특히 뛰어납니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">동료</span></div>
+                    <div class="qa-answer-text">다른 팀과의 협업에서도 자기 팀 입장만 고집하지 않고 전체 관점에서 조율하려는 모습을 자주 보여줍니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">부하직원</span></div>
+                    <div class="qa-answer-text">막힌 문제를 들고 가면 답을 바로 주기보다 스스로 생각할 수 있도록 질문을 던져 주셔서 성장에 도움이 많이 됐습니다.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Q2 : 기본 닫힘 상태 -->
+              <div class="qa-item">
+                <div class="qa-head" onclick="toggleQA(this)">
+                  <span class="qa-num">2</span>
+                  <div class="qa-question-col">
+                    <span class="qa-cmp">성과관리 &rsaquo; 전략적 의사결정</span>
+                    <span class="qa-question">리더로서 가장 개선이 필요하다고 생각하는 부분은 무엇인가요?</span>
+                  </div>
+                  <span class="qa-count">응답 4건</span>
+                  <svg class="qa-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="qa-body">
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent me">나</span></div>
+                    <div class="qa-answer-text">의사결정을 내리기까지 정보를 지나치게 많이 확인하려는 경향이 있어, 실행 속도가 느려질 때가 있습니다. 우선순위를 정해 빠르게 판단하는 연습이 필요합니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">상사</span></div>
+                    <div class="qa-answer-text">숫자 기반의 전략적 의사결정 역량을 조금 더 보완하면 좋겠습니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">동료</span></div>
+                    <div class="qa-answer-text">본인 업무 완성도가 높은 만큼, 위임을 조금 더 빨리 결정해도 될 것 같습니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">부하직원</span></div>
+                    <div class="qa-answer-text">가끔 촉박한 일정에서 우선순위 조율이 늦어질 때가 있어, 조금 더 빠른 공유를 부탁드리고 싶습니다.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Q3 : 무응답 1건 포함 -->
+              <div class="qa-item">
+                <div class="qa-head" onclick="toggleQA(this)">
+                  <span class="qa-num">3</span>
+                  <div class="qa-question-col">
+                    <span class="qa-cmp">사람관리 &rsaquo; 팀원육성</span>
+                    <span class="qa-question">함께 일하면서 느낀 개선 제안이 있다면 자유롭게 작성해 주세요.</span>
+                  </div>
+                  <span class="qa-count">응답 3건</span>
+                  <svg class="qa-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="qa-body">
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">상사</span></div>
+                    <div class="qa-answer-text">특별한 제안 사항은 없습니다. 지금처럼만 해주시면 좋겠습니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">동료</span></div>
+                    <div class="qa-answer-text">회의 시간을 조금 더 짧게 운영해 주시면 좋을 것 같습니다.</div>
+                  </div>
+                  <div class="qa-answer">
+                    <div class="qa-answer-head"><span class="qa-respondent">부하직원</span></div>
+                    <div class="qa-answer-text">1:1 미팅 주기를 조금 더 짧게 가져가면 좋겠습니다.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="footnote-area" style="padding-top:10px">
+              <span class="footnote-text">※ 답변을 작성하지 않은 응답자는 표시되지 않습니다.</span>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -1000,6 +1127,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 <script>
 function openReport() {
   window.open('진단_개인보고서.html', '_blank');
+}
+
+function toggleQA(headEl) {
+  headEl.parentElement.classList.toggle('open');
 }
 
 const COURSES = [
