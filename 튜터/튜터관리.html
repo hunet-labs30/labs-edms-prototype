@@ -82,13 +82,6 @@ body { font-family:'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; fon
 .filter-select:focus { border-color:var(--primary); }
 .filter-count { font-size:12px; color:#888; margin-left:auto; }
 
-/* ── 검색결과 요약 ── */
-.kpi-row { display:flex; gap:0; border-bottom:1px solid var(--border); }
-.kpi-chip { flex:1; text-align:center; padding:14px 0; border-right:1px solid var(--border); }
-.kpi-chip:last-child { border-right:none; }
-.kpi-val { font-size:20px; font-weight:700; color:var(--primary); }
-.kpi-label { font-size:11.5px; color:#888; margin-top:3px; }
-
 /* ── Table ── */
 .tbl-wrap { overflow-x:auto; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
@@ -100,9 +93,6 @@ tbody td { padding:11px 14px; vertical-align:middle; }
 tbody td.center { text-align:center; }
 
 /* ── 상태 뱃지 ── */
-.status-badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; }
-.status-y { background:#e8f0fe; color:#1a73e8; }
-.status-n { background:#f3f4f6; color:#888; }
 .course-badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:10px; font-size:11px; font-weight:700; white-space:nowrap; }
 .course-scheduled { background:#f3f4f6; color:#888; }
 .course-ongoing { background:#e8f0fe; color:#1a73e8; }
@@ -296,26 +286,13 @@ tbody td.center { text-align:center; }
             <option value="email">이메일</option>
           </select>
           <input type="text" class="filter-input search" id="searchInput" placeholder="검색어를 입력해주세요." onkeydown="if(event.key==='Enter')filterTable()">
-          <select class="filter-select" id="filterStatus" onchange="filterTable()">
-            <option value="">상태 전체</option>
-            <option value="Y">활성</option>
-            <option value="N">비활성</option>
-          </select>
           <button class="btn btn-primary btn-sm" onclick="filterTable()">검색</button>
           <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
           <span class="filter-count" id="filterCount"></span>
           <div style="display:flex; gap:8px;">
             <button class="btn btn-gray" onclick="toast('현재 검색 결과가 엑셀로 다운로드됩니다. (프로토타입)')">엑셀 다운로드</button>
             <button class="btn btn-gray" onclick="openBulkModal()">일괄 배정/삭제</button>
-            <button class="btn btn-primary" onclick="openRegisterModal()">＋ 튜터 등록</button>
           </div>
-        </div>
-
-        <!-- 검색결과 요약 -->
-        <div class="kpi-row">
-          <div class="kpi-chip"><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-label">전체 튜터</div></div>
-          <div class="kpi-chip"><div class="kpi-val" id="kpiActive">0</div><div class="kpi-label">활성</div></div>
-          <div class="kpi-chip"><div class="kpi-val" id="kpiInactive">0</div><div class="kpi-label">비활성</div></div>
         </div>
 
         <!-- 테이블 -->
@@ -328,7 +305,6 @@ tbody td.center { text-align:center; }
                 <th>이메일</th>
                 <th>연락처</th>
                 <th class="center" style="width:100px;">담당 과정 수</th>
-                <th class="center" style="width:80px;">활성여부</th>
                 <th class="center" style="width:100px;">등록일</th>
                 <th class="center" style="width:90px;">메일발송</th>
               </tr>
@@ -394,49 +370,6 @@ tbody td.center { text-align:center; }
   </main>
 </div>
 
-<!-- ── 모달: 튜터 등록 ── -->
-<div class="modal-overlay" id="registerModal">
-  <div class="modal-box" style="width:480px;">
-    <div class="modal-header">
-      <h3>튜터 등록</h3>
-      <button class="modal-close" onclick="closeModal('registerModal')">×</button>
-    </div>
-    <div class="modal-body" style="padding:0;">
-      <div style="padding:18px 20px 0;">
-        <div class="bulk-info-box" style="margin-bottom:16px;">튜터 정보를 입력하고 등록하세요. 계정 안내 메일은 등록 후 목록에서 별도로 발송할 수 있습니다.</div>
-      </div>
-      <table class="form-table" style="border:none; border-radius:0; margin:0 20px 20px; width:calc(100% - 40px);">
-        <tr class="form-row">
-          <th>이름<span class="req">*</span></th>
-          <td><input id="regName" class="form-input" type="text" placeholder="이름을 입력해주세요."></td>
-        </tr>
-        <tr class="form-row">
-          <th>이메일(아이디)<span class="req">*</span></th>
-          <td>
-            <input id="regEmail" class="form-input" type="email" placeholder="이메일을 입력해주세요.">
-            <div class="form-hint">로그인 아이디로 사용됩니다. 시스템 전체 기준으로 중복 여부를 확인합니다.</div>
-          </td>
-        </tr>
-        <tr class="form-row">
-          <th>연락처</th>
-          <td>
-            <div class="form-inline">
-              <span style="font-size:12px; color:#555;">010</span><span style="color:#cdd2d9;">-</span>
-              <input id="regPhone1" class="form-input" type="text" placeholder="0000" style="width:80px;" maxlength="4">
-              <span style="color:#cdd2d9;">-</span>
-              <input id="regPhone2" class="form-input" type="text" placeholder="0000" style="width:80px;" maxlength="4">
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('registerModal')">취소</button>
-      <button class="btn btn-primary" onclick="registerTutor()">등록</button>
-    </div>
-  </div>
-</div>
-
 <!-- ── 모달: 튜터 정보 수정 ── -->
 <div class="modal-overlay" id="editModal">
   <div class="modal-box" style="width:480px;">
@@ -463,16 +396,6 @@ tbody td.center { text-align:center; }
               <span style="color:#cdd2d9;">-</span>
               <input id="editPhone2" class="form-input" type="text" style="width:80px;" maxlength="4">
             </div>
-          </td>
-        </tr>
-        <tr class="form-row">
-          <th>활성여부</th>
-          <td>
-            <select id="editStatus" class="filter-select" style="width:120px;">
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-            <div class="form-hint">N 설정 시 튜터사이트 접근이 즉시 차단됩니다. 기존 채점 데이터는 유지됩니다.</div>
           </td>
         </tr>
       </table>
@@ -742,31 +665,31 @@ function toggleNav(el) { el.parentElement.classList.toggle('open'); }
 
 // ── 샘플 데이터 ──
 let DATA = [
-  { id:'T012', name:'김*현', email:'kh***@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, active:true, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
+  { id:'T012', name:'김*현', email:'kh***@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:12, assignedAt:'2026.03.11' },
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:8, assignedAt:'2026.03.11' },
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
       { code:'LM-2024005', name:'AI 활용 실무 (마이크로러닝)', status:'ended', learners:5, assignedAt:'2026.01.05' },
     ] },
-  { id:'T011', name:'이*진', email:'lj***@gmail.com', phone:'010-5678-3342', courseCnt:2, active:true, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
+  { id:'T011', name:'이*진', email:'lj***@gmail.com', phone:'010-5678-3342', courseCnt:2, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
     courses:[
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:6, assignedAt:'2026.03.06' },
       { code:'LM-2024006', name:'신규입사자 온보딩', status:'ended', learners:14, assignedAt:'2026.02.01' },
     ] },
-  { id:'T010', name:'박*영', email:'py***@naver.com', phone:'010-9012-7790', courseCnt:3, active:true, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
+  { id:'T010', name:'박*영', email:'py***@naver.com', phone:'010-9012-7790', courseCnt:3, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
     courses:[
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
       { code:'LM-2024007', name:'재무제표 이해하기', status:'ongoing', learners:9, assignedAt:'2026.03.02' },
       { code:'LM-2024008', name:'프레젠테이션 스킬업', status:'ended', learners:11, assignedAt:'2026.01.10' },
     ] },
-  { id:'T009', name:'최*수', email:'cs***@kakao.com', phone:'010-3456-1108', courseCnt:0, active:true, regDate:'2026.02.14', lastLogin:'-',
+  { id:'T009', name:'최*수', email:'cs***@kakao.com', phone:'010-3456-1108', courseCnt:0, regDate:'2026.02.14', lastLogin:'-',
     courses:[] },
-  { id:'T008', name:'정*호', email:'jh***@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, active:false, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
+  { id:'T008', name:'정*호', email:'jh***@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:3, assignedAt:'2026.02.01' },
     ] },
-  { id:'T007', name:'강*민', email:'km***@outlook.com', phone:'010-2345-4415', courseCnt:2, active:true, regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
+  { id:'T007', name:'강*민', email:'km***@outlook.com', phone:'010-2345-4415', courseCnt:2, regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
     courses:[
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:5, assignedAt:'2026.01.23' },
       { code:'LM-2024009', name:'컴플라이언스 필수교육', status:'ended', learners:20, assignedAt:'2025.12.01' },
@@ -785,9 +708,6 @@ function renderTable(data) {
   const tbody = document.getElementById('tableBody');
   const empty = document.getElementById('emptyMsg');
   document.getElementById('filterCount').textContent = `검색결과 ${data.length}건`;
-  document.getElementById('kpiTotal').textContent = DATA.length;
-  document.getElementById('kpiActive').textContent = DATA.filter(t => t.active).length;
-  document.getElementById('kpiInactive').textContent = DATA.filter(t => !t.active).length;
 
   if (data.length === 0) { tbody.innerHTML = ''; empty.style.display = ''; return; }
   empty.style.display = 'none';
@@ -799,7 +719,6 @@ function renderTable(data) {
       <td>${escHtml(t.email)}</td>
       <td>${escHtml(t.phone)}</td>
       <td class="center" style="font-weight:700; color:var(--primary);">${t.courseCnt}</td>
-      <td class="center"><span class="status-badge ${t.active?'status-y':'status-n'}">${t.active?'Y':'N'}</span></td>
       <td class="center" style="font-size:11.5px; color:#888;">${t.regDate}</td>
       <td class="center"><button class="btn btn-sm btn-gray" onclick="openMailModal('${t.id}')">발송</button></td>
     </tr>`).join('');
@@ -808,12 +727,9 @@ function renderTable(data) {
 function filterTable() {
   const type = document.getElementById('searchType').value;
   const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-  const status = document.getElementById('filterStatus').value;
   const filtered = DATA.filter(t => {
     const field = type === 'email' ? t.email : t.name;
-    const matchKeyword = !keyword || field.toLowerCase().includes(keyword);
-    const matchStatus = !status || (status === 'Y' ? t.active : !t.active);
-    return matchKeyword && matchStatus;
+    return !keyword || field.toLowerCase().includes(keyword);
   });
   renderTable(filtered);
 }
@@ -821,7 +737,6 @@ function filterTable() {
 function resetFilter() {
   document.getElementById('searchInput').value = '';
   document.getElementById('searchType').value = 'name';
-  document.getElementById('filterStatus').value = '';
   renderTable(DATA);
 }
 
@@ -841,7 +756,6 @@ function openView(id) {
     <tr><th>튜터명</th><td>${escHtml(t.name)}</td><th>등록일</th><td>${t.regDate}</td></tr>
     <tr><th>이메일(아이디)</th><td>${escHtml(t.email)}</td><th>최근 로그인</th><td>${t.lastLogin}</td></tr>
     <tr><th>연락처</th><td>${escHtml(t.phone)}</td><th>담당 과정 수</th><td style="color:var(--primary); font-weight:700;">${t.courseCnt}</td></tr>
-    <tr><th>활성여부</th><td colspan="3"><span class="status-badge ${t.active?'status-y':'status-n'}">${t.active?'Y':'N'}</span></td></tr>
   `;
   document.getElementById('viewCourseCount').textContent = `총 ${t.courses.length}건`;
   document.getElementById('viewCourseBody').innerHTML = t.courses.length ? t.courses.map((c,i) => `
@@ -856,31 +770,6 @@ function openView(id) {
   showScreen('view');
 }
 
-// ── 튜터 등록 ──
-function openRegisterModal() {
-  document.getElementById('regName').value = '';
-  document.getElementById('regEmail').value = '';
-  document.getElementById('regPhone1').value = '';
-  document.getElementById('regPhone2').value = '';
-  document.getElementById('registerModal').classList.add('open');
-}
-function registerTutor() {
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  if (!name) { alert('이름을 입력해주세요.'); return; }
-  if (!email) { alert('이메일을 입력해주세요.'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('올바른 이메일 형식으로 입력해주세요.'); return; }
-  if (DATA.some(t => t.email.toLowerCase() === email.toLowerCase())) { alert('중복된 이메일이 존재합니다. 이메일을 확인해주세요.'); return; }
-  const p1 = document.getElementById('regPhone1').value.trim();
-  const p2 = document.getElementById('regPhone2').value.trim();
-  const phone = (p1 && p2) ? `010-${p1}-${p2}` : '-';
-  const newTutor = { id:'T' + String(DATA.length + 13).padStart(3,'0'), name, email, phone, courseCnt:0, active:true, regDate:'2026.08.24', lastLogin:'-', courses:[] };
-  DATA.unshift(newTutor);
-  filterTable();
-  closeModal('registerModal');
-  toast('튜터가 등록되었습니다.');
-}
-
 // ── 튜터 수정 ──
 function openEditModal() {
   const t = DATA.find(x => x.id === currentTutorId);
@@ -890,7 +779,6 @@ function openEditModal() {
   const [p1, p2] = (t.phone.match(/^010-(\d{4})-(\d{4})$/) || [,'','']).slice(1);
   document.getElementById('editPhone1').value = p1 || '';
   document.getElementById('editPhone2').value = p2 || '';
-  document.getElementById('editStatus').value = t.active ? 'Y' : 'N';
   document.getElementById('editModal').classList.add('open');
 }
 function saveEdit() {
@@ -899,7 +787,6 @@ function saveEdit() {
   const p1 = document.getElementById('editPhone1').value.trim();
   const p2 = document.getElementById('editPhone2').value.trim();
   t.phone = (p1 && p2) ? `010-${p1}-${p2}` : t.phone;
-  t.active = document.getElementById('editStatus').value === 'Y';
   closeModal('editModal');
   openView(t.id);
   filterTable();
@@ -1108,7 +995,7 @@ function closeBulkResultModal() { document.getElementById('bulkResultModal').cla
 
 document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
 document.getElementById('bulkResultModal').addEventListener('click', function(e) { if (e.target === this) closeBulkResultModal(); });
-['registerModal','editModal','pwResetModal','mailModal'].forEach(id => {
+['editModal','pwResetModal','mailModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) closeModal(id); });
 });
 </script>
