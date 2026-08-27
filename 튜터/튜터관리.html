@@ -157,6 +157,7 @@ tbody td.center { text-align:center; }
 /* ── 일괄등록 공통 (엑셀 업로드 공통정책) ── */
 .bulk-modal-box { width:820px; max-height:88vh; display:flex; flex-direction:column; position:relative; }
 .bulk-modal-body { flex:1; overflow-y:auto; padding:22px 26px; }
+.bulk-modal-footer { flex-shrink:0; padding:14px 26px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
 .bulk-info-box { background:#f8faff; border:1px solid #c7d8f7; border-radius:8px; padding:14px 18px; margin-bottom:20px; font-size:12.5px; line-height:1.9; color:#2a3a6a; }
 .bulk-info-title { font-size:13px; font-weight:700; color:#0a1e4a; margin-bottom:6px; }
 .bulk-section { margin-bottom:20px; }
@@ -480,9 +481,9 @@ tbody td.center { text-align:center; }
       <div class="tab-content active" id="tab-assign">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 배정 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. <strong>1회 최대 1,000건</strong>, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
-          엑셀 양식 내 컬럼: <strong>과정코드 / 튜터ID / 학습자ID</strong><br>
-          미리보기로 오류 확인 후 실행 버튼을 눌러주세요. 오류가 있는 행이 있어도 정상 행은 배정 처리됩니다.
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
+          미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 행이 있어도 정상 행은 배정 처리됩니다.
         </div>
 
         <div class="bulk-section">
@@ -517,15 +518,6 @@ tbody td.center { text-align:center; }
           </div>
         </div>
 
-        <div class="bulk-section">
-          <div class="bulk-step-title">Step 3. 미리보기 및 실행</div>
-          <div style="display:flex; gap:8px; justify-content:flex-end;">
-            <button class="btn btn-outline" id="bulkPreviewBtn-assign" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview('assign')">미리보기</button>
-            <button class="btn btn-primary" id="bulkSubmitBtn-assign" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit('assign')">실행</button>
-            <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
-          </div>
-        </div>
-
         <div id="bulkPreviewResult-assign" style="display:none; margin-top:4px;">
           <div id="bulkPreviewMessage-assign" class="bulk-result-banner"></div>
           <div id="bulkErrorBlock-assign" style="display:none;">
@@ -547,8 +539,8 @@ tbody td.center { text-align:center; }
       <div class="tab-content" id="tab-delete">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 삭제 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. <strong>1회 최대 1,000건</strong>, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
-          엑셀 양식 내 컬럼: <strong>과정코드 / 튜터ID / 학습자ID</strong><br>
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
           삭제되는 것은 튜터-학습자 배정 정보이며, <strong>기존 채점 데이터는 유지</strong>됩니다.
         </div>
 
@@ -584,15 +576,6 @@ tbody td.center { text-align:center; }
           </div>
         </div>
 
-        <div class="bulk-section">
-          <div class="bulk-step-title">Step 3. 미리보기 및 실행</div>
-          <div style="display:flex; gap:8px; justify-content:flex-end;">
-            <button class="btn btn-outline" id="bulkPreviewBtn-delete" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview('delete')">미리보기</button>
-            <button class="btn btn-primary" id="bulkSubmitBtn-delete" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit('delete')">실행</button>
-            <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
-          </div>
-        </div>
-
         <div id="bulkPreviewResult-delete" style="display:none; margin-top:4px;">
           <div id="bulkPreviewMessage-delete" class="bulk-result-banner"></div>
           <div id="bulkErrorBlock-delete" style="display:none;">
@@ -620,20 +603,24 @@ tbody td.center { text-align:center; }
             <tr><td>파일 형식 오류</td><td>엑셀(.xlsx, .xls) 외의 파일을 첨부한 경우</td></tr>
             <tr><td>파일 확인 불가</td><td>엑셀 파일이지만 손상·암호화 등으로 내용을 확인할 수 없는 경우</td></tr>
             <tr><td>파일 용량 초과</td><td>파일 용량이 10MB를 초과하는 경우</td></tr>
-            <tr><td>최대 처리 건수 초과</td><td>1회 최대 처리 건수(1,000건)를 초과한 경우</td></tr>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
             <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
-            <tr><td>필수값 누락</td><td>과정코드·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
-            <tr><td>존재하지 않는 과정코드</td><td>시스템에 등록되지 않은 과정코드인 경우</td></tr>
+            <tr><td>필수값 누락</td><td>과정아이디·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>존재하지 않는 과정아이디</td><td>시스템에 등록되지 않은 과정아이디인 경우</td></tr>
             <tr><td>존재하지 않는 튜터ID</td><td>시스템에 없거나 비활성 상태인 튜터ID인 경우</td></tr>
             <tr><td>존재하지 않는 학습자ID</td><td>시스템에 없는 학습자ID인 경우(해당 과정 미신청자 포함)</td></tr>
-            <tr><td>이미 배정된 조합 <span style="color:#888; font-weight:400;">(배정 전용)</span></td><td>동일한 과정코드·튜터ID·학습자ID 조합이 이미 배정되어 있는 경우</td></tr>
-            <tr><td>배정 이력 없음 <span style="color:#888; font-weight:400;">(삭제 전용)</span></td><td>삭제하려는 과정코드·튜터ID·학습자ID 조합의 배정 이력이 없는 경우</td></tr>
+            <tr><td>이미 배정된 조합 <span style="color:#888; font-weight:400;">(배정 전용)</span></td><td>동일한 과정아이디·튜터ID·학습자ID 조합이 이미 배정되어 있는 경우</td></tr>
+            <tr><td>배정 이력 없음 <span style="color:#888; font-weight:400;">(삭제 전용)</span></td><td>삭제하려는 과정아이디·튜터ID·학습자ID 조합의 배정 이력이 없는 경우</td></tr>
           </tbody>
         </table>
         </div>
       </div>
 
+    </div>
+
+    <div class="bulk-modal-footer">
+      <button class="btn btn-outline" id="bulkPreviewBtnFooter" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview(currentBulkTab)">미리보기</button>
+      <button class="btn btn-primary" id="bulkSubmitBtnFooter" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit(currentBulkTab)">등록</button>
     </div>
 
     <!-- 팝업 전체 로딩 오버레이 -->
@@ -849,13 +836,16 @@ renderTable(DATA);
 /* ══════════════════════════════════════════════
    일괄 배정/삭제 — 엑셀 업로드 공통정책 (탭별 독립 상태)
    ══════════════════════════════════════════════ */
-const bulkState = { assign: { file:null }, delete: { file:null } };
+const bulkState = { assign: { file:null, previewOk:false }, delete: { file:null, previewOk:false } };
+let currentBulkTab = 'assign';
 
 function switchModalTab(type) {
+  currentBulkTab = type;
   ['assign','delete'].forEach(k => {
     document.getElementById('tabBtn-' + k).classList.toggle('active', k === type);
     document.getElementById('tab-' + k).classList.toggle('active', k === type);
   });
+  refreshBulkFooter();
 }
 
 function openBulkModal() {
@@ -869,13 +859,18 @@ function closeBulkModal() {
 }
 function resetBulkTab(type) {
   bulkState[type].file = null;
+  bulkState[type].previewOk = false;
   document.getElementById('bulkFileInput-' + type).value = '';
   document.getElementById('bulkFileSelected-' + type).style.display = 'none';
   document.getElementById('bulkDropZone-' + type).style.display = '';
   document.getElementById('bulkPreviewResult-' + type).style.display = 'none';
   hideBulkFileErr(type);
-  setBtnDisabled('bulkPreviewBtn-' + type, true);
-  setBtnDisabled('bulkSubmitBtn-' + type, true);
+  if (type === currentBulkTab) refreshBulkFooter();
+}
+function refreshBulkFooter() {
+  const st = bulkState[currentBulkTab];
+  setBtnDisabled('bulkPreviewBtnFooter', !st.file);
+  setBtnDisabled('bulkSubmitBtnFooter', !st.previewOk);
 }
 function setBtnDisabled(id, disabled) {
   const btn = document.getElementById(id);
@@ -889,7 +884,7 @@ function showBulkFileErr(type, name, msg) {
   document.getElementById('bulkErrFileMsg-' + type).textContent = msg;
   document.getElementById('bulkFileSelected-' + type).style.display = 'none';
   document.getElementById('bulkDropZone-' + type).style.display = '';
-  setBtnDisabled('bulkPreviewBtn-' + type, true);
+  if (type === currentBulkTab) refreshBulkFooter();
 }
 function hideBulkFileErr(type) { document.getElementById('bulkFileErrCard-' + type).style.display = 'none'; }
 function bulkClearFileErr(type) { hideBulkFileErr(type); document.getElementById('bulkFileInput-' + type).value = ''; }
@@ -918,35 +913,32 @@ function handleBulkFile(file, type) {
   }
   if (file.size > 10 * 1024 * 1024) { alert('파일 용량이 10MB를 초과합니다.'); return; }
   bulkState[type].file = file;
+  bulkState[type].previewOk = false;
   document.getElementById('bulkDropZone-' + type).style.display = 'none';
   const sel = document.getElementById('bulkFileSelected-' + type);
   sel.style.display = 'flex';
   document.getElementById('bulkFileNameText-' + type).textContent = file.name;
   document.getElementById('bulkFileSizeText-' + type).textContent = `(${(file.size/1024).toFixed(1)}KB)`;
-  setBtnDisabled('bulkPreviewBtn-' + type, false);
+  document.getElementById('bulkPreviewResult-' + type).style.display = 'none';
+  if (type === currentBulkTab) refreshBulkFooter();
 }
 function bulkClearFile(type) {
   bulkState[type].file = null;
+  bulkState[type].previewOk = false;
   document.getElementById('bulkFileInput-' + type).value = '';
   document.getElementById('bulkFileSelected-' + type).style.display = 'none';
   document.getElementById('bulkDropZone-' + type).style.display = '';
   document.getElementById('bulkPreviewResult-' + type).style.display = 'none';
   hideBulkFileErr(type);
-  setBtnDisabled('bulkPreviewBtn-' + type, true);
-  setBtnDisabled('bulkSubmitBtn-' + type, true);
+  if (type === currentBulkTab) refreshBulkFooter();
 }
 
 function bulkPreview(type) {
   const file = bulkState[type].file;
   if (!file) return;
-  const fname = file.name.toLowerCase();
-  if (fname.includes('초과')) {
-    alert('최대 1,000건까지 처리할 수 있습니다. 파일을 나눠서 업로드해주세요.');
-    return;
-  }
   showBulkLoading('파일을 검증하고 있습니다.');
-  setBtnDisabled('bulkPreviewBtn-' + type, true);
-  setBtnDisabled('bulkSubmitBtn-' + type, true);
+  setBtnDisabled('bulkPreviewBtnFooter', true);
+  setBtnDisabled('bulkSubmitBtnFooter', true);
   setTimeout(() => { hideBulkLoading(); renderBulkPreviewResult(type); }, 900);
 }
 
@@ -957,27 +949,26 @@ function renderBulkPreviewResult(type) {
   const errBlock = document.getElementById('bulkErrorBlock-' + type);
   const tableEl = document.getElementById('bulkPreviewTable-' + type);
   document.getElementById('bulkPreviewResult-' + type).style.display = '';
-  setBtnDisabled('bulkPreviewBtn-' + type, false);
+  bulkState[type].previewOk = true;
 
   if (!hasError) {
     const verb = type === 'assign' ? '배정' : '삭제';
     msgEl.style.background = '#dcfce7'; msgEl.style.color = '#16a34a';
-    msgEl.innerHTML = `<span class="icon">✔</span><span>미리보기가 완료되었습니다. 총 46건이 정상 확인되었습니다. 실행 버튼을 클릭해 ${verb} 처리해 주세요.</span>`;
+    msgEl.innerHTML = `<span class="icon">✔</span><span>미리보기가 완료되었습니다. 총 46건이 정상 확인되었습니다. 등록 버튼을 클릭해 ${verb} 처리해 주세요.</span>`;
     errBlock.style.display = 'none';
-    setBtnDisabled('bulkSubmitBtn-' + type, false);
   } else {
     msgEl.style.background = '#fef2f2'; msgEl.style.color = '#c0392b';
-    msgEl.innerHTML = '<span class="icon">⚠</span><span>일부 행에서 오류가 발견되었습니다. 오류 내용을 확인해주세요. 오류 없는 정상 행은 실행 시 처리되고, 오류 행은 제외됩니다.</span>';
+    msgEl.innerHTML = '<span class="icon">⚠</span><span>일부 행에서 오류가 발견되었습니다. 오류 내용을 확인해주세요. 오류 없는 정상 행은 등록 시 처리되고, 오류 행은 제외됩니다.</span>';
     errBlock.style.display = '';
     const rows = type === 'assign'
-      ? `<tr><td>4</td><td>LM-2024099 / T003 / S00231</td><td style="color:#c0392b;">존재하지 않는 과정코드입니다.</td></tr>
+      ? `<tr><td>4</td><td>LM-2024099 / T003 / S00231</td><td style="color:#c0392b;">존재하지 않는 과정아이디입니다.</td></tr>
          <tr><td>9</td><td>LM-2024001 / T003 / S00231</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
          <tr><td>15</td><td>LM-2024002 / T099 / S00118</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
       : `<tr><td>2</td><td>LM-2024003 / T005 / S00118</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
          <tr><td>11</td><td>LM-2024001 / T003 / S09981</td><td style="color:#c0392b;">존재하지 않는 학습자ID입니다.</td></tr>`;
     tableEl.querySelector('tbody').innerHTML = rows;
-    setBtnDisabled('bulkSubmitBtn-' + type, false);
   }
+  if (type === currentBulkTab) refreshBulkFooter();
 }
 
 function downloadErrorList(type) { toast('오류 목록이 다운로드됩니다. (프로토타입)'); }
