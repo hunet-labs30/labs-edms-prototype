@@ -164,10 +164,12 @@ tbody td.center { text-align:center; }
 .bulk-drop-zone { border:1.5px dashed #cdd2d9; border-radius:6px; background:#fafbfc; padding:30px 20px; text-align:center; cursor:pointer; transition:border-color .2s, background .2s; }
 .bulk-drop-zone:hover, .bulk-drop-zone.drag-active { border-color:var(--primary); background:#f0f5ff; }
 .bulk-drop-text { font-size:12.5px; color:#888; margin-bottom:10px; }
-.bulk-error-tbl { width:100%; border-collapse:collapse; font-size:12px; }
-.bulk-error-tbl th { background:#f5f6fa; padding:9px 14px; text-align:center; font-size:11.5px; font-weight:700; color:#555; border:1px solid var(--border); }
-.bulk-error-tbl td { padding:10px 14px; border:1px solid #f0f2f5; vertical-align:middle; }
-.bulk-error-tbl td:first-child { font-weight:600; color:#1a1a2e; background:#fafbfc; text-align:center; white-space:nowrap; }
+.bulk-tbl-wrap { border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.bulk-error-tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
+.bulk-error-tbl th { background:#f7f8fa; padding:11px 16px; text-align:left; font-size:11.5px; font-weight:600; color:#888; border-bottom:1px solid var(--border); }
+.bulk-error-tbl td { padding:12px 16px; border-bottom:1px solid #f0f2f5; vertical-align:middle; text-align:left; color:#333; }
+.bulk-error-tbl tr:last-child td { border-bottom:none; }
+.bulk-error-tbl td:first-child { white-space:nowrap; }
 
 /* ── 파일 레벨 오류 카드 ── */
 .bulk-file-card-err { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; margin-top:14px; position:relative; }
@@ -531,10 +533,12 @@ tbody td.center { text-align:center; }
               <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">오류 항목</h4>
               <button class="btn btn-sm btn-gray" onclick="downloadErrorList('assign')">↓ 오류내용 다운</button>
             </div>
-            <table id="bulkPreviewTable-assign" class="bulk-error-tbl">
-              <thead><tr><th style="width:70px;">행</th><th style="width:160px;">식별값</th><th>오류내용</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <div class="bulk-tbl-wrap">
+              <table id="bulkPreviewTable-assign" class="bulk-error-tbl">
+                <thead><tr><th style="width:70px;">행</th><th style="width:220px;">식별값</th><th>오류내용</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -596,10 +600,12 @@ tbody td.center { text-align:center; }
               <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">오류 항목</h4>
               <button class="btn btn-sm btn-gray" onclick="downloadErrorList('delete')">↓ 오류내용 다운</button>
             </div>
-            <table id="bulkPreviewTable-delete" class="bulk-error-tbl">
-              <thead><tr><th style="width:70px;">행</th><th style="width:160px;">식별값</th><th>오류내용</th></tr></thead>
-              <tbody></tbody>
-            </table>
+            <div class="bulk-tbl-wrap">
+              <table id="bulkPreviewTable-delete" class="bulk-error-tbl">
+                <thead><tr><th style="width:70px;">행</th><th style="width:220px;">식별값</th><th>오류내용</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -607,32 +613,25 @@ tbody td.center { text-align:center; }
       <!-- 오류 케이스 정리 (공통) -->
       <div class="bulk-section" style="margin-top:4px;">
         <div class="bulk-step-title">오류 케이스 정리</div>
-
-        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">파일 레벨</div>
-        <table class="bulk-error-tbl" style="margin-bottom:16px;">
-          <thead><tr><th style="width:100px;">액션</th><th style="width:200px;">상황</th><th>메시지</th><th style="width:110px;">노출 방법</th></tr></thead>
-          <tbody>
-            <tr><td>파일 선택/드롭</td><td>엑셀 외 파일 형식</td><td>허용되지 않은 파일 형식입니다: {확장자}</td><td>파일 카드 인라인 오류</td></tr>
-            <tr><td>파일 선택/드롭</td><td>엑셀 파일이지만 확인 불가(손상/암호화 등)</td><td>정상적인 엑셀파일을 등록해주세요.</td><td>알림</td></tr>
-            <tr><td>파일 선택/드롭</td><td>파일 용량 10MB 초과</td><td>파일 용량이 10MB를 초과합니다.</td><td>알림</td></tr>
-            <tr><td>미리보기 클릭</td><td>1회 최대 처리 건수(1,000건) 초과</td><td>최대 1,000건까지 처리할 수 있습니다. 파일을 나눠서 업로드해주세요.</td><td>알림</td></tr>
-          </tbody>
-        </table>
-
-        <div style="font-size:12px; font-weight:700; color:#555; margin-bottom:6px;">행(Row) 레벨</div>
+        <div class="bulk-tbl-wrap">
         <table class="bulk-error-tbl">
-          <thead><tr><th style="width:140px;">구분</th><th>오류케이스 정리</th></tr></thead>
+          <thead><tr><th style="width:220px;">오류 케이스</th><th>설명</th></tr></thead>
           <tbody>
-            <tr><td>공통</td><td>데이터 없음 — 엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
-            <tr><td>공통</td><td>샘플 양식 불일치 — 업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
-            <tr><td>공통</td><td>필수값 누락 — 과정코드·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
-            <tr><td>공통</td><td>존재하지 않는 과정코드 — 시스템에 등록되지 않은 과정코드인 경우</td></tr>
-            <tr><td>공통</td><td>존재하지 않거나 비활성 상태인 튜터ID</td></tr>
-            <tr><td>공통</td><td>존재하지 않는 학습자ID(해당 과정 미신청자 포함)</td></tr>
-            <tr><td>일괄 배정 전용</td><td>이미 동일하게 배정된 조합 — 중복 배정 요청인 경우</td></tr>
-            <tr><td>일괄 삭제 전용</td><td>배정 이력이 없는 조합 — 삭제할 배정 건이 존재하지 않는 경우</td></tr>
+            <tr><td>파일 형식 오류</td><td>엑셀(.xlsx, .xls) 외의 파일을 첨부한 경우</td></tr>
+            <tr><td>파일 확인 불가</td><td>엑셀 파일이지만 손상·암호화 등으로 내용을 확인할 수 없는 경우</td></tr>
+            <tr><td>파일 용량 초과</td><td>파일 용량이 10MB를 초과하는 경우</td></tr>
+            <tr><td>최대 처리 건수 초과</td><td>1회 최대 처리 건수(1,000건)를 초과한 경우</td></tr>
+            <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
+            <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
+            <tr><td>필수값 누락</td><td>과정코드·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>존재하지 않는 과정코드</td><td>시스템에 등록되지 않은 과정코드인 경우</td></tr>
+            <tr><td>존재하지 않는 튜터ID</td><td>시스템에 없거나 비활성 상태인 튜터ID인 경우</td></tr>
+            <tr><td>존재하지 않는 학습자ID</td><td>시스템에 없는 학습자ID인 경우(해당 과정 미신청자 포함)</td></tr>
+            <tr><td>이미 배정된 조합 <span style="color:#888; font-weight:400;">(배정 전용)</span></td><td>동일한 과정코드·튜터ID·학습자ID 조합이 이미 배정되어 있는 경우</td></tr>
+            <tr><td>배정 이력 없음 <span style="color:#888; font-weight:400;">(삭제 전용)</span></td><td>삭제하려는 과정코드·튜터ID·학습자ID 조합의 배정 이력이 없는 경우</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>
@@ -971,11 +970,11 @@ function renderBulkPreviewResult(type) {
     msgEl.innerHTML = '<span class="icon">⚠</span><span>일부 행에서 오류가 발견되었습니다. 오류 내용을 확인해주세요. 오류 없는 정상 행은 실행 시 처리되고, 오류 행은 제외됩니다.</span>';
     errBlock.style.display = '';
     const rows = type === 'assign'
-      ? `<tr><td style="text-align:center;">4</td><td>LM-2024099</td><td style="color:#c0392b;">존재하지 않는 과정코드입니다.</td></tr>
-         <tr><td style="text-align:center;">9</td><td>T003 / S00231</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
-         <tr><td style="text-align:center;">15</td><td>T099</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
-      : `<tr><td style="text-align:center;">2</td><td>T005 / S00118</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
-         <tr><td style="text-align:center;">11</td><td>S09981</td><td style="color:#c0392b;">존재하지 않는 학습자ID입니다.</td></tr>`;
+      ? `<tr><td>4</td><td>LM-2024099 / T003 / S00231</td><td style="color:#c0392b;">존재하지 않는 과정코드입니다.</td></tr>
+         <tr><td>9</td><td>LM-2024001 / T003 / S00231</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
+         <tr><td>15</td><td>LM-2024002 / T099 / S00118</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
+      : `<tr><td>2</td><td>LM-2024003 / T005 / S00118</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
+         <tr><td>11</td><td>LM-2024001 / T003 / S09981</td><td style="color:#c0392b;">존재하지 않는 학습자ID입니다.</td></tr>`;
     tableEl.querySelector('tbody').innerHTML = rows;
     setBtnDisabled('bulkSubmitBtn-' + type, false);
   }
