@@ -178,6 +178,19 @@ tbody td.center { text-align:center; }
 .bulk-file-card-err .close-x { width:20px; height:20px; border-radius:50%; background:#eee; border:none; color:#888; font-size:11px; cursor:pointer; flex-shrink:0; }
 .bulk-file-err-msg { color:#c0392b; font-size:12px; margin-top:6px; }
 
+/* ── 첨부 파일 카드 (정상) ── */
+.bulk-file-card { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #e2e5ea; border-radius:8px; padding:12px 14px; margin-top:14px; position:relative; }
+.bulk-file-card .file-badge { width:34px; height:34px; border-radius:8px; background:#1a9c5c; color:#fff; font-size:10px; font-weight:800; letter-spacing:.3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.bulk-file-card .file-info { flex:1; min-width:0; }
+.bulk-file-card .file-name { font-size:13px; font-weight:600; color:#1a1a2e; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bulk-file-card .file-size { font-size:11px; color:#999; margin-top:2px; }
+.bulk-file-remove { position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; background:#fff; border:1px solid #ddd; color:#888; font-size:11px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.15); }
+.bulk-file-remove:hover { color:#c0392b; border-color:#e8c4bf; }
+
+/* ── 미리보기 결과 배너 ── */
+.bulk-result-banner { display:flex; align-items:flex-start; gap:8px; padding:12px 14px; border-radius:6px; font-size:13px; line-height:1.6; margin-bottom:14px; }
+.bulk-result-banner .icon { flex-shrink:0; font-size:14px; }
+
 /* ── 로딩 오버레이 (팝업 전체) ── */
 .bulk-loading-overlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,.9); border-radius:8px; align-items:center; justify-content:center; z-index:10; }
 .bulk-loading-overlay.show { display:flex; }
@@ -484,15 +497,13 @@ tbody td.center { text-align:center; }
             <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput-assign').click()">파일 선택</button>
             <input type="file" id="bulkFileInput-assign" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this,'assign')">
           </div>
-          <div id="bulkFileSelected-assign" style="display:none; margin-top:14px; border:1px solid #dde1e7; border-radius:6px; padding:12px 14px; background:#f9fafb; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">📎</span>
-              <div>
-                <div id="bulkFileNameText-assign" style="font-size:13px; font-weight:600; color:#1a1a2e;"></div>
-                <div id="bulkFileSizeText-assign" style="font-size:11px; color:#888; margin-top:2px;"></div>
-              </div>
+          <div id="bulkFileSelected-assign" class="bulk-file-card" style="display:none;">
+            <div class="file-badge">XLS</div>
+            <div class="file-info">
+              <div class="file-name" id="bulkFileNameText-assign"></div>
+              <div class="file-size" id="bulkFileSizeText-assign"></div>
             </div>
-            <button class="btn btn-xs" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile('assign')">× 삭제</button>
+            <button class="bulk-file-remove" onclick="bulkClearFile('assign')">✕</button>
           </div>
           <div id="bulkFileErrCard-assign" style="display:none;">
             <div class="bulk-file-card-err">
@@ -514,15 +525,17 @@ tbody td.center { text-align:center; }
         </div>
 
         <div id="bulkPreviewResult-assign" style="display:none; margin-top:4px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #eee;">
-            <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">미리보기 결과</h4>
-            <button class="btn btn-sm btn-gray" id="bulkErrorDownloadBtn-assign" style="display:none;" onclick="downloadErrorList('assign')">↓ 오류내용 다운로드</button>
+          <div id="bulkPreviewMessage-assign" class="bulk-result-banner"></div>
+          <div id="bulkErrorBlock-assign" style="display:none;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
+              <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">오류 항목</h4>
+              <button class="btn btn-sm btn-gray" onclick="downloadErrorList('assign')">↓ 오류내용 다운</button>
+            </div>
+            <table id="bulkPreviewTable-assign" class="bulk-error-tbl">
+              <thead><tr><th style="width:70px;">행</th><th style="width:160px;">식별값</th><th>오류내용</th></tr></thead>
+              <tbody></tbody>
+            </table>
           </div>
-          <div id="bulkPreviewMessage-assign" style="padding:12px 14px; border-radius:6px; font-size:13px; margin-bottom:14px;"></div>
-          <table id="bulkPreviewTable-assign" class="bulk-error-tbl" style="display:none;">
-            <thead><tr><th style="width:100px;">행 번호</th><th>오류 내용</th></tr></thead>
-            <tbody></tbody>
-          </table>
         </div>
       </div>
 
@@ -549,15 +562,13 @@ tbody td.center { text-align:center; }
             <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput-delete').click()">파일 선택</button>
             <input type="file" id="bulkFileInput-delete" accept=".xlsx,.xls" style="display:none" onchange="bulkFileSelected(this,'delete')">
           </div>
-          <div id="bulkFileSelected-delete" style="display:none; margin-top:14px; border:1px solid #dde1e7; border-radius:6px; padding:12px 14px; background:#f9fafb; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:16px;">📎</span>
-              <div>
-                <div id="bulkFileNameText-delete" style="font-size:13px; font-weight:600; color:#1a1a2e;"></div>
-                <div id="bulkFileSizeText-delete" style="font-size:11px; color:#888; margin-top:2px;"></div>
-              </div>
+          <div id="bulkFileSelected-delete" class="bulk-file-card" style="display:none;">
+            <div class="file-badge">XLS</div>
+            <div class="file-info">
+              <div class="file-name" id="bulkFileNameText-delete"></div>
+              <div class="file-size" id="bulkFileSizeText-delete"></div>
             </div>
-            <button class="btn btn-xs" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile('delete')">× 삭제</button>
+            <button class="bulk-file-remove" onclick="bulkClearFile('delete')">✕</button>
           </div>
           <div id="bulkFileErrCard-delete" style="display:none;">
             <div class="bulk-file-card-err">
@@ -579,15 +590,17 @@ tbody td.center { text-align:center; }
         </div>
 
         <div id="bulkPreviewResult-delete" style="display:none; margin-top:4px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #eee;">
-            <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">미리보기 결과</h4>
-            <button class="btn btn-sm btn-gray" id="bulkErrorDownloadBtn-delete" style="display:none;" onclick="downloadErrorList('delete')">↓ 오류내용 다운로드</button>
+          <div id="bulkPreviewMessage-delete" class="bulk-result-banner"></div>
+          <div id="bulkErrorBlock-delete" style="display:none;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
+              <h4 style="font-size:14px; font-weight:700; color:#1a1a2e;">오류 항목</h4>
+              <button class="btn btn-sm btn-gray" onclick="downloadErrorList('delete')">↓ 오류내용 다운</button>
+            </div>
+            <table id="bulkPreviewTable-delete" class="bulk-error-tbl">
+              <thead><tr><th style="width:70px;">행</th><th style="width:160px;">식별값</th><th>오류내용</th></tr></thead>
+              <tbody></tbody>
+            </table>
           </div>
-          <div id="bulkPreviewMessage-delete" style="padding:12px 14px; border-radius:6px; font-size:13px; margin-bottom:14px;"></div>
-          <table id="bulkPreviewTable-delete" class="bulk-error-tbl" style="display:none;">
-            <thead><tr><th style="width:100px;">행 번호</th><th>오류 내용</th></tr></thead>
-            <tbody></tbody>
-          </table>
         </div>
       </div>
 
@@ -942,27 +955,27 @@ function renderBulkPreviewResult(type) {
   const file = bulkState[type].file;
   const hasError = !file.name.toLowerCase().includes('샘플') && !file.name.toLowerCase().includes('템플릿');
   const msgEl = document.getElementById('bulkPreviewMessage-' + type);
+  const errBlock = document.getElementById('bulkErrorBlock-' + type);
   const tableEl = document.getElementById('bulkPreviewTable-' + type);
-  const downloadBtn = document.getElementById('bulkErrorDownloadBtn-' + type);
   document.getElementById('bulkPreviewResult-' + type).style.display = '';
   setBtnDisabled('bulkPreviewBtn-' + type, false);
 
   if (!hasError) {
-    msgEl.style.background = '#dcfce7'; msgEl.style.color = '#16a34a';
     const verb = type === 'assign' ? '배정' : '삭제';
-    msgEl.textContent = `✔ 미리보기가 완료되었습니다. 총 46건이 정상 확인되었습니다. 실행 버튼을 클릭해 ${verb} 처리해 주세요.`;
-    tableEl.style.display = 'none'; downloadBtn.style.display = 'none';
+    msgEl.style.background = '#dcfce7'; msgEl.style.color = '#16a34a';
+    msgEl.innerHTML = `<span class="icon">✔</span><span>미리보기가 완료되었습니다. 총 46건이 정상 확인되었습니다. 실행 버튼을 클릭해 ${verb} 처리해 주세요.</span>`;
+    errBlock.style.display = 'none';
     setBtnDisabled('bulkSubmitBtn-' + type, false);
   } else {
     msgEl.style.background = '#fef2f2'; msgEl.style.color = '#c0392b';
-    msgEl.textContent = '✖ 일부 행에서 오류가 발견되었습니다. 오류 없는 정상 행은 실행 시 처리되고, 오류 행은 제외됩니다.';
-    tableEl.style.display = ''; downloadBtn.style.display = '';
+    msgEl.innerHTML = '<span class="icon">⚠</span><span>일부 행에서 오류가 발견되었습니다. 오류 내용을 확인해주세요. 오류 없는 정상 행은 실행 시 처리되고, 오류 행은 제외됩니다.</span>';
+    errBlock.style.display = '';
     const rows = type === 'assign'
-      ? `<tr><td style="text-align:center;">4</td><td>존재하지 않는 과정코드입니다.</td></tr>
-         <tr><td style="text-align:center;">9</td><td>이미 동일하게 배정된 조합입니다.</td></tr>
-         <tr><td style="text-align:center;">15</td><td>존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
-      : `<tr><td style="text-align:center;">2</td><td>배정 이력이 없는 조합입니다.</td></tr>
-         <tr><td style="text-align:center;">11</td><td>존재하지 않는 학습자ID입니다.</td></tr>`;
+      ? `<tr><td style="text-align:center;">4</td><td>LM-2024099</td><td style="color:#c0392b;">존재하지 않는 과정코드입니다.</td></tr>
+         <tr><td style="text-align:center;">9</td><td>T003 / S00231</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
+         <tr><td style="text-align:center;">15</td><td>T099</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
+      : `<tr><td style="text-align:center;">2</td><td>T005 / S00118</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
+         <tr><td style="text-align:center;">11</td><td>S09981</td><td style="color:#c0392b;">존재하지 않는 학습자ID입니다.</td></tr>`;
     tableEl.querySelector('tbody').innerHTML = rows;
     setBtnDisabled('bulkSubmitBtn-' + type, false);
   }
