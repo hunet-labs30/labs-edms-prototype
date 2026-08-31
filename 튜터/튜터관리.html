@@ -125,20 +125,6 @@ tbody td.center { text-align:center; }
 .modal-body { padding:20px; font-size:13px; line-height:1.7; color:#444; }
 .modal-footer { padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
 
-/* ── 폼 ── */
-.form-row { display:flex; border-bottom:1px solid #f0f2f5; }
-.form-row:last-child { border-bottom:none; }
-.form-row th { width:130px; flex-shrink:0; background:#f8f9fb; font-size:12.5px; font-weight:600; color:#444; padding:12px 14px; text-align:left; }
-.form-row td { flex:1; padding:10px 14px; }
-.form-table { border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-.form-table .form-row { display:flex; }
-.form-input { height:32px; border:1px solid var(--border); border-radius:4px; padding:0 10px; font-size:12.5px; width:100%; font-family:inherit; }
-.form-input:focus { outline:none; border-color:var(--primary); }
-.form-input:disabled { background:#f5f6f8; color:#888; }
-.req { color:#e03030; margin-left:2px; }
-.form-hint { font-size:11px; color:#888; margin-top:4px; }
-.form-inline { display:flex; align-items:center; gap:6px; }
-
 /* ── 상세 화면 정보 표 ── */
 .info-table { width:100%; border-collapse:collapse; }
 .info-table tr { border-bottom:1px solid #f0f2f5; }
@@ -377,49 +363,11 @@ tbody td.center { text-align:center; }
 
       <div style="display:flex; justify-content:center; gap:8px; padding-bottom:8px;">
         <button class="btn btn-gray" onclick="showScreen('list')">목록</button>
-        <button class="btn btn-gray" onclick="openEditModal()">수정</button>
         <button class="btn btn-gray" onclick="openPwResetModal()">비밀번호 초기화</button>
       </div>
     </div><!-- /screen-view -->
 
   </main>
-</div>
-
-<!-- ── 모달: 튜터 정보 수정 ── -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal-box" style="width:480px;">
-    <div class="modal-header">
-      <h3>튜터 정보 수정</h3>
-      <button class="modal-close" onclick="closeModal('editModal')">×</button>
-    </div>
-    <div class="modal-body" style="padding:0;">
-      <table class="form-table" style="border:none; border-radius:0; margin:20px; width:calc(100% - 40px);">
-        <tr class="form-row">
-          <th>이름</th>
-          <td><input id="editName" class="form-input" type="text" disabled></td>
-        </tr>
-        <tr class="form-row">
-          <th>이메일(아이디)</th>
-          <td><input id="editEmail" class="form-input" type="email" disabled></td>
-        </tr>
-        <tr class="form-row">
-          <th>연락처</th>
-          <td>
-            <div class="form-inline">
-              <span style="font-size:12px; color:#555;">010</span><span style="color:#cdd2d9;">-</span>
-              <input id="editPhone1" class="form-input" type="text" style="width:80px;" maxlength="4">
-              <span style="color:#cdd2d9;">-</span>
-              <input id="editPhone2" class="form-input" type="text" style="width:80px;" maxlength="4">
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('editModal')">취소</button>
-      <button class="btn btn-primary" onclick="saveEdit()">저장</button>
-    </div>
-  </div>
 </div>
 
 <!-- ── 모달: 비밀번호 초기화 ── -->
@@ -782,29 +730,6 @@ function openView(id) {
   showScreen('view');
 }
 
-// ── 튜터 수정 ──
-function openEditModal() {
-  const t = DATA.find(x => x.id === currentTutorId);
-  if (!t) return;
-  document.getElementById('editName').value = t.name;
-  document.getElementById('editEmail').value = t.email;
-  const [p1, p2] = (t.phone.match(/^010-(\d{4})-(\d{4})$/) || [,'','']).slice(1);
-  document.getElementById('editPhone1').value = p1 || '';
-  document.getElementById('editPhone2').value = p2 || '';
-  document.getElementById('editModal').classList.add('open');
-}
-function saveEdit() {
-  const t = DATA.find(x => x.id === currentTutorId);
-  if (!t) return;
-  const p1 = document.getElementById('editPhone1').value.trim();
-  const p2 = document.getElementById('editPhone2').value.trim();
-  t.phone = (p1 && p2) ? `010-${p1}-${p2}` : t.phone;
-  closeModal('editModal');
-  openView(t.id);
-  filterTable();
-  toast('튜터 정보가 저장되었습니다.');
-}
-
 // ── 비밀번호 초기화 ──
 function openPwResetModal() {
   const t = DATA.find(x => x.id === currentTutorId);
@@ -1011,7 +936,7 @@ function closeBulkResultModal() { document.getElementById('bulkResultModal').cla
 
 document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
 document.getElementById('bulkResultModal').addEventListener('click', function(e) { if (e.target === this) closeBulkResultModal(); });
-['editModal','pwResetModal','mailModal'].forEach(id => {
+['pwResetModal','mailModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) closeModal(id); });
 });
 </script>
