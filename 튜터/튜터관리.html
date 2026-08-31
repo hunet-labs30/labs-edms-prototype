@@ -82,6 +82,14 @@ body { font-family:'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; fon
 .filter-select:focus { border-color:var(--primary); }
 .filter-count { font-size:12px; color:#888; margin-left:auto; }
 
+/* ── 검색결과 요약 ── */
+.search-summary-row { display:flex; gap:24px; padding:14px 18px; border-bottom:1px solid var(--border); }
+.search-summary-item { display:flex; align-items:baseline; gap:6px; }
+.search-summary-val { font-size:18px; font-weight:700; color:#1a1a2e; }
+.search-summary-val.active { color:#2e8b4f; }
+.search-summary-val.inactive { color:#bbb; }
+.search-summary-label { font-size:12px; color:#888; }
+
 /* ── Table ── */
 .tbl-wrap { overflow-x:auto; }
 table { width:100%; border-collapse:collapse; font-size:12.5px; }
@@ -302,6 +310,22 @@ tbody td.center { text-align:center; }
           </div>
         </div>
 
+        <!-- 검색결과 요약 -->
+        <div class="search-summary-row">
+          <div class="search-summary-item">
+            <span class="search-summary-val" id="summaryTotal">0</span>
+            <span class="search-summary-label">전체 튜터</span>
+          </div>
+          <div class="search-summary-item">
+            <span class="search-summary-val active" id="summaryActive">0</span>
+            <span class="search-summary-label">활성</span>
+          </div>
+          <div class="search-summary-item">
+            <span class="search-summary-val inactive" id="summaryInactive">0</span>
+            <span class="search-summary-label">비활성</span>
+          </div>
+        </div>
+
         <!-- 테이블 -->
         <div class="tbl-wrap">
           <table>
@@ -310,7 +334,7 @@ tbody td.center { text-align:center; }
                 <th style="width:48px;">No.</th>
                 <th>튜터명</th>
                 <th>이메일</th>
-                <th>연락처</th>
+                <th>휴대번호</th>
                 <th class="center" style="width:100px;">담당 과정 수</th>
                 <th class="center" style="width:70px;">활성여부</th>
                 <th class="center" style="width:100px;">등록일</th>
@@ -692,16 +716,22 @@ function renderTable(data) {
     </tr>`).join('');
 }
 
+function updateSummary(list) {
+  document.getElementById('summaryTotal').textContent = list.length;
+  document.getElementById('summaryActive').textContent = list.filter(t => t.active === 'Y').length;
+  document.getElementById('summaryInactive').textContent = list.filter(t => t.active === 'N').length;
+}
+
 function filterTable() {
   const type = document.getElementById('searchType').value;
   const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
   const status = document.getElementById('statusFilter').value;
-  const filtered = DATA.filter(t => {
+  const keywordFiltered = DATA.filter(t => {
     const field = type === 'email' ? t.email : t.name;
-    const matchesKeyword = !keyword || field.toLowerCase().includes(keyword);
-    const matchesStatus = status === 'all' || t.active === status;
-    return matchesKeyword && matchesStatus;
+    return !keyword || field.toLowerCase().includes(keyword);
   });
+  updateSummary(keywordFiltered);
+  const filtered = keywordFiltered.filter(t => status === 'all' || t.active === status);
   renderTable(filtered);
 }
 
@@ -709,6 +739,7 @@ function resetFilter() {
   document.getElementById('searchInput').value = '';
   document.getElementById('searchType').value = 'name';
   document.getElementById('statusFilter').value = 'all';
+  updateSummary(DATA);
   renderTable(DATA);
 }
 
@@ -727,7 +758,7 @@ function openView(id) {
   document.getElementById('viewBasicInfo').innerHTML = `
     <tr><th>튜터명</th><td>${escHtml(t.name)}</td><th>등록일</th><td>${t.regDate}</td></tr>
     <tr><th>이메일(아이디)</th><td>${escHtml(t.email)}</td><th>최근 로그인</th><td>${t.lastLogin}</td></tr>
-    <tr><th>연락처</th><td>${escHtml(t.phone)}</td><th>담당 과정 수</th><td style="color:var(--primary); font-weight:700;">${t.courseCnt}</td></tr>
+    <tr><th>휴대번호</th><td>${escHtml(t.phone)}</td><th>담당 과정 수</th><td style="color:var(--primary); font-weight:700;">${t.courseCnt}</td></tr>
     <tr><th>활성여부</th><td style="color:${t.active === 'Y' ? '#2e8b4f' : '#bbb'}; font-weight:700;">${t.active === 'Y' ? '활성' : '비활성'}</td><th></th><td></td></tr>
   `;
   document.getElementById('viewCourseCount').textContent = `총 ${t.courses.length}건`;
@@ -781,6 +812,7 @@ function toast(msg) {
 }
 
 // ── 초기 렌더 ──
+updateSummary(DATA);
 renderTable(DATA);
 
 /* ══════════════════════════════════════════════
