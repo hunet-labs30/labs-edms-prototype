@@ -99,8 +99,8 @@ tbody td.center { text-align:center; }
 .course-ended { background:#eef7ee; color:#2e8b4f; }
 
 /* ── 이름/코드 ── */
-.tutor-name { font-size:13px; font-weight:700; color:#1a1a2e; cursor:pointer; }
-.tutor-name:hover { color:var(--primary); text-decoration:underline; }
+.tutor-name { font-size:13px; font-weight:700; color:var(--primary); cursor:pointer; }
+.tutor-name:hover { color:var(--primary-dark); text-decoration:underline; }
 
 /* ── Empty ── */
 .tbl-empty { text-align:center; padding:48px 24px; color:#bbb; font-size:13px; }
@@ -481,7 +481,7 @@ tbody td.center { text-align:center; }
       <div class="tab-content active" id="tab-assign">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 배정 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
           엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
           미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 행이 있어도 정상 행은 배정 처리됩니다.
         </div>
@@ -539,7 +539,7 @@ tbody td.center { text-align:center; }
       <div class="tab-content" id="tab-delete">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 삭제 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
           엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
           삭제되는 것은 튜터-학습자 배정 정보이며, <strong>기존 채점 데이터는 유지</strong>됩니다.
         </div>
@@ -593,16 +593,13 @@ tbody td.center { text-align:center; }
         </div>
       </div>
 
-      <!-- 오류 케이스 정리 (공통) -->
+      <!-- 오류 케이스 정리 (공통, 행 레벨만 — 파일 레벨 3종은 파일 카드 인라인 오류로 별도 노출) -->
       <div class="bulk-section" style="margin-top:4px;">
         <div class="bulk-step-title">오류 케이스 정리</div>
         <div class="bulk-tbl-wrap">
         <table class="bulk-error-tbl">
           <thead><tr><th style="width:220px;">오류 케이스</th><th>설명</th></tr></thead>
           <tbody>
-            <tr><td>파일 형식 오류</td><td>엑셀(.xlsx, .xls) 외의 파일을 첨부한 경우</td></tr>
-            <tr><td>파일 확인 불가</td><td>엑셀 파일이지만 손상·암호화 등으로 내용을 확인할 수 없는 경우</td></tr>
-            <tr><td>파일 용량 초과</td><td>파일 용량이 10MB를 초과하는 경우</td></tr>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
             <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
             <tr><td>필수값 누락</td><td>과정아이디·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
@@ -664,31 +661,31 @@ function toggleNav(el) { el.parentElement.classList.toggle('open'); }
 
 // ── 샘플 데이터 ──
 let DATA = [
-  { id:'T012', name:'김*현', email:'kh***@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
+  { id:'T012', name:'김*현', email:'kimhyun@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:12, assignedAt:'2026.03.11' },
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:8, assignedAt:'2026.03.11' },
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
       { code:'LM-2024005', name:'AI 활용 실무 (마이크로러닝)', status:'ended', learners:5, assignedAt:'2026.01.05' },
     ] },
-  { id:'T011', name:'이*진', email:'lj***@gmail.com', phone:'010-5678-3342', courseCnt:2, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
+  { id:'T011', name:'이*진', email:'leejin@gmail.com', phone:'010-5678-3342', courseCnt:2, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
     courses:[
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:6, assignedAt:'2026.03.06' },
       { code:'LM-2024006', name:'신규입사자 온보딩', status:'ended', learners:14, assignedAt:'2026.02.01' },
     ] },
-  { id:'T010', name:'박*영', email:'py***@naver.com', phone:'010-9012-7790', courseCnt:3, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
+  { id:'T010', name:'박*영', email:'parkyoung@naver.com', phone:'010-9012-7790', courseCnt:3, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
     courses:[
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', learners:0, assignedAt:'2026.04.01' },
       { code:'LM-2024007', name:'재무제표 이해하기', status:'ongoing', learners:9, assignedAt:'2026.03.02' },
       { code:'LM-2024008', name:'프레젠테이션 스킬업', status:'ended', learners:11, assignedAt:'2026.01.10' },
     ] },
-  { id:'T009', name:'최*수', email:'cs***@kakao.com', phone:'010-3456-1108', courseCnt:0, regDate:'2026.02.14', lastLogin:'-',
+  { id:'T009', name:'최*수', email:'choisu@kakao.com', phone:'010-3456-1108', courseCnt:0, regDate:'2026.02.14', lastLogin:'-',
     courses:[] },
-  { id:'T008', name:'정*호', email:'jh***@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
+  { id:'T008', name:'정*호', email:'jeongho@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', learners:3, assignedAt:'2026.02.01' },
     ] },
-  { id:'T007', name:'강*민', email:'km***@outlook.com', phone:'010-2345-4415', courseCnt:2, regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
+  { id:'T007', name:'강*민', email:'kangmin@outlook.com', phone:'010-2345-4415', courseCnt:2, regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
     courses:[
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', learners:5, assignedAt:'2026.01.23' },
       { code:'LM-2024009', name:'컴플라이언스 필수교육', status:'ended', learners:20, assignedAt:'2025.12.01' },
@@ -700,6 +697,18 @@ const COURSE_STATUS_CLASS = { scheduled:'course-scheduled', ongoing:'course-ongo
 
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── 개인정보 마스킹 (공통 정책: 목록 등 다중 정보 화면에 적용) ──
+function maskEmail(email) {
+  const at = String(email||'').indexOf('@');
+  if (at < 1) return email;
+  return email.charAt(0) + '***' + email.slice(at);
+}
+function maskPhone(phone) {
+  const digits = String(phone||'').replace(/[^0-9]/g, '');
+  if (digits.length < 7) return phone;
+  return digits.slice(0, 3) + '****' + digits.slice(-4);
 }
 
 // ── 렌더 ──
@@ -715,8 +724,8 @@ function renderTable(data) {
     <tr>
       <td class="center">${data.length - i}</td>
       <td><span class="tutor-name" onclick="openView('${t.id}')">${escHtml(t.name)}</span></td>
-      <td>${escHtml(t.email)}</td>
-      <td>${escHtml(t.phone)}</td>
+      <td>${escHtml(maskEmail(t.email))}</td>
+      <td>${escHtml(maskPhone(t.phone))}</td>
       <td class="center" style="font-weight:700; color:var(--primary);">${t.courseCnt}</td>
       <td class="center" style="font-size:11.5px; color:#888;">${t.regDate}</td>
       <td class="center"><button class="btn btn-sm btn-gray" onclick="openMailModal('${t.id}')">발송</button></td>
