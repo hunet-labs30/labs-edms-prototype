@@ -330,7 +330,7 @@ tbody td.center { text-align:center; }
         <div class="result-header">
           <div class="result-count">검색결과 <strong id="filterCount">0</strong>건</div>
           <div class="result-right">
-            <button class="btn btn-gray" onclick="toast('현재 검색 결과가 엑셀로 다운로드됩니다. (프로토타입)')">엑셀 다운로드</button>
+            <button class="btn btn-gray">엑셀 다운로드</button>
             <button class="btn btn-gray" onclick="openBulkModal()">일괄 배정/삭제</button>
           </div>
         </div>
@@ -632,7 +632,7 @@ tbody td.center { text-align:center; }
       <div class="result-fail-msg" id="rFailMsg" style="display:none;">시스템 오류로 인해 일부 건이 처리되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-sm btn-gray" id="rDownloadBtn" style="display:none;" onclick="toast('실패 목록이 다운로드됩니다. (프로토타입)')">실패내용 다운(.xlsx)</button>
+      <button class="btn btn-sm btn-gray" id="rDownloadBtn" style="display:none;">실패내용 다운(.xlsx)</button>
       <button class="btn btn-sm btn-primary" onclick="closeBulkResultModal()">닫기</button>
     </div>
   </div>
@@ -960,7 +960,7 @@ function renderBulkPreviewResult(type) {
   if (type === currentBulkTab) refreshBulkFooter();
 }
 
-function downloadErrorList(type) { toast('오류 목록이 다운로드됩니다. (프로토타입)'); }
+function downloadErrorList(type) {}
 
 function bulkSubmit(type) {
   const verb = type === 'assign' ? '배정' : '삭제';
