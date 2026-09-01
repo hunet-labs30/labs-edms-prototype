@@ -677,7 +677,7 @@ let DATA = [
     ] },
 ];
 
-const COURSE_STATUS_LABEL = { scheduled:'예정', ongoing:'학습중', ended:'종료' };
+const COURSE_STATUS_LABEL = { scheduled:'예정', ongoing:'학습중', ended:'학습완료' };
 const COURSE_STATUS_CLASS = { scheduled:'course-scheduled', ongoing:'course-ongoing', ended:'course-ended' };
 
 function escHtml(s) {
@@ -900,7 +900,7 @@ function handleBulkFile(file, type) {
     showBulkFileErr(type, file.name, `허용되지 않은 파일 형식입니다: ${ext}`);
     return;
   }
-  if (file.size > 10 * 1024 * 1024) { alert('파일 용량이 10MB를 초과합니다.'); return; }
+  if (file.size > 10 * 1024 * 1024) { showBulkFileErr(type, file.name, '파일 용량이 10MB를 초과합니다.'); return; }
   bulkState[type].file = file;
   bulkState[type].previewOk = false;
   document.getElementById('bulkDropZone-' + type).style.display = 'none';
@@ -973,8 +973,9 @@ function bulkSubmit(type) {
 }
 function showBulkResult(type, total, ok, fail) {
   const verb = type === 'assign' ? '배정' : '삭제';
+  const okLabel = type === 'assign' ? '등록 완료' : '삭제 완료';
   document.getElementById('bulkResultTitle').textContent = `일괄 ${verb} 결과`;
-  document.getElementById('rOkLabel').textContent = `${verb} 완료`;
+  document.getElementById('rOkLabel').textContent = okLabel;
   document.getElementById('rTotal').textContent = total;
   document.getElementById('rOk').textContent = ok;
   document.getElementById('rFail').textContent = fail;
