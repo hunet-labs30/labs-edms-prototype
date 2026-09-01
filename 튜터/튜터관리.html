@@ -736,7 +736,7 @@ function filterTable() {
   const status = document.getElementById('statusFilter').value;
   const keywordFiltered = DATA.filter(t => {
     const field = type === 'email' ? t.email : t.name;
-    return !keyword || field.toLowerCase().includes(keyword);
+    return !keyword || field.toLowerCase() === keyword;
   });
   const filtered = keywordFiltered.filter(t => status === 'all' || t.active === status);
   renderTable(filtered);
