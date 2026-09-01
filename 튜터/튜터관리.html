@@ -467,8 +467,8 @@ tbody td.center { text-align:center; }
       <div class="tab-content active" id="tab-assign">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 배정 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정 정보를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
-          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
+          엑셀 파일(.xlsx, .xls)로 튜터-과정 배정 정보를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID</strong><br>
           미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
         </div>
 
@@ -525,9 +525,9 @@ tbody td.center { text-align:center; }
       <div class="tab-content" id="tab-delete">
         <div class="bulk-info-box">
           <div class="bulk-info-title">일괄 삭제 안내</div>
-          엑셀 파일(.xlsx, .xls)로 튜터-학습자 배정을 한 번에 해제할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
-          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID / 학습자ID</strong><br>
-          삭제되는 것은 튜터-학습자 배정 정보이며, <strong>기존 채점 데이터는 유지</strong>됩니다.
+          엑셀 파일(.xlsx, .xls)로 튜터-과정 배정을 한 번에 해제할 수 있습니다. <strong>최대 10MB</strong>까지 첨부 가능하며, 반드시 <strong>Sheet1</strong>에 기재해주세요.<br>
+          엑셀 양식 내 컬럼: <strong>과정아이디 / 튜터ID</strong><br>
+          삭제되는 것은 튜터-과정 배정 정보이며, <strong>기존 채점 데이터는 유지</strong>됩니다.
         </div>
 
         <div class="bulk-section">
@@ -588,12 +588,11 @@ tbody td.center { text-align:center; }
           <tbody>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우(헤더 행 이후 데이터 없음)</td></tr>
             <tr><td>샘플 양식 불일치</td><td>업로드한 파일의 컬럼 구성(헤더)이 제공된 양식과 다른 경우</td></tr>
-            <tr><td>필수값 누락</td><td>과정아이디·튜터ID·학습자ID 중 비어 있는 항목이 있는 경우</td></tr>
+            <tr><td>필수값 누락</td><td>과정아이디·튜터ID 중 비어 있는 항목이 있는 경우</td></tr>
             <tr><td>존재하지 않는 과정아이디</td><td>시스템에 등록되지 않은 과정아이디인 경우</td></tr>
             <tr><td>존재하지 않는 튜터ID</td><td>시스템에 없거나 비활성 상태인 튜터ID인 경우</td></tr>
-            <tr><td>존재하지 않는 학습자ID</td><td>시스템에 없는 학습자ID인 경우(해당 과정 미신청자 포함)</td></tr>
-            <tr><td>이미 배정된 조합 <span style="color:#888; font-weight:400;">(배정 전용)</span></td><td>동일한 과정아이디·튜터ID·학습자ID 조합이 이미 배정되어 있는 경우</td></tr>
-            <tr><td>배정 이력 없음 <span style="color:#888; font-weight:400;">(삭제 전용)</span></td><td>삭제하려는 과정아이디·튜터ID·학습자ID 조합의 배정 이력이 없는 경우</td></tr>
+            <tr><td>이미 배정된 조합 <span style="color:#888; font-weight:400;">(배정 전용)</span></td><td>동일한 과정아이디·튜터ID 조합이 이미 배정되어 있는 경우</td></tr>
+            <tr><td>배정 이력 없음 <span style="color:#888; font-weight:400;">(삭제 전용)</span></td><td>삭제하려는 과정아이디·튜터ID 조합의 배정 이력이 없는 경우</td></tr>
           </tbody>
         </table>
         </div>
@@ -951,11 +950,11 @@ function renderBulkPreviewResult(type) {
     msgEl.innerHTML = '<span class="icon">⚠</span><span>일부 행에서 오류가 발견되었습니다. 오류 내용을 확인해주세요. 오류 없는 정상 행은 등록 시 처리되고, 오류 행은 제외됩니다.</span>';
     errBlock.style.display = '';
     const rows = type === 'assign'
-      ? `<tr><td>4</td><td>LM-2024099 / T003 / S00231</td><td style="color:#c0392b;">존재하지 않는 과정아이디입니다.</td></tr>
-         <tr><td>9</td><td>LM-2024001 / T003 / S00231</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
-         <tr><td>15</td><td>LM-2024002 / T099 / S00118</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
-      : `<tr><td>2</td><td>LM-2024003 / T005 / S00118</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
-         <tr><td>11</td><td>LM-2024001 / T003 / S09981</td><td style="color:#c0392b;">존재하지 않는 학습자ID입니다.</td></tr>`;
+      ? `<tr><td>4</td><td>LM-2024099 / T003</td><td style="color:#c0392b;">존재하지 않는 과정아이디입니다.</td></tr>
+         <tr><td>9</td><td>LM-2024001 / T003</td><td style="color:#c0392b;">이미 동일하게 배정된 조합입니다.</td></tr>
+         <tr><td>15</td><td>LM-2024002 / T099</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`
+      : `<tr><td>2</td><td>LM-2024003 / T005</td><td style="color:#c0392b;">배정 이력이 없는 조합입니다.</td></tr>
+         <tr><td>11</td><td>LM-2024001 / T099</td><td style="color:#c0392b;">존재하지 않거나 비활성 상태인 튜터ID입니다.</td></tr>`;
     tableEl.querySelector('tbody').innerHTML = rows;
   }
   if (type === currentBulkTab) refreshBulkFooter();
