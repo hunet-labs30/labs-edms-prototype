@@ -45,7 +45,7 @@
                   <tr>
                     <td style="padding-bottom: 32px;">
                       <p style="margin: 0; font-size: 28px; font-weight: bold; line-height: 1.4; letter-spacing: -0.7px; color: rgba(23, 23, 25, 0.8);">
-                        튜터 사이트 계정 발급을 위한 안내
+                        튜터 관리자 사이트 계정 발급을 위한 안내
                       </p>
                     </td>
                   </tr>
@@ -64,14 +64,48 @@
                       </p>
                     </td>
                   </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffffff" style="padding-bottom: 20px;">
+                <!-- 관련법령 -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #e1e2e4; border-radius: 8px; overflow: hidden;">
                   <tr>
-                    <td style="padding-bottom: 32px;">
-                      <p style="margin: 0; font-size: 14px; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.8);">
-                        튜터 시스템에 접근·활동하기 위해 <strong>개인정보 보호법 제15조(개인정보의 수집·이용) 1항 4호</strong>에 의해 서비스 이용에 필수적인 개인정보를 수집하고 있습니다.
+                    <td bgcolor="#f7f7f8" style="padding: 20px 24px;">
+                      <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.8);">
+                        ※ 관련법령
+                      </p>
+                      <p style="margin: 0; font-size: 13px; line-height: 1.7; letter-spacing: -0.4px; color: rgba(23, 23, 25, 0.6);">
+                        ■ '정보통신망 이용촉진 및 정보보호 등에 관한 법률' 제47조<br>
+                        ■ '정보통신망 이용촉진 및 정보보호 등에 관한 법률 시행령' 제50조<br>
+                        &nbsp;&nbsp;&nbsp;- 정보보호 관리체계 인증 등에 관한 고시(미래창조과학부고시 제2016-0214호)
                       </p>
                     </td>
                   </tr>
                 </table>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffffff">
+                <!-- 인사말2 -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td style="padding-bottom: 32px;">
+                      <p style="margin: 0; font-size: 14px; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.8);">
+                        클래스보드 튜터 시스템은 학습자의 개인정보가 포함되어 있습니다.<br>
+                        튜터 시스템에 접근·활동하기 위해 개인정보처리시스템 권한부여 절차에 따라 개인정보 열람 권한 부여를 위해 개인정보 수집 및 이용 및 (개인)정보보호 유지활동 동의절차가 필요합니다.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffffff" style="padding-bottom: 8px;">
+                <p style="margin: 0; font-size: 14px; font-weight: 600; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.8);">
+                  ※ 로그인 정보
+                </p>
               </td>
             </tr>
             <tr>
@@ -112,7 +146,7 @@
                   <tr>
                     <td>
                       <p style="margin: 0; font-size: 14px; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.8);">
-                        위 계정으로 튜터 사이트에 접속·로그인하여 개인정보 수집 및 이용 동의 후 튜터 계정 및 권한을 신청해주세요.
+                        위 계정으로 클래스보드에 접속·로그인 후 개인정보수집 및 이용동의 등 튜터계정 및 권한을 신청해주세요.
                       </p>
                     </td>
                   </tr>
@@ -128,8 +162,8 @@
                       <table border="0" cellpadding="0" cellspacing="0">
                         <tr>
                           <td bgcolor="#0066ff" align="center" style="padding: 0; border-radius: 12px; -webkit-text-size-adjust: none;">
-                            <a href="{{튜터사이트 접속 URL}}" target="_blank" style="display: inline-block; padding: 16px 24px; color: #ffffff; font-family: 'Pretendard', 'Noto Sans KR', 'NanumGothic', 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6; letter-spacing: -0.5px; text-decoration: none;">
-                              튜터사이트 접속
+                            <a href="{{클래스보드 접속 URL}}" target="_blank" style="display: inline-block; padding: 16px 24px; color: #ffffff; font-family: 'Pretendard', 'Noto Sans KR', 'NanumGothic', 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 16px; font-weight: 500; line-height: 1.6; letter-spacing: -0.5px; text-decoration: none;">
+                              클래스보드 접속
                             </a>
                           </td>
                         </tr>
@@ -144,7 +178,7 @@
             <tr>
               <td bgcolor="#ffffff" style="padding: 32px 0;">
                 <p style="margin: 0; font-size: 12px; line-height: 1.6; letter-spacing: -0.5px; color: rgba(23, 23, 25, 0.45);">
-                  본 메일은 발송전용 메일로 회신되지 않습니다.<br />
+                  본 메일은 {{연수원명}} 임직원님께 발송되는 발송전용 메일로 회신되지 않습니다.<br />
                   본 메일은 정보통신망 이용촉진 및 정보보호 등에 관한 법률 시행규칙에 의거하여 발송되었습니다.
                 </p>
               </td>
