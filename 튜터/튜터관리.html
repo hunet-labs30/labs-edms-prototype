@@ -82,13 +82,6 @@ body { font-family:'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; fon
 .filter-select:focus { border-color:var(--primary); }
 .filter-count { font-size:12px; color:#888; margin-left:auto; }
 
-/* ── 검색결과 요약 ── */
-.summary-table-wrap { padding:18px 18px 0; }
-.summary-table { width:100%; border-collapse:collapse; font-size:12.5px; }
-.summary-table th { background:#f5f6fa; border:1px solid var(--border); padding:9px 10px; font-weight:700; font-size:11.5px; color:#555; text-align:center; }
-.summary-table td { border:1px solid var(--border); border-top:none; padding:10px; text-align:center; font-size:16px; font-weight:700; color:#1a1a2e; }
-.summary-table td.total-val { color:var(--primary); }
-
 /* ── 검색결과 헤더 (건수 + 우측 버튼) ── */
 .result-header { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; }
 .result-count { font-size:12px; color:#888; }
@@ -294,20 +287,6 @@ tbody td.center { text-align:center; }
       </div>
 
       <div class="card">
-        <!-- 검색결과 요약 -->
-        <div class="summary-table-wrap">
-          <table class="summary-table">
-            <thead>
-              <tr><th>전체 튜터</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="total-val" id="summaryTotal">0</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <!-- 필터 바 -->
         <div class="filter-bar">
           <select class="filter-select" id="searchType">
@@ -338,7 +317,6 @@ tbody td.center { text-align:center; }
                 <th>이메일</th>
                 <th>휴대번호</th>
                 <th class="center" style="width:100px;">담당 과정 수</th>
-                <th class="center" style="width:70px;">활성여부</th>
                 <th class="center" style="width:100px;">등록일</th>
                 <th class="center" style="width:90px;">메일발송</th>
               </tr>
@@ -639,25 +617,25 @@ function toggleNav(el) { el.parentElement.classList.toggle('open'); }
 
 // ── 샘플 데이터 ──
 let DATA = [
-  { id:'T012', name:'김민현', email:'kimhyun@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, active:'Y', regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
+  { id:'T012', name:'김민현', email:'kimhyun@hunet.co.kr', phone:'010-1234-5821', courseCnt:4, regDate:'2026.03.10', lastLogin:'2026.07.15 14:32',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', assignedAt:'2026.03.11' },
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', assignedAt:'2026.03.11' },
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', assignedAt:'2026.04.01' },
       { code:'LM-2024005', name:'AI 활용 실무 (마이크로러닝)', status:'ended', assignedAt:'2026.01.05' },
     ] },
-  { id:'T011', name:'이서진', email:'leejin@gmail.com', phone:'010-5678-3342', courseCnt:2, active:'Y', regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
+  { id:'T011', name:'이서진', email:'leejin@gmail.com', phone:'010-5678-3342', courseCnt:2, regDate:'2026.03.05', lastLogin:'2026.07.10 09:12',
     courses:[
       { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', assignedAt:'2026.03.06' },
       { code:'LM-2024006', name:'신규입사자 온보딩', status:'ended', assignedAt:'2026.02.01' },
     ] },
-  { id:'T010', name:'박지영', email:'parkyoung@naver.com', phone:'010-9012-7790', courseCnt:3, active:'Y', regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
+  { id:'T010', name:'박지영', email:'parkyoung@naver.com', phone:'010-9012-7790', courseCnt:3, regDate:'2026.02.20', lastLogin:'2026.06.28 17:40',
     courses:[
       { code:'LM-2024003', name:'비즈니스 영어 회화', status:'scheduled', assignedAt:'2026.04.01' },
       { code:'LM-2024007', name:'재무제표 이해하기', status:'ongoing', assignedAt:'2026.03.02' },
       { code:'LM-2024008', name:'프레젠테이션 스킬업', status:'ended', assignedAt:'2026.01.10' },
     ] },
-  { id:'T008', name:'정민호', email:'jeongho@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, active:'Y', regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
+  { id:'T008', name:'정민호', email:'jeongho@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', assignedAt:'2026.02.01' },
     ] },
@@ -704,14 +682,9 @@ function renderTable(data) {
       <td>${escHtml(maskEmail(t.email))}</td>
       <td>${escHtml(maskPhone(t.phone))}</td>
       <td class="center" style="font-weight:700; color:var(--primary);">${t.courseCnt}</td>
-      <td class="center"><span style="font-weight:700; color:${t.active === 'Y' ? '#2e8b4f' : '#bbb'};">${t.active === 'Y' ? '활성' : '비활성'}</span></td>
       <td class="center" style="font-size:11.5px; color:#888;">${t.regDate}</td>
       <td class="center"><button class="btn btn-sm btn-gray" onclick="openMailModal('${t.id}')">발송</button></td>
     </tr>`).join('');
-}
-
-function updateSummary(list) {
-  document.getElementById('summaryTotal').textContent = list.length;
 }
 
 function filterTable() {
@@ -727,7 +700,6 @@ function filterTable() {
 function resetFilter() {
   document.getElementById('searchInput').value = '';
   document.getElementById('searchType').value = 'name';
-  updateSummary(DATA);
   renderTable(DATA);
 }
 
@@ -747,7 +719,6 @@ function openView(id) {
     <tr><th>튜터명</th><td>${escHtml(t.name)}</td><th>등록일</th><td>${t.regDate}</td></tr>
     <tr><th>이메일(아이디)</th><td>${escHtml(t.email)}</td><th>최근 로그인</th><td>${t.lastLogin}</td></tr>
     <tr><th>휴대번호</th><td>${escHtml(t.phone)}</td><th>담당 과정 수</th><td style="color:var(--primary); font-weight:700;">${t.courseCnt}</td></tr>
-    <tr><th>활성여부</th><td style="color:${t.active === 'Y' ? '#2e8b4f' : '#bbb'}; font-weight:700;">${t.active === 'Y' ? '활성' : '비활성'}</td><th></th><td></td></tr>
   `;
   document.getElementById('viewCourseCount').textContent = `총 ${t.courses.length}건`;
   document.getElementById('viewCourseBody').innerHTML = t.courses.length ? t.courses.map((c,i) => `
@@ -800,7 +771,6 @@ function toast(msg) {
 }
 
 // ── 초기 렌더 ──
-updateSummary(DATA);
 renderTable(DATA);
 
 /* ══════════════════════════════════════════════
