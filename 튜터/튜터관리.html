@@ -298,13 +298,11 @@ tbody td.center { text-align:center; }
         <div class="summary-table-wrap">
           <table class="summary-table">
             <thead>
-              <tr><th>전체 튜터</th><th>활성</th><th>비활성</th></tr>
+              <tr><th>전체 튜터</th></tr>
             </thead>
             <tbody>
               <tr>
                 <td class="total-val" id="summaryTotal">0</td>
-                <td id="summaryActive">0</td>
-                <td id="summaryInactive">0</td>
               </tr>
             </tbody>
           </table>
@@ -317,11 +315,6 @@ tbody td.center { text-align:center; }
             <option value="email">이메일</option>
           </select>
           <input type="text" class="filter-input search" id="searchInput" placeholder="검색어를 입력해주세요." onkeydown="if(event.key==='Enter')filterTable()">
-          <select class="filter-select" id="statusFilter">
-            <option value="all">전체</option>
-            <option value="Y">활성</option>
-            <option value="N">비활성</option>
-          </select>
           <button class="btn btn-primary btn-sm" onclick="filterTable()">검색</button>
           <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
         </div>
@@ -331,7 +324,7 @@ tbody td.center { text-align:center; }
           <div class="result-count">검색결과 <strong id="filterCount">0</strong>건</div>
           <div class="result-right">
             <button class="btn btn-gray">엑셀 다운로드</button>
-            <button class="btn btn-gray" onclick="openBulkModal()">일괄 배정/삭제</button>
+            <button class="btn btn-gray" disabled style="opacity:.45;cursor:not-allowed;" title="추후 개발 예정">일괄 배정/삭제</button>
           </div>
         </div>
 
@@ -664,16 +657,9 @@ let DATA = [
       { code:'LM-2024007', name:'재무제표 이해하기', status:'ongoing', assignedAt:'2026.03.02' },
       { code:'LM-2024008', name:'프레젠테이션 스킬업', status:'ended', assignedAt:'2026.01.10' },
     ] },
-  { id:'T009', name:'최민수', email:'choisu@kakao.com', phone:'010-3456-1108', courseCnt:0, active:'N', regDate:'2026.02.14', lastLogin:'-',
-    courses:[] },
   { id:'T008', name:'정민호', email:'jeongho@hunet.co.kr', phone:'010-7890-6623', courseCnt:1, active:'Y', regDate:'2026.01.30', lastLogin:'2026.05.02 11:03',
     courses:[
       { code:'LM-2024001', name:'신임 팀장 과정 (러닝메이커)', status:'ongoing', assignedAt:'2026.02.01' },
-    ] },
-  { id:'T007', name:'강태민', email:'kangmin@outlook.com', phone:'010-2345-4415', courseCnt:2, active:'N', regDate:'2026.01.22', lastLogin:'2026.07.20 08:55',
-    courses:[
-      { code:'LM-2024002', name:'데이터 분석 기초과정', status:'ongoing', assignedAt:'2026.01.23' },
-      { code:'LM-2024009', name:'컴플라이언스 필수교육', status:'ended', assignedAt:'2025.12.01' },
     ] },
 ];
 
@@ -726,26 +712,21 @@ function renderTable(data) {
 
 function updateSummary(list) {
   document.getElementById('summaryTotal').textContent = list.length;
-  document.getElementById('summaryActive').textContent = list.filter(t => t.active === 'Y').length;
-  document.getElementById('summaryInactive').textContent = list.filter(t => t.active === 'N').length;
 }
 
 function filterTable() {
   const type = document.getElementById('searchType').value;
   const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-  const status = document.getElementById('statusFilter').value;
   const keywordFiltered = DATA.filter(t => {
     const field = type === 'email' ? t.email : t.name;
     return !keyword || field.toLowerCase() === keyword;
   });
-  const filtered = keywordFiltered.filter(t => status === 'all' || t.active === status);
-  renderTable(filtered);
+  renderTable(keywordFiltered);
 }
 
 function resetFilter() {
   document.getElementById('searchInput').value = '';
   document.getElementById('searchType').value = 'name';
-  document.getElementById('statusFilter').value = 'all';
   updateSummary(DATA);
   renderTable(DATA);
 }
