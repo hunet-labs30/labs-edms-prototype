@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LABS New EDMS — 권한 관리</title>
+<title>LABS New EDMS — 교육담당자 계정 관리</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -305,6 +305,10 @@
     font-size: 12px; color: #6d4c00; line-height: 1.7;
     margin-bottom: 16px;
   }
+  .info-box .info-lead { font-weight: 700; margin: 0 0 6px; }
+  .info-box .info-list { margin: 0; padding-left: 16px; }
+  .info-box .info-list li { margin-top: 4px; }
+  .info-box .info-list li:first-child { margin-top: 0; }
 
   /* 등록 모달 검색 결과 */
   .reg-search-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 0; }
@@ -369,6 +373,7 @@
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <a class="nav-flat" href="#">LABS Studio</a>
+    <a class="nav-flat" href="#">대시보드</a>
     <div class="nav-group">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <span class="nav-group-label">임직원</span>
@@ -426,17 +431,6 @@
       </div>
       <div class="nav-sub">
         <a class="nav-item" href="#">사외교육 관리</a>
-        <a class="nav-item" href="#">사외교육 결과보고</a>
-      </div>
-    </div>
-    <div class="nav-group">
-      <div class="nav-group-header" onclick="toggleNavGroup(this)">
-        <span class="nav-group-label">러닝메이커</span>
-        <span class="nav-arrow">▶</span>
-      </div>
-      <div class="nav-sub">
-        <a class="nav-item" href="#">러닝메이커 Expert</a>
-        <a class="nav-item" href="#">학습자용 러닝메이커</a>
       </div>
     </div>
     <div class="nav-group">
@@ -456,7 +450,6 @@
       <div class="nav-sub">
         <a class="nav-item" href="#">공지사항 관리</a>
         <a class="nav-item" href="#">띠배너 관리</a>
-        <a class="nav-item" href="#">게시글 관리</a>
       </div>
     </div>
     <div class="nav-group">
@@ -466,10 +459,19 @@
       </div>
       <div class="nav-sub">
         <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">계획수립 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+        <a class="nav-item" href="#">필수교육</a>
+        <a class="nav-item" href="#">이용가이드</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학점</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
         <a class="nav-item" href="#">학점 관리</a>
-        <a class="nav-item" href="#">역량진단 관리</a>
-        <a class="nav-item" href="#">필수교육 관리</a>
-        <a class="nav-item" href="#">레벨/마일리지 관리</a>
       </div>
     </div>
     <div class="nav-group">
@@ -478,19 +480,32 @@
         <span class="nav-arrow">▶</span>
       </div>
       <div class="nav-sub">
-        <a class="nav-item" href="#">수강신청 기간</a>
-        <a class="nav-item" href="#">수강신청 제한</a>
+        <a class="nav-item" href="#">수강신청 기간설정</a>
+        <a class="nav-item" href="#">수강신청 제한설정</a>
       </div>
     </div>
-    <!-- 연수원 설정 (활성) -->
-    <div class="nav-group open">
+    <div class="nav-group">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
-        <span class="nav-group-label">연수원 설정</span>
+        <span class="nav-group-label">아이런 설정</span>
         <span class="nav-arrow">▶</span>
       </div>
       <div class="nav-sub">
-        <a class="nav-item" href="#">로그인</a>
-        <a class="nav-item active" href="#">권한 관리</a>
+        <a class="nav-item" href="#">사용 설정 (+아이런 키 발급)</a>
+        <a class="nav-item" href="#">주제별 대화 탭 등록</a>
+        <a class="nav-item" href="#">대화 탭 세부 설정</a>
+      </div>
+    </div>
+    <!-- 설정 (활성) -->
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item active" href="#">교육담당자 계정 관리</a>
+        <a class="nav-item" href="#">약관 설정</a>
+        <a class="nav-item" href="#">연수원 설정</a>
+        <a class="nav-item" href="#">SSO 설정</a>
       </div>
     </div>
   </nav>
@@ -500,8 +515,8 @@
 
     <!-- PAGE HEADER -->
     <div class="page-header-row">
-      <div class="page-header-title">권한 관리</div>
-      <div class="breadcrumb">연수원 설정 &gt; 권한 관리</div>
+      <div class="page-header-title">교육담당자 계정 관리</div>
+      <div class="breadcrumb">설정 &gt; 교육담당자 계정 관리</div>
     </div>
 
     <!-- TABS -->
@@ -512,67 +527,67 @@
 
     <!-- ── 탭 1: 교육담당자 ─────────────────────────── -->
     <section class="tab-panel active" id="tab-edu" role="tabpanel">
-      <!-- 검색 -->
-      <div class="card">
-        <div class="search-row">
-          <select class="select" id="s-company" style="width:140px;">
-            <option value="">회사 선택</option>
-            <option>LABS 연수원</option>
-            <option>휴넷</option>
-            <option>ABC마트</option>
-            <option>건강보험공단</option>
-            <option>국민연금공단</option>
-          </select>
-          <select class="select" id="s-field" style="width:100px;">
-            <option value="name">이름</option>
-            <option value="email">아이디</option>
-          </select>
-          <div class="search-input-wrap">
-            <span class="ico-search">&#x1F50D;</span>
-            <input class="input" id="s-keyword" type="text" placeholder="검색어를 입력해주세요.">
-          </div>
-          <div class="search-actions">
-            <button class="btn btn-primary" onclick="doSearch()">검색</button>
-            <button class="btn btn-reset" onclick="doReset()">초기화</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 목록 -->
-      <div class="card">
-        <div class="result-header">
-          <div class="result-count">총 <strong id="total-count">0</strong>명</div>
-          <div class="result-right">
-            <button class="btn btn-dark" onclick="openRegModal()">+ 권한 등록</button>
-          </div>
-        </div>
-        <table class="main-table">
-          <thead>
-            <tr>
-              <th style="width:44px;">No.</th>
-              <th style="width:80px;">이름</th>
-              <th>아이디(이메일)</th>
-              <th style="width:100px;">부서</th>
-              <th style="width:110px;">등록일</th>
-              <th style="width:160px;">관리</th>
-            </tr>
-          </thead>
-          <tbody id="acc-tbody"></tbody>
-        </table>
-        <div class="table-footer">
-          <div class="page-size-wrap">
-            페이지당
-            <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
-              <option value="30">30</option>
-              <option value="50" selected>50</option>
-              <option value="100">100</option>
-              <option value="200">200</option>
+        <!-- 검색 -->
+        <div class="card">
+          <div class="search-row">
+            <select class="select" id="s-company" style="width:140px;">
+              <option value="">회사 선택</option>
+              <option>LABS 연수원</option>
+              <option>휴넷</option>
+              <option>ABC마트</option>
+              <option>건강보험공단</option>
+              <option>국민연금공단</option>
             </select>
-            건
+            <select class="select" id="s-field" style="width:100px;">
+              <option value="name">이름</option>
+              <option value="email">아이디</option>
+            </select>
+            <div class="search-input-wrap">
+              <span class="ico-search">&#x1F50D;</span>
+              <input class="input" id="s-keyword" type="text" placeholder="검색어를 입력해주세요.">
+            </div>
+            <div class="search-actions">
+              <button class="btn btn-primary" onclick="doSearch()">검색</button>
+              <button class="btn btn-reset" onclick="doReset()">초기화</button>
+            </div>
           </div>
-          <div class="pagination" id="pagination"></div>
         </div>
-      </div>
+
+        <!-- 목록 -->
+        <div class="card">
+          <div class="result-header">
+            <div class="result-count">총 <strong id="total-count">0</strong>명</div>
+            <div class="result-right">
+              <button class="btn btn-dark" onclick="openRegModal()">+ 교육담당자 등록</button>
+            </div>
+          </div>
+          <table class="main-table">
+            <thead>
+              <tr>
+                <th style="width:44px;">No.</th>
+                <th style="width:80px;">이름</th>
+                <th>아이디(이메일)</th>
+                <th style="width:100px;">부서</th>
+                <th style="width:110px;">등록일</th>
+                <th style="width:220px;">관리</th>
+              </tr>
+            </thead>
+            <tbody id="acc-tbody"></tbody>
+          </table>
+          <div class="table-footer">
+            <div class="page-size-wrap">
+              페이지당
+              <select class="select" id="page-size" onchange="pageSize=parseInt(this.value);currentPage=1;renderTable()">
+                <option value="30">30</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+              </select>
+              건
+            </div>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
     </section>
 
     <!-- ── 탭 2: 러닝메이커 매니저 ─── -->
@@ -653,9 +668,9 @@
 <!-- 교육담당자: 권한 등록 모달               -->
 <!-- ══════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-reg">
-  <div class="modal" style="width:640px;">
+  <div class="modal" style="width:820px;">
     <div class="modal-header">
-      <h3>교육담당자 권한 등록</h3>
+      <h3>교육담당자 등록</h3>
       <button class="modal-close" onclick="closeModal('modal-reg')">&times;</button>
     </div>
     <div class="modal-body">
@@ -687,6 +702,22 @@
         (<span id="reg-selected-email"></span>) &nbsp;/&nbsp;
         <span id="reg-selected-company"></span> &nbsp;/&nbsp;
         <span id="reg-selected-dept"></span>
+      </div>
+
+      <!-- 결재 수신 메일 여부 -->
+      <div id="reg-mail-section" style="display:none;margin-top:16px;">
+        <table class="form-table">
+          <tr>
+            <th>결재 수신 메일</th>
+            <td>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="reg-mail-yn" value="Y" checked> 수신</label>
+                <label class="radio-label"><input type="radio" name="reg-mail-yn" value="N"> 미수신</label>
+              </div>
+              <div class="form-hint">결재 승인 대기 시 발송되는 안내 메일 수신 여부입니다.</div>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
     <div class="modal-footer">
@@ -834,6 +865,40 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════ -->
+<!-- 담당자 설정 모달                         -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-staff-perm">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>담당자 설정</h3>
+      <button class="modal-close" onclick="closeModal('modal-staff-perm')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <table class="form-table">
+        <tr>
+          <th>담당자</th>
+          <td><input class="form-input readonly" id="sp-name" readonly></td>
+        </tr>
+        <tr>
+          <th>결재 수신 메일</th>
+          <td>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="sp-mail-yn" value="Y"> 수신</label>
+              <label class="radio-label"><input type="radio" name="sp-mail-yn" value="N"> 미수신</label>
+            </div>
+            <div class="form-hint">결재 승인 대기 시 발송되는 안내 메일 수신 여부입니다.</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="mbtn mbtn-gray" onclick="closeModal('modal-staff-perm')">취소</button>
+      <button class="mbtn mbtn-blue" onclick="saveStaffPerm()">저장</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── 사이드바 토글 ──
 function toggleNavGroup(header) {
@@ -881,15 +946,21 @@ const _maskN = maskName;
 const _maskL = maskEmail;
 const _maskE = empno => empno || '-';
 
-let ALL_DATA = Array.from({ length: 22 }, (_, i) => ({
-  id: 22 - i,
-  empno: '202' + String(22 - i).padStart(5, '0'),
-  name: NAMES[i % NAMES.length],
-  email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
-  company: COMPANIES[i % COMPANIES.length],
-  dept: DEPTS[i % DEPTS.length],
-  regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
-}));
+let ALL_DATA = Array.from({ length: 22 }, (_, i) => {
+  return {
+    id: 22 - i,
+    empno: '202' + String(22 - i).padStart(5, '0'),
+    name: NAMES[i % NAMES.length],
+    email: 'user' + String(i + 1).padStart(2, '0') + '@' + ['company.co.kr', 'corp.com', 'org.kr'][i % 3],
+    company: COMPANIES[i % COMPANIES.length],
+    dept: DEPTS[i % DEPTS.length],
+    regDate: '2025-' + String((i % 12) + 1).padStart(2, '0') + '-' + String((i % 28) + 1).padStart(2, '0'),
+    mailYn: true,
+  };
+});
+// 결재 수신 메일 미수신 샘플 2건 부여
+ALL_DATA[3].mailYn = false;
+ALL_DATA[7].mailYn = false;
 
 let filteredData = [...ALL_DATA];
 let currentPage = 1;
@@ -949,7 +1020,8 @@ function renderTable() {
     document.getElementById('pagination').innerHTML = '';
     return;
   }
-  tbody.innerHTML = slice.map((r, idx) => `
+  tbody.innerHTML = slice.map((r, idx) => {
+    return `
     <tr>
       <td>${filteredData.length - start - idx}</td>
       <td>${maskName(r.name)}</td>
@@ -958,10 +1030,12 @@ function renderTable() {
       <td>${r.regDate.replace(/-/g, '.')}</td>
       <td>
         <button class="btn-sm btn-sm-outline" onclick="openResendModal(${r.id})">재발송</button>
+        <button class="btn-sm btn-sm-outline" onclick="openStaffPermModal(${r.id})">설정</button>
         <button class="btn-sm btn-sm-red" onclick="openDeleteModal(${r.id})">삭제</button>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
   renderPagination();
 }
 
@@ -1010,6 +1084,7 @@ function openRegModal() {
   document.getElementById('reg-search-result').style.display = 'none';
   document.getElementById('reg-search-tbody').innerHTML = '';
   document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('reg-mail-section').style.display = 'none';
   document.getElementById('btn-reg-submit').disabled = true;
   openModal('modal-reg');
   setTimeout(() => document.getElementById('reg-name-kw').focus(), 100);
@@ -1043,6 +1118,7 @@ function searchByName() {
   resultDiv.style.display = 'block';
   selectedUser = null;
   document.getElementById('reg-selected-info').style.display = 'none';
+  document.getElementById('reg-mail-section').style.display = 'none';
   document.getElementById('btn-reg-submit').disabled = true;
 }
 
@@ -1056,6 +1132,10 @@ function selectUser(idx) {
   document.getElementById('reg-selected-dept').textContent    = user.dept;
   document.getElementById('reg-selected-info').style.display = 'block';
   document.getElementById('btn-reg-submit').disabled = false;
+  document.getElementById('reg-search-result').style.display = 'none';
+
+  document.getElementById('reg-mail-section').style.display = 'block';
+  document.querySelector('input[name="reg-mail-yn"][value="Y"]').checked = true;
 }
 
 function submitReg() {
@@ -1063,10 +1143,11 @@ function submitReg() {
   const today = new Date();
   const regDate = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
   const newId = (ALL_DATA[0]?.id || 0) + 1;
-  ALL_DATA.unshift({ id: newId, empno: '', name: selectedUser.name, email: selectedUser.email, company: selectedUser.company, dept: selectedUser.dept, regDate });
+  const mailYn = document.querySelector('input[name="reg-mail-yn"]:checked').value === 'Y';
+  ALL_DATA.unshift({ id: newId, empno: '', name: selectedUser.name, email: selectedUser.email, company: selectedUser.company, dept: selectedUser.dept, regDate, mailYn });
   closeModal('modal-reg');
   doSearch();
-  alert(selectedUser.name + ' 담당자의 교육담당자 권한이 등록되었습니다.\n계정 안내 메일이 발송됩니다.');
+  alert(selectedUser.name + ' 담당자의 교육담당자 권한이 등록되었습니다.\n계정 안내 메일이 발송됩니다.\n결재 수신 메일: ' + (mailYn ? '수신' : '미수신'));
 }
 
 // ── 계정 안내 메일 재발송 모달 ──
@@ -1102,6 +1183,28 @@ function submitDelete() {
   renderTable();
   alert('교육담당자 권한이 삭제되었습니다.');
 }
+
+// ══════════════════════════ 담당자 설정 모달 (결재 수신 메일) ══════════════════════════
+let spTargetStaff = null;
+
+function openStaffPermModal(staffId) {
+  const s = ALL_DATA.find(x => x.id === staffId);
+  if (!s) return;
+  spTargetStaff = s;
+  document.getElementById('sp-name').value = `${s.name} (${s.email}) / ${s.dept || '-'}`;
+  document.querySelector(`input[name="sp-mail-yn"][value="${s.mailYn === false ? 'N' : 'Y'}"]`).checked = true;
+  openModal('modal-staff-perm');
+}
+
+function saveStaffPerm() {
+  spTargetStaff.mailYn = document.querySelector('input[name="sp-mail-yn"]:checked').value === 'Y';
+  closeModal('modal-staff-perm');
+  renderTable();
+  showMainToast(`${spTargetStaff.name} 담당자의 설정이 저장되었습니다.`);
+}
+
+// ── 교육담당자/그룹 탭 공용 토스트 (LM 토스트와 별개 DOM 재사용) ──
+function showMainToast(msg) { lmShowToast(msg); }
 
 // ── LM 검색 ──
 function lmDoSearch() { lmShowToast('검색 결과를 조회합니다.'); }
