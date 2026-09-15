@@ -1218,8 +1218,10 @@
   <div class="logo"><span>LABS</span> New EDMS</div>
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
-  <span class="user-name">김이름 님</span>
-  <button class="btn-header">로그아웃</button>
+  <select class="lang-select" onchange="if(this.value) location.href=this.value" title="부서관리 버전 선택" style="margin-right:6px;">
+    <option value="조직역할_관리_부서.html">V2 · 그룹사/계열사/하위계열사</option>
+    <option value="조직역할_관리_부서_v1_구버전.html" selected>V1 · 구버전</option>
+  </select>
   <select class="lang-select"><option>한국어</option><option>English</option></select>
 </header>
 
