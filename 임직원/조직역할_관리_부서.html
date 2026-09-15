@@ -9863,11 +9863,12 @@ function deptRenderTree(filter, dragging, overTarget, isIllegal) {
     });
     container.appendChild(item);
     if (!isCollapsed) {
-      // 이 회사에 직속된 부서·미지정 인원을 먼저(바로 아래) 렌더링, 그 다음 하위 회사(계열사/하위계열사)
+      // 이 회사에 직속된 부서·미지정 인원을 바로 아래에 렌더링
       (node.depts||[]).forEach(d => renderNode(d, depth+1));
       renderUnassignedRow(node, depth+1);
-      (node.children||[]).forEach(c => renderCompanyNode(c, depth+1));
     }
+    // 하위 회사(계열사/하위계열사)는 상위 회사의 접힘 여부와 무관하게 항상 노출
+    (node.children||[]).forEach(c => renderCompanyNode(c, depth+1));
   }
   function renderUnassignedRow(companyNode, depth) {
     const id = '__unassigned__:' + companyNode.id;
