@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단 결과 보기 (가변 계층 실험안) | LABS 3.0</title>
+<!-- 기획 프로토타입: 진단지 단계가 6단계일 때 결과 화면을 어떻게 그릴지 실험하는 안.
+     화면/데이터는 하드코딩이 아니라 실제 트리(TREE) + 재귀 렌더링으로 만들어서,
+     사이에 낀 단계가 몇 개든(0개~N개) 같은 로직으로 동작하는지 검증한다.
+     핵심 설계: 판정~매핑 사이에 낀 단계들을 계속 중첩해서 보여주면 화면이 너무 깊어지므로,
+     그 사이 단계 이름들을 "세부역량군 · 역량요소"처럼 하나의 경로 라벨로 합쳐 그룹 헤더 하나로만 보여준다. -->
+<style>
+:root {
+  --primary:       #246CF9;
+  --primary-light: #EEF3FF;
+  --bg:            #F5F6FA;
+  --white:         #ffffff;
+  --text-900:      #111827;
+  --text-700:      #374151;
+  --text-500:      #6B7280;
+  --text-400:      #9CA3AF;
+  --border:        #E5E7EB;
+  --border-light:  #F3F4F6;
+  --blue:   #246CF9; --blue-bg:   #EEF3FF;
+  --orange: #F97316; --orange-bg: #FFF4ED;
+  --green:  #16A34A; --green-bg:  #DCFCE7;
+  --red:    #DC2626; --red-bg:    #FEE2E2;
+  --purple: #7C3AED; --purple-bg: #EDE9FE;
+  --gray:   #6B7280; --gray-bg:   #F3F4F6;
+  --gnb-h:     56px;
+  --sidebar-w: 200px;
+  --font: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-size:14px;line-height:1.5;}
+
+/* ── GNB ── */
+.gnb{position:fixed;top:0;left:0;right:0;height:var(--gnb-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:300;}
+.gnb-logo{font-size:17px;font-weight:800;color:var(--text-900);letter-spacing:-.5px;display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.gnb-logo-box{width:28px;height:28px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.gnb-logo-box svg{width:15px;height:15px;}
+.gnb-search-wrap{flex:1;max-width:580px;margin:0 auto;}
+.gnb-search{width:100%;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:0 16px 0 38px;font-size:13px;color:var(--text-700);outline:none;}
+.gnb-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+.gnb-icon{width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);position:relative;}
+.gnb-icon svg{width:20px;height:20px;}
+.gnb-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white;}
+
+/* ── LAYOUT ── */
+.app{display:flex;padding-top:var(--gnb-h);min-height:100vh;}
+.sidebar{position:fixed;top:var(--gnb-h);left:0;width:var(--sidebar-w);height:calc(100vh - var(--gnb-h));background:var(--white);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;padding:12px 0 20px;z-index:200;}
+.sb-menu{list-style:none;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13.5px;font-weight:500;color:var(--text-500);cursor:pointer;text-decoration:none;border-left:3px solid transparent;white-space:nowrap;}
+.sb-item.active{background:var(--primary-light);color:var(--primary);font-weight:700;border-left-color:var(--primary);}
+.sb-item.sm{font-size:13px;padding:7px 18px;}
+.sb-divider{height:1px;background:var(--border);margin:8px 0;}
+.main-wrap{margin-left:var(--sidebar-w);flex:1;min-width:0;}
+.main{padding:24px 28px 60px;}
+
+/* ── Page Header ── */
+.page-header{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.breadcrumb{font-size:12px;color:var(--text-400);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.page-title{font-size:20px;font-weight:700;color:var(--text-900);letter-spacing:-.4px;}
+.page-desc{font-size:13px;color:var(--text-500);margin-top:4px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-md);font-size:13px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;font-family:inherit;}
+.btn-outline{background:var(--white);color:var(--primary);border:1.5px solid var(--primary);}
+.btn-outline:hover{background:var(--primary-light);}
+
+/* ── 실험안 안내 배너 ── */
+.hier-note{display:flex;gap:12px;background:#FFF9EC;border:1px solid #FBE4A6;border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;}
+.hier-note-icon{font-size:18px;flex-shrink:0;}
+.hier-note-text{font-size:12.5px;color:#8a6215;line-height:1.7;}
+.hier-note-text b{color:#6b4a0e;}
+.hier-path{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.hier-chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:9px;background:#fff;border:1px solid #FBE4A6;color:#8a6215;}
+.hier-chip.pin{background:var(--primary);border-color:var(--primary);color:#fff;}
+.hier-chip.mute{opacity:.6;}
+.hier-arrow{color:#d8bb77;font-size:12px;}
+
+/* ── Meta Card ── */
+.meta-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.meta-item{display:flex;flex-direction:column;gap:2px;}
+.meta-label{font-size:11px;color:var(--text-400);}
+.meta-val{font-size:13px;font-weight:600;color:var(--text-900);}
+.meta-divider{width:1px;height:32px;background:var(--border);}
+
+/* ── Result Sections ── */
+.result-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden;}
+.rs-head{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.rs-head-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;}
+.rs-title{font-size:14px;font-weight:700;color:var(--text-900);}
+.rs-body{padding:0 20px 20px;}
+.type-heading{font-size:13px;font-weight:700;color:var(--text-500);margin:20px 0 10px;display:flex;align-items:center;gap:6px;}
+.type-heading:first-child{margin-top:0;}
+.type-heading-tag{font-size:10.5px;font-weight:700;color:var(--text-400);background:var(--gray-bg);padding:2px 8px;border-radius:8px;}
+
+/* 역량군 서머리 카드 (판정 단계) */
+.group-summary{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.group-sum-card{flex:1;background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px 14px;min-width:160px;}
+.group-sum-title{font-size:12px;font-weight:700;color:var(--text-500);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.group-sum-scores{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+.group-sum-me{font-size:26px;font-weight:800;letter-spacing:-.5px;}
+.group-sum-divider{font-size:13px;color:var(--border);font-weight:300;}
+.group-sum-avg{font-size:13px;color:var(--text-400);font-weight:600;}
+.group-sum-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:10px 0 12px;}
+.group-sum-fill{position:absolute;left:0;top:0;height:4px;background:var(--primary);border-radius:2px;}
+.group-sum-dot-me{position:absolute;top:50%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--primary);z-index:2;}
+.group-sum-dot-avg{position:absolute;top:50%;transform:translate(-50%,-50%);width:7px;height:7px;border-radius:50%;background:#9CA3AF;z-index:1;}
+.group-sum-footer{display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.group-sum-lbl{color:var(--text-400);}
+.sw-mini-badge{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:9px;}
+.sw-mini-badge.strong{background:var(--green-bg);color:var(--green);}
+.sw-mini-badge.weak{background:var(--red-bg);color:var(--red);}
+.footnote-area{padding:4px 0 8px;}.footnote-text{font-size:11px;color:var(--text-400);}
+
+/* 강점/약점 카드 (사이에 낀 단계 → 경로 라벨 하나로 합쳐 그룹 헤더) */
+.sw-cards{display:flex;gap:16px;margin-top:16px;align-items:flex-start;}
+.sw-card{flex:1;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;min-width:0;}
+.sw-card-head{padding:10px 16px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.sw-card-head.strong{background:var(--green-bg);color:var(--green);border-bottom:1px solid #bbf7d0;}
+.sw-card-head.weak{background:var(--red-bg);color:var(--red);border-bottom:1px solid #fecaca;}
+.sw-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:14px;}
+.sw-subgroup{padding-bottom:14px;border-bottom:1px dashed var(--border-light);}
+.sw-subgroup:last-child{border-bottom:none;padding-bottom:0;}
+.sw-subgroup-title{font-size:12.5px;font-weight:700;color:var(--text-700);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.sw-subgroup-score{font-size:11px;font-weight:700;color:var(--text-400);}
+.sw-group-label{font-size:11px;font-weight:700;color:var(--text-400);margin-bottom:6px;}
+
+/* 매핑 단계(세부역량) + 그 아래 측정문항군 목록 */
+.sw-map-list{display:flex;flex-direction:column;gap:10px;}
+.sw-map-item{}
+.sw-map-head{display:flex;align-items:center;gap:8px;}
+.sw-map-name{font-size:12.5px;font-weight:700;}
+.sw-map-name.strong{color:var(--green);}
+.sw-map-name.weak{color:var(--red);}
+.sw-map-score{font-size:11px;font-weight:700;color:var(--text-400);}
+.sw-qgroup-list{margin:5px 0 0 4px;padding-left:12px;border-left:2px solid var(--border-light);display:flex;flex-direction:column;gap:3px;}
+.sw-qgroup-item{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:var(--text-500);}
+.sw-qgroup-name{color:var(--text-500);}
+.sw-qgroup-score{font-weight:700;color:var(--text-700);}
+
+.cmp-plus{display:inline-block;background:var(--blue-bg);color:var(--blue);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;}
+.cmp-minus{display:inline-block;background:var(--red-bg);color:var(--red);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;}
+
+/* 종합지수 막대 차트 (다면 비교: 본인/상사/동료/구성원/전사) */
+.bar-chart-wrap{display:flex;gap:32px;justify-content:center;align-items:flex-end;padding:32px 0 8px;flex-wrap:wrap;min-height:200px;}
+.bar-group{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:110px;}
+.bar-group-title{font-size:12px;font-weight:700;color:var(--text-700);text-align:center;}
+.bar-group-path{font-size:10px;color:var(--text-400);text-align:center;margin-top:-4px;}
+.bars{display:flex;gap:6px;align-items:flex-end;height:130px;}
+.bar-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-col{width:24px;border-radius:3px 3px 0 0;position:relative;min-height:4px;}
+.bar-label{font-size:10px;color:var(--text-500);text-align:center;white-space:nowrap;}
+.bar-val{font-size:11px;font-weight:700;color:var(--text-700);}
+.bar-mine{background:#246CF9;}
+.bar-best{background:#16A34A;}
+.bar-top{background:#F97316;}
+.bar-sub{background:#7C3AED;}
+.bar-all{background:#D1D5DB;}
+.bar-legend{display:flex;gap:16px;justify-content:center;padding:12px 0 4px;border-top:1px solid var(--border-light);margin-top:8px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-500);}
+.legend-dot{width:10px;height:10px;border-radius:2px;}
+
+/* 세부역량별 갭 상세 테이블 */
+.gap-table{width:100%;border-collapse:collapse;margin-top:4px;font-size:12.5px;}
+.gap-table th{background:var(--bg);padding:8px 12px;text-align:center;font-weight:600;color:var(--text-700);border:1px solid var(--border);font-size:11.5px;}
+.gap-table td{padding:8px 12px;border:1px solid var(--border);text-align:center;vertical-align:middle;}
+.gap-table td.gt-path{text-align:left;color:var(--text-500);font-size:11.5px;}
+.gap-table td.gt-name{text-align:left;font-weight:600;color:var(--text-900);}
+.gap-table td.gt-num{font-weight:700;}
+.gap-zero{display:inline-block;background:#F3F4F6;color:var(--text-400);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.gap-badge{display:inline-block;background:var(--red-bg);color:var(--red);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.gap-badge.pos{background:var(--green-bg);color:var(--green);}
+
+/* ── 추천과정 드로어 ── */
+.course-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;opacity:0;pointer-events:none;transition:opacity .25s;}
+.course-overlay.open{opacity:1;pointer-events:all;}
+.course-drawer{position:fixed;top:0;right:0;height:100%;width:460px;max-width:95vw;background:var(--white);z-index:501;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.14);}
+.course-drawer.open{transform:translateX(0);}
+.cd-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-title{font-size:15px;font-weight:700;color:var(--text-900);}
+.cd-subtitle{font-size:11.5px;color:var(--text-400);margin-top:3px;}
+.cd-close{width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);flex-shrink:0;}
+.cd-close:hover{background:var(--bg);}
+.cd-tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-tab{padding:10px 14px;font-size:13px;font-weight:600;color:var(--text-400);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:5px;}
+.cd-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.cd-body{flex:1;overflow-y:auto;padding:16px 20px 24px;}
+.cd-count{font-size:12px;color:var(--text-400);margin-bottom:14px;}
+.cd-group{margin-bottom:22px;}
+.cd-group-label{font-size:11px;font-weight:700;letter-spacing:.2px;padding:4px 10px;border-radius:var(--r-sm);margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;}
+.cd-group-label.weak{background:var(--red-bg);color:var(--red);}
+.cd-group-label.strong{background:var(--green-bg);color:var(--green);}
+.cd-group-label-tag{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.6);}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px;background:var(--white);cursor:pointer;text-decoration:none;}
+.cd-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(36,108,249,.08);}
+.cd-item-thumb{width:72px;height:54px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0;background:var(--border-light);}
+.cd-item-left{flex:1;min-width:0;}
+.cd-item-cmp{font-size:10.5px;font-weight:700;color:var(--text-400);margin-bottom:3px;}
+.cd-item-name{font-size:13px;font-weight:600;color:var(--text-900);line-height:1.4;}
+.cd-item-type{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:5px;}
+.cd-item-type.online{background:var(--blue-bg);color:var(--blue);}
+.cd-item-type.offline{background:var(--green-bg);color:var(--green);}
+.cd-item-type.micro{background:var(--orange-bg);color:var(--orange);}
+.cd-tab-badge{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.cd-tab-badge.strong{background:var(--green-bg);color:var(--green);}
+.cd-tab-badge.weak{background:var(--red-bg);color:var(--red);}
+
+/* ── 계층 디버그 패널 ── */
+.debug-toggle{font-size:11px;color:var(--text-400);cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block;}
+.debug-tree{display:none;background:#0f172a;color:#cbd5e1;border-radius:var(--r-md);padding:14px 16px;font-size:11.5px;font-family:'Consolas',monospace;line-height:1.7;margin-top:8px;white-space:pre;overflow-x:auto;}
+.debug-tree.open{display:block;}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header class="gnb">
+  <a href="../진단_연수원.html" class="gnb-logo">
+    <div class="gnb-logo-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+    </div>
+    LABS
+  </a>
+  <div class="gnb-search-wrap"><input class="gnb-search" type="text" placeholder="과정명, 키워드로 검색해 보세요"></div>
+  <div class="gnb-right">
+    <button class="gnb-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="gnb-badge"></span>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item">Home</a></li>
+      <li><a href="#" class="sb-item">Contents</a></li>
+      <li><a href="#" class="sb-item">Connect</a></li>
+      <li><a href="#" class="sb-item active">my Canvas</a></li>
+    </ul>
+    <div class="sb-divider"></div>
+    <ul class="sb-menu"><li><a href="#" class="sb-item sm active">진단</a></li></ul>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="main">
+
+      <div class="page-header">
+        <div>
+          <div class="breadcrumb"><span>my Canvas</span> › <span>진단</span> › <span>결과 보기</span></div>
+          <div class="page-title">진단 결과 보기 <span id="pageTitleTag" style="color:#e26a00;font-weight:700;font-size:14px;">(가변 계층 실험안 · 6단계)</span></div>
+          <div class="page-desc">2026년 하반기 리더십 역량진단</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-outline" onclick="openCourseDrawer()">추천 과정 보기</button>
+        </div>
+      </div>
+
+      <!-- 실험안 안내 -->
+      <div class="hier-note">
+        <div class="hier-note-icon">🧭</div>
+        <div class="hier-note-text">
+          <span id="hierSummary"><b>이 진단지는 6단계 구조</b>입니다. 강점·약점 판정 단계(역량군)와 추천과정 매핑 단계(세부역량) 사이에
+          <b>세부역량군 · 역량요소, 2개 단계</b>가 끼어 있습니다. 이 사이 단계들을 계속 중첩해서 보여주면 화면이 너무 깊어지므로,
+          <b>이름들을 "세부역량군 · 역량요소"처럼 경로 하나로 합쳐 그룹 헤더 하나로만</b> 보여줍니다.
+          반면 매핑 단계 아래, 실제 응답이 쌓이는 <b>측정문항군</b>은 숨기지 않고 각 세부역량 밑에 목록으로 그대로 펼쳐서 보여줍니다 —
+          "사이에 낀 단계"는 합쳐서 요약하고, "실제 응답이 있는 가장 아래 단계"는 숨기지 않는다는 원칙입니다.
+          이 로직은 사이 단계가 0개든 2개든 같은 코드로 동작합니다 (재귀 렌더링).</span>
+          <div class="hier-path" id="hierPath">
+            <span class="hier-chip mute">유형</span><span class="hier-arrow">→</span>
+            <span class="hier-chip pin">역량군 (판정)</span><span class="hier-arrow">→</span>
+            <span class="hier-chip">세부역량군</span><span class="hier-arrow">→</span>
+            <span class="hier-chip">역량요소</span><span class="hier-arrow">→</span>
+            <span class="hier-chip pin">세부역량 (매핑)</span><span class="hier-arrow">→</span>
+            <span class="hier-chip">측정문항군 (세부역량 아래에 목록으로 표시)</span>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-outline" id="levelToggleBtn" onclick="toggleLevelCount()" style="font-size:12px;padding:5px 12px;">🔬 1단계로 테스트</button>
+            <span class="debug-toggle" onclick="toggleDebugTree()">▸ 실제 트리 데이터 보기</span>
+          </div>
+          <div class="debug-tree" id="debugTree"></div>
+        </div>
+      </div>
+
+      <div id="view-available">
+
+        <div class="meta-card">
+          <div class="meta-item"><div class="meta-label">진단명</div><div class="meta-val">2026년 하반기 리더십 역량진단</div></div>
+          <div class="meta-divider"></div>
+          <div class="meta-item"><div class="meta-label">진단기간</div><div class="meta-val">2026.11.01 ~ 2026.11.30</div></div>
+          <div class="meta-divider"></div>
+          <div class="meta-item"><div class="meta-label">진단대상자</div><div class="meta-val">홍길동 (본인)</div></div>
+        </div>
+
+        <div id="scoreCardsWrap"></div>
+        <div class="footnote-area"><span class="footnote-text">※ 전체 = 나에게 응답한 평가자 전원의 평균 · 강점·약점 판정은 <b>역량군</b> 단계 기준</span></div>
+
+        <div class="result-section">
+          <div class="rs-head"><span class="rs-head-dot"></span><span class="rs-title">홍길동 님의 강점 / 약점 역량</span></div>
+          <div class="rs-body" id="swDetailWrap"></div>
+        </div>
+
+        <!-- ② 종합지수 (다면 비교) -->
+        <div class="result-section">
+          <div class="rs-head"><span class="rs-head-dot"></span><span class="rs-title">종합지수 — 평가자별 비교</span><span style="margin-left:auto;font-size:10px;color:var(--text-400);">척도 0 ~ 5</span></div>
+          <div class="rs-body" id="raterChartWrap"></div>
+        </div>
+
+        <!-- ③ 세부역량별 갭 상세 -->
+        <div class="result-section">
+          <div class="rs-head"><span class="rs-head-dot"></span><span class="rs-title">세부역량별 갭 상세</span><span style="margin-left:auto;font-size:10px;color:var(--text-400);">GAP = 본인 − 전사평균</span></div>
+          <div class="rs-body" id="gapTableWrap"></div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- 추천과정 드로어 -->
+<div class="course-overlay" id="courseOverlay" onclick="closeCourseDrawer()"></div>
+<div class="course-drawer" id="courseDrawer">
+  <div class="cd-head">
+    <div>
+      <div class="cd-title">추천 과정</div>
+      <div class="cd-subtitle">홍길동 님의 진단결과를 분석하여 제안하는 추천 교육과정 정보입니다.</div>
+    </div>
+    <button class="cd-close" onclick="closeCourseDrawer()">✕</button>
+  </div>
+  <div class="cd-tabs">
+    <div class="cd-tab active" onclick="switchCourseTab(this,'all')">전체</div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'strong')">강점 역량 <span class="cd-tab-badge strong">강화</span></div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'weak')">약점 역량 <span class="cd-tab-badge weak">보완</span></div>
+  </div>
+  <div class="cd-body" id="courseBody"></div>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// 6단계 계층 정의: 유형(1) > 역량군(2,판정) > 세부역량군(3) > 역량요소(4) > 세부역량(5,매핑) > 측정문항군(6)
+// ─────────────────────────────────────────
+let LEVELS = ['유형', '역량군', '세부역량군', '역량요소', '세부역량', '측정문항군'];
+let SCORE_DEPTH = 2;
+let MAP_DEPTH = 5;
+const STRONG_TH = 4.0, WEAK_TH = 3.8;
+
+// 실제 원점수는 depth6(측정문항군)에만 있고, 위 단계 점수는 전부 그 아래 leaf 평균으로 계산한다.
+// scores = { self:본인, sup:상사, peer:동료, sub:구성원, all:전사평균 } — 다면 비교/갭 계산에 쓴다.
+const RATERS = [
+  { key: 'self', label: '본인', cls: 'bar-mine' },
+  { key: 'sup',  label: '상사', cls: 'bar-best' },
+  { key: 'peer', label: '동료', cls: 'bar-top' },
+  { key: 'sub',  label: '구성원', cls: 'bar-sub' },
+  { key: 'all',  label: '전사', cls: 'bar-all' },
+];
+const TREE_6LEVEL = [
+  { name: '리더십 역량진단', children: [
+    { name: '조직관리', children: [
+      { name: '변화혁신', children: [
+        { name: '혁신실행', children: [
+          { name: '변화관리', children: [ { name: '문항A', scores: { self: 4.7, sup: 4.6, peer: 4.4, sub: 4.8, all: 4.2 } } ] },
+          { name: '혁신활동', children: [ { name: '문항B', scores: { self: 4.6, sup: 4.5, peer: 4.3, sub: 4.7, all: 4.1 } } ] },
+        ]}
+      ]}
+    ]},
+    { name: '사람관리', children: [
+      { name: '관계구축', children: [
+        { name: '신뢰소통', children: [
+          { name: '신뢰형성', children: [ { name: '문항C', scores: { self: 4.9, sup: 4.8, peer: 4.6, sub: 5.0, all: 4.3 } } ] },
+          { name: '의사소통', children: [ { name: '문항D', scores: { self: 4.7, sup: 4.6, peer: 4.5, sub: 4.8, all: 4.2 } } ] },
+        ]}
+      ]}
+    ]},
+    { name: '성과관리', children: [
+      { name: '전략기획', children: [
+        { name: '의사결정력', children: [
+          { name: '전략적 의사결정', courses: [
+            { name: '리더를 위한 전략적 의사결정', type: 'online', thumb: 'https://picsum.photos/seed/c1/80/60' },
+            { name: '불확실한 상황에서의 의사결정 기술', type: 'micro', thumb: 'https://picsum.photos/seed/c2/80/60' },
+          ], children: [ { name: '문항E', scores: { self: 3.2, sup: 3.0, peer: 3.1, sub: 3.3, all: 3.8 } } ] },
+        ]}
+      ]},
+      { name: '실행관리', children: [
+        { name: '문제해결력', children: [
+          { name: '문제해결', courses: [
+            { name: '데이터 기반 문제해결 프레임워크', type: 'online', thumb: 'https://picsum.photos/seed/c3/80/60' },
+            { name: 'MECE 사고와 맥킨지식 문제해결', type: 'offline', thumb: 'https://picsum.photos/seed/c4/80/60' },
+          ], children: [ { name: '문항F', scores: { self: 3.4, sup: 3.2, peer: 3.3, sub: 3.5, all: 3.9 } } ] },
+        ]}
+      ]},
+    ]},
+  ]},
+];
+
+// 극단 케이스 테스트용: 단계가 1개뿐인 진단지. 이 경우 판정 단계 = 매핑 단계 = 유일한 단계이고,
+// 그 아래 더 내려갈 단계가 없으니 노드 자신이 곧 leaf라 scores를 직접 갖는다(children 없음).
+// TREE는 원래도 depth1 배열이라 역량이 1개든 여러 개든 같은 구조 — 노드를 여러 개 둬서 강점/약점이 실제로 갈리는지까지 확인한다.
+const TREE_1LEVEL = [
+  { name: '전략적 사고', scores: { self: 4.2, sup: 4.0, peer: 4.1, sub: 4.3, all: 3.9 }, courses: [
+    { name: '전략 기획 마스터클래스', type: 'online', thumb: 'https://picsum.photos/seed/o3/80/60' },
+  ] },
+  { name: '커뮤니케이션', scores: { self: 3.6, sup: 3.5, peer: 3.4, sub: 3.7, all: 3.9 }, courses: [
+    { name: '리더십 기본기 다지기', type: 'online', thumb: 'https://picsum.photos/seed/o1/80/60' },
+    { name: '현장 리더를 위한 코칭 워크숍', type: 'offline', thumb: 'https://picsum.photos/seed/o2/80/60' },
+  ] },
+  { name: '변화관리', scores: { self: 3.5, sup: 3.3, peer: 3.6, sub: 3.4, all: 3.8 }, courses: [
+    { name: '조직 변화관리 워크숍', type: 'offline', thumb: 'https://picsum.photos/seed/o4/80/60' },
+  ] },
+];
+
+let TREE = TREE_6LEVEL;
+
+function escHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+// depth6(측정문항군)까지 내려가 rater별 raw score를 모아 평균 — 어떤 단계에서 불러도 그 아래 전체 평균이 나온다.
+function leafScores(node, rater) {
+  if (node.scores) return [node.scores[rater]];
+  return (node.children || []).flatMap(c => leafScores(c, rater));
+}
+function avgScore(node, rater) {
+  const scores = leafScores(node, rater || 'self');
+  return scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+}
+
+// TREE(depth1 배열)에서 SCORE_DEPTH까지 내려가 판정 단계 노드를 전부 모은다.
+// ancestorPath = 판정 단계보다 위에 있는 조상 이름들. 1단계짜리 진단지는 조상이 아예 없다(빈 배열).
+function collectScoreNodes() {
+  const result = [];
+  function walk(nodes, depth, ancestorPath) {
+    nodes.forEach(n => {
+      if (depth === SCORE_DEPTH) { result.push({ node: n, ancestorPath }); return; }
+      walk(n.children || [], depth + 1, [...ancestorPath, n.name]);
+    });
+  }
+  walk(TREE, 1, []);
+  return result;
+}
+
+// 판정 단계 노드 하나(groupNode) 아래에서 매핑 단계 노드들을 모은다.
+// 판정==매핑(같은 단계)이면 groupNode 자신이 곧 매핑 대상이라 그대로 반환한다.
+function mapItemsUnder(groupNode) {
+  if (MAP_DEPTH === SCORE_DEPTH) return [{ pathNames: [], mapNode: groupNode }];
+  const result = [];
+  function walk(node, depth, pathNames) {
+    if (depth === MAP_DEPTH - 1) {
+      (node.children || []).forEach(mapNode => result.push({ pathNames, mapNode }));
+      return;
+    }
+    (node.children || []).forEach(child => walk(child, depth + 1, [...pathNames, child.name]));
+  }
+  walk(groupNode, SCORE_DEPTH, []);
+  return result;
+}
+
+// ─────────────────────────────────────────
+// ① 역량군 서머리 카드 (판정 단계 = depth SCORE_DEPTH)
+// ─────────────────────────────────────────
+function renderScoreCards() {
+  const wrap = document.getElementById('scoreCardsWrap');
+  let html = '<div class="group-summary">';
+  collectScoreNodes().forEach(({ node: groupNode, ancestorPath }) => {
+    const score = avgScore(groupNode, 'self');
+    const avg = avgScore(groupNode, 'all');
+    const isStrong = score >= STRONG_TH;
+    const gap = score - avg;
+    const pct = Math.min(100, Math.round(score / 5 * 100));
+    const avgPct = Math.min(100, Math.round(avg / 5 * 100));
+    const prefix = ancestorPath.length ? `<span style="color:var(--text-400);font-weight:500;">${escHtml(ancestorPath.join(' · '))} · </span>` : '';
+    html += `<div class="group-sum-card">
+      <div class="group-sum-title">${prefix}${escHtml(groupNode.name)} <span class="sw-mini-badge ${isStrong ? 'strong' : 'weak'}">${isStrong ? '강점' : '약점'}</span></div>
+      <div class="group-sum-scores">
+        <span class="group-sum-me" style="color:${isStrong ? 'var(--primary)' : 'var(--orange)'}">${score.toFixed(2)}</span>
+        <span class="group-sum-divider">/</span>
+        <span class="group-sum-avg">전체 ${avg.toFixed(1)}</span>
+      </div>
+      <div class="group-sum-track">
+        <div class="group-sum-fill" style="width:${pct}%;${isStrong ? '' : 'background:var(--orange)'}"></div>
+        <div class="group-sum-dot-avg" style="left:${avgPct}%"></div>
+        <div class="group-sum-dot-me" style="left:${pct}%;${isStrong ? '' : 'border-color:var(--orange)'}"></div>
+      </div>
+      <div class="group-sum-footer">
+        <span class="group-sum-lbl">척도 0 ~ 5.0</span>
+        <span class="${gap >= 0 ? 'cmp-plus' : 'cmp-minus'}">${gap >= 0 ? '+' : ''}${gap.toFixed(2)}</span>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+// 매핑 단계 노드 하나를 "이름 + 점수 + (있으면) 측정문항군 목록" 블록으로 렌더링.
+// 1단계짜리 진단지처럼 매핑 노드 자신이 곧 leaf(scores 직접 보유, children 없음)일 때도 그대로 동작한다.
+function renderMapItemBlock(mapNode, tagCls) {
+  const s = avgScore(mapNode, 'self').toFixed(1);
+  const qgroups = (mapNode.children || []).map(q => `
+    <div class="sw-qgroup-item"><span class="sw-qgroup-name">${escHtml(q.name)}</span><span class="sw-qgroup-score">${avgScore(q, 'self').toFixed(1)}</span></div>`).join('');
+  return `
+    <div class="sw-map-item">
+      <div class="sw-map-head"><span class="sw-map-name ${tagCls}">${escHtml(mapNode.name)}</span><span class="sw-map-score">${s}</span></div>
+      ${qgroups ? `<div class="sw-qgroup-list">${qgroups}</div>` : ''}
+    </div>`;
+}
+
+// ─────────────────────────────────────────
+// ② 강점/약점 상세 — 판정~매핑 사이에 낀 단계(몇 개든, 0개 포함)를 경로 하나로 합쳐 그룹 헤더로 표시
+// ─────────────────────────────────────────
+function renderSwDetail() {
+  const strongGroups = [], weakGroups = [];
+  collectScoreNodes().forEach(({ node: groupNode }) => {
+    const isStrong = avgScore(groupNode, 'self') >= STRONG_TH;
+    (isStrong ? strongGroups : weakGroups).push({ groupNode });
+  });
+
+  function renderGroupBody(groupNode, tagCls) {
+    const byPath = {}, order = [];
+    mapItemsUnder(groupNode).forEach(({ pathNames, mapNode }) => {
+      const key = pathNames.join(' · ');
+      if (!(key in byPath)) { byPath[key] = []; order.push(key); }
+      byPath[key].push(mapNode);
+    });
+    return order.map(key => {
+      const items = byPath[key].map(mapNode => renderMapItemBlock(mapNode, tagCls)).join('');
+      return `${key ? `<div class="sw-group-label">${escHtml(key)}</div>` : ''}<div class="sw-map-list">${items}</div>`;
+    }).join('');
+  }
+
+  function renderCard(items, tag) {
+    if (!items.length) return `<div style="padding:24px 0;text-align:center;color:var(--text-400);font-size:12.5px;">해당 역량이 없습니다.</div>`;
+    return items.map(({ groupNode }) => `
+      <div class="sw-subgroup">
+        <div class="sw-subgroup-title">${escHtml(groupNode.name)} <span class="sw-subgroup-score">${avgScore(groupNode, 'self').toFixed(1)}</span></div>
+        ${renderGroupBody(groupNode, tag)}
+      </div>`).join('');
+  }
+
+  document.getElementById('swDetailWrap').innerHTML = `
+    <div class="sw-cards">
+      <div class="sw-card">
+        <div class="sw-card-head strong">강점 역량</div>
+        <div class="sw-card-body">${renderCard(strongGroups, 'strong')}</div>
+      </div>
+      <div class="sw-card">
+        <div class="sw-card-head weak">약점 역량</div>
+        <div class="sw-card-body">${renderCard(weakGroups, 'weak')}</div>
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────
+// ③ 종합지수 — 역량군(판정 단계)마다 본인/상사/동료/구성원/전사 막대 비교
+// ─────────────────────────────────────────
+function renderRaterChart() {
+  let html = '<div class="bar-chart-wrap">';
+  collectScoreNodes().forEach(({ node: groupNode }) => {
+    const maxH = 130;
+    html += `<div class="bar-group"><div class="bars">`;
+    RATERS.forEach(r => {
+      const v = avgScore(groupNode, r.key);
+      const h = Math.max(4, Math.round(v / 5 * maxH));
+      html += `<div class="bar-item">
+        <div class="bar-val">${v.toFixed(1)}</div>
+        <div class="bar-col ${r.cls}" style="height:${h}px"></div>
+        <div class="bar-label">${r.label}</div>
+      </div>`;
+    });
+    html += `</div><div class="bar-group-title">${escHtml(groupNode.name)}</div></div>`;
+  });
+  html += '</div>';
+  html += `<div class="bar-legend">${RATERS.map(r => `<span class="legend-item"><span class="legend-dot ${r.cls}"></span>${r.label}</span>`).join('')}</div>`;
+  document.getElementById('raterChartWrap').innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// ④ 세부역량별(매핑 단계) 갭 상세 — 사이 단계 경로를 함께 표기
+// ─────────────────────────────────────────
+function collectMapRows() {
+  const rows = [];
+  collectScoreNodes().forEach(({ node: groupNode }) => {
+    mapItemsUnder(groupNode).forEach(({ pathNames, mapNode }) => {
+      rows.push({
+        grp: groupNode.name,
+        path: pathNames.join(' · '),
+        name: mapNode.name,
+        self: avgScore(mapNode, 'self'),
+        all: avgScore(mapNode, 'all'),
+      });
+    });
+  });
+  return rows;
+}
+function renderGapTable() {
+  const rows = collectMapRows();
+  let html = `<table class="gap-table"><thead><tr>
+    <th style="width:110px;">역량군</th><th>사이 단계 경로</th><th style="width:140px;">세부역량</th>
+    <th style="width:70px;">본인</th><th style="width:70px;">전사평균</th><th style="width:80px;">GAP</th>
+  </tr></thead><tbody>`;
+  rows.forEach(r => {
+    const gap = r.self - r.all;
+    const badgeCls = gap === 0 ? 'gap-zero' : (gap > 0 ? 'gap-badge pos' : 'gap-badge');
+    html += `<tr>
+      <td class="gt-path">${escHtml(r.grp)}</td>
+      <td class="gt-path">${r.path ? escHtml(r.path) : '<span style="color:var(--text-400)">—</span>'}</td>
+      <td class="gt-name">${escHtml(r.name)}</td>
+      <td class="gt-num">${r.self.toFixed(1)}</td>
+      <td class="gt-num" style="color:var(--text-400);">${r.all.toFixed(1)}</td>
+      <td><span class="${badgeCls}">${gap > 0 ? '+' : ''}${gap.toFixed(1)}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('gapTableWrap').innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// ③ 추천과정 드로어 — 매핑 단계(depth MAP_DEPTH)의 courses를 모아,
+//    "역량군 › (사이 단계 경로)"를 그룹 라벨로 묶어서 보여준다.
+// ─────────────────────────────────────────
+function collectCourses() {
+  const list = [];
+  collectScoreNodes().forEach(({ node: groupNode }) => {
+    const tag = avgScore(groupNode, 'self') >= STRONG_TH ? 'strong' : 'weak';
+    mapItemsUnder(groupNode).forEach(({ pathNames, mapNode }) => {
+      (mapNode.courses || []).forEach(c => list.push({ ...c, grp: groupNode.name, pathNames, cmp: mapNode.name, tag }));
+    });
+  });
+  return list;
+}
+const TYPE_LABEL = { online: '온라인', offline: '오프라인', hybrid: '하이브리드러닝', micro: '마이크로러닝' };
+const TAG_LABEL = { weak: '보완', strong: '강화' };
+
+function openCourseDrawer() {
+  document.getElementById('courseOverlay').classList.add('open');
+  document.getElementById('courseDrawer').classList.add('open');
+  renderCourses('all');
+}
+function closeCourseDrawer() {
+  document.getElementById('courseOverlay').classList.remove('open');
+  document.getElementById('courseDrawer').classList.remove('open');
+}
+function switchCourseTab(el, tab) {
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCourses(tab);
+}
+function renderCourses(tab) {
+  const allCourses = collectCourses();
+  const list = tab === 'all' ? allCourses : allCourses.filter(c => c.tag === tab);
+  const body = document.getElementById('courseBody');
+  if (!list.length) { body.innerHTML = '<div style="text-align:center;padding:48px 0;color:var(--text-400);font-size:13px">해당 과정이 없습니다.</div>'; return; }
+
+  const groups = {}, order = [];
+  list.forEach(c => {
+    const key = [c.grp, ...c.pathNames].join(' › ');
+    if (!groups[key]) { groups[key] = []; order.push(key); }
+    groups[key].push(c);
+  });
+
+  let html = `<div class="cd-count">총 ${list.length}개 과정 · ${order.length}개 그룹</div>`;
+  order.forEach(key => {
+    const items = groups[key];
+    const tag = items[0].tag;
+    html += `<div class="cd-group"><span class="cd-group-label ${tag}">${escHtml(key)}<span class="cd-group-label-tag">${TAG_LABEL[tag]}</span></span>`;
+    items.forEach(c => {
+      html += `<a class="cd-item" href="#" onclick="return false;">
+        <img class="cd-item-thumb" src="${c.thumb}" alt="${escHtml(c.name)}" loading="lazy">
+        <div class="cd-item-left">
+          <div class="cd-item-cmp">${escHtml(c.cmp)}</div>
+          <div class="cd-item-name">${escHtml(c.name)}</div>
+          <span class="cd-item-type ${c.type}">${TYPE_LABEL[c.type]}</span>
+        </div>
+      </a>`;
+    });
+    html += '</div>';
+  });
+  body.innerHTML = html;
+}
+
+// ─────────────────────────────────────────
+// 디버그: 실제 트리 데이터를 텍스트로 펼쳐서 보여주기 (프로토타입 검증용)
+// ─────────────────────────────────────────
+function dumpTree() {
+  let out = '';
+  function walk(nodes, depth) {
+    nodes.forEach(n => {
+      out += '  '.repeat(depth - 1) + `${LEVELS[depth - 1]}: ${n.name}` + (n.scores ? ` (본인 ${n.scores.self} · 상사 ${n.scores.sup} · 동료 ${n.scores.peer} · 구성원 ${n.scores.sub} · 전사 ${n.scores.all})` : '') + (n.courses ? ` [추천과정 ${n.courses.length}개]` : '') + '\n';
+      if (n.children) walk(n.children, depth + 1);
+    });
+  }
+  walk(TREE, 1);
+  return out;
+}
+function toggleDebugTree() {
+  const el = document.getElementById('debugTree');
+  el.classList.toggle('open');
+  if (el.classList.contains('open')) el.textContent = dumpTree();
+}
+
+function renderAll() {
+  renderScoreCards();
+  renderSwDetail();
+  renderRaterChart();
+  renderGapTable();
+  const dbg = document.getElementById('debugTree');
+  if (dbg.classList.contains('open')) dbg.textContent = dumpTree();
+}
+
+// ── 극단 케이스 테스트: 단계 1개 ↔ 6개 전환 ──
+// SCORE_DEPTH === MAP_DEPTH === 1이 되어, 위 모든 렌더 함수가 "조상 없음 · 사이 단계 없음 · 매핑=판정"을
+// 특수 케이스로 따로 처리하지 않고 같은 코드로 그려내는지 실제로 보여준다.
+let usingOneLevel = false;
+function toggleLevelCount() {
+  usingOneLevel = !usingOneLevel;
+  if (usingOneLevel) {
+    LEVELS = ['역량'];
+    SCORE_DEPTH = 1;
+    MAP_DEPTH = 1;
+    TREE = TREE_1LEVEL;
+  } else {
+    LEVELS = ['유형', '역량군', '세부역량군', '역량요소', '세부역량', '측정문항군'];
+    SCORE_DEPTH = 2;
+    MAP_DEPTH = 5;
+    TREE = TREE_6LEVEL;
+  }
+  document.getElementById('levelToggleBtn').textContent = usingOneLevel ? '🔬 6단계로 복원' : '🔬 1단계로 테스트';
+  document.getElementById('pageTitleTag').textContent = usingOneLevel ? '(가변 계층 실험안 · 1단계 극단 케이스)' : '(가변 계층 실험안 · 6단계)';
+  document.getElementById('hierSummary').textContent = usingOneLevel
+    ? '지금은 1단계 구조입니다 — "전략적 사고 · 커뮤니케이션 · 변화관리" 3개 역량이 나란히 있고, 각 역량 자체가 판정 단계이자 매핑 단계이자 실제 응답이 쌓이는 단계입니다. 역량이 여러 개라도 트리의 depth1 배열 안에 나란히 들어있을 뿐이라 코드는 그대로 동작하며, 조상도 사이에 낀 단계도 없어서 위 설명 문구는 이 경우엔 해당 없음(N/A) 처리됩니다.'
+    : '이 진단지는 6단계 구조입니다. 강점·약점 판정 단계(역량군)와 추천과정 매핑 단계(세부역량) 사이에 세부역량군 · 역량요소, 2개 단계가 끼어 있습니다. 이 사이 단계들을 계속 중첩해서 보여주면 화면이 너무 깊어지므로, 이름들을 "세부역량군 · 역량요소"처럼 경로 하나로 합쳐 그룹 헤더 하나로만 보여줍니다. 반면 매핑 단계 아래, 실제 응답이 쌓이는 측정문항군은 숨기지 않고 각 세부역량 밑에 목록으로 그대로 펼쳐서 보여줍니다 — "사이에 낀 단계"는 합쳐서 요약하고, "실제 응답이 있는 가장 아래 단계"는 숨기지 않는다는 원칙입니다. 이 로직은 사이 단계가 0개든 2개든 같은 코드로 동작합니다 (재귀 렌더링).';
+  document.getElementById('hierPath').innerHTML = LEVELS.map((l, i) => {
+    const depth = i + 1;
+    const isScore = depth === SCORE_DEPTH, isMap = depth === MAP_DEPTH;
+    const cls = (isScore || isMap) ? 'hier-chip pin' : 'hier-chip';
+    const tag = isScore && isMap ? ' (판정+매핑)' : isScore ? ' (판정)' : isMap ? ' (매핑)' : '';
+    return `<span class="${cls}">${escHtml(l)}${tag}</span>`;
+  }).join('<span class="hier-arrow">→</span>');
+  document.getElementById('debugTree').textContent = '';
+  document.getElementById('debugTree').classList.remove('open');
+  renderAll();
+}
+
+renderAll();
+</script>
+
+</body>
+</html>

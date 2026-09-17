@@ -542,8 +542,9 @@
         <div class="search-body">
           <select class="select" id="s-course-field" style="width:88px;">
             <option value="name">과정명</option>
-            <option value="code">상품코드</option>
+            <option value="code">과정아이디</option>
           </select>
+          <!-- 과정명: like 검색 / 과정아이디: 완전일치 검색 -->
           <div class="search-icon-wrap">
             <span class="ico">&#128269;</span>
             <input class="input" id="s-course-kw" type="text" placeholder="검색어를 입력해주세요.">
@@ -771,11 +772,22 @@ const YEONSUWAN_LIST = [
 ];
 const COURSE_KINDS = ['단과', '단과', '단과', '단과', '종합'];
 const OPS_TYPES    = ['일반', '일반', '일반', '러닝메이커'];
-const COURSE_NAMES = [
-  'AI 에이전트 시대가 온다','데이터 리터러시 기본','스토리텔링 프레젠테이션',
-  '리더의 코칭 대화법','업무 자동화 with Python','MS 365 실무 활용',
-  '영어 비즈니스 이메일','중국어 회화 입문','ESG 경영 이해','조직문화와 소통',
-  '마케팅 전략 수립','재무제표 읽는 법','협상의 기술','퍼포먼스 마케팅 이해','갈등관리 리더십',
+const COURSE_POOL = [
+  { name: 'AI 에이전트 시대가 온다',     code: 'CRS-001' },
+  { name: '데이터 리터러시 기본',        code: 'CRS-002' },
+  { name: '스토리텔링 프레젠테이션',     code: 'CRS-003' },
+  { name: '리더의 코칭 대화법',          code: 'CRS-004' },
+  { name: '업무 자동화 with Python',     code: 'CRS-005' },
+  { name: 'MS 365 실무 활용',            code: 'CRS-006' },
+  { name: '영어 비즈니스 이메일',        code: 'CRS-007' },
+  { name: '중국어 회화 입문',            code: 'CRS-008' },
+  { name: 'ESG 경영 이해',               code: 'CRS-009' },
+  { name: '조직문화와 소통',             code: 'CRS-010' },
+  { name: '마케팅 전략 수립',            code: 'CRS-011' },
+  { name: '재무제표 읽는 법',            code: 'CRS-012' },
+  { name: '협상의 기술',                 code: 'CRS-013' },
+  { name: '퍼포먼스 마케팅 이해',        code: 'CRS-014' },
+  { name: '갈등관리 리더십',             code: 'CRS-015' },
 ];
 const COMPLETE_STATUS = [
   { code: 'studying',   label: '학습중', badge: 'badge-studying' },
@@ -806,6 +818,7 @@ function addDays(dateStr, days) {
 
 let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
   const type   = COURSE_TYPES[rand(COURSE_TYPES.length)];
+  const course = COURSE_POOL[rand(COURSE_POOL.length)];
   const name   = NAMES[rand(NAMES.length)];
   const company = COMPANIES[rand(COMPANIES.length)];
   const studyFrom = `2026-${String(3 + rand(2)).padStart(2,'0')}-${String(1 + rand(28)).padStart(2,'0')}`;
@@ -843,7 +856,7 @@ let ALL_DATA = Array.from({ length: 140 }, (_, i) => {
     dept: DEPTS[rand(DEPTS.length)], name, learnerStatus,
     empNo: String(20000 + i * 13).slice(-6),
     userId: 'hu' + String(10000 + i * 37).slice(-6) + '@hunet.co.kr',
-    courseType: type, courseName: COURSE_NAMES[rand(COURSE_NAMES.length)],
+    courseType: type, courseName: course.name, courseCode: course.code,
     courseDiv: rand(2) === 0 ? '정시' : '수시',
     courseKind: COURSE_KINDS[rand(COURSE_KINDS.length)], opsType: OPS_TYPES[rand(OPS_TYPES.length)],
     studyFrom, studyTo, progress, status, completeDate, score,
@@ -1176,7 +1189,7 @@ function doSearch() {
     if (learnerKw) {
       if (learnerField === 'name'  && r.name !== learnerKw) return false;
       if (learnerField === 'id'    && r.userId.toLowerCase() !== learnerKw.toLowerCase()) return false;
-      if (learnerField === 'empNo' && r.empNo !== learnerKw) return false;
+      if (learnerField === 'empNo' && !r.empNo.includes(learnerKw)) return false;
     }
     // 수료여부
     if (completeStatus) {
@@ -1185,10 +1198,10 @@ function doSearch() {
       if (completeStatus === 'complete'     && !(isEnded && r.status.code === 'complete')) return false;
       if (completeStatus === 'incomplete'   && !(isEnded && r.status.code !== 'complete')) return false;
     }
-    // 과정 검색
+    // 과정명: like 검색 / 과정아이디: 완전일치 검색
     if (courseKw) {
       if (courseField === 'name' && !r.courseName.toLowerCase().includes(courseKw)) return false;
-      if (courseField === 'code' && !r.courseName.toLowerCase().includes(courseKw)) return false;
+      if (courseField === 'code' && r.courseCode.toLowerCase() !== courseKw) return false;
     }
     if (courseKind && r.courseKind !== courseKind) return false;
     if (courseOps  && r.opsType   !== courseOps) return false;

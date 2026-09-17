@@ -1,0 +1,4073 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진단 만들기 — LABS New EDMS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #1a73e8;
+  --bg: #f5f6fa;
+  --sidebar-bg: #2c3e50;
+  --sidebar-hover: #3d5166;
+  --header-bg: #1e2b37;
+  --white: #ffffff;
+  --border: #dde1e7;
+  --text: #333;
+}
+body {
+  font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+  font-size: 13px; background: var(--bg); color: var(--text);
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ── HEADER ── */
+.top-header {
+  background: var(--header-bg); color: #fff; height: 46px;
+  display: flex; align-items: center; padding: 0 20px; gap: 16px;
+  flex-shrink: 0; z-index: 200;
+}
+.top-header .logo { font-size: 15px; font-weight: 700; color: #fff; }
+.top-header .logo span { color: #7eb8f7; }
+.top-header .subtitle { font-size: 12px; color: #aab; }
+.top-header .spacer { flex: 1; }
+.top-header .user-name { font-size: 13px; color: #ccc; }
+.top-header .btn-header { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+.top-header .lang-select { background: #3a4f63; border: 1px solid #556; color: #ccc; padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+/* ── LAYOUT ── */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar { width: 180px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px; }
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+.nav-group-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; cursor: pointer; user-select: none; color: #b8c4ce; font-size: 12px; font-weight: 700; border-left: 3px solid transparent; }
+.nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-group.open > .nav-group-header { color: #7eb8f7; background: rgba(126,184,247,0.07); border-left-color: #7eb8f7; }
+.nav-group-label { flex: 1; }
+.nav-arrow { font-size: 9px; color: #556; transition: transform 0.2s; }
+.nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #7eb8f7; }
+.nav-sub { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+.nav-group.open > .nav-sub { max-height: 300px; padding: 2px 0 6px; }
+.nav-item { display: block; padding: 5px 12px 5px 22px; color: #8da0b0; font-size: 12px; text-decoration: none; cursor: pointer; }
+.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+.nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+.nav-flat { display: block; padding: 10px 14px; color: #b8c4ce; font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+.nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+/* ── PAGE HEADER ── */
+.page-header-row { display: flex; align-items: flex-start; justify-content: space-between; }
+.page-title-area { display: flex; flex-direction: column; gap: 4px; }
+.page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+.breadcrumb { font-size: 11px; color: #999; }
+
+/* ── BUTTONS ── */
+.btn { height: 32px; padding: 0 18px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-family: inherit; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; font-weight: 700; }
+.btn-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+.btn-gray { background: #f0f2f5; color: #444; border: 1px solid #ccc; }
+.btn-sm { height: 28px; padding: 0 12px; font-size: 12px; }
+.btn-xs { height: 24px; padding: 0 9px; font-size: 11px; }
+
+/* ── STEP WIZARD ── */
+.step-wizard {
+  display: flex; background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+  min-height: 60px; flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.step-item {
+  display: flex; align-items: center; gap: 10px; padding: 13px 28px;
+  flex: 1; cursor: pointer; position: relative; border-right: 1px solid var(--border);
+}
+.step-item:last-child { border-right: none; }
+.step-item::after {
+  content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+  border-left: 10px solid var(--border); z-index: 1;
+}
+.step-item:last-child::after { display: none; }
+.step-item::before {
+  content: ''; position: absolute; right: -9px; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+  border-left: 10px solid #fff; z-index: 2;
+}
+.step-item:last-child::before { display: none; }
+.step-item.active::before { border-left-color: #fff; }
+.step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; background: #e0e3e8; color: #888; transition: all 0.2s; }
+.step-item.active .step-num { background: var(--primary); color: #fff; }
+.step-item.done .step-num { background: #1a7a4a; color: #fff; }
+.step-info { display: flex; flex-direction: column; gap: 1px; }
+.step-sub { font-size: 10px; color: #aaa; }
+.step-label { font-size: 13px; font-weight: 700; color: #aaa; }
+.step-item.active .step-label { color: var(--primary); }
+.step-item.done .step-label { color: #1a7a4a; }
+.step-item.active .step-sub { color: #7aaaf7; }
+.step-item.done .step-sub { color: #5daa82; }
+
+/* ── FORM SECTION ── */
+.form-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.form-section-header {
+  padding: 11px 20px; background: #f8f9fb; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; color: #1a1a2e; display: flex; align-items: center; gap: 8px;
+}
+.section-icon { font-size: 14px; }
+.form-table { width: 100%; border-collapse: collapse; }
+.form-table tr { border-bottom: 1px solid #f0f2f5; }
+.form-table tr:last-child { border-bottom: none; }
+.form-th {
+  width: 160px; padding: 11px 20px; font-size: 12px; font-weight: 600; color: #555;
+  background: #fafbfc; border-right: 1px solid #f0f2f5; text-align: left; vertical-align: middle;
+  white-space: nowrap;
+}
+.form-th .req { color: #e53e3e; margin-left: 2px; }
+.form-td { padding: 9px 16px; vertical-align: middle; }
+.form-input { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; }
+.form-input:focus { border-color: var(--primary); }
+.form-input.w-lg { width: 420px; }
+.form-input.w-date { width: 140px; }
+.form-textarea { width: 100%; max-width: 100%; height: 120px; border: 1px solid #ccc; border-radius: 3px; padding: 8px 10px; font-size: 12px; font-family: inherit; outline: none; resize: vertical; }
+.form-textarea:focus { border-color: var(--primary); }
+.form-select { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 8px; font-size: 12px; background: #fff; cursor: pointer; font-family: inherit; outline: none; }
+.form-select:focus { border-color: var(--primary); }
+.inline-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.radio-group { display: flex; gap: 18px; align-items: center; }
+.radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
+
+/* 안내 박스 */
+.info-box {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 6px;
+  font-size: 12px; color: #1a5cc8; line-height: 1.5;
+}
+.info-icon { font-size: 16px; flex-shrink: 0; }
+
+/* ── STEP 1: 2패널 카드 방식 ── */
+.step1-panel-wrap {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  height: calc(100vh - 280px);
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.step1-left {
+  width: 40%;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.step1-right {
+  flex: 1;
+  background: #f8f9fb;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 왼쪽 패널: 검색 행 */
+.step1-search-row {
+  display: flex;
+  gap: 6px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f2f5;
+  flex-shrink: 0;
+}
+
+.step1-search-input {
+  flex: 1;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+
+.step1-search-input:focus {
+  border-color: var(--primary);
+}
+
+/* 왼쪽 패널: 카드 목록 */
+.step1-card-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.step1-card-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.step1-card-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+/* 진단지 카드 */
+.diag-card {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.12s;
+}
+
+.diag-card:hover {
+  background: #f5f8ff;
+}
+
+.diag-card.selected {
+  background: #f0f4ff;
+  border-left-color: var(--primary);
+}
+
+.diag-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 진단지가 선택된 이후 비공개/삭제 처리된 경우 노출되는 상태 배지 */
+.qset-status-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.qset-status-badge.badge-private { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+.qset-status-badge.badge-deleted { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+
+.diag-tag {
+  display: inline-flex;
+  padding: 1px 6px;
+  background: #e8f0fe;
+  color: #1a5cc8;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 3px;
+}
+
+.diag-card-meta {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 3px;
+}
+
+.diag-card-date {
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* 왼쪽 패널: 링크 버튼 */
+.step1-link-btn {
+  padding: 12px 14px;
+  border-top: 1px solid #f0f2f5;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 12px;
+}
+
+.step1-link-btn a {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.step1-link-btn a:hover {
+  text-decoration: underline;
+}
+
+/* 진단지 없는 빈 상태 */
+.step1-no-data {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; text-align: center; padding: 60px 32px; gap: 18px;
+  background: #fff;
+}
+.step1-no-data-icon { font-size: 72px; opacity: 0.18; line-height: 1; }
+.step1-no-data h3 { font-size: 18px; font-weight: 800; color: #1a1a2e; margin: 0; }
+.step1-no-data p { font-size: 13px; color: #888; line-height: 1.7; margin: 0; }
+.step1-no-data .btn-create {
+  margin-top: 4px; padding: 12px 24px; font-size: 14px;
+  background: var(--primary); color: #fff; border: none; border-radius: 8px;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .15s, transform .1s;
+}
+.step1-no-data .btn-create:hover { background: #1557b0; transform: translateY(-1px); }
+/* 프로토타입 전용 토글 */
+.proto-toggle {
+  font-size: 11px; color: #aaa; background: #f5f6f8; border: 1px solid #e0e3e8;
+  border-radius: 4px; padding: 3px 8px; cursor: pointer; font-family: inherit;
+  white-space: nowrap;
+}
+.proto-toggle:hover { color: var(--primary); border-color: var(--primary); }
+
+.diagtype-choice-card {
+  flex: 1; border: 1.5px solid #dde1e7; border-radius: 8px; padding: 22px 18px;
+  cursor: pointer; transition: border-color .15s, box-shadow .15s;
+}
+.diagtype-choice-card:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(26,115,232,.15); }
+.diagtype-choice-card.selected { border-color: var(--primary); border-width: 2px; background: #f0f4ff; box-shadow: 0 2px 10px rgba(26,115,232,.12); }
+.proto-toggle.active-deleted { background: #fdecea; border-color: #f5b7b1; color: #c0392b; }
+
+/* 오른쪽 패널: 빈 상태 */
+.preview-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  font-size: 13px;
+  text-align: center;
+  gap: 10px;
+}
+
+.preview-empty-icon {
+  font-size: 40px;
+  opacity: 0.4;
+}
+
+/* 오른쪽 패널: 내용 */
+.preview-content {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.preview-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.preview-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.preview-title {
+  font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px;
+}
+/* 질문 텍스트 필드 */
+.prev-q-input {
+  width: 100%; border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 10px; font-size: 13px; font-family: inherit; color: #111827;
+  line-height: 1.6; resize: none; outline: none; background: #fafbfc;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  overflow: hidden;
+}
+.prev-q-input:hover { border-color: #a8c0f0; background: #fff; }
+.prev-q-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px #e8f0fe; }
+
+/* 질문 카드 삭제 버튼 */
+.prev-q-card { position: relative; }
+.prev-q-del {
+  position: absolute; top: 10px; right: 10px;
+  background: none; border: none; color: #ccc; cursor: pointer;
+  font-size: 15px; line-height: 1; padding: 3px 5px; border-radius: 3px;
+  transition: background .12s, color .12s;
+}
+.prev-q-del:hover { background: #fef2f2; color: #e11d48; }
+
+.preview-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.stat-chip {
+  padding: 3px 10px;
+  background: #e8f0fe;
+  color: #1a5cc8;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 트리 구조 */
+.tree-type {
+  margin-bottom: 12px;
+}
+
+.tree-type-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #e0e7ff;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.tree-type-header:hover {
+  background: #f5f8ff;
+}
+
+.tree-type-toggle {
+  font-size: 9px;
+  color: #555;
+  transition: transform 0.2s;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tree-type.open > .tree-type-header .tree-type-toggle {
+  transform: rotate(90deg);
+}
+
+.tree-type-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a2e5c;
+  flex: 1;
+}
+
+.tree-type-qcnt {
+  font-size: 11px;
+  color: #888;
+}
+
+.tree-subs {
+  padding-left: 16px;
+  display: none;
+}
+
+.tree-type.open > .tree-subs {
+  display: block;
+}
+
+.tree-group-block { margin-bottom: 8px; }
+.tree-group-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 20px;
+  background: #f0f2f5; border-radius: 4px;
+  font-size: 12px; font-weight: 700; color: #444;
+  margin-bottom: 4px;
+}
+.tree-group-name { flex: 1; }
+.tree-group-subs { padding-left: 16px; }
+
+.tree-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #444;
+  border-left: 2px solid #e0e3e8;
+}
+
+.tree-sub-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #bbb;
+  flex-shrink: 0;
+}
+
+.tree-sub-name {
+  flex: 1;
+}
+
+.tree-sub-qcnt {
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* ── STEP 1 오른쪽: 문항 미리보기 ── */
+.preview-sub-block { margin-bottom: 6px; }
+.preview-sub-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; background: #f4f6fb; border-radius: 4px;
+  margin-bottom: 0; cursor: pointer; user-select: none;
+}
+.preview-sub-header:hover { background: #eef1f9; }
+.preview-sub-toggle { font-size: 9px; color: #888; transition: transform .15s; }
+.preview-sub-block.open .preview-sub-toggle { transform: rotate(90deg); }
+.preview-sub-name { font-size: 12px; font-weight: 700; color: #1a2e5c; flex: 1; }
+.preview-sub-scale {
+  font-size: 10px; color: #6b7280; background: #fff;
+  border: 1px solid #d1d5db; padding: 1px 6px; border-radius: 3px;
+}
+.preview-q-list { display: none; padding: 8px 0 4px; }
+.preview-sub-block.open .preview-q-list { display: block; }
+
+/* 응답 화면과 동일한 문항 카드 */
+.prev-q-card {
+  background: #fff; border-radius: 6px; padding: 16px 18px;
+  margin-bottom: 8px; border: 1.5px solid var(--border);
+}
+.prev-q-label {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  color: var(--primary); margin-bottom: 8px; letter-spacing: .2px;
+}
+.prev-q-text { font-size: 13px; line-height: 1.8; color: #111827; margin-bottom: 14px; }
+.prev-likert {
+  display: flex; border-top: 1px solid #f3f4f6;
+  padding-top: 12px; gap: 4px;
+}
+.prev-likert-opt { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.prev-likert-opt input[type=radio] { display: none; }
+.prev-likert-opt label {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; width: 100%;
+}
+.prev-likert-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid var(--border); background: #fff; flex-shrink: 0; transition: all .15s;
+}
+.prev-likert-opt label:hover .prev-likert-circle { border-color: var(--primary); background: #e8f0fe; }
+.prev-likert-opt input[type=radio]:checked + label .prev-likert-circle {
+  background: var(--primary); border-color: var(--primary);
+}
+.prev-likert-lbl { font-size: 10px; color: #6b7280; text-align: center; line-height: 1.4; word-break: keep-all; }
+
+/* ── STEP 2: 응답자 역할 카드 (튜토리얼형) ── */
+.respondent-cards { display: flex; flex-direction: column; gap: 28px; }
+.resp-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.resp-type-name { font-size: 15px; font-weight: 800; color: #1a1a2e; }
+.resp-type-meta { font-size: 12px; color: #888; background: #f0f2f5; padding: 2px 8px; border-radius: 10px; }
+.resp-section-hint { font-size: 12px; color: #aaa; margin: 0 0 14px; }
+.resp-role-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.resp-role-card {
+  border: 2px solid var(--border); border-radius: 12px;
+  padding: 22px 14px 18px; text-align: center; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s, box-shadow .15s;
+  position: relative; background: #fafbfc;
+  user-select: none;
+}
+.resp-role-card:hover { border-color: var(--primary); background: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,115,232,.1); }
+.resp-role-card.selected { border-color: var(--primary); background: #eef2ff; }
+.resp-role-icon { font-size: 36px; margin-bottom: 10px; line-height: 1; }
+.resp-role-name { font-size: 14px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+.resp-role-desc { font-size: 11.5px; color: #888; line-height: 1.5; word-break: keep-all; }
+.resp-role-check {
+  position: absolute; top: 10px; right: 10px;
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid #d1d5db; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: transparent;
+  transition: all .15s;
+}
+.resp-role-card.selected .resp-role-check { background: var(--primary); border-color: var(--primary); color: #fff; }
+.resp-role-card.required { cursor: default; }
+.resp-role-card.required:hover { transform: none; box-shadow: none; }
+.resp-role-required-tag { font-size: 10.5px; font-weight: 700; color: var(--primary); margin-left: 3px; }
+
+/* ── STEP 3: 트리 구조 ── */
+.tree-container { background: #fff; border: 1px solid var(--border); border-radius: 6px; }
+.tree-node { border-bottom: 1px solid #f0f2f5; }
+.tree-node:last-child { border-bottom: none; }
+.tree-header {
+  display: flex; align-items: center; gap: 10px; padding: 11px 16px;
+  background: #fafbfc; cursor: pointer; user-select: none;
+}
+.tree-header:hover { background: #f5f8ff; }
+.tree-toggle { font-size: 9px; color: #555; transition: transform 0.2s; }
+.tree-node.open > .tree-header .tree-toggle { transform: rotate(90deg); }
+.tree-badge { display: none; }
+.tree-label { font-size: 13px; font-weight: 700; color: #1a2e5c; flex: 1; }
+/* 역량군 강점/약점 점수 설정 */
+.score-setting { display: flex; align-items: center; gap: 5px; margin-left: 12px; font-size: 11px; flex-shrink: 0; }
+.score-lbl { font-weight: 700; font-size: 11px; white-space: nowrap; }
+.score-lbl.strong { color: #1a7a4a; }
+.score-lbl.weak { color: #c0392b; }
+.score-input { width: 50px; height: 26px; border: 1px solid #ccc; border-radius: 3px; text-align: center; font-size: 12px; font-family: inherit; outline: none; }
+.score-input:focus { border-color: var(--primary); }
+.score-unit { font-size: 11px; color: #777; white-space: nowrap; }
+
+/* ── STEP 3: 점수 설정 카드 ── */
+.score-type-card { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+.score-type-card:hover { border-color: #a8c0f0; }
+.score-type-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.score-type-name { font-size: 16px; font-weight: 800; color: #1a1a2e; }
+.score-type-qcnt { font-size: 12px; color: #888; background: #f0f2f5; padding: 2px 8px; border-radius: 10px; }
+.score-inputs-wrap { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; }
+.score-group { display: flex; flex-direction: column; gap: 6px; }
+.score-group-label { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+.score-group-label.strong { color: #1a7a4a; }
+.score-group-label.weak { color: #c0392b; }
+.score-group-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+.strong .dot { background: #1a7a4a; }
+.weak .dot { background: #c0392b; }
+.score-num-input { width: 80px; height: 40px; border: 1.5px solid var(--border); border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; outline: none; color: #1a1a2e; font-family: inherit; }
+.score-num-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #e8f0fe; }
+.score-num-unit { font-size: 12px; color: #888; margin-top: 4px; }
+.score-zone-bar { height: 8px; border-radius: 4px; margin-top: 16px; background: linear-gradient(to right, #fde8e8 0%, #fde8e8 var(--weak-pct,30%), #f0f2f5 var(--weak-pct,30%), #f0f2f5 var(--strong-pct,70%), #e6f7ee var(--strong-pct,70%), #e6f7ee 100%); }
+.score-zone-labels { display: flex; justify-content: space-between; font-size: 10px; margin-top: 4px; }
+.score-zone-labels .z-weak { color: #c0392b; }
+.score-zone-labels .z-mid { color: #888; text-align: center; }
+.score-zone-labels .z-strong { color: #1a7a4a; }
+.tree-body { display: none; max-height: 0; overflow: hidden; }
+.tree-node.open > .tree-body { display: block; max-height: none; }
+.tree-sub-header {
+  display: flex; align-items: center; gap: 10px; padding: 9px 16px 9px 40px;
+  background: #fff; cursor: pointer; border-top: 1px solid #f3f4f6;
+}
+.tree-sub-header:hover { background: #fafbfc; }
+.tree-sub-label { font-size: 12px; font-weight: 600; color: #333; flex: 1; }
+.tree-sub-btn { height: 24px; padding: 0 10px; font-size: 11px; background: #fff; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; color: #555; font-family: inherit; white-space: nowrap; }
+.tree-sub-btn:hover { border-color: var(--primary); color: var(--primary); }
+.tree-sub-courses { display: flex; gap: 4px; flex-wrap: wrap; }
+.course-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #e6f7ee; color: #1a7a4a; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.course-more-badge { display: inline-flex; align-items: center; padding: 2px 8px; background: #e8f0fe; color: #1a5cc8; border-radius: 3px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.course-more-badge:hover { background: #d0e2ff; }
+
+/* ── STEP 4: 섹션 ── */
+.step4-section { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.step4-section-header {
+  padding: 13px 20px; background: #f8f9fb; border-bottom: 1px solid var(--border);
+  font-size: 13px; font-weight: 700; color: #1a1a2e;
+}
+
+/* 탭 구조 */
+.tab-group { display: flex; border-bottom: 2px solid #e0e3e8; flex-shrink: 0; overflow-x: auto; background: #fff; }
+.tab { padding: 9px 18px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+.tab:hover { color: var(--primary); }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── 응답자 등록 3패널 모달 ── */
+.resp-modal-box { background: #fff; border-radius: 6px; width: 1060px; max-width: 96vw; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.resp-set-btn { height:24px; padding:0 10px; font-size:11px; background:#fff; border:1px solid var(--primary); color:var(--primary); border-radius:3px; cursor:pointer; font-family:inherit; white-space:nowrap; }
+.resp-set-btn:hover { background:var(--primary); color:#fff; }
+.resp-count-link { color:var(--primary); font-weight:700; cursor:pointer; font-size:12px; text-decoration:underline; }
+
+/* 테이블 */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { background: #f0f2f5; border: 1px solid var(--border); padding: 7px 10px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+.data-table td { border: 1px solid #e8eaed; padding: 7px 10px; text-align: center; color: #333; }
+.data-table tbody tr:hover td { background: #f5f8ff; }
+.data-table .name-col { text-align: left; padding-left: 12px; }
+
+.toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
+.toolbar .spacer { flex: 1; }
+
+/* ── MODALS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,.45); align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #fff; border-radius: 6px; width: 560px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0,0,0,.22); }
+.modal-box.w-lg { width: 680px; }
+.modal-box.w-xl { width: 800px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.modal-header h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; line-height: 1; }
+.modal-close:hover { color: #333; }
+.modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+.modal-footer { padding: 13px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.modal-input { height: 30px; border: 1px solid #ccc; border-radius: 3px; padding: 0 10px; font-size: 12px; font-family: inherit; outline: none; flex: 1; }
+.modal-input:focus { border-color: var(--primary); }
+.modal-notice { font-size: 11px; color: #888; background: #f8f9fb; border: 1px solid #eee; border-radius: 4px; padding: 8px 12px; line-height: 1.7; }
+
+/* 검색 행 */
+.search-row { display: flex; gap: 6px; }
+
+/* 과정 목록 */
+.course-list-items { display: flex; flex-direction: column; gap: 0; max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
+.course-item { padding: 8px 12px; border-bottom: 1px solid #f0f2f5; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; background: #fff; }
+.course-item:last-child { border-bottom: none; }
+.course-item:hover { background: #f5f8ff; }
+.course-item input[type=checkbox] { flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
+.course-item-name { flex: 1; }
+
+.selected-courses-label { font-size: 12px; font-weight: 700; color: #555; margin: 12px 0 6px; }
+.selected-course-items { display: flex; flex-direction: column; gap: 4px; min-height: 32px; }
+.selected-course-item { display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: #f0f4ff; border: 1px solid #c5d8f7; border-radius: 4px; font-size: 12px; }
+.selected-course-item .course-name { flex: 1; color: #1a2e5c; }
+.selected-course-item .del-btn { background: none; border: none; color: #bbb; cursor: pointer; font-size: 14px; padding: 0; }
+.selected-course-item .del-btn:hover { color: #c00; }
+
+/* TOAST */
+#toast { display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 10px 24px; border-radius: 6px; font-size: 13px; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,.25); white-space: nowrap; }
+
+.step-content:not(.active) { display: none !important; }
+.step-content.active { display: flex; flex-direction: column; }
+
+/* ── WIZARD LAYOUT ── */
+.main { flex: 1; overflow: hidden; padding: 0 !important; display: flex; flex-direction: column; }
+.wiz-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* 왼쪽 단계 패널 */
+.wiz-aside {
+  width: 220px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.wiz-aside-head { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+.wiz-aside-head .wiz-aside-title { font-size: 14px; font-weight: 800; color: #1a1a2e; }
+.wiz-aside-head .wiz-aside-sub { font-size: 11px; color: #999; margin-top: 3px; }
+.wiz-step-list { padding: 8px 10px; flex: 1; }
+.wiz-step-connector { width: 1.5px; height: 16px; background: #e0e3e8; margin: 0 auto 0 20px; }
+.wiz-step-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 8px; border-radius: 8px; cursor: pointer;
+  transition: background .12s;
+}
+.wiz-step-item:hover { background: #f5f6f8; }
+.wiz-step-item.is-active { background: #eef2ff; }
+.wiz-step-badge {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  background: #e0e3e8; color: #999; margin-top: 1px;
+  transition: background .2s, color .2s;
+}
+.wiz-step-item.is-active .wiz-step-badge { background: var(--primary); color: #fff; }
+.wiz-step-item.is-done .wiz-step-badge { background: #1a7a4a; color: #fff; font-size: 14px; }
+.wiz-step-meta { flex: 1; }
+.wiz-step-title { font-size: 12px; font-weight: 700; color: #bbb; line-height: 1.3; }
+.wiz-step-item.is-active .wiz-step-title { color: var(--primary); }
+.wiz-step-item.is-done .wiz-step-title { color: #333; }
+.wiz-step-desc { font-size: 11px; color: #ccc; margin-top: 3px; line-height: 1.4; }
+.wiz-step-item.is-active .wiz-step-desc { color: #7aaaf7; }
+.wiz-step-item.is-done .wiz-step-desc { color: #999; }
+
+.wiz-aside-foot { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+/* 오른쪽 콘텐츠 영역 */
+.wiz-content { flex: 1; min-width: 0; overflow-y: auto; background: var(--bg); padding: 20px; }
+
+/* 스텝 카드 */
+.wiz-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-direction: column; overflow: hidden;
+  min-height: calc(100vh - 130px);
+}
+.wiz-card-head {
+  padding: 22px 28px 18px; background: #fafbfc;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.wiz-step-tag {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: var(--primary);
+  background: #e8f0fe; padding: 3px 10px; border-radius: 12px;
+  margin-bottom: 10px;
+}
+.wiz-card-head h2 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0 0 6px; letter-spacing: -.3px; }
+.wiz-card-head p { font-size: 13px; color: #888; margin: 0; line-height: 1.65; }
+.wiz-card-body { flex: 1; }
+.wiz-card-body.padded { padding: 24px 28px; }
+.wiz-card-foot {
+  flex-shrink: 0; padding: 14px 28px;
+  border-top: 1px solid var(--border); background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.wiz-card-foot .foot-left { display: flex; align-items: center; gap: 8px; }
+.wiz-card-foot .foot-right { display: flex; align-items: center; gap: 8px; }
+
+/* 임시저장 */
+.btn-draft {
+  background: #fff; border: 1px solid #ccc; color: #555;
+  display: inline-flex; align-items: center; gap: 5px; width: 100%; justify-content: center;
+}
+.btn-draft:hover { border-color: var(--primary); color: var(--primary); }
+.draft-saved { font-size: 11px; color: #888; display: none; text-align: center; }
+.draft-saved.show { display: block; }
+
+/* ── 진단 상태 시뮬레이터 (wiz-aside) ── */
+.wiz-status-switcher {
+  border-top: 1px solid #3d5166;
+  border-bottom: 1px solid #3d5166;
+  padding: 8px 0;
+  background: rgba(0,0,0,.18);
+}
+.wiz-status-switcher-label {
+  font-size: 10px; color: #7eb8f7; font-weight: 700;
+  margin-bottom: 5px; padding: 0 14px; letter-spacing: .3px;
+}
+.wiz-status-btn {
+  display: block; width: 100%;
+  padding: 5px 14px; text-align: left;
+  background: transparent; border: none;
+  color: #8da0b0; font-size: 11px; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.wiz-status-btn:hover { background: rgba(255,255,255,.07); color: #d0dae2; }
+.wiz-status-btn.active { color: #fff; font-weight: 700; }
+.wiz-status-btn.active::before { content: '▶ '; }
+
+/* ── 진단 상태 배너 (wiz-content 상단) ── */
+#diag-status-banner {
+  border-radius: 5px; padding: 9px 14px;
+  display: none; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 600; margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+#diag-status-banner.status-after   { background: #e3f2fd; border: 1px solid #90caf9; color: #1565c0; }
+#diag-status-banner.status-expired { background: #fff3e0; border: 1px solid #ffb74d; color: #e65100; }
+#diag-status-banner.status-completed { background: #fce4ec; border: 1px solid #f48fb1; color: #880e4f; }
+#diag-status-banner .banner-desc { font-weight: 400; opacity: .85; }
+
+/* ── STEP 잠금 overlay (wiz-card-body 내부에만 삽입) ── */
+.step-lock-overlay {
+  position: absolute; inset: 0; z-index: 10;
+  background: transparent;
+  pointer-events: all;
+  cursor: not-allowed;
+}
+.step-lock-badge {
+  background: #546e7a; color: #fff;
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 12px; display: inline-flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+
+</style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header class="top-header">
+  <div class="logo"><span>LABS</span> New EDMS</div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">임직원</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">학습</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">결과</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">교육비용</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">사외교육</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+        <a class="nav-item" href="#">사외교육 결과보고</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">러닝메이커</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">러닝메이커 Expert</a>
+        <a class="nav-item" href="#">학습자용 러닝메이커</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">커넥트</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">게시글</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+        <a class="nav-item" href="#">게시글 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">학점 관리</a>
+        <a class="nav-item active" href="#">진단 관리</a>
+        <a class="nav-item" href="#">IDP 관리</a>
+        <a class="nav-item" href="#">필수교육 관리</a>
+        <a class="nav-item" href="#">레벨/마일리지 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">수강신청 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간</a>
+        <a class="nav-item" href="#">수강신청 제한</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNav(this)">
+        <span class="nav-group-label">연수원 설정</span><span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">로그인</a>
+        <a class="nav-item" href="#">계정 권한</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="wiz-layout">
+
+      <!-- ── 왼쪽 단계 패널 ── -->
+      <aside class="wiz-aside">
+        <div class="wiz-aside-head">
+          <div class="wiz-aside-title" id="wiz-aside-title-text">진단 만들기</div>
+          <div class="wiz-aside-sub" id="wiz-aside-sub-text">아래 단계에 맞춰 설정해주세요.</div>
+        </div>
+        <!-- 프로토타입 전용: 진단 상태 시뮬레이터 -->
+        <div class="wiz-status-switcher">
+          <div class="wiz-status-switcher-label">⚙ 상태 시뮬레이션</div>
+          <button class="wiz-status-btn active" id="wiz-status-btn-before"    onclick="setDiagStatus('before')">진단 전 (만들기)</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-after"     onclick="setDiagStatus('after')">진단 진행 중</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-expired"   onclick="setDiagStatus('expired')">진단 마감 전</button>
+          <button class="wiz-status-btn"        id="wiz-status-btn-completed" onclick="setDiagStatus('completed')">진단 완료</button>
+        </div>
+        <div class="wiz-step-list">
+          <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
+            <div class="wiz-step-badge">1</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단 유형 선택</div>
+              <div class="wiz-step-desc">어떤 진단을 만들지 선택</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
+            <div class="wiz-step-badge">2</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단지 선택</div>
+              <div class="wiz-step-desc">어떤 역량을 진단할지 선택</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector" id="wiz-connector-3"></div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">응답자 유형</div>
+              <div class="wiz-step-desc">누가 응답하는지 설정</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
+            <div class="wiz-step-badge">4</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">역량 점수 설정</div>
+              <div class="wiz-step-desc">강점/약점 기준 점수</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-5" onclick="goToStep(5)">
+            <div class="wiz-step-badge">5</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">추천 과정 연결</div>
+              <div class="wiz-step-desc">결과 기반 과정 설정 (선택)</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
+            <div class="wiz-step-badge">6</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단 기본 설정</div>
+              <div class="wiz-step-desc">이름·기간·설명 입력</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector" id="wiz-connector-7"></div>
+          <div class="wiz-step-item" id="wiz-step-7" onclick="goToStep(7)">
+            <div class="wiz-step-badge">7</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">응답자 등록</div>
+              <div class="wiz-step-desc">진단 참여자 등록</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-8" onclick="goToStep(8)">
+            <div class="wiz-step-badge">8</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">검토 및 진단 생성</div>
+              <div class="wiz-step-desc">최종 확인 후 진단 생성</div>
+            </div>
+          </div>
+        </div>
+        <div class="wiz-aside-foot">
+          <a href="edms_역량진단_관리_상시진단.html"
+             style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;transition:border-color .15s,color .15s;"
+             onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
+             onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
+            ← 목록으로
+          </a>
+          <button class="btn btn-draft" onclick="saveDraft()">💾 임시저장</button>
+          <span class="draft-saved" id="draftSavedMsg">✓ 저장됨</span>
+        </div>
+      </aside>
+
+      <!-- ── 오른쪽 콘텐츠 ── -->
+      <div class="wiz-content">
+
+        <!-- 진단 상태 배너 (수정/보기 모드) -->
+        <div id="diag-status-banner"></div>
+
+        <!-- STEP 1: 진단 유형 선택 -->
+        <div class="step-content active wiz-card" id="step-content-1">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-1">STEP 1 / 8</span>
+            <h2>진단 유형을 선택해주세요.</h2>
+            <p>선택한 유형에 따라 이후 설정 단계가 달라집니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div style="display:flex;gap:16px;max-width:700px;">
+              <div class="diagtype-choice-card selected" data-type="범용" onclick="chooseDiagType('범용')">
+                <div style="font-size:26px;margin-bottom:10px;">🎯</div>
+                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">범용진단</div>
+                <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자를 직접 지정해 정해진 기간 동안 진행합니다.</div>
+              </div>
+              <div class="diagtype-choice-card" data-type="상시" onclick="chooseDiagType('상시')">
+                <div style="font-size:26px;margin-bottom:10px;">🔁</div>
+                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">상시진단</div>
+                <div style="font-size:12.5px;color:#777;line-height:1.6;">전체 임직원을 대상으로 상시 오픈하는 자가진단입니다.<br>응답 허용 횟수(1회/무제한)를 설정할 수 있습니다.</div>
+              </div>
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"></div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 진단지 선택 -->
+        <div class="step-content wiz-card" id="step-content-2">
+          <div class="wiz-card-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div>
+              <span class="wiz-step-tag" id="stepTag-2">STEP 2 / 8</span>
+              <h2>진단지를 선택해주세요.</h2>
+              <p>진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.</p>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              <button class="proto-toggle" onclick="toggleStep1State()" id="step1ToggleBtn" title="프로토타입 전용">📋 빈 상태 보기</button>
+              <button class="proto-toggle" onclick="toggleQsetDeletedDemo()" id="step1DeletedToggleBtn" title="프로토타입 전용">🗑 진단지 삭제 시뮬레이션</button>
+            </div>
+          </div>
+          <div class="wiz-card-body">
+
+            <!-- ▸ 빈 상태 뷰 -->
+            <div id="step1EmptyView" style="display:none;flex:1;flex-direction:row;gap:0;">
+
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <div class="step1-no-data">
+                  <div class="step1-no-data-icon">📋</div>
+                  <h3>등록된 진단지가 없습니다.</h3>
+                  <p>진단 시작을 위해 진단지를 생성해주세요.</p>
+                  <button class="btn-create" onclick="location.href='edms_진단지_만들기.html'">
+                    ✚ 진단지 만들기
+                  </button>
+                  <p style="font-size:11px;color:#bbb;margin-top:4px;">만든 후 이 페이지로 돌아와 진단지를 선택하세요</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ▸ 데이터 있는 뷰 -->
+            <div id="step1DataView" style="display:flex;flex:1;">
+              <div class="step1-panel-wrap" style="flex:1;">
+                <div class="step1-left">
+                  <div class="step1-search-row">
+                    <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="검색어를 입력해주세요.">
+                    <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
+                  </div>
+                  <div class="step1-card-list" id="step1CardList"></div>
+                  <div class="step1-link-btn">
+                    <!-- 분기: EDMS 진단지 생성 개발 완료 시 → edms_진단지_만들기.html / 미완료 시 → 진단 플랫폼 외부 링크 -->
+                    <a href="edms_진단지_만들기.html" onclick="/* TODO: 개발 미완료 시 href를 진단 플랫폼 URL로 교체 */">새 진단지 만들기 →</a>
+                  </div>
+                </div>
+                <div class="step1-right">
+                  <div id="step1PreviewEmpty" class="preview-empty">
+                    <div class="preview-empty-icon">📋</div>
+                    <div>왼쪽에서 진단지를 선택하면<br>문항을 미리 확인할 수 있어요</div>
+                  </div>
+                  <div id="step1PreviewContent" class="preview-content" style="display:none;">
+                    <div class="preview-title" id="previewQuestionnaireName"></div>
+                    <div class="preview-stats" id="previewStats"></div>
+                    <div id="previewTree"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"></div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 응답자 유형 -->
+        <div class="step-content wiz-card" id="step-content-3">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-3">STEP 3 / 8</span>
+            <h2>응답자 유형을 선택해주세요.</h2>
+            <p>선택한 응답자 유형은 모든 진단 유형에 동일하게 적용됩니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div class="respondent-cards" id="respondentCardsContainer"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: 역량 점수 설정 -->
+        <div class="step-content wiz-card" id="step-content-4">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-4">STEP 4 / 8</span>
+            <h2>역량 점수 기준을 설정해주세요</h2>
+            <p>진단 리포트에서 강점과 약점을 구분할 점수 기준을 역량군별로 설정합니다.</p>
+          </div>
+          <div class="wiz-card-body padded" id="scoreSettingsContainer"></div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 5: 추천과정 연결 -->
+        <div class="step-content wiz-card" id="step-content-5">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-5">STEP 5 / 8 · 선택사항</span>
+            <h2>추천 과정을 설정해주세요.</h2>
+            <p>세부역량별로 강점·약점 결과에 따라 학습자에게 자동 추천할 과정을 설정합니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+              <button class="btn btn-gray btn-sm" onclick="openBulkUploadModal()">📥 일괄 업로드</button>
+            </div>
+            <div class="tree-container" id="courseTreeContainer"></div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-gray btn-lg" onclick="nextStep()">건너뛰기</button>
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6: 진단 기본 설정 -->
+        <div class="step-content wiz-card" id="step-content-6">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-6">STEP 6 / 8</span>
+            <h2>진단 기본 정보를 입력해주세요</h2>
+            <p>진단 이름과 진행 기간을 설정합니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div class="step4-section">
+              <table class="form-table" style="width:100%;">
+                <tr>
+                  <th class="form-th">진단명 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <input class="form-input w-lg" id="diagNameInput" placeholder="진단명을 입력하세요">
+                  </td>
+                </tr>
+                <tr>
+                  <th class="form-th">진단 기간 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <div class="inline-row">
+                      <input class="form-input w-date" id="diagStartDate" type="date">
+                      <input class="form-input" id="diagStartTime" type="time" style="width:100px;" value="00:00">
+                      <span style="font-size:12px;color:#888;">~</span>
+                      <input class="form-input w-date" id="diagEndDate" type="date">
+                      <input class="form-input" id="diagEndTime" type="time" style="width:100px;" value="23:59">
+                      <span id="step5-enddate-hint" style="display:none;font-size:11px;color:#e65100;font-weight:600;">← 종료일만 변경 가능</span>
+                    </div>
+                  </td>
+                </tr>
+                
+                <tr>
+                  <th class="form-th" style="vertical-align:top;padding-top:13px;">진단 소개 및 설명</th>
+                  <td class="form-td">
+                    <textarea class="form-textarea" id="diagDescription">안녕하세요.
+설문에 참여해 주셔서 감사합니다.
+
+진단은 15분 정도 소요됩니다. 많은 업무로 바쁘시더라도 개인의 발전과 성장 기회 마련을 위해,
+진솔한 응답을 부탁드립니다.
+
+※ 주의 사항
+선택하신 보기는 자동으로 저장되며, 설문지 맨 하단의 [제출하기] 버튼을 누르기 전까지 언제든지 수정할 수 있습니다.
+[제출하기] 버튼을 눌러 설문을 완료한 후에는 응답 내용을 수정하실 수 없으니 주의 바랍니다.
+
+감사합니다.</textarea>
+                  </td>
+                </tr>
+                <tr id="step5-response-count-row" style="display:none;">
+                  <th class="form-th">응답 허용 횟수 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <div class="radio-group">
+                      <label>
+                        <input type="radio" name="responseCount" value="1" checked style="cursor:pointer;">
+                        1회만 (제출 후 응시 불가)
+                      </label>
+                      <label style="margin-left:16px;">
+                        <input type="radio" name="responseCount" value="unlimited" style="cursor:pointer;">
+                        무제한 (제출 후에도 재응시 가능)
+                      </label>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
+            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+          </div>
+        </div>
+
+        <!-- STEP 7: 대상자 & 응답자 설정 -->
+        <div class="step-content wiz-card" id="step-content-7">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-7">STEP 7 / 8</span>
+            <h2>진단 대상자와 응답자를 설정해주세요</h2>
+            <p>진단대상자와 응답할 응답자를 등록합니다.</p>
+          </div>
+          <div class="wiz-card-body padded">
+            <div class="step4-section">
+              <div style="display:flex;flex-direction:column;overflow:hidden;">
+                <div class="tab-group" id="step4TabGroup"></div>
+                <div style="overflow:hidden;flex:1;display:flex;flex-direction:column;">
+                  <div id="step4TabPanes"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="wiz-card-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 8: 검토 및 진단 생성 -->
+        <div class="step-content wiz-card" id="step-content-8">
+          <div class="wiz-card-head">
+            <span class="wiz-step-tag" id="stepTag-8">STEP 8 / 8 · 마지막 단계</span>
+            <h2>진단 생성 전 검토해주세요.</h2>
+            <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
+          </div>
+          <div class="wiz-card-body padded" id="step7ReviewContainer"></div>
+          <div class="wiz-card-foot" id="step7-foot">
+            <div class="foot-left">
+              <button class="btn btn-gray" onclick="prevStep()" id="step7-prev-btn">← 이전</button>
+            </div>
+            <div class="foot-right">
+              <button onclick="openDiagnosisPreview()" style="height:36px;padding:0 16px;background:#fff;border:1px solid var(--primary);border-radius:4px;font-size:13px;color:var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;">👁 진단지 미리보기</button>
+              <button class="btn btn-primary btn-lg" onclick="createDiagnosis()" id="step7-create-btn">진단 생성</button>
+              <button class="btn btn-primary btn-lg" onclick="saveDiagEdit()" id="step7-save-btn" style="display:none;">수정 완료</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /wiz-content -->
+    </div><!-- /wiz-layout -->
+  </main>
+</div>
+
+<!-- Course Setting Modal -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal-box" style="width:820px;max-height:88vh;overflow:hidden;">
+    <div class="modal-header">
+      <h3>과정 설정 — <span id="courseModalTitle"></span></h3>
+      <button class="modal-close" onclick="closeModal('courseModal')">×</button>
+    </div>
+    <div class="modal-body" style="flex-direction:row;gap:14px;padding:14px 16px;overflow:hidden;min-height:0;">
+      <!-- 좌: 과정 카탈로그 -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;min-height:0;">
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <select id="crsFilterCat1" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="crsFilterCatChange(1)"></select>
+          <select id="crsFilterCat2" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="crsFilterCatChange(2)"></select>
+          <select id="crsFilterCat3" style="height:34px;padding:0 10px;border:1px solid #dde1e7;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;display:none;" onchange="searchCourses()"></select>
+        </div>
+        <div style="position:relative;flex-shrink:0;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:13px;">🔍</span>
+          <input id="courseSearchInput" placeholder="과정명을 검색하세요."
+                 style="width:100%;height:36px;border:1px solid #dde1e7;border-radius:20px;padding:0 12px 0 34px;font-size:12px;font-family:inherit;outline:none;background:#f5f6f8;"
+                 oninput="searchCourses()">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+          <select id="crsFilterType" style="height:28px;padding:0 8px;border:1px solid #dde1e7;border-radius:14px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer;" onchange="searchCourses()">
+            <option value="">유형</option>
+            <option value="온라인">온라인</option>
+            <option value="오프라인">오프라인</option>
+          </select>
+        </div>
+        <div style="font-size:11px;color:#888;flex-shrink:0;">검색 결과: <strong id="courseResultCount">0</strong>개</div>
+        <div id="courseCandidateList" style="border:1px solid var(--border);border-radius:6px;overflow-y:auto;height:260px;background:#fff;"></div>
+      </div>
+      <!-- 우: 선택한 과정 -->
+      <div style="width:260px;flex-shrink:0;border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;background:#fafbfc;overflow:hidden;max-height:360px;">
+        <div style="padding:10px 14px;border-bottom:1px solid #eceef1;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span style="font-size:12px;font-weight:700;color:#444;">선택한 과정 <span style="color:var(--primary);">(<span id="selectedCourseCount">0</span>)</span></span>
+          <button onclick="clearAllCourses()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;text-decoration:underline;">전체삭제</button>
+        </div>
+        <div id="selectedCourseList" style="flex:1;overflow-y:auto;padding:8px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('courseModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="saveCourse()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Target Bulk Upload Modal -->
+<div class="modal-overlay" id="targetBulkModal">
+  <div class="modal-box w-lg" style="max-height:88vh;overflow:hidden;">
+    <div class="modal-header">
+      <h3>대상자 일괄 등록</h3>
+      <button class="modal-close" onclick="closeModal('targetBulkModal')">×</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;gap:18px;">
+      <!-- 안내 박스 -->
+      <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
+        <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 등록 안내</div>
+        엑셀 파일(.xlsx)로 대상자·응답자를 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        <strong>시트1</strong>: 대상자 아이디 · 응답자 아이디 · 응답범위(드롭다운) · 응답범위코드(자동)<br>
+        <strong>시트2</strong>: 응답범위 코드표 (수정 금지)<br>
+        응답범위는 드롭다운 선택, 응답범위코드는 수식으로 자동 입력됩니다. 샘플 데이터는 삭제 후 사용하세요.
+      </div>
+      <!-- Step 1 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 1. 업로드 양식 다운로드</div>
+        <button class="btn btn-outline" onclick="downloadTargetTemplate()">📥 업로드 양식 다운로드</button>
+      </div>
+      <!-- Step 2 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 2. 파일 첨부 및 미리보기</div>
+        <div style="border:2px dashed #c5d8f7;border-radius:8px;background:#f8faff;padding:36px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('targetBulkFile').click()">
+          <div style="font-size:13px;color:#999;margin-bottom:14px;">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();document.getElementById('targetBulkFile').click()">파일 선택</button>
+          <input type="file" id="targetBulkFile" style="display:none;" accept=".xlsx,.xls">
+        </div>
+      </div>
+
+      <!-- 미리보기 결과 -->
+      <div id="targetPreviewResult">
+        <!-- 시나리오A: 오류 있음 -->
+        <div id="targetPreviewErr">
+          <div style="background:#fff8f0;border:1px solid #ffb347;border-radius:6px;padding:10px 16px;font-size:12px;color:#7a3800;font-weight:600;margin-bottom:10px;">
+            ⚠️ 총 5건 중 2건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;width:60px;">행</th>
+                <th style="background:#f5f6fa;padding:8px 12px;border:1px solid #dde1e7;">오류내용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">3행</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">존재하지 않는 응답자 아이디</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">5행</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">응답자 아이디 미입력</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 시나리오B: 오류 없음 -->
+        <div id="targetPreviewOk" style="display:none;">
+          <div style="background:#f0fff4;border:1px solid #68d391;border-radius:6px;padding:10px 16px;font-size:12px;color:#1a6630;font-weight:600;">
+            ✅ 총 5건 오류 없이 확인되었습니다. 등록 버튼을 클릭해주세요.
+          </div>
+        </div>
+      </div>
+
+      <!-- 오류 케이스 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 케이스 정리</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead>
+            <tr>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;width:160px;">오류내용 표시방법</th>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;">오류케이스 정리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자 아이디 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열 대상자 아이디가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 대상자 아이디</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">A열에 입력한 아이디가 시스템에 존재하지 않는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 아이디 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">응답범위가 본인 외 유형인데 B열 응답자 아이디가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">존재하지 않는 응답자 아이디</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">B열에 입력한 응답자 아이디가 시스템에 존재하지 않는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답자 중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">특정 대상자에 이미 등록된 응답자가 파일에 포함된 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">엑셀파일 내 중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">대상자별 응답자 중복인 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">본인 응답범위 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열이 '본인'인데 B열 응답자 아이디가 A열 대상자 아이디와 다른 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 미입력</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 응답범위가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 값이 코드표의 응답범위 목록에 없는 경우</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('targetBulkModal')">취소</button>
+      <button class="btn btn-outline btn-sm" onclick="targetBulkPreview()">미리보기</button>
+      <button class="btn btn-primary btn-sm" id="btnTargetBulkSubmit" disabled onclick="uploadTargetBulkFile()">등록</button>
+    </div>
+  </div>
+</div>
+<!-- Bulk Upload Modal -->
+<div class="modal-overlay" id="bulkUploadModal">
+  <div class="modal-box w-lg" style="max-height:88vh;overflow:hidden;">
+    <div class="modal-header">
+      <h3>추천과정 일괄 업로드</h3>
+      <button class="modal-close" onclick="closeModal('bulkUploadModal')">×</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;gap:18px;">
+
+      <!-- 안내 박스 -->
+      <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
+        <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 업로드 안내</div>
+        엑셀 파일(.xlsx)로 세부유형별 추천과정을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        시트 구성: <strong>세부유형코드 · 세부유형명 · 과정명 · 과정아이디</strong> (A~D열)<br>
+        시트2 코드표를 참고하여 세부유형코드를 입력하고, 동일 세부유형에 과정이 여러 개면 행을 추가하세요.<br>
+        미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
+      </div>
+
+      <!-- Step 1 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 1. 업로드 양식 다운로드</div>
+        <button class="btn btn-outline" onclick="downloadTemplate()">📥 업로드 양식 다운로드</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">Step 2. 파일 첨부 및 미리보기</div>
+        <div id="bulkDropZone" style="border:2px dashed #c5d8f7;border-radius:8px;background:#f8faff;padding:36px 20px;text-align:center;cursor:pointer;transition:all .15s;"
+          onclick="document.getElementById('bulkUploadFile').click()">
+          <div style="font-size:13px;color:#999;margin-bottom:14px;">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
+          <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();document.getElementById('bulkUploadFile').click()">파일 선택</button>
+          <input type="file" id="bulkUploadFile" style="display:none;" accept=".xlsx,.xls">
+        </div>
+      </div>
+
+      <!-- 오류 케이스 -->
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">오류 케이스 정리</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <thead>
+            <tr>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;width:160px;">오류내용 표시방법</th>
+              <th style="background:#f5f6fa;padding:9px 14px;text-align:center;font-size:11.5px;font-weight:700;color:#555;border:1px solid #dde1e7;">오류케이스 정리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">데이터 없음</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">엑셀 파일에 등록된 데이터가 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">세부유형코드(A열)가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트2 코드표에 없는 세부유형코드가 입력된 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">과정아이디 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">과정아이디(D열)가 입력되지 않은 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 세부유형코드와 과정아이디 조합이 이미 등록되어 있는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">업로드 파일이 10MB를 초과한 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">컬럼값 오류</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">샘플 파일의 컬럼명을 변경하거나 컬럼순서 등을 변경한 경우</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('bulkUploadModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="uploadBulkFile()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Target Modal -->
+<div class="modal-overlay" id="addTargetModal">
+  <div class="modal-box w-xl">
+    <div class="modal-header">
+      <h3>대상자 등록</h3>
+      <button class="modal-close" onclick="closeModal('addTargetModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-row">
+        <input class="modal-input" id="targetSearchInput" placeholder="이름 또는 사번으로 검색">
+        <button class="btn btn-primary btn-sm" onclick="searchTargets()">검색</button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)"></th>
+            <th style="width:40px;">No</th>
+            <th class="name-col">이름</th>
+            <th style="width:100px;">사번</th>
+            <th style="width:120px;">부서/팀</th>
+            <th style="width:80px;">직급</th>
+          </tr>
+        </thead>
+        <tbody id="targetTableBody">
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>1</td>
+            <td class="name-col">홍길동</td>
+            <td>20230101</td>
+            <td>인재개발팀</td>
+            <td>팀장</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>2</td>
+            <td class="name-col">김대리</td>
+            <td>20210505</td>
+            <td>전략기획팀</td>
+            <td>대리</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" class="target-check"></td>
+            <td>3</td>
+            <td class="name-col">이사원</td>
+            <td>20190812</td>
+            <td>마케팅팀</td>
+            <td>사원</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray btn-sm" onclick="closeModal('addTargetModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="addSelectedTargets()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 응답자 등록 3패널 모달 ══ -->
+<div class="modal-overlay" id="respondentModal">
+  <div class="resp-modal-box">
+    <div class="modal-header">
+      <h3 id="respondentModalTitle">응답자 추가</h3>
+      <button class="modal-close" onclick="closeModal('respondentModal')">×</button>
+    </div>
+    <div style="display:flex;flex:1;overflow:hidden;height:600px;">
+      <!-- ① 왼쪽 178px -->
+      <div style="width:178px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:#fafbfc;">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:#f0f4ff;flex-shrink:0;">
+          <div id="mk-person-name" style="font-size:13px;font-weight:700;color:#1a2e5c;margin-bottom:2px;"></div>
+          <div id="mk-person-meta" style="font-size:11px;color:#888;"></div>
+        </div>
+        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;flex-shrink:0;">진단 유형 선택</div>
+        <div id="mk-type-list" style="flex-shrink:0;"></div>
+        <div style="padding:8px 14px 4px;font-size:11px;font-weight:700;color:#888;letter-spacing:.3px;border-top:1px solid var(--border);margin-top:4px;flex-shrink:0;">진단 대상자 선택</div>
+        <div id="mk-member-list" style="flex:1;overflow-y:auto;"></div>
+      </div>
+      <!-- ② 중앙 -->
+      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);">
+        <div id="mk-center-title" style="padding:9px 14px;font-size:12px;font-weight:700;color:#1a2e5c;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;"></div>
+        <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;padding:0 8px;background:#fff;overflow-x:auto;">
+          <span class="mk-resp-tab" data-tab="개별"      onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid var(--primary);color:var(--primary);font-weight:700;">개별</span>
+          <span class="mk-resp-tab" data-tab="부서별"    onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">부서별</span>
+          <span class="mk-resp-tab" data-tab="직급별"    onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직급별</span>
+          <span class="mk-resp-tab" data-tab="직책별"    onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직책별</span>
+          <span class="mk-resp-tab" data-tab="직무별"    onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직무별</span>
+          <span class="mk-resp-tab" data-tab="직군별"    onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">직군별</span>
+          <span class="mk-resp-tab" data-tab="대상구분별" onclick="mkRespSelectTab(this)" style="padding:7px 12px;font-size:12px;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;color:#888;">대상구분별</span>
+        </div>
+        <div id="mk-search-row" style="display:flex;gap:6px;padding:7px 12px;border-bottom:1px solid #f0f2f5;flex-shrink:0;">
+          <select id="mk-search-company" style="width:90px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff;">
+            <option value="">회사 전체</option><option>동아ST</option><option>동아쏘시오홀딩스</option><option>휴넷</option>
+          </select>
+          <select id="mk-search-type" style="width:68px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px;font-family:inherit;background:#fff;">
+            <option value="name">이름</option><option value="empno">사번</option><option value="dept">부서</option>
+          </select>
+          <input id="mk-search-keyword" placeholder="검색어를 입력하세요." style="flex:1;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 8px;font-size:12px;font-family:inherit;outline:none;" onkeydown="if(event.key==='Enter')mkRespSearch()">
+          <button onclick="mkRespSearch()" style="height:28px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">검색</button>
+          <button onclick="mkRespSearchAll()" style="height:28px;padding:0 10px;background:#f0f2f5;color:#444;border:1px solid #ccc;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">전체검색</button>
+        </div>
+        <!-- 개별 패널 -->
+        <div id="mk-panel-single" style="display:flex;flex:1;overflow:hidden;flex-direction:column;">
+          <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <span id="mk-pool-info">총 0명</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span>선택: <strong id="mk-sel-count" style="color:var(--primary);">0</strong>명</span>
+              <button onclick="mkRespAddChecked()" style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
+            </div>
+          </div>
+          <div style="flex:1;overflow-y:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead><tr style="background:#f0f2f5;">
+                <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;"><input type="checkbox" id="mk-pool-chk-all" onchange="mkRespToggleAllPool(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
+                <th style="padding:6px 8px;border:1px solid var(--border);">이름</th>
+                <th style="padding:6px 8px;border:1px solid var(--border);">아이디</th>
+                <th style="padding:6px 8px;border:1px solid var(--border);">사번</th>
+                <th style="padding:6px 8px;border:1px solid var(--border);">회사명</th>
+                <th style="padding:6px 8px;border:1px solid var(--border);">부서명</th>
+                <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
+              </tr></thead>
+              <tbody id="mk-pool-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- 분류별 패널 -->
+        <div id="mk-panel-split" style="display:none;flex:1;overflow:hidden;flex-direction:row;">
+          <div id="mk-split-left" style="width:180px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;background:#fafafa;"></div>
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div style="padding:5px 12px;font-size:11px;color:#666;border-bottom:1px solid #f0f2f5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+              <span id="mk-split-info">항목을 선택하세요.</span>
+              <button onclick="mkRespAddSplitChecked()" style="height:26px;padding:0 12px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;">추가 →</button>
+            </div>
+            <div style="flex:1;overflow-y:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:12px;">
+                <thead><tr style="background:#f0f2f5;">
+                  <th style="width:32px;padding:6px 4px;border:1px solid var(--border);text-align:center;"><input type="checkbox" id="mk-split-chk-all" onchange="mkRespToggleAllSplit(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);">이름</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);">아이디</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);">사번</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);">회사명</th>
+                  <th style="padding:6px 8px;border:1px solid var(--border);">부서명</th>
+                  <th style="width:44px;padding:6px 4px;border:1px solid var(--border);"></th>
+                </tr></thead>
+                <tbody id="mk-split-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ③ 오른쪽 260px -->
+      <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;background:#fffef5;overflow:hidden;">
+        <div style="padding:9px 12px;border-bottom:1px solid #e8d88a;font-size:12px;font-weight:700;color:#7a6a00;background:#fff8c5;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <span>등록된 응답자 <strong id="mk-reg-count" style="color:var(--primary);">0</strong>명</span>
+          <button onclick="mkRespDelSelected()" style="height:22px;padding:0 8px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">삭제</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <thead><tr style="background:#fff3c0;">
+              <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;text-align:center;"><input type="checkbox" id="mk-reg-chk-all" onchange="mkRespToggleAllReg(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
+              <th style="padding:5px 6px;border:1px solid #e8d88a;white-space:nowrap;">이름</th>
+              <th style="padding:5px 6px;border:1px solid #e8d88a;white-space:nowrap;">부서</th>
+              <th style="width:28px;padding:5px 3px;border:1px solid #e8d88a;"></th>
+            </tr></thead>
+            <tbody id="mk-reg-tbody"><tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gray" onclick="closeModal('respondentModal')">취소</button>
+      <button class="btn btn-primary" onclick="mkRespSave()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 진단 유형 변경 경고 팝업 -->
+<div class="modal-overlay" id="diagTypeChangeModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-body" style="padding:24px 24px 20px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
+      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">진단 유형을 변경하면<br>지금까지 설정한 내용이 초기화됩니다.</p>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-gray" onclick="cancelDiagTypeChange()">닫기</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmDiagTypeChange()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 응답자 유형 변경 경고 팝업 -->
+<div class="modal-overlay" id="respTypeChangeModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-body" style="padding:24px 24px 20px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
+      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">응답자 유형 변경 시<br>응답자 설정이 초기화됩니다.</p>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-gray" onclick="cancelRespTypeChange()">닫기</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmRespTypeChange()">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="../공통/emp-register-popup.js"></script>
+<script>
+let currentStep = 1;
+let _currentTargetTabIdx = 0;
+let maxReachedStep = 1;
+
+// 새로운 진단지 데이터 구조
+const QUESTIONNAIRES = [
+  {
+    id: 1,
+    name: '리더십역량진단 v2.0',
+    tags: ['LC', 'OC'],
+    typeCount: 2,
+    subCount: 11,
+    qCount: 50,
+    date: '2025-03-15',
+    compatTypes: ['범용', '상시'],
+    locked: false,
+    resultTemplate: 'standard',
+    types: [
+      {
+        id: 'LC',
+        name: '리더십역량',
+        qCount: 30,
+        groups: [
+          {
+            name: 'Self역량군',
+            qCount: 10,
+            avg: 3.8,
+            subs: [
+              { name: '전략적 사고', qCount: 5, scale: '5점 척도',
+                questions: ['나는 단기 목표와 장기 전략을 연계하여 사고한다.','나는 외부 환경 변화가 팀 업무에 미치는 영향을 선제적으로 분석한다.','나는 다양한 가능성과 시나리오를 검토하여 전략을 수립한다.','나는 경쟁 환경을 고려하여 차별화된 방향을 제시한다.','나는 전략적 우선순위에 따라 자원을 효과적으로 배분한다.'] },
+              { name: '의사결정 능력', qCount: 5, scale: '5점 척도',
+                questions: ['나는 충분한 정보를 수집한 후 의사결정을 내린다.','나는 불확실한 상황에서도 신속하고 합리적인 결정을 내린다.','나는 의사결정 시 팀원들의 의견을 적극적으로 반영한다.','나는 결정 사항의 장단점을 명확히 설명할 수 있다.','나는 결정 결과에 대한 책임을 기꺼이 진다.'] }
+            ]
+          },
+          {
+            name: 'People역량군',
+            qCount: 10,
+            avg: 3.2,
+            subs: [
+              { name: '비전 및 목표 설정', qCount: 5, scale: '6점 척도 (AB선택형)',
+                questions: ['나는 팀의 장기적인 비전과 방향을 명확히 제시한다.','나는 팀원들이 조직 목표를 자신의 업무와 연결할 수 있도록 돕는다.','나는 현실적이면서도 도전적인 목표를 설정한다.','나는 목표 달성 현황을 주기적으로 점검하고 피드백을 제공한다.','나는 변화하는 환경에 맞게 목표를 유연하게 조정한다.'] },
+              { name: '구성원 육성 및 동기부여', qCount: 5, scale: '6점 척도 (AB선택형)',
+                questions: ['나는 팀원의 강점과 개발 영역을 파악하고 있다.','나는 팀원들에게 성장 기회를 적극적으로 제공한다.','나는 팀원이 좋은 성과를 냈을 때 즉시 인정하고 칭찬한다.','나는 각 팀원의 동기부여 요인을 파악하여 맞춤 지원을 제공한다.','나는 팀원들의 커리어 목표와 회사 목표를 연결할 수 있도록 지원한다.'] }
+            ]
+          },
+          {
+            name: 'Team역량군',
+            qCount: 10,
+            avg: 4.1,
+            subs: [
+              { name: '갈등 관리', qCount: 5, scale: '5점 척도',
+                questions: ['나는 팀 내 갈등 상황을 조기에 파악하고 개입한다.','나는 갈등의 원인을 객관적으로 분석하여 해결책을 모색한다.','나는 팀원들이 의견 차이를 건설적으로 표현하도록 독려한다.','나는 갈등 해결 과정에서 모든 관련자의 입장을 공정하게 고려한다.','나는 갈등 해결 후 팀 분위기 회복을 위해 적극적으로 노력한다.'] },
+              { name: '성과 창출 및 관리', qCount: 5, scale: '5점 척도',
+                questions: ['나는 팀의 성과를 측정할 수 있는 명확한 기준을 수립한다.','나는 업무 우선순위를 효과적으로 설정하여 팀의 성과를 극대화한다.','나는 성과 창출에 방해가 되는 장애물을 신속하게 제거한다.','나는 팀원들의 역할과 책임을 명확히 구분하여 관리한다.','나는 성과 결과에 대해 팀원들과 함께 검토하고 개선 방향을 논의한다.'] }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'OC',
+        name: '조직문화역량',
+        qCount: 20,
+        groups: [
+          {
+            name: '소통협력역량군',
+            qCount: 12,
+            avg: 3.6,
+            subs: [
+              { name: '소통 및 협력', qCount: 4, scale: '5점 척도',
+                questions: ['나는 팀원들과 정기적으로 소통하며 정보를 공유한다.','나는 타 부서와의 협력을 적극적으로 도모한다.','나는 팀원들의 의견을 경청하고 존중한다.','나는 불필요한 소통 장벽을 제거하기 위해 노력한다.'] },
+              { name: '다양성 존중', qCount: 4, scale: '5점 척도',
+                questions: ['나는 팀원들의 다양한 배경과 관점을 존중한다.','나는 다양한 의견이 더 나은 결과를 만든다고 믿는다.','나는 특정 팀원이 소외되지 않도록 포용적인 환경을 조성한다.','나는 편견 없이 모든 팀원을 공정하게 대우한다.'] },
+              { name: '팀워크', qCount: 4, scale: '5점 척도',
+                questions: ['나는 팀 공동 목표를 개인 목표보다 우선시한다.','나는 팀원이 어려움을 겪을 때 자발적으로 도움을 제공한다.','나는 팀의 성공을 함께 축하하고 공을 나눈다.','나는 팀 내 신뢰를 쌓기 위해 지속적으로 노력한다.'] }
+            ]
+          },
+          {
+            name: '혁신성과역량군',
+            qCount: 8,
+            avg: 3.4,
+            subs: [
+              { name: '윤리경영 및 책임의식', qCount: 4, scale: '5점 척도',
+                questions: ['나는 업무 수행 시 윤리적 기준을 최우선으로 고려한다.','나는 팀원들에게 윤리적 행동의 모범을 보인다.','나는 비윤리적 상황을 인지했을 때 즉시 시정 조치를 취한다.','나는 성과 달성보다 올바른 방식을 더 중요하게 생각한다.'] },
+              { name: '변화관리 및 혁신', qCount: 4, scale: '5점 척도',
+                questions: ['나는 변화의 필요성을 팀원들에게 적극적으로 설명한다.','나는 새로운 아이디어와 시도를 팀 내에서 환영하는 분위기를 만든다.','나는 변화에 저항하는 팀원들을 이해하고 설득하는 방법을 안다.','나는 변화 과정에서 발생하는 불안을 최소화하기 위해 노력한다.'] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: '비즈니스역량진단 v1.5',
+    tags: ['BS', 'JC', 'IT'],
+    typeCount: 3,
+    subCount: 9,
+    qCount: 72,
+    date: '2025-01-20',
+    compatTypes: ['범용', '상시'],
+    locked: false,
+    resultTemplate: 'standard',
+    types: [
+      {
+        id: 'BS',
+        name: '비즈니스스킬',
+        qCount: 24,
+        groups: [
+          {
+            name: '커뮤니케이션역량군',
+            qCount: 16,
+            avg: 3.5,
+            subs: [
+              { name: '프레젠테이션 능력', qCount: 8, scale: '5점 척도',
+                questions: ['나는 발표 목적과 청중에 맞게 내용을 구성한다.','나는 핵심 메시지를 명확하고 간결하게 전달한다.','나는 시각 자료를 효과적으로 활용하여 이해를 돕는다.','나는 청중의 반응을 살피며 발표 방식을 조율한다.','나는 질의응답 상황에서 침착하고 논리적으로 답변한다.','나는 발표 전 충분한 준비와 연습을 한다.','나는 데이터와 근거를 바탕으로 주장을 뒷받침한다.','나는 발표 후 피드백을 반영하여 개선한다.'] },
+              { name: '문서작성 능력', qCount: 8, scale: '5점 척도',
+                questions: ['나는 문서의 목적에 맞는 구조와 형식을 선택한다.','나는 핵심 내용을 빠짐없이 포함하면서 간결하게 작성한다.','나는 독자의 이해 수준을 고려하여 용어를 선택한다.','나는 데이터와 사실에 근거한 내용을 작성한다.','나는 오탈자 없이 정확한 문서를 작성한다.','나는 문서 작성 후 검토 및 수정 과정을 거친다.','나는 시각적으로 보기 좋은 레이아웃을 구성한다.','나는 기한 내에 문서를 완성한다.'] }
+            ]
+          },
+          {
+            name: '협상역량군',
+            qCount: 8,
+            avg: 3.1,
+            subs: [
+              { name: '협상 능력', qCount: 8, scale: '5점 척도',
+                questions: ['나는 협상 전 상대방의 입장과 관심사를 충분히 파악한다.','나는 협상에서 원하는 결과와 양보 가능한 범위를 사전에 설정한다.','나는 감정을 통제하며 이성적으로 협상에 임한다.','나는 윈-윈 해결책을 찾기 위해 창의적 대안을 제시한다.','나는 협상 결과를 명확하게 문서화한다.','나는 협상 과정에서 관계 유지를 중요하게 생각한다.','나는 협상 중 예상치 못한 변수에 유연하게 대응한다.','나는 협상 후 합의 사항을 성실히 이행한다.'] }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'JC',
+        name: '직무역량',
+        qCount: 24,
+        groups: [
+          {
+            name: '직무전문역량군',
+            qCount: 16,
+            avg: 3.7,
+            subs: [
+              { name: '전문지식 활용', qCount: 8, scale: '5점 척도',
+                questions: ['나는 직무 관련 최신 트렌드와 지식을 지속적으로 학습한다.','나는 보유한 전문지식을 업무에 실질적으로 적용한다.','나는 전문지식을 팀원들과 공유하여 조직 역량을 높인다.','나는 직무 관련 자격증 취득이나 교육에 적극 참여한다.','나는 업무 중 발생하는 전문적 문제를 스스로 해결한다.','나는 타 분야 전문가와 협업할 때 시너지를 만든다.','나는 새로운 기술이나 방법론 도입에 긍정적이다.','나는 전문지식을 쉽게 설명할 수 있는 커뮤니케이션 능력을 갖추고 있다.'] },
+              { name: '문제해결력', qCount: 8, scale: '5점 척도',
+                questions: ['나는 문제의 근본 원인을 체계적으로 분석한다.','나는 다양한 해결책을 도출하고 최선의 방안을 선택한다.','나는 복잡한 문제를 작은 단위로 분리하여 접근한다.','나는 과거 경험을 활용하여 유사 문제를 효율적으로 해결한다.','나는 문제 해결 과정에서 관련자들과 적극적으로 협력한다.','나는 해결책 실행 후 효과를 검증하고 보완한다.','나는 데이터와 논리를 바탕으로 문제를 해결한다.','나는 불확실한 상황에서도 최선의 결정을 내린다.'] }
+            ]
+          },
+          {
+            name: '창의혁신역량군',
+            qCount: 8,
+            avg: 2.9,
+            subs: [
+              { name: '창의적 사고', qCount: 8, scale: '5점 척도',
+                questions: ['나는 기존의 방식에 의문을 제기하고 새로운 접근법을 시도한다.','나는 다양한 분야에서 아이디어를 수집하여 업무에 적용한다.','나는 팀 내 창의적 아이디어 제안을 장려한다.','나는 실패를 두려워하지 않고 새로운 시도를 지속한다.','나는 기존 프로세스를 개선하는 아이디어를 정기적으로 제안한다.','나는 연관 없어 보이는 개념들을 연결하여 새로운 해결책을 만든다.','나는 브레인스토밍 세션을 효과적으로 진행한다.','나는 창의적 아이디어를 실제로 실행 가능한 계획으로 구체화한다.'] }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'IT',
+        name: 'IT활용역량',
+        qCount: 24,
+        groups: [
+          {
+            name: '디지털역량군',
+            qCount: 16,
+            avg: 3.3,
+            subs: [
+              { name: '디지털 리터러시', qCount: 8, scale: '5점 척도',
+                questions: ['나는 업무에 필요한 디지털 도구를 능숙하게 활용한다.','나는 새로운 디지털 기술을 빠르게 습득한다.','나는 디지털 정보의 신뢰성을 평가하는 능력을 갖추고 있다.','나는 사이버 보안의 중요성을 이해하고 실천한다.','나는 협업 도구를 통해 원격 업무를 효과적으로 수행한다.','나는 디지털 전환이 업무에 미치는 영향을 이해한다.','나는 디지털 도구를 통해 업무 효율성을 높인다.','나는 팀원들의 디지털 역량 향상을 지원한다.'] },
+              { name: '데이터 분석', qCount: 8, scale: '5점 척도',
+                questions: ['나는 업무 의사결정을 위해 데이터를 적극적으로 활용한다.','나는 데이터에서 의미 있는 패턴과 인사이트를 도출한다.','나는 스프레드시트나 분석 도구를 능숙하게 사용한다.','나는 데이터 시각화를 통해 복잡한 정보를 이해하기 쉽게 전달한다.','나는 데이터의 품질과 정확성을 검증한다.','나는 분석 결과를 바탕으로 실행 가능한 제안을 한다.','나는 데이터 기반의 성과 지표를 설정하고 관리한다.','나는 데이터 보안과 개인정보 보호 규정을 준수한다.'] }
+            ]
+          },
+          {
+            name: 'AI활용역량군',
+            qCount: 8,
+            avg: 2.7,
+            subs: [
+              { name: 'AI 활용 능력', qCount: 8, scale: '5점 척도',
+                questions: ['나는 업무에 AI 도구를 활용하여 생산성을 높인다.','나는 AI의 한계와 적절한 활용 범위를 이해한다.','나는 AI 결과물을 비판적으로 검토하고 활용한다.','나는 AI 기술 트렌드를 지속적으로 학습한다.','나는 AI를 활용한 새로운 업무 방식을 팀에 제안한다.','나는 AI 윤리와 책임 있는 사용 원칙을 준수한다.','나는 AI 도구를 통해 반복적인 업무를 자동화한다.','나는 AI 활용 역량 강화를 위해 지속적으로 교육받는다.'] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: '조직문화진단 2026',
+    tags: ['OC'],
+    typeCount: 1,
+    subCount: 5,
+    qCount: 26,
+    date: '2025-11-01',
+    compatTypes: ['범용', '상시'],
+    locked: false,
+    resultTemplate: 'standard',
+    types: [
+      {
+        id: 'OC',
+        name: '조직문화',
+        qCount: 26,
+        groups: [
+          {
+            name: '심리안전역량군',
+            qCount: 9,
+            avg: 3.9,
+            subs: [
+              { name: '심리적 안전감', qCount: 7, scale: '5점 척도',
+                questions: ['우리 팀에서는 실수를 해도 불이익이 없다고 느낀다.','팀원들이 문제를 제기할 때 수용적인 반응을 보인다.','나는 팀 내에서 불편한 의견도 자유롭게 표현할 수 있다.','팀원들은 서로의 약점을 공격적으로 이용하지 않는다.','우리 팀에서는 도움을 요청하는 것이 자연스럽다.','실패한 경험을 팀 학습의 기회로 활용한다.','팀원들은 서로의 아이디어를 존중하며 발전시킨다.'] },
+              { name: '협업 문화', qCount: 2, scale: '서술형',
+                questions: ['우리 팀의 협업 문화에서 가장 잘 되고 있다고 느끼는 점은 무엇인가요?','협업 과정에서 개선이 필요하다고 느끼는 부분을 자유롭게 서술해주세요.'] }
+            ]
+          },
+          {
+            name: '성과학습역량군',
+            qCount: 14,
+            avg: 3.6,
+            subs: [
+              { name: '성과 지향성', qCount: 7, scale: '5점 척도',
+                questions: ['우리 조직은 명확한 성과 기준과 목표를 가지고 있다.','성과에 대한 공정한 평가와 보상이 이루어진다.','높은 성과를 위한 도전적인 목표를 추구한다.','성과 달성을 위한 필요 자원이 충분히 제공된다.','성과 창출에 방해가 되는 장애물이 신속히 제거된다.','우수한 성과자는 조직 내에서 인정받는다.','성과 목표는 구성원의 의견을 반영하여 설정된다.'] },
+              { name: '학습 조직화', qCount: 7, scale: '5점 척도',
+                questions: ['조직은 구성원의 지속적인 학습을 적극 지원한다.','우리 조직은 실패에서 배우는 문화를 가지고 있다.','새로운 지식과 아이디어가 조직 내에서 빠르게 공유된다.','구성원들은 자기 주도적으로 학습하고 성장한다.','조직은 변화하는 환경에 맞게 지속적으로 혁신한다.','학습 결과가 실제 업무 개선으로 이어진다.','지식 관리 시스템이 효과적으로 운영된다.'] }
+            ]
+          },
+          {
+            name: '정성 피드백역량군',
+            qCount: 3,
+            avg: null,
+            subs: [
+              { name: '자유 의견', qCount: 3, scale: '서술형',
+                questions: ['조직문화 개선을 위해 제안하고 싶은 의견을 자유롭게 작성해주세요.','최근 인상 깊었던 조직문화 관련 경험이 있다면 공유해주세요.','앞으로 우리 조직이 나아갔으면 하는 방향을 서술해주세요.'] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 4,
+    name: 'AI리터러시 진단 (상품형)',
+    tags: ['AI'],
+    typeCount: 1,
+    subCount: 3,
+    qCount: 15,
+    date: '2026-01-15',
+    compatTypes: ['범용', '상시'],
+    locked: true,
+    resultTemplate: 'ai_literacy',
+    types: [
+      {
+        id: 'AIL',
+        name: 'AI리터러시',
+        qCount: 15,
+        groups: [
+          {
+            name: 'AI개념이해역량군',
+            qCount: 5,
+            avg: 3.2,
+            subs: [
+              { name: 'AI기초개념', qCount: 5, scale: '5점 척도',
+                questions: ['나는 AI의 기본 개념을 이해한다.','나는 머신러닝과 딥러닝의 차이를 안다.','나는 AI의 한계를 인식한다.','나는 AI 윤리의 중요성을 이해한다.','나는 AI 관련 최신 뉴스를 관심있게 본다.'] }
+            ]
+          },
+          {
+            name: 'AI활용실무역량군',
+            qCount: 5,
+            avg: 2.8,
+            subs: [
+              { name: 'AI도구활용', qCount: 5, scale: '5점 척도',
+                questions: ['나는 ChatGPT 같은 생성형 AI를 업무에 활용한다.','나는 AI 도구의 한계를 이해하고 결과를 검증한다.','나는 AI를 통해 업무 효율을 높인다.','나는 AI 도구 사용 시 개인정보를 보호한다.','나는 AI를 지속적으로 학습하려 한다.'] }
+            ]
+          },
+          {
+            name: 'AI윤리책임역량군',
+            qCount: 5,
+            avg: 3.4,
+            subs: [
+              { name: 'AI윤리실천', qCount: 5, scale: '5점 척도',
+                questions: ['나는 AI가 만든 편향된 결과를 인식한다.','나는 AI 도구 사용 시 투명성을 유지한다.','나는 AI 결과에 무비판적으로 의존하지 않는다.','나는 AI 관련 규정을 준수한다.','나는 팀원들의 책임있는 AI 사용을 권장한다.'] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// 호환성을 위한 DIAGNOSTIC_DATA (새로운 QUESTIONNAIRES 기반)
+const DIAGNOSTIC_DATA = {};
+QUESTIONNAIRES.forEach(q => {
+  DIAGNOSTIC_DATA[q.id] = {
+    name: q.name,
+    types: q.types.map(t => ({
+      id: t.id,
+      name: t.name + `(${t.id})`,
+      questions: t.qCount,
+      subtypes: t.groups.flatMap(g => g.subs).map(s => s.name)
+    }))
+  };
+});
+
+let selectedQuestionnaire = null;
+let selectedDiagnosticId = null;
+// 이미 선택된 진단지가 이후 비공개/삭제 처리된 경우를 시뮬레이션 (id -> 'private' | 'deleted')
+let qsetVisibilityOverride = {};
+let respondentSettings = {};
+let courseSettings = {};
+let currentCourseSettingKey = null;
+let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부 — 대상자 등록(일괄/개별)은 이 값이 true여야 사용 가능
+let selectedDiagnosticType = '범용'; // 새로 추가: 진단유형 (기본값: 범용진단)
+
+function toggleNav(el) {
+  const group = el.parentElement;
+  group.classList.toggle('open');
+}
+
+// ─── STEP 2(진단지 선택) 함수들 ───
+
+let step1HasData = true;
+function toggleStep1State() {
+  step1HasData = !step1HasData;
+  const emptyView = document.getElementById('step1EmptyView');
+  const dataView  = document.getElementById('step1DataView');
+  const btn       = document.getElementById('step1ToggleBtn');
+  if (step1HasData) {
+    emptyView.style.display = 'none';
+    dataView.style.display  = 'flex';
+    btn.textContent = '📋 빈 상태 보기';
+  } else {
+    emptyView.style.display = 'flex';
+    dataView.style.display  = 'none';
+    btn.textContent = '📋 데이터 있는 상태 보기';
+  }
+}
+
+function filterQuestionnaires() {
+  // 선택된 진단유형에 호환되는 진단지만 필터링
+  // 비공개/삭제 처리된 진단지는 신규 선택 목록에서 제외하되, 이미 선택된 상태(수정 진입 등)라면 계속 노출
+  return QUESTIONNAIRES.filter(q => {
+    if (!q.compatTypes || !q.compatTypes.includes(selectedDiagnosticType)) return false;
+    const override = qsetVisibilityOverride[q.id];
+    if (override && q.id !== selectedDiagnosticId) return false;
+    return true;
+  });
+}
+
+// ─── STEP 1: 진단유형 선택 ───
+
+let _pendingDiagType = null;
+
+function chooseDiagType(type) {
+  if (type === selectedDiagnosticType) return;
+  // STEP1 이후로 진행한 적이 있다면(=이미 뭔가 설정한 상태) 유형 변경 시 초기화 경고를 먼저 띄운다
+  if (maxReachedStep > 1) {
+    _pendingDiagType = type;
+    document.getElementById('diagTypeChangeModal').classList.add('open');
+    return;
+  }
+  applyDiagTypeChange(type);
+}
+
+function applyDiagTypeChange(type) {
+  selectedDiagnosticType = type;
+  document.querySelectorAll('.diagtype-choice-card').forEach(c => c.classList.toggle('selected', c.dataset.type === type));
+  applyStepVisibility();
+  currentStep = 1;
+  maxReachedStep = 1;
+  goToStep(1);
+}
+
+function cancelDiagTypeChange() {
+  document.getElementById('diagTypeChangeModal').classList.remove('open');
+  _pendingDiagType = null;
+}
+
+function confirmDiagTypeChange() {
+  document.getElementById('diagTypeChangeModal').classList.remove('open');
+  if (_pendingDiagType) applyDiagTypeChange(_pendingDiagType);
+  _pendingDiagType = null;
+}
+
+// 내부 스텝(1~8) ↔ 화면표시 스텝 매핑. STEP1은 진단유형 선택, 상시진단은 STEP3(응답자 유형)·STEP7(응답자 등록)을 건너뜀
+function stepDisplayMeta() {
+  if (selectedDiagnosticType === '상시') {
+    // STEP3(응답자 유형)·STEP7(응답자 등록)은 상시진단에서 자동 처리되어 노출하지 않음
+    return { total: 6, map: { 1: 1, 2: 2, 4: 3, 5: 4, 6: 5, 8: 6 }, hidden: [3, 7] };
+  }
+  return { total: 8, map: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8 }, hidden: [] };
+}
+
+const STEP_TAG_SUFFIX = { 5: ' · 선택사항', 8: ' · 마지막 단계' };
+
+function applyStepVisibility() {
+  const meta = stepDisplayMeta();
+
+  for (let i = 1; i <= 8; i++) {
+    const navItem = document.getElementById('wiz-step-' + i);
+    if (navItem) navItem.style.display = meta.hidden.includes(i) ? 'none' : '';
+    const connector = document.getElementById('wiz-connector-' + i);
+    if (connector) connector.style.display = meta.hidden.includes(i) ? 'none' : '';
+    const tag = document.getElementById('stepTag-' + i);
+    if (tag) tag.textContent = 'STEP ' + meta.map[i] + ' / ' + meta.total + (STEP_TAG_SUFFIX[i] || '');
+  }
+
+  // 상시진단만 응답 허용 횟수(1회/무제한) 설정 노출
+  const responseCountRow = document.getElementById('step5-response-count-row');
+  if (responseCountRow) responseCountRow.style.display = selectedDiagnosticType === '상시' ? '' : 'none';
+}
+
+// 스텝 이동 시 숨겨진 스텝을 건너뛴 다음/이전 내부 스텝 번호 반환
+function getAdjacentStep(from, dir) {
+  const meta = stepDisplayMeta();
+  let step = from + dir;
+  while (step >= 1 && step <= 8 && meta.hidden.includes(step)) {
+    step += dir;
+  }
+  return step;
+}
+
+function renderStep1() {
+  const cardList = document.getElementById('step1CardList');
+  cardList.innerHTML = '';
+
+  const filteredQs = filterQuestionnaires();
+
+  filteredQs.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'diag-card';
+    card.dataset.qid = q.id;
+
+    // 호환되지 않는 진단지는 비활성 처리
+    if (!q.compatTypes.includes(selectedDiagnosticType)) {
+      card.style.opacity = '0.5';
+      card.style.cursor = 'not-allowed';
+      card.title = '선택한 진단유형과 호환되지 않습니다.';
+    }
+
+    const override = qsetVisibilityOverride[q.id];
+    const overrideBadge = override === 'private' ? '<span class="qset-status-badge badge-private">비공개</span>'
+                         : override === 'deleted' ? '<span class="qset-status-badge badge-deleted">삭제됨</span>' : '';
+
+    card.innerHTML = `
+      <div class="diag-card-title">
+        <span>${q.name}</span>
+        ${q.locked ? '<span style="font-size:14px;">🔒</span>' : ''}
+        ${overrideBadge}
+      </div>
+      <div class="diag-card-meta">유형 ${q.typeCount}개 · 역량군 ${q.types.reduce((s,t)=>s+(t.groups?t.groups.length:0),0)}개 · 세부역량 ${q.subCount}개 · ${q.qCount}문항</div>
+      <div class="diag-card-date">등록일 ${q.date}</div>
+    `;
+
+    if (!q.compatTypes.includes(selectedDiagnosticType)) {
+      card.onclick = (e) => {
+        showToast('상시진단 전용 진단지입니다.');
+        e.preventDefault();
+      };
+    } else {
+      card.onclick = () => selectQuestionnaire(q.id);
+    }
+
+    cardList.appendChild(card);
+  });
+
+  // 기본 선택: 기존 선택이 목록에 남아있으면 유지, 없으면 첫 번째 항목
+  const keepId = filteredQs.some(q => q.id === selectedDiagnosticId) ? selectedDiagnosticId : filteredQs[0]?.id;
+  if (keepId) selectQuestionnaire(keepId);
+}
+
+function selectQuestionnaire(id) {
+  selectedDiagnosticId = id;
+  selectedQuestionnaire = QUESTIONNAIRES.find(q => q.id === id);
+
+  // 카드 강조 업데이트
+  document.querySelectorAll('.diag-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  document.querySelector(`.diag-card[data-qid="${id}"]`)?.classList.add('selected');
+
+  // 오른쪽 패널 업데이트
+  renderPreview(selectedQuestionnaire);
+}
+
+// 현재 선택된 진단지를 공개 → 비공개 → 삭제됨 순으로 순환 시뮬레이션
+// (이미 선택된 진단지가 저장 이후 비공개/삭제 처리되어도 STEP1 선택 상태는 유지되는 스펙 시연용)
+function toggleQsetDeletedDemo() {
+  if (!selectedDiagnosticId) return;
+  const cur = qsetVisibilityOverride[selectedDiagnosticId] || 'public';
+  const next = cur === 'public' ? 'private' : cur === 'private' ? 'deleted' : 'public';
+  if (next === 'public') delete qsetVisibilityOverride[selectedDiagnosticId];
+  else qsetVisibilityOverride[selectedDiagnosticId] = next;
+
+  const btn = document.getElementById('step1DeletedToggleBtn');
+  btn.classList.toggle('active-deleted', next !== 'public');
+  btn.textContent = next === 'private' ? '🔒 비공개 상태 시뮬레이션 중'
+                   : next === 'deleted' ? '🗑 삭제됨 상태 시뮬레이션 중'
+                   : '🗑 진단지 삭제 시뮬레이션';
+  renderStep1();
+}
+
+function renderPreview(questionnaire) {
+  const empty = document.getElementById('step1PreviewEmpty');
+  const content = document.getElementById('step1PreviewContent');
+
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  // 제목 (+ 이미 선택된 진단지가 이후 비공개/삭제 처리된 경우 상태 배지)
+  const override = qsetVisibilityOverride[questionnaire.id];
+  const overrideBadge = override === 'private' ? ' <span class="qset-status-badge badge-private">비공개</span>'
+                       : override === 'deleted' ? ' <span class="qset-status-badge badge-deleted">삭제됨</span>' : '';
+  document.getElementById('previewQuestionnaireName').innerHTML = questionnaire.name + overrideBadge;
+
+  // 통계 칩 (유형 > 역량군 > 세부역량 동적 계산)
+  const groupCount = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
+  const subCount   = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.reduce((gs, g) => gs + g.subs.length, 0) : 0), 0);
+  const statsHtml = `
+    <span class="stat-chip">유형 ${questionnaire.typeCount}개</span>
+    <span class="stat-chip">역량군 ${groupCount}개</span>
+    <span class="stat-chip">세부역량 ${subCount}개</span>
+    <span class="stat-chip">${questionnaire.qCount}문항</span>
+  `;
+  document.getElementById('previewStats').innerHTML = statsHtml;
+
+  // 트리 구조 (유형 > 역량군 > 세부역량)
+  const treeHtml = questionnaire.types.map((type, typeIdx) => {
+    const groupsHtml = type.groups.map((group, gidx) => {
+      const subsHtml = group.subs.map((sub, subIdx) => {
+        const blockId = `prev-sub-${typeIdx}-${gidx}-${subIdx}`;
+        const LIKERT = ['매우 그렇다','그렇다','보통이다','그렇지 않다','전혀 그렇지 않다'];
+        const qCardsHtml = (sub.questions || []).map((q, qi) => {
+          const qKey = `prev_${typeIdx}_${gidx}_${subIdx}_${qi}`;
+          return `
+            <div class="prev-q-card">
+              <button class="prev-q-del" onclick="deletePreviewQuestion(this)" title="문항 삭제">×</button>
+              <textarea class="prev-q-input" rows="2" oninput="autoResize(this)">${q}</textarea>
+              <div class="prev-likert">
+                ${LIKERT.map((lbl, vi) => `
+                  <div class="prev-likert-opt">
+                    <input type="radio" name="${qKey}" id="${qKey}_${vi}" value="${vi+1}">
+                    <label for="${qKey}_${vi}">
+                      <div class="prev-likert-circle"></div>
+                      <span class="prev-likert-lbl">${lbl}</span>
+                    </label>
+                  </div>`).join('')}
+              </div>
+            </div>`;
+        }).join('');
+        return `
+          <div class="preview-sub-block open" id="${blockId}">
+            <div class="preview-sub-header" onclick="togglePreviewSub('${blockId}')">
+              <span class="preview-sub-toggle">▶</span>
+              <span class="preview-sub-name">${sub.name}</span>
+              <span class="preview-sub-scale">${sub.scale || '5점 척도'}</span>
+              <span class="tree-sub-qcnt">${sub.qCount}문항</span>
+            </div>
+            <div class="preview-q-list">${qCardsHtml}</div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="tree-group-block">
+          <div class="tree-group-header">
+            <span class="tree-group-name">${group.name}</span>
+            <span class="tree-type-qcnt">${group.qCount}문항</span>
+          </div>
+          <div class="tree-group-subs">${subsHtml}</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="tree-type open">
+        <div class="tree-type-header" onclick="toggleTreeTypeNode(this)">
+          <span class="tree-type-toggle">▼</span>
+          <span class="tree-type-name">${type.name}</span>
+          <span class="tree-type-qcnt">· ${type.qCount}문항</span>
+        </div>
+        <div class="tree-subs">${groupsHtml}</div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('previewTree').innerHTML = treeHtml;
+}
+
+function toggleTreeTypeNode(header) {
+  const node = header.closest('.tree-type');
+  node.classList.toggle('open');
+}
+
+function togglePreviewSub(blockId) {
+  const block = document.getElementById(blockId);
+  if (block) block.classList.toggle('open');
+}
+
+function deletePreviewQuestion(btn) {
+  const card       = btn.closest('.prev-q-card');
+  // remove() 전에 조상 참조 미리 저장
+  const subBlock   = card.closest('.preview-sub-block');
+  const groupBlock = subBlock  ? subBlock.closest('.tree-group-block') : null;
+  const treeType   = groupBlock ? groupBlock.closest('.tree-type')      : null;
+
+  card.style.transition = 'opacity .15s';
+  card.style.opacity = '0';
+  setTimeout(() => {
+    card.remove();
+
+    // 1단계: 세부역량 내 문항이 모두 삭제되면 세부역량 제거
+    if (!subBlock) return;
+    if (subBlock.querySelectorAll('.prev-q-card').length > 0) return;
+
+    subBlock.style.transition = 'opacity .15s';
+    subBlock.style.opacity = '0';
+    setTimeout(() => {
+      subBlock.remove();
+
+      // 2단계: 역량군 내 세부역량이 모두 삭제되면 역량군 제거
+      if (!groupBlock) return;
+      if (groupBlock.querySelectorAll('.preview-sub-block').length > 0) return;
+
+      groupBlock.style.transition = 'opacity .15s';
+      groupBlock.style.opacity = '0';
+      setTimeout(() => {
+        groupBlock.remove();
+
+        // 3단계: 유형 내 역량군이 모두 삭제되면 유형 제거
+        if (!treeType) return;
+        if (treeType.querySelectorAll('.tree-group-block').length > 0) return;
+
+        treeType.style.transition = 'opacity .15s';
+        treeType.style.opacity = '0';
+        setTimeout(() => treeType.remove(), 150);
+      }, 150);
+    }, 150);
+  }, 150);
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function searchQuestionnaires() {
+  const searchText = document.getElementById('step1SearchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.diag-card');
+
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(searchText) ? '' : 'none';
+  });
+}
+
+function selectDiagnostic(id, rowEl) {
+  // 호환성 유지 (deprecated)
+  selectedDiagnosticId = id;
+  const q = QUESTIONNAIRES.find(x => x.id === id);
+  renderPreview(q);
+}
+
+const RESP_ROLES = [
+  { key: '본인',   icon: '🧑', name: '본인',   desc: '진단 대상자 본인이\n직접 응답합니다' },
+  { key: '구성원', icon: '👥', name: '구성원', desc: '대상자의 팀원·\n부하직원이 응답합니다' },
+  { key: '상사',   icon: '🏢', name: '상사',   desc: '대상자의 직속\n상사가 응답합니다' },
+  { key: '동료',   icon: '🤝', name: '동료',   desc: '대상자의 동료가\n응답합니다' },
+];
+
+function generateRespondentCards() {
+  if (!selectedQuestionnaire) return;
+  const container = document.getElementById('respondentCardsContainer');
+  container.innerHTML = '';
+
+  // 상시진단이면 고정 메시지 표시
+  if (selectedDiagnosticType === '상시') {
+    container.innerHTML = `
+      <div style="padding:24px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;">
+        <div style="font-size:14px;font-weight:600;color:#2a3a6a;margin-bottom:8px;">상시진단은 본인 자기진단만 가능합니다</div>
+        <div style="font-size:12px;color:#4a5a8a;">다면평가(상사, 동료 등)는 범용진단 유형에서만 사용할 수 있습니다.</div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <div class="resp-role-card" style="opacity:1;cursor:default;">
+          <div style="font-size:18px;margin-bottom:8px;">👤</div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">본인</div>
+          <div style="font-size:11px;color:#666;">자기진단</div>
+          <input type="checkbox" checked disabled style="margin-top:12px;cursor:default;">
+        </div>
+      </div>
+    `;
+    respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false }; // 자동으로 본인만 선택
+    return;
+  }
+
+  // 범용진단: 기존 로직
+  respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
+
+  const section = document.createElement('div');
+  section.innerHTML = `
+    <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
+    <div class="resp-role-grid">
+      ${RESP_ROLES.map(role => {
+        const isRequired = role.key === '본인';
+        return `
+        <div class="resp-role-card${isRequired ? ' selected required' : ''}"
+             ${isRequired ? '' : `onclick="toggleRespRole(this, '${role.key}')"`}>
+          <div class="resp-role-check">✓</div>
+          <div class="resp-role-icon">${role.icon}</div>
+          <div class="resp-role-name">${role.name}${isRequired ? '<span class="resp-role-required-tag">(필수)</span>' : ''}</div>
+          <div class="resp-role-desc">${role.desc.replace(/\n/g,'<br>')}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  container.appendChild(section);
+}
+
+let _pendingRespToggle = null;
+
+function toggleRespRole(el, roleKey) {
+  if (roleKey === '본인') {
+    showToast('본인 응답은 필수이며 해제할 수 없습니다.');
+    return;
+  }
+  const isCurrentlySelected = el.classList.contains('selected');
+  if (isCurrentlySelected) {
+    const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.startsWith(roleKey + ':') && MK_RESPONDENTS[k].length > 0);
+    if (hasRespondents) {
+      _pendingRespToggle = { el, roleKey };
+      document.getElementById('respTypeChangeModal').classList.add('open');
+      return;
+    }
+  }
+  _applyRespToggle(el, roleKey);
+}
+
+function _applyRespToggle(el, roleKey) {
+  el.classList.toggle('selected');
+  respondentSettings[roleKey] = el.classList.contains('selected');
+}
+
+function confirmRespTypeChange() {
+  document.getElementById('respTypeChangeModal').classList.remove('open');
+  if (_pendingRespToggle) {
+    const { el, roleKey } = _pendingRespToggle;
+    Object.keys(MK_RESPONDENTS).forEach(k => {
+      if (k.startsWith(roleKey + ':')) MK_RESPONDENTS[k] = [];
+    });
+    _applyRespToggle(el, roleKey);
+    _pendingRespToggle = null;
+  }
+}
+
+function cancelRespTypeChange() {
+  document.getElementById('respTypeChangeModal').classList.remove('open');
+  _pendingRespToggle = null;
+}
+
+function updateRespondentSetting(checkbox) {
+  const type = checkbox.dataset.type;
+  const option = checkbox.dataset.option;
+  if (respondentSettings[type]) {
+    respondentSettings[type][option] = checkbox.checked;
+  }
+}
+
+function generateScoreSettings() {
+  if (!selectedQuestionnaire) return;
+  const container = document.getElementById('scoreSettingsContainer');
+  container.innerHTML = '';
+  const scaleMin = 1;
+
+  selectedQuestionnaire.types.forEach(type => {
+    type.groups.forEach((group, gidx) => {
+      const groupId = `${type.id}-${gidx}`;
+
+      // 서술형 전용 세부역량은 점수화 대상에서 제외 (강점/약점 판정 불가 — 결과보기의 "주관식 응답"에서 별도 확인)
+      const scoredSubs = group.subs.filter(s => s.scale !== '서술형');
+      // 역량군의 모든 세부역량이 서술형이면 점수 설정 카드 자체를 노출하지 않음
+      if (scoredSubs.length === 0) return;
+
+      // 역량군 내 세부역량별 척도 파악 (서술형 제외한 세부역량만 대상)
+      const subScaleMaxes = scoredSubs.map(s => parseInt(s.scale) || 5);
+      const rawMax = Math.min(...subScaleMaxes);
+      const hasAB = subScaleMaxes.some(m => m === 6);
+      // AB선택형이 포함된 역량군은 정규화 기준 5점으로 고정
+      const scaleMax = hasAB ? 5 : rawMax;
+
+      const abRows = [1,2,3,4,5,6].map(v => {
+        const norm = (v / 6 * 5).toFixed(2);
+        const isMid = v === 3;
+        return `<tr style="${isMid ? 'background:#fef3c7;font-weight:600;' : ''}">
+          <td style="padding:3px 10px;text-align:center;border:1px solid #e5e7eb;">${v}점</td>
+          <td style="padding:3px 10px;text-align:center;border:1px solid #e5e7eb;">${norm}점${isMid ? ' ← 중간값' : ''}</td>
+        </tr>`;
+      }).join('');
+
+      const abNotice = hasAB
+        ? `<div style="margin-bottom:10px;padding:8px 12px;background:#fffbeb;border:1px solid #f59e0b;border-radius:6px;font-size:12px;color:#78350f;line-height:1.6;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <span>⚠ 이 역량군에는 <b>6점 척도(AB선택형)</b> 문항이 포함됩니다. 결과는 <b>5점 정규화</b>하여 표시됩니다. 기준 점수는 <b>1~5 범위</b>로 입력하세요.</span>
+              <button onclick="(function(btn){var t=document.getElementById('ab-table-${groupId}');var open=t.style.display!=='none';t.style.display=open?'none':'block';btn.textContent=open?'변환표 보기':'닫기';})(this)" style="flex-shrink:0;padding:3px 10px;background:#fde68a;border:1px solid #f59e0b;border-radius:4px;font-size:11px;color:#78350f;cursor:pointer;white-space:nowrap;">변환표 보기</button>
+            </div>
+            <div id="ab-table-${groupId}" style="display:none;margin-top:8px;">
+              <table style="border-collapse:collapse;font-size:11px;">
+                <thead><tr style="background:#fde68a;">
+                  <th style="padding:3px 12px;border:1px solid #e5e7eb;">6점 원점수</th>
+                  <th style="padding:3px 12px;border:1px solid #e5e7eb;">5점 정규화</th>
+                </tr></thead>
+                <tbody>${abRows}</tbody>
+              </table>
+            </div>
+           </div>`
+        : '';
+
+      const mixedNote = '';
+      const scoredQCount = scoredSubs.reduce((s, x) => s + x.qCount, 0);
+
+      const defaultStrong = Math.round(scaleMax * 0.7);
+      const defaultWeak   = Math.round(scaleMax * 0.5);
+
+      const div = document.createElement('div');
+      div.className = 'score-type-card';
+      div.innerHTML = `
+        <div class="score-type-head">
+          <span class="score-type-name" style="font-size:14px;">${type.name}</span>
+          <span style="font-size:12px;color:#888;margin:0 6px;">—</span>
+          <span class="score-type-name">${group.name}</span>
+          <span class="score-type-qcnt">${scoredQCount}문항</span>
+        </div>
+        ${abNotice}${mixedNote}
+        <div class="score-inputs-wrap">
+          <div class="score-group">
+            <div class="score-group-label strong"><span class="dot"></span> 강점 기준</div>
+            <input type="number" class="score-num-input" id="score-strong-${groupId}" value="${defaultStrong}" min="${scaleMin}" max="${scaleMax}" step="1">
+            <div class="score-num-unit">이 점수 이상이면 강점</div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
+          </div>
+          <div class="score-group">
+            <div class="score-group-label weak"><span class="dot"></span> 약점 기준</div>
+            <input type="number" class="score-num-input" id="score-weak-${groupId}" value="${defaultWeak}" min="${scaleMin}" max="${scaleMax}" step="1">
+            <div class="score-num-unit">이 점수 미만이면 약점</div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
+          </div>
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:11px;color:#aaa;margin-bottom:6px;">점수 구간 미리보기</div>
+            <div class="score-zone-bar" id="zone-bar-${groupId}" style="--weak-pct:${defaultWeak/scaleMax*100}%;--strong-pct:${defaultStrong/scaleMax*100}%;"></div>
+            <div class="score-zone-labels">
+              <span class="z-weak">약점</span>
+              <span class="z-mid">보통</span>
+              <span class="z-strong">강점</span>
+            </div>
+          </div>
+        </div>
+        <div id="score-err-${groupId}" style="display:none;margin-top:10px;padding:8px 12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:12px;color:#c0392b;"></div>
+      `;
+      // zone bar 업데이트 + 유효성 검사 (scaleMax는 역량군별로 클로저에 캡처)
+      const updateZone = () => {
+        const w = +document.getElementById('score-weak-' + groupId).value;
+        const s = +document.getElementById('score-strong-' + groupId).value;
+        const bar = document.getElementById('zone-bar-' + groupId);
+        const errEl = document.getElementById('score-err-' + groupId);
+        const strongEl = document.getElementById('score-strong-' + groupId);
+        const weakEl   = document.getElementById('score-weak-'   + groupId);
+        if (bar) {
+          bar.style.setProperty('--weak-pct',   (w / scaleMax * 100) + '%');
+          bar.style.setProperty('--strong-pct', (s / scaleMax * 100) + '%');
+        }
+        if (s <= w) {
+          errEl.textContent = '강점 기준은 약점 기준보다 높아야 합니다.';
+          errEl.style.display = 'block';
+          strongEl.style.borderColor = '#c0392b';
+          weakEl.style.borderColor   = '#c0392b';
+        } else if (s < scaleMin || s > scaleMax || w < scaleMin || w > scaleMax) {
+          errEl.textContent = `${scaleMin}~${scaleMax} 사이의 값을 입력해주세요.`;
+          errEl.style.display = 'block';
+          strongEl.style.borderColor = '#c0392b';
+          weakEl.style.borderColor   = '#c0392b';
+        } else {
+          errEl.style.display = 'none';
+          strongEl.style.borderColor = '';
+          weakEl.style.borderColor   = '';
+        }
+      };
+      div.querySelector('#score-weak-'   + groupId).addEventListener('input', updateZone);
+      div.querySelector('#score-strong-' + groupId).addEventListener('input', updateZone);
+      container.appendChild(div);
+    });
+  });
+
+  // 진단지 전체 문항이 서술형이라 점수화할 역량군이 하나도 없는 경우
+  if (container.children.length === 0) {
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#999;text-align:center;">
+        <div style="font-size:32px;margin-bottom:12px;">✍️</div>
+        <div style="font-size:14px;font-weight:600;color:#555;">진단지 전체 문항이 서술형으로 구성되어<br>역량 점수 기준 설정이 필요하지 않습니다.</div>
+      </div>
+    `;
+  }
+}
+
+function generateCourseTree() {
+  if (!selectedQuestionnaire) return;
+  const container = document.getElementById('courseTreeContainer');
+  container.innerHTML = '';
+  courseSettings = {};
+
+  selectedQuestionnaire.types.forEach(type => {
+    const typeNode = document.createElement('div');
+    typeNode.className = 'tree-node open';
+
+    const groupsHtml = type.groups.map((group, gidx) => {
+      const subsHtml = group.subs.map((sub, sidx) => {
+        const key = `${type.id}-g${gidx}-s${sidx}`;
+        courseSettings[key] = [];
+        return `
+          <div class="tree-sub-header" onclick="openCourseModal('${sub.name}', '${key}')">
+            <span class="tree-sub-label">${sub.name}</span>
+            <button class="tree-sub-btn" onclick="event.stopPropagation(); openCourseModal('${sub.name}', '${key}')">과정 설정</button>
+            <div class="tree-sub-courses" id="courses-${key}"></div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div style="margin-bottom:8px;">
+          <div style="padding:7px 16px;background:#f8f9fb;font-size:12px;font-weight:700;color:#444;border-top:1px solid #f0f2f5;">
+            ${group.name}
+          </div>
+          ${subsHtml}
+        </div>
+      `;
+    }).join('');
+
+    typeNode.innerHTML = `
+      <div class="tree-header" onclick="toggleTreeNode(this)">
+        <span class="tree-toggle">▶</span>
+        <span class="tree-label">${type.name}</span>
+      </div>
+      <div class="tree-body">${groupsHtml}</div>
+    `;
+    container.appendChild(typeNode);
+  });
+}
+
+function toggleTreeNode(headerEl) {
+  const node = headerEl.parentElement;
+  node.classList.toggle('open');
+}
+
+const COURSE_CATS = {
+  '직무공통': {
+    '리더십':        ['사람관리','성과관리','코칭/멘토링'],
+    '커뮤니케이션':  ['보고/설득','협상/조정'],
+    '비즈니스스킬':  ['기획/문서','데이터분석'],
+  },
+  '법정의무교육': {
+    '안전보건':   ['산업안전보건','중대재해예방'],
+    '인권/윤리':  ['성희롱예방','직장내괴롭힘예방','장애인인식개선'],
+    '정보보호':   ['개인정보보호'],
+  },
+  '신입/직무전환': {
+    '온보딩':  ['회사이해','비즈니스매너'],
+    'OA실무':  ['엑셀','문서작성'],
+  },
+};
+const COURSE_CATALOG = [
+  {name:'VUCA 시대 빛나는 코칭 리더십',          type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'코칭/멘토링'},
+  {name:'사람을 움직이는 사람관리의 기술',        type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'하마터면 꼰대가 될 뻔했다',              type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'성과를 만드는 목표관리(OKR)',            type:'온라인',  cat1:'직무공통',      cat2:'리더십',       cat3:'성과관리'},
+  {name:'설득의 보고서 작성법',                   type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'보고/설득'},
+  {name:'갈등을 줄이는 협상의 정석',              type:'온라인',  cat1:'직무공통',      cat2:'커뮤니케이션', cat3:'협상/조정'},
+  {name:'실무자를 위한 데이터 분석 입문',         type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'데이터분석'},
+  {name:'기획서 한 장으로 끝내기',               type:'온라인',  cat1:'직무공통',      cat2:'비즈니스스킬', cat3:'기획/문서'},
+  {name:'부서장 리더십',                          type:'오프라인',cat1:'직무공통',      cat2:'리더십',       cat3:'사람관리'},
+  {name:'개인정보보호 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'정보보호',     cat3:'개인정보보호'},
+  {name:'직장 내 괴롭힘 예방 교육',              type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'직장내괴롭힘예방'},
+  {name:'산업안전보건 교육',                      type:'온라인',  cat1:'법정의무교육',  cat2:'안전보건',     cat3:'산업안전보건'},
+  {name:'성희롱 예방 교육',                       type:'온라인',  cat1:'법정의무교육',  cat2:'인권/윤리',    cat3:'성희롱예방'},
+  {name:'신입사원 비즈니스 매너',                 type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'비즈니스매너'},
+  {name:'한 눈에 보는 우리 회사 이해',            type:'온라인',  cat1:'신입/직무전환', cat2:'온보딩',       cat3:'회사이해'},
+  {name:'실무 엑셀 마스터 과정',                  type:'온라인',  cat1:'신입/직무전환', cat2:'OA실무',       cat3:'엑셀'},
+];
+const courseData = {};
+let currentCourseKey = '';
+let currentCourseTitle = '';
+
+function openCourseModal(title, key) {
+  currentCourseKey = key;
+  currentCourseTitle = title;
+  document.getElementById('courseModalTitle').textContent = title;
+  document.getElementById('courseSearchInput').value = '';
+  const cat1El = document.getElementById('crsFilterCat1');
+  cat1El.innerHTML = '<option value="">대분류</option>' +
+    Object.keys(COURSE_CATS).map(k => `<option value="${k}">${k}</option>`).join('');
+  const cat2El = document.getElementById('crsFilterCat2');
+  cat2El.innerHTML = '<option value="">중분류</option>'; cat2El.style.display = 'none';
+  const cat3El = document.getElementById('crsFilterCat3');
+  cat3El.innerHTML = '<option value="">소분류</option>'; cat3El.style.display = 'none';
+  document.getElementById('crsFilterType').value = '';
+  searchCourses();
+  renderSelectedCourses();
+  openModal('courseModal');
+}
+
+function crsFilterCatChange(level) {
+  if (level === 1) {
+    const cat1 = document.getElementById('crsFilterCat1').value;
+    const cat2El = document.getElementById('crsFilterCat2');
+    const cat3El = document.getElementById('crsFilterCat3');
+    if (cat1 && COURSE_CATS[cat1]) {
+      cat2El.innerHTML = '<option value="">중분류</option>' +
+        Object.keys(COURSE_CATS[cat1]).map(k => `<option value="${k}">${k}</option>`).join('');
+      cat2El.style.display = '';
+    } else { cat2El.innerHTML = '<option value="">중분류</option>'; cat2El.style.display = 'none'; }
+    cat3El.innerHTML = '<option value="">소분류</option>'; cat3El.style.display = 'none';
+  } else if (level === 2) {
+    const cat1 = document.getElementById('crsFilterCat1').value;
+    const cat2 = document.getElementById('crsFilterCat2').value;
+    const cat3El = document.getElementById('crsFilterCat3');
+    if (cat2 && COURSE_CATS[cat1] && COURSE_CATS[cat1][cat2]) {
+      cat3El.innerHTML = '<option value="">소분류</option>' +
+        COURSE_CATS[cat1][cat2].map(k => `<option value="${k}">${k}</option>`).join('');
+      cat3El.style.display = '';
+    } else { cat3El.innerHTML = '<option value="">소분류</option>'; cat3El.style.display = 'none'; }
+  }
+  searchCourses();
+}
+
+function searchCourses() {
+  const cat1 = document.getElementById('crsFilterCat1').value;
+  const cat2 = document.getElementById('crsFilterCat2').value;
+  const cat3 = document.getElementById('crsFilterCat3').value;
+  const type = document.getElementById('crsFilterType').value;
+  const q = document.getElementById('courseSearchInput').value.trim().toLowerCase();
+  const results = COURSE_CATALOG.filter(c => {
+    if (cat1 && c.cat1 !== cat1) return false;
+    if (cat2 && c.cat2 !== cat2) return false;
+    if (cat3 && c.cat3 !== cat3) return false;
+    if (type && c.type !== type) return false;
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  renderCourseCatalog(results);
+}
+
+function renderCourseCatalog(list) {
+  const selected = courseData[currentCourseKey] || [];
+  document.getElementById('courseResultCount').textContent = list.length;
+  const el = document.getElementById('courseCandidateList');
+  if (!list.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:#aaa;">검색 결과가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c => {
+    const isAdded = selected.includes(c.name);
+    const badgeColor = c.type === '온라인' ? '#1a73e8' : '#7c3aed';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #f0f2f5;font-size:12px;gap:8px;">
+      <span style="display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;background:${badgeColor};color:#fff;white-space:nowrap;flex-shrink:0;">${c.type}</span>
+      <span style="flex:1;color:#333;">${c.name}</span>
+      <button onclick="addCourseItem('${c.name.replace(/'/g,"\\'")}')"
+              style="height:24px;padding:0 10px;font-size:11px;border-radius:3px;cursor:pointer;font-family:inherit;
+                     background:${isAdded?'#eef2ff':'var(--primary)'};color:${isAdded?'#888':'#fff'};
+                     border:1px solid ${isAdded?'#ccd3f0':'var(--primary)'};white-space:nowrap;"
+              ${isAdded?'disabled':''}>
+        ${isAdded?'추가됨':'+ 추가'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function addCourseItem(name) {
+  if (!courseData[currentCourseKey]) courseData[currentCourseKey] = [];
+  const list = courseData[currentCourseKey];
+  if (!list.includes(name)) { list.push(name); renderSelectedCourses(); searchCourses(); }
+}
+
+function removeCourseItem(name) {
+  if (courseData[currentCourseKey])
+    courseData[currentCourseKey] = courseData[currentCourseKey].filter(c => c !== name);
+  renderSelectedCourses(); searchCourses();
+}
+
+function clearAllCourses() {
+  courseData[currentCourseKey] = [];
+  renderSelectedCourses(); searchCourses();
+}
+
+function renderSelectedCourses() {
+  const list = courseData[currentCourseKey] || [];
+  document.getElementById('selectedCourseCount').textContent = list.length;
+  const el = document.getElementById('selectedCourseList');
+  if (!list.length) {
+    el.innerHTML = '<div style="font-size:12px;color:#bbb;padding:12px 4px;text-align:center;">추가된 과정이 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = list.map(c =>
+    `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fff;border:1px solid #e2e6f0;border-radius:4px;margin-bottom:4px;font-size:12px;">
+      <span style="flex:1;color:#1a2e5c;word-break:keep-all;">${c}</span>
+      <button onclick="removeCourseItem('${c.replace(/'/g,"\\'")}');"
+              style="width:18px;height:18px;border-radius:50%;border:1px solid #ccc;background:#f5f5f5;color:#888;font-size:12px;cursor:pointer;line-height:1;flex-shrink:0;font-family:inherit;">×</button>
+    </div>`
+  ).join('');
+}
+
+function renderCoursePills(key, title, list) {
+  const div = document.getElementById(`courses-${key}`);
+  if (!div) return;
+  if (list.length === 0) { div.innerHTML = ''; return; }
+  if (list.length <= 2) {
+    div.innerHTML = list.map(c => `<span class="course-pill">${c}</span>`).join('');
+    return;
+  }
+  // 3개 이상: 첫 1개 + "+N개 더" 뱃지
+  const safeTitle = title.replace(/'/g, "\\'");
+  div.innerHTML = `<span class="course-pill">${list[0]}</span><span class="course-more-badge" onclick="event.stopPropagation();openCourseModal('${safeTitle}','${key}')">+${list.length - 1}개 더</span>`;
+}
+
+function saveCourse() {
+  const list = courseData[currentCourseKey] || [];
+  renderCoursePills(currentCourseKey, currentCourseTitle, list);
+  showToast('과정 설정이 저장되었습니다.');
+  closeModal('courseModal');
+}
+
+function generateStep4Tabs() {
+  if (!selectedQuestionnaire) return;
+  const tabGroup = document.getElementById('step4TabGroup');
+  const tabPanesContainer = document.getElementById('step4TabPanes');
+  tabGroup.innerHTML = '';
+  tabPanesContainer.innerHTML = '';
+
+  // 상시진단이면 안내 카드만 표시
+  if (selectedDiagnosticType === '상시') {
+    tabGroup.innerHTML = '';
+    tabPanesContainer.innerHTML = `
+      <div style="padding:32px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:16px;font-weight:700;color:#2a3a6a;margin-bottom:12px;">전체 임직원이 실시간으로 자동 대상입니다</div>
+        <div style="font-size:13px;color:#4a5a8a;line-height:1.6;">
+          신규 입사자도 자동으로 진단 대상에 포함되며, 별도 대상자 등록이 필요하지 않습니다.<br>
+          진단기간 내에 모든 임직원이 자유롭게 응시할 수 있습니다.
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const tabs = [];
+  RESP_ROLES.forEach(role => {
+    if (respondentSettings[role.key]) {
+      tabs.push({ name: role.name, key: role.key, id: role.key });
+    }
+  });
+
+  tabs.forEach((tab, idx) => {
+    const tabEl = document.createElement('div');
+    tabEl.className = `tab ${idx === 0 ? 'active' : ''}`;
+    tabEl.textContent = tab.name;
+    tabEl.dataset.tabid = tab.id;
+    tabEl.onclick = () => switchStep4Tab(idx);
+    tabGroup.appendChild(tabEl);
+
+    const isSelf = tab.key === '본인';
+    const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
+      const respCell = isSelf
+        ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
+        : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tab.name}')">설정</button>`;
+      return `<tr>
+        <td><input type="checkbox"></td>
+        <td>${ri+1}</td>
+        <td class="name-col">${t.name}</td>
+        <td>${t.empno}</td>
+        <td>${t.dept}</td>
+        <td>팀장</td>
+        <td>${respCell}</td>
+      </tr>`;
+    }).join('');
+
+    const paneEl = document.createElement('div');
+    paneEl.className = `tab-pane ${idx === 0 ? 'active' : ''}`;
+    paneEl.innerHTML = `
+      <div class="toolbar">
+        <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">${MK_DIAG_TARGETS.length}</strong>명 등록됨</div>
+        <div class="spacer"></div>
+        <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
+        <button class="btn btn-gray btn-sm" onclick="openTargetBulkModal(${idx})">일괄 등록</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddTargetModal(${idx})">대상자 등록</button>
+      </div>
+      <div style="overflow-x:auto;flex:1;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" onclick="toggleTabTableSelect(${idx}, this)"></th>
+              <th style="width:40px;">No</th>
+              <th class="name-col">이름</th>
+              <th style="width:100px;">사번</th>
+              <th style="width:120px;">부서/팀</th>
+              <th style="width:80px;">직급</th>
+              <th style="width:110px;">응답자</th>
+            </tr>
+          </thead>
+          <tbody id="targets-${idx}">${sampleRows}</tbody>
+        </table>
+      </div>
+    `;
+    tabPanesContainer.appendChild(paneEl);
+  });
+}
+
+function switchStep4Tab(idx) {
+  document.querySelectorAll('#step4TabGroup .tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('#step4TabPanes .tab-pane').forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+}
+
+
+function openBulkUploadModal() {
+  openModal('bulkUploadModal');
+}
+
+function downloadTemplate() {
+  const wb = XLSX.utils.book_new();
+
+  /* ── Sheet 1: 업로드 템플릿 ── */
+  const s1 = [
+    ['세부유형코드', '세부유형명', '과정명', '과정아이디'],
+    ['LC_G01_01', '[Self역량군] 전략적 사고', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
+    ['LC_G01_02', '[Self역량군] 의사결정 능력', '사람을 움직이는 사람관리의 기술', 'C002'],
+    ['LC_G02_01', '[People역량군] 비전 및 목표 설정', '성과를 만드는 목표관리(OKR)', 'C003'],
+  ];
+  const ws1 = XLSX.utils.aoa_to_sheet(s1);
+  ws1['!cols'] = [{wch:14},{wch:22},{wch:36},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, ws1, '업로드_템플릿');
+
+  /* ── Sheet 2: 코드표 ── */
+  const q = selectedQuestionnaire || QUESTIONNAIRES[0];
+  const s2 = [['세부유형코드', '세부유형명']];
+  q.types.forEach(type => {
+    type.groups.forEach((group, gidx) => {
+      group.subs.forEach((sub, sidx) => {
+        s2.push([
+          `${type.id}_G${String(gidx+1).padStart(2,'0')}_${String(sidx+1).padStart(2,'0')}`,
+          `[${group.name}] ${sub.name}`,
+        ]);
+      });
+    });
+  });
+  const ws2 = XLSX.utils.aoa_to_sheet(s2);
+  ws2['!cols'] = [{wch:14},{wch:26}];
+  XLSX.utils.book_append_sheet(wb, ws2, '코드표');
+
+  XLSX.writeFile(wb, '추천과정_업로드_템플릿.xlsx');
+  showToast('템플릿이 다운로드됩니다.');
+}
+
+function uploadBulkFile() {
+  showToast('파일이 업로드되었습니다.');
+  closeModal('bulkUploadModal');
+}
+
+function openTargetBulkModal(tabIdx) {
+  if (!hasDraftSaved) { showToast('대상자 등록은 임시저장을 먼저 진행해야 사용할 수 있습니다.'); return; }
+  _currentTargetTabIdx = tabIdx;
+  openModal('targetBulkModal');
+}
+
+let _targetPreviewTick = 0;
+function targetBulkPreview() {
+  const input = document.getElementById('targetBulkFile');
+  const file = input ? input.files[0] : null;
+  if (!file) { alert('엑셀파일을 등록해주세요.'); return; }
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    alert('엑셀파일을 등록해주세요.');
+    input.value = '';
+    const nameEl = document.getElementById('targetBulkFileName');
+    if (nameEl) nameEl.textContent = '';
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('파일 용량이 10MB를 초과합니다.');
+    input.value = '';
+    const nameEl = document.getElementById('targetBulkFileName');
+    if (nameEl) nameEl.textContent = '';
+    return;
+  }
+  const isError = (++_targetPreviewTick % 2 === 1);
+  const resultEl = document.getElementById('targetPreviewResult');
+  const errEl    = document.getElementById('targetPreviewErr');
+  const okEl     = document.getElementById('targetPreviewOk');
+  if (resultEl) resultEl.style.display = 'block';
+  if (errEl)    errEl.style.display    = isError ? 'block' : 'none';
+  if (okEl)     okEl.style.display     = isError ? 'none'  : 'block';
+  const submitBtn = document.getElementById('btnTargetBulkSubmit');
+  if (submitBtn) submitBtn.disabled = isError;
+}
+
+function uploadTargetBulkFile() {
+  showToast('총 OO명이 등록되었습니다.');
+  closeModal('targetBulkModal');
+}
+
+function downloadTargetTemplate() {
+  if (!selectedQuestionnaire) {
+    showToast('진단지를 먼저 선택해주세요.');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+  wb.Workbook = { Names: [] };
+
+  /* ── Sheet2: 코드표 (응답범위 코드표) ── */
+  const RESP_CODE = { '본인':'01', '상사':'02', '구성원':'03', '동료':'04' };
+  const activeRoles = RESP_ROLES.filter(r => respondentSettings[r.key]);
+  const s2Rows = [['응답범위', '응답범위코드']];
+  activeRoles.forEach(role => {
+    s2Rows.push([role.key, RESP_CODE[role.key]]);
+  });
+
+  const ws2 = XLSX.utils.aoa_to_sheet(s2Rows);
+  ws2['!cols'] = [{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws2, '코드표');
+
+  /* ── Named Ranges ── */
+  const nRoles = activeRoles.length;
+  if (nRoles > 0) {
+    wb.Workbook.Names.push({
+      Name: 'RESP_NAMES',
+      Ref: '코드표!$A$2:$A$' + (nRoles + 1)
+    });
+  }
+
+  /* ── Sheet1: 업로드 템플릿 ── */
+  const MAX_ROW = 200;
+  const headers = ['대상자 아이디','응답자 아이디','응답범위','응답범위코드'];
+  const hints   = ['예: hong@hunet.co.kr','예: kim@hunet.co.kr','드롭다운 선택','자동 입력 (수정 금지)'];
+  const ws1Data = [headers, hints];
+  for (let r = 3; r <= MAX_ROW; r++) {
+    ws1Data.push([
+      '', '', // A~B: 입력
+      '', // C: 드롭다운
+      { f: 'IF($C' + r + '="","",IFERROR(VLOOKUP($C' + r + ',코드표!$A:$B,2,FALSE),""))' } // D: VLOOKUP
+    ]);
+  }
+  const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
+  ws1['!cols'] = [{wch:26},{wch:26},{wch:14},{wch:16}];
+  ws1['!freeze'] = { xSplit: 0, ySplit: 2 }; // 2행 고정
+
+  // 데이터 유효성 (C열: 응답범위 드롭다운)
+  ws1['!dataValidation'] = [
+    {
+      sqref: 'C3:C' + MAX_ROW,
+      type: 'list',
+      formula1: 'RESP_NAMES',
+      allowBlank: true,
+      showErrorMessage: true,
+      errorTitle: '응답범위 오류',
+      error: '코드표의 응답범위를 선택해주세요.'
+    }
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws1, '업로드_템플릿');
+
+  // Sheet 순서: 업로드_템플릿 → 코드표
+  wb.SheetNames = ['업로드_템플릿', '코드표'];
+
+  XLSX.writeFile(wb, '대상자_일괄등록_템플릿.xlsx');
+  showToast('템플릿이 다운로드됩니다.');
+}
+
+function openAddTargetModal(tabIdx) {
+  if (!hasDraftSaved) { showToast('대상자 등록은 임시저장을 먼저 진행해야 사용할 수 있습니다.'); return; }
+  _currentTargetTabIdx = tabIdx;
+  if (typeof meOpenMemberSingleModal === 'function') {
+    meOpenMemberSingleModal();
+  } else {
+    showToast('대상자 등록 모듈을 불러오는 중입니다.');
+  }
+}
+
+function searchTargets() {
+  showToast('대상자를 검색합니다.');
+}
+
+function toggleSelectAll(checkbox) {
+  document.querySelectorAll('.target-check').forEach(cb => {
+    cb.checked = checkbox.checked;
+  });
+}
+
+function toggleTabTableSelect(tabIdx, checkbox) {
+  document.querySelectorAll(`#targets-${tabIdx} input[type=checkbox]`).forEach(cb => {
+    cb.checked = checkbox.checked;
+  });
+}
+
+function addSelectedTargets() {
+  showToast('대상자가 등록되었습니다.');
+  closeModal('addTargetModal');
+}
+
+/* ══ 응답자 등록 3패널 ══ */
+const MK_RESPONDENTS = {};   // key: "tabId:rowIdx" → [{empno,name,loginId,company,dept}, ...]
+const MK_DIAG_TARGETS = [
+  {name:'홍*동', meta:'팀장 · 인재개발팀', empno:'20230101', dept:'인재개발팀'},
+  {name:'김*수', meta:'팀장 · 전략기획팀', empno:'20210505', dept:'전략기획팀'},
+  {name:'이*희', meta:'팀장 · 마케팅팀',   empno:'20190812', dept:'마케팅팀'},
+];
+
+let _mkCurrentTabId = '';
+let _mkRowIdx = 0;
+let _mkTempList = [];
+let _mkFilteredPool = [];
+let _mkSplitItems = [];
+let _mkSplitSelIdx = -1;
+let _mkSplitMembers = [];
+
+function _mkKey() { return _mkCurrentTabId + ':' + _mkRowIdx; }
+
+function openRespondentModal(tabId, rowIdx, tabLabel) {
+  _mkCurrentTabId = tabId;
+  _mkRowIdx = rowIdx;
+  document.getElementById('respondentModalTitle').textContent = '응답자 추가 — ' + (tabLabel || tabId);
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  _mkInitModal();
+  openModal('respondentModal');
+}
+
+function _mkInitModal() {
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-person-name').textContent = target ? target.name : '';
+  document.getElementById('mk-person-meta').textContent = target ? target.meta : '';
+
+  // 진단 유형 목록 (역할 탭 구조에서는 불필요 — 섹션 숨김)
+  const typeList = document.getElementById('mk-type-list');
+  typeList.innerHTML = '';
+  const typeSection = typeList.previousElementSibling;
+  if (typeSection) typeSection.style.display = 'none';
+
+  document.getElementById('mk-center-title').textContent = _mkCurrentTabId + ' 응답자 설정 — ' + (target ? target.name : '');
+
+  // 탭 초기화
+  document.querySelectorAll('.mk-resp-tab').forEach(t => {
+    const first = t.dataset.tab === '개별';
+    t.style.borderBottom = first ? '2px solid var(--primary)' : '2px solid transparent';
+    t.style.color = first ? 'var(--primary)' : '#888';
+    t.style.fontWeight = first ? '700' : 'normal';
+  });
+  document.getElementById('mk-panel-single').style.display = 'flex';
+  document.getElementById('mk-panel-split').style.display = 'none';
+  document.getElementById('mk-search-row').style.display = 'flex';
+  document.getElementById('mk-search-keyword').value = '';
+  document.getElementById('mk-search-company').value = '';
+  document.getElementById('mk-search-type').value = 'name';
+
+  _mkRenderMemberList();
+  _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []);
+  _mkRenderPool();
+  _mkRenderReg();
+}
+
+function _mkGetTypes() {
+  return [];
+}
+
+function _mkRenderMemberList() {
+  const el = document.getElementById('mk-member-list');
+  el.innerHTML = MK_DIAG_TARGETS.map((t, i) => {
+    const active = i === _mkRowIdx;
+    const cnt = (MK_RESPONDENTS[_mkCurrentTabId + ':' + i] || []).length;
+    return `<div onclick="mkRespSelectMember(${i})" style="padding:8px 14px;font-size:12px;cursor:pointer;border-left:3px solid ${active?'var(--primary)':'transparent'};color:${active?'var(--primary)':'#444'};font-weight:${active?'700':'normal'};background:${active?'#f0f4ff':''};display:flex;align-items:center;gap:5px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:${active?'var(--primary)':'#ddd'};flex-shrink:0;"></span>
+      <span>${t.name}</span>
+      ${cnt>0?`<span style="margin-left:auto;font-size:10px;color:var(--primary);font-weight:700;">${cnt}명</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function mkRespSelectMember(rowIdx) {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];
+  _mkRowIdx = rowIdx;
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-person-name').textContent = target ? target.name : '';
+  document.getElementById('mk-person-meta').textContent = target ? target.meta : '';
+  document.getElementById('mk-center-title').textContent = _mkCurrentTabId.replace('-',' ') + ' 응답자 설정 — ' + (target ? target.name : '');
+  _mkRenderMemberList();
+  _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []);
+  _mkRenderPool();
+  _mkRenderReg();
+}
+
+function mkRespSelectType(el) {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];
+  _mkCurrentTabId = el.dataset.tabid;
+  _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
+  document.querySelectorAll('.mk-type-item').forEach(e => {
+    const active = e.dataset.tabid === _mkCurrentTabId;
+    e.style.borderLeftColor = active ? 'var(--primary)' : 'transparent';
+    e.style.color = active ? 'var(--primary)' : '#444';
+    e.style.fontWeight = active ? '700' : 'normal';
+    e.style.background = active ? '#f0f4ff' : '';
+  });
+  const target = MK_DIAG_TARGETS[_mkRowIdx];
+  document.getElementById('mk-center-title').textContent = _mkCurrentTabId.replace('-',' ') + ' 응답자 설정 — ' + (target ? target.name : '');
+  _mkRenderMemberList();
+  _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []);
+  _mkRenderPool();
+  _mkRenderReg();
+}
+
+function _mkFilterPool(members) {
+  const company = document.getElementById('mk-search-company').value;
+  const type    = document.getElementById('mk-search-type').value;
+  const kw      = document.getElementById('mk-search-keyword').value.trim().toLowerCase();
+  _mkFilteredPool = members.filter(m => {
+    if (company && m.company !== company) return false;
+    if (kw) {
+      const val = type === 'empno' ? m.empno : (type === 'dept' ? m.dept : m.name);
+      if (!(val||'').toLowerCase().includes(kw)) return false;
+    }
+    return true;
+  });
+}
+
+function mkRespSearch() { _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []); _mkRenderPool(); }
+function mkRespSearchAll() {
+  document.getElementById('mk-search-keyword').value = '';
+  document.getElementById('mk-search-company').value = '';
+  mkRespSearch();
+}
+
+function _mkRenderPool() {
+  const tbody = document.getElementById('mk-pool-tbody');
+  document.getElementById('mk-pool-info').textContent = '총 ' + _mkFilteredPool.length + '명';
+  document.getElementById('mk-sel-count').textContent = '0';
+  document.getElementById('mk-pool-chk-all').checked = false;
+  if (!_mkFilteredPool.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;">검색 결과가 없습니다.</td></tr>'; return;
+  }
+  const maskN = typeof _mbr_maskN === 'function' ? _mbr_maskN : n => n;
+  const maskL = typeof _mbr_maskL === 'function' ? _mbr_maskL : l => l;
+  tbody.innerHTML = _mkFilteredPool.map((m, i) => {
+    const isReg = _mkTempList.some(r => r.empno === m.empno);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
+      <td style="text-align:center;padding:5px 4px;">${isReg
+        ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
+        : `<input type="checkbox" class="mk-pool-chk" data-idx="${i}" onchange="mkRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}
+      </td>
+      <td style="padding:5px 8px;"><strong>${maskN(m.name)}</strong></td>
+      <td style="padding:5px 8px;font-size:11px;color:#666;">${maskL(m.loginId||'')}</td>
+      <td style="padding:5px 8px;">${m.empno}</td>
+      <td style="padding:5px 8px;">${m.company||''}</td>
+      <td style="padding:5px 8px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg?'':`<button onclick="mkRespAddOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+function mkRespOnPoolCheck() {
+  const cnt = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
+  document.getElementById('mk-sel-count').textContent = cnt;
+  const all = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk');
+  document.getElementById('mk-pool-chk-all').checked = all.length > 0 && cnt === all.length;
+}
+function mkRespToggleAllPool(checked) {
+  document.querySelectorAll('#mk-pool-tbody .mk-pool-chk').forEach(c => c.checked = checked);
+  document.getElementById('mk-sel-count').textContent = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
+}
+function mkRespAddOne(idx) {
+  const m = _mkFilteredPool[idx];
+  if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
+  _mkTempList.push(m); _mkRenderPool(); _mkRenderReg();
+}
+function mkRespAddChecked() {
+  const checked = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked');
+  if (!checked.length) { showToast('추가할 응답자를 선택하세요.'); return; }
+  let added = 0;
+  checked.forEach(cb => {
+    const m = _mkFilteredPool[+cb.dataset.idx];
+    if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
+  });
+  _mkRenderPool(); _mkRenderReg();
+  showToast(added ? added + '명이 응답자로 추가되었습니다.' : '이미 추가된 응답자입니다.');
+}
+
+function _mkRenderReg() {
+  const tbody = document.getElementById('mk-reg-tbody');
+  document.getElementById('mk-reg-count').textContent = _mkTempList.length;
+  document.getElementById('mk-reg-chk-all').checked = false;
+  const maskN = typeof _mbr_maskN === 'function' ? _mbr_maskN : n => n;
+  if (!_mkTempList.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">등록된 응답자가 없습니다.</td></tr>'; return;
+  }
+  tbody.innerHTML = _mkTempList.map((m, i) => `
+    <tr>
+      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;"><input type="checkbox" class="mk-reg-chk" style="cursor:pointer;accent-color:var(--primary);"></td>
+      <td style="padding:4px 6px;border:1px solid #e8d88a;"><strong>${maskN(m.name)}</strong></td>
+      <td style="padding:4px 6px;border:1px solid #e8d88a;color:#666;font-size:11px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:4px 3px;border:1px solid #e8d88a;"><button onclick="mkRespDelOne(${i})" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:14px;line-height:1;">×</button></td>
+    </tr>`).join('');
+}
+
+function mkRespDelOne(idx) { _mkTempList.splice(idx,1); _mkRenderPool(); _mkRenderReg(); }
+function mkRespToggleAllReg(checked) { document.querySelectorAll('#mk-reg-tbody .mk-reg-chk').forEach(c=>c.checked=checked); }
+function mkRespDelSelected() {
+  const indices = [...document.querySelectorAll('#mk-reg-tbody .mk-reg-chk:checked')]
+    .map(cb => [...document.querySelectorAll('#mk-reg-tbody tr')].indexOf(cb.closest('tr'))).sort((a,b)=>b-a);
+  if (!indices.length) { showToast('삭제할 응답자를 선택하세요.'); return; }
+  indices.forEach(i => _mkTempList.splice(i,1));
+  _mkRenderPool(); _mkRenderReg();
+}
+
+function mkRespSelectTab(el) {
+  document.querySelectorAll('.mk-resp-tab').forEach(t => {
+    t.style.borderBottom = '2px solid transparent'; t.style.color = '#888'; t.style.fontWeight = 'normal';
+  });
+  el.style.borderBottom = '2px solid var(--primary)'; el.style.color = 'var(--primary)'; el.style.fontWeight = '700';
+  const tab = el.dataset.tab;
+  const single = document.getElementById('mk-panel-single');
+  const split  = document.getElementById('mk-panel-split');
+  const srow   = document.getElementById('mk-search-row');
+  if (tab === '개별') {
+    single.style.display = 'flex'; split.style.display = 'none'; srow.style.display = 'flex';
+  } else {
+    single.style.display = 'none'; split.style.display = 'flex'; srow.style.display = 'none';
+    _mkLoadSplit(tab);
+  }
+}
+
+function _mkFlattenDept(nodes, depth) {
+  const res = [];
+  (nodes||[]).forEach(n => {
+    res.push({label:'　'.repeat(depth||0)+n.name, members:n.members||[]});
+    if (n.children && n.children.length) res.push(..._mkFlattenDept(n.children,(depth||0)+1));
+  });
+  return res;
+}
+
+function _mkLoadSplit(tab) {
+  _mkSplitSelIdx = -1; _mkSplitMembers = [];
+  const deptTree = typeof MBR_DEPT_TREE !== 'undefined' ? MBR_DEPT_TREE : [];
+  const mbrData  = typeof MBR_DATA !== 'undefined' ? MBR_DATA : {grade:[],position:[],job:[],jobgroup:[]};
+  const tgtTypes = typeof MBR_TARGET_TYPES !== 'undefined' ? MBR_TARGET_TYPES : [];
+  if      (tab==='부서별')    _mkSplitItems = _mkFlattenDept(deptTree, 0);
+  else if (tab==='직급별')    _mkSplitItems = mbrData.grade.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직책별')    _mkSplitItems = mbrData.position.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직무별')    _mkSplitItems = mbrData.job.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='직군별')    _mkSplitItems = mbrData.jobgroup.map(g=>({label:g.label,members:g.members}));
+  else if (tab==='대상구분별') _mkSplitItems = tgtTypes.map(t=>({label:t.typeName,members:t.divs.flatMap(d=>d.members)}));
+  _mkRenderSplitLeft();
+  _mkRenderSplitRight([]);
+  document.getElementById('mk-split-info').textContent = '항목을 선택하세요.';
+}
+
+function _mkRenderSplitLeft() {
+  document.getElementById('mk-split-left').innerHTML = _mkSplitItems.map((item,i) =>
+    `<div onclick="mkRespSelectSplitItem(${i})" style="padding:7px 10px;font-size:12px;cursor:pointer;border-left:3px solid ${i===_mkSplitSelIdx?'var(--primary)':'transparent'};color:${i===_mkSplitSelIdx?'var(--primary)':'#333'};background:${i===_mkSplitSelIdx?'#f0f4ff':''};border-bottom:1px solid #eee;word-break:keep-all;">${item.label}</div>`
+  ).join('');
+}
+
+function mkRespSelectSplitItem(idx) {
+  _mkSplitSelIdx = idx; _mkSplitMembers = _mkSplitItems[idx].members||[];
+  _mkRenderSplitLeft(); _mkRenderSplitRight(_mkSplitMembers);
+  document.getElementById('mk-split-info').textContent = _mkSplitItems[idx].label.trim()+' — '+_mkSplitMembers.length+'명';
+}
+
+function _mkRenderSplitRight(members) {
+  const tbody = document.getElementById('mk-split-tbody');
+  document.getElementById('mk-split-chk-all').checked = false;
+  const maskN = typeof _mbr_maskN === 'function' ? _mbr_maskN : n=>n;
+  const maskL = typeof _mbr_maskL === 'function' ? _mbr_maskL : l=>l;
+  if (!members.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#bbb;padding:20px 8px;font-size:11px;">항목을 선택하세요.</td></tr>'; return;
+  }
+  tbody.innerHTML = members.map((m,i) => {
+    const isReg = _mkTempList.some(r=>r.empno===m.empno);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
+      <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':`<input type="checkbox" class="mk-split-chk" data-idx="${i}" style="cursor:pointer;accent-color:var(--primary);">`}</td>
+      <td style="padding:5px 8px;"><strong>${maskN(m.name)}</strong></td>
+      <td style="padding:5px 8px;font-size:11px;color:#666;">${maskL(m.loginId||'')}</td>
+      <td style="padding:5px 8px;">${m.empno}</td>
+      <td style="padding:5px 8px;">${m.company||''}</td>
+      <td style="padding:5px 8px;">${m.dept||''}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg?'':`<button onclick="mkRespAddSplitOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+function mkRespToggleAllSplit(checked) { document.querySelectorAll('#mk-split-tbody .mk-split-chk').forEach(c=>c.checked=checked); }
+function mkRespAddSplitOne(idx) {
+  const m = _mkSplitMembers[idx];
+  if (!m||_mkTempList.some(r=>r.empno===m.empno)){showToast('이미 추가된 응답자입니다.');return;}
+  _mkTempList.push(m); _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
+}
+function mkRespAddSplitChecked() {
+  const checked = document.querySelectorAll('#mk-split-tbody .mk-split-chk:checked');
+  if (!checked.length){showToast('추가할 응답자를 선택하세요.');return;}
+  let added=0;
+  checked.forEach(cb=>{const m=_mkSplitMembers[+cb.dataset.idx];if(m&&!_mkTempList.some(r=>r.empno===m.empno)){_mkTempList.push(m);added++;}});
+  _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
+  showToast(added?added+'명이 응답자로 추가되었습니다.':'이미 추가된 응답자입니다.');
+}
+
+function mkRespSave() {
+  MK_RESPONDENTS[_mkKey()] = [..._mkTempList];
+  // 테이블 셀 업데이트
+  const tabIdx = _mkGetTabIdxFromTabId(_mkCurrentTabId);
+  if (tabIdx >= 0) {
+    const rows = document.querySelectorAll(`#targets-${tabIdx} tr`);
+    if (rows[_mkRowIdx]) {
+      const lastCell = rows[_mkRowIdx].cells[rows[_mkRowIdx].cells.length - 1];
+      if (lastCell) {
+        const cnt = _mkTempList.length;
+        lastCell.innerHTML = cnt > 0
+          ? `<a class="resp-count-link" onclick="openRespondentModal('${_mkCurrentTabId}',${_mkRowIdx})">${cnt}명</a>`
+          : `<button class="resp-set-btn" onclick="openRespondentModal('${_mkCurrentTabId}',${_mkRowIdx})">설정</button>`;
+      }
+    }
+  }
+  showToast('응답자 설정이 저장되었습니다.');
+  closeModal('respondentModal');
+}
+
+function _mkGetTabIdxFromTabId(tabId) {
+  let idx = -1;
+  document.querySelectorAll('#step4TabGroup .tab').forEach((t, i) => {
+    if (t.dataset.tabid === tabId) idx = i;
+  });
+  return idx;
+}
+
+function deleteSelectedTargets(tabIdx) {
+  showToast('선택된 대상자가 삭제되었습니다.');
+}
+
+function exportTargetExcel(tabIdx) {
+}
+
+function previewDiagnosis() {
+  showToast('미리보기 페이지로 이동합니다.');
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('open');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('open');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2000);
+}
+
+function updateBottomButtons() {
+  // 버튼이 각 카드 foot으로 이동됨 — 별도 업데이트 불필요
+}
+
+function saveDraft() {
+  if (!selectedDiagnosticId) {
+    showToast('진단지를 선택해야 임시저장할 수 있습니다.');
+    return;
+  }
+  hasDraftSaved = true;
+  const msg = document.getElementById('draftSavedMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2500);
+  showToast('임시저장 되었습니다.');
+}
+
+function openDiagnosisPreview() {
+  // STEP 1에서 선택된 진단지 데이터를 sessionStorage에 저장 후 미리보기 페이지 오픈
+  const q = selectedQuestionnaire;
+  if (!q) {
+    showToast('진단지를 먼저 선택해주세요. (STEP 2)');
+    return;
+  }
+
+  // 미리보기에 필요한 형태로 데이터 가공
+  const payload = {
+    name: q.name,
+    types: q.types.map(t => ({
+      name: t.name,
+      qCount: t.groups.reduce((s, g) => s + g.subs.reduce((ss, sub) => ss + (sub.questions?.length || 0), 0), 0),
+      groups: t.groups.map(g => ({
+        name: g.name,
+        qCount: g.subs.reduce((s, sub) => s + (sub.questions?.length || 0), 0),
+        subs: g.subs.map(sub => ({
+          name: sub.name,
+          scale: sub.scale || '5점 척도',
+          questions: sub.questions || []
+        }))
+      }))
+    }))
+  };
+
+  try {
+    sessionStorage.setItem('previewQuestionnaire', JSON.stringify(payload));
+  } catch(e) {}
+  window.open('진단_응답_화면.html', '_blank');
+}
+
+function generateStep7Review() {
+  const container = document.getElementById('step7ReviewContainer');
+  if (!container) return;
+
+  const diagName  = document.getElementById('diagNameInput')?.value?.trim() || '(미입력)';
+  const startDate = document.getElementById('diagStartDate')?.value || '';
+  const startTime = document.getElementById('diagStartTime')?.value || '';
+  const endDate   = document.getElementById('diagEndDate')?.value || '';
+  const endTime   = document.getElementById('diagEndTime')?.value || '';
+  const period    = (startDate || endDate)
+    ? `${startDate}${startTime ? ' ' + startTime : ''} ~ ${endDate}${endTime ? ' ' + endTime : ''}`
+    : '(미입력)';
+
+  const qName = selectedQuestionnaire ? selectedQuestionnaire.name : '(미선택)';
+
+  const selectedRoles = [];
+  RESP_ROLES.forEach(role => {
+    if (respondentSettings[role.key]) selectedRoles.push(role.name);
+  });
+
+  const totalCourses = Object.values(courseData).reduce((s, arr) => s + arr.length, 0);
+
+  const responseCountChecked = document.querySelector('input[name="responseCount"]:checked');
+  const responseCountText = responseCountChecked ? (responseCountChecked.value === '1' ? '1회만' : '무제한') : '';
+
+  const meta = stepDisplayMeta();
+  const allRows = [
+    { step: 1, label: '진단 유형 선택',    value: selectedDiagnosticType === '상시' ? '상시진단' : '범용진단' },
+    { step: 2, label: '진단지 선택',      value: qName },
+    { step: 3, label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)' },
+    { step: 4, label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨' },
+    { step: 5, label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정` },
+    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${period}` + (selectedDiagnosticType === '상시' ? ` / 응답 허용 횟수: ${responseCountText}` : '') },
+    { step: 7, label: selectedDiagnosticType === '상시' ? '대상자 범위' : '응답자 등록',
+      value: selectedDiagnosticType === '상시' ? '전체 임직원(신규입사자 포함)' : '유형별 응답자 등록됨' },
+  ];
+  // 완전히 잠긴 STEP만 "보기"로 표시, 그 외(부분수정 포함)는 "수정"으로 표시
+  const currentLocked = (STEP_LOCK_MAP[_diagStatus]?.[selectedDiagnosticType] || []);
+  const rows = allRows
+    .filter(r => !meta.hidden.includes(r.step))
+    .map(r => ({
+      ...r,
+      stepLabel: 'STEP ' + meta.map[r.step],
+      target: r.step,
+      btnLabel: (_diagStatus !== 'before' && currentLocked.includes(r.step)) ? '보기' : '수정',
+    }));
+
+  container.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;">
+      ${rows.map(r => `
+        <tr style="border-bottom:1px solid #f0f2f5;">
+          <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.stepLabel}</td>
+          <td style="width:160px;padding:14px 0;font-size:13px;font-weight:700;color:#1a1a2e;">${r.label}</td>
+          <td style="padding:14px 16px;font-size:13px;color:#555;">${r.value}</td>
+          <td style="width:60px;padding:14px 0;text-align:right;">
+            <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">${r.btnLabel}</button>
+          </td>
+        </tr>`).join('')}
+    </table>
+  `;
+}
+
+function createDiagnosis() {
+  if (!selectedDiagnosticId) { showToast('진단지를 선택해주세요.'); return; }
+  const diagName = document.getElementById('diagNameInput')?.value?.trim();
+  if (!diagName) { showToast('진단명을 입력해주세요.'); return; }
+  if (!validateDates()) return;
+  if (!validateScores()) return;
+  showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
+  setTimeout(() => { location.href = 'edms_역량진단_관리_상시진단.html'; }, 1400);
+}
+
+function validateScores() {
+  if (!selectedQuestionnaire) return true;
+  let valid = true;
+  selectedQuestionnaire.types.forEach(type => {
+    type.groups.forEach((group, gidx) => {
+      const groupId = `${type.id}-${gidx}`;
+      const s = +document.getElementById('score-strong-' + groupId)?.value;
+      const w = +document.getElementById('score-weak-'   + groupId)?.value;
+      if (s <= w) { showToast('강점 기준은 약점 기준보다 높아야 합니다.'); valid = false; }
+    });
+  });
+  return valid;
+}
+
+function validateDates() {
+  const startDate = document.getElementById('diagStartDate').value;
+  const startTime = document.getElementById('diagStartTime').value;
+  const endDate   = document.getElementById('diagEndDate').value;
+  const endTime   = document.getElementById('diagEndTime').value;
+  if (!startDate || !endDate) {
+    showToast('시작일시와 종료일시를 모두 입력해주세요.');
+    return false;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(startDate + (startTime ? 'T' + startTime : 'T00:00'));
+  const end   = new Date(endDate   + (endTime   ? 'T' + endTime   : 'T23:59'));
+  if (start < today) {
+    showToast('진단 시작일은 오늘 이후(오늘 포함) 날짜여야 합니다.');
+    return false;
+  }
+  if (end < start) {
+    showToast('종료일시는 시작일시보다 이후 날짜여야 합니다.');
+    return false;
+  }
+  return true;
+}
+
+function nextStep() {
+  if (currentStep === 2 && !selectedDiagnosticId) {
+    showToast('진단지를 선택해주세요.');
+    return;
+  }
+  if (currentStep === 3) {
+    let anySelected = false;
+    RESP_ROLES.forEach(role => {
+      if (respondentSettings[role.key]) anySelected = true;
+    });
+    if (!anySelected) { showToast('응답자 유형을 1개 이상 선택해주세요.'); return; }
+  }
+  if (currentStep === 4 && !validateScores()) return;
+  if (currentStep === 6 && !validateDates()) return;
+  if (currentStep === 7) {
+    const allTabs = document.querySelectorAll('#step4TabGroup .tab');
+    let valid = true;
+    allTabs.forEach((tab, idx) => {
+      const rows = document.querySelectorAll(`#targets-${idx} tr`);
+      if (rows.length === 0) valid = false;
+    });
+    if (!valid) { showToast('대상자를 1명 이상 등록해주세요.'); return; }
+  }
+  const next = getAdjacentStep(currentStep, 1);
+  if (next <= 8) {
+    maxReachedStep = Math.max(maxReachedStep, next);
+    currentStep = next;
+    goToStep(currentStep);
+  }
+}
+
+function prevStep() {
+  const prev = getAdjacentStep(currentStep, -1);
+  if (prev >= 1) {
+    currentStep = prev;
+    goToStep(currentStep);
+  }
+}
+
+function goToStep(step) {
+  const meta = stepDisplayMeta();
+  if (step < 1 || step > 8 || meta.hidden.includes(step)) return;
+  if (step > maxReachedStep) {
+    showToast('이전 단계를 완료한 후 이동할 수 있습니다.');
+    return;
+  }
+  document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+  document.getElementById(`step-content-${step}`).classList.add('active');
+
+  // wiz-aside step item 상태 업데이트
+  for (let i = 1; i <= 8; i++) {
+    const el = document.getElementById(`wiz-step-${i}`);
+    if (!el) continue;
+    el.classList.remove('is-active', 'is-done');
+    const badge = el.querySelector('.wiz-step-badge');
+    const dispNum = meta.map[i] || i;
+    if (i < step) {
+      el.classList.add('is-done');
+      badge.textContent = '✓';
+    } else if (i === step) {
+      el.classList.add('is-active');
+      badge.textContent = dispNum;
+    } else {
+      badge.textContent = dispNum;
+    }
+  }
+  applyStepVisibility();
+
+  currentStep = step;
+  if (step === 2) renderStep1();
+  if (step === 3) generateRespondentCards();
+  if (step === 4) generateScoreSettings();
+  if (step === 5) generateCourseTree();
+  if (step === 7) generateStep4Tabs();
+  if (step === 8) generateStep7Review();
+  updateBottomButtons();
+  const wc = document.querySelector('.wiz-content');
+  if (wc) wc.scrollTop = 0;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (history.scrollRestoration) history.scrollRestoration = 'manual';
+  applyStepVisibility();
+  renderStep1();
+  updateBottomButtons();
+  const mainEl = document.querySelector('.main');
+  if (mainEl) mainEl.scrollTop = 0;
+  // 오늘 날짜를 min으로 설정 (과거 날짜 선택 불가, 오늘 포함)
+  const today = new Date().toISOString().split('T')[0];
+  const startDateEl = document.getElementById('diagStartDate');
+  const endDateEl   = document.getElementById('diagEndDate');
+  if (startDateEl) startDateEl.min = today;
+  if (endDateEl)   endDateEl.min   = today;
+  // 종료일 min을 시작일 변경 시 동기화
+  if (startDateEl && endDateEl) {
+    startDateEl.addEventListener('change', () => {
+      endDateEl.min = startDateEl.value || today;
+      if (endDateEl.value && endDateEl.value < startDateEl.value) {
+        endDateEl.value = startDateEl.value;
+      }
+    });
+  }
+});
+
+// 대상자 추가 공통 모듈 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof meMbrInit === 'function') {
+    meMbrInit({
+      getRegistered: () => {
+        const tabs = document.querySelectorAll('#step6-tabs .tab-pane');
+        const pane = tabs[_currentTargetTabIdx];
+        if (!pane) return [];
+        return [...pane.querySelectorAll('tbody tr')]
+          .map(tr => ({ empno: tr.cells[3]?.textContent?.trim() }))
+          .filter(m => m.empno);
+      },
+      onRegister: (members) => {
+        const tabs = document.querySelectorAll('#step6-tabs .tab-pane');
+        const pane = tabs[_currentTargetTabIdx];
+        if (pane) {
+          const tbody = pane.querySelector('tbody');
+          const countEl = pane.querySelector(`#target-count-${_currentTargetTabIdx}`);
+          members.forEach(m => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><input type="checkbox" class="target-check"></td>
+              <td>${tbody ? tbody.querySelectorAll('tr').length + 1 : 1}</td>
+              <td>${m.name || ''}</td><td>${m.empno || ''}</td>
+              <td>${m.dept || ''}</td><td>${m.grade || ''}</td>
+              <td>${m.company || ''}</td><td>010-****-****</td>`;
+            if (tbody) tbody.appendChild(tr);
+          });
+          if (countEl) countEl.textContent = tbody ? tbody.querySelectorAll('tr').length : members.length;
+        }
+        showToast(members.length + '명이 추가되었습니다.');
+      },
+      getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
+    });
+  }
+});
+
+/* ══════════════════════════════════════════════════════
+   진단 상태별 수정 분기 (프로토타입 시뮬레이터)
+   상태값: before | after | expired | completed
+   ══════════════════════════════════════════════════════ */
+let _diagStatus = 'before';
+
+// 상태별 STEP 잠금 목록 (진단유형별로 다름) — Confluence "New EDMS - 진단 만들기" v3.1
+// (https://ihunet.atlassian.net/wiki/spaces/30/pages/5247827973) "진단 상태별 수정 권한" 표 기준
+// (STEP1 "진단유형 선택"이 새로 추가되며 기존 STEP 번호가 전부 +1 밀림)
+// before:    전체 수정 가능
+// after(진행 중)/expired(마감 전):
+//   범용진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
+//              STEP 6(진단 기본 설정)는 완전잠금이 아닌 "부분 수정"(applyStep5PartialLock 별도 처리) — 이 목록에는 포함하지 않음.
+//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 범용과 동일하게 부분 수정으로 별도 처리.
+// STEP 1(진단유형 선택)은 진단이 생성된 이후(진행 중/마감 전/완료)에는 항상 잠금 — STEP2와 동일하게 변경 불가
+// completed: 전체 잠금 (STEP6도 이때만 완전 잠금이라 이 목록에 포함)
+const STEP_LOCK_MAP = {
+  before:    { 범용: [],         상시: [] },
+  after:     { 범용: [1, 2, 3],     상시: [1, 2] },
+  expired:   { 범용: [1, 2, 3, 7],  상시: [1, 2] },
+  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 상시: [1, 2, 3, 4, 5, 6, 7] },
+};
+
+// 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)
+function stepLockDesc(status) {
+  if (status === 'completed') return '모든 항목 수정 불가 · 보기 전용';
+  const meta = stepDisplayMeta();
+  // STEP8(검토 및 생성)은 항상 접근 가능한 요약 화면이라 잠금 대상 안내에서 제외
+  const visible = [];
+  for (let i = 1; i <= 7; i++) if (!meta.hidden.includes(i)) visible.push(i);
+  const locked = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).filter(i => visible.includes(i));
+  const hasStep6 = visible.includes(6);
+  const fullyUnlocked = visible.filter(i => !locked.includes(i) && i !== 6);
+
+  const parts = [];
+  if (fullyUnlocked.length) parts.push(`STEP ${fullyUnlocked.map(i => meta.map[i]).join('·')} 수정 가능`);
+  if (hasStep6) parts.push(`STEP ${meta.map[6]} 일부 항목만 수정 가능(종료일시·소개)`);
+  if (!fullyUnlocked.length && !hasStep6) return '모든 항목 수정 불가';
+  parts.push('나머지 수정 불가');
+  return parts.join(' / ');
+}
+
+// STEP 6(진단 기본 설정)는 진행 중·마감 전 상태에서 "부분 수정" — 진단명·시작일시는 잠그고, 종료일시·소개는 계속 편집 가능
+function applyStep5PartialLock(status) {
+  const lockNameStart = (status === 'after' || status === 'expired' || status === 'completed');
+  const lockEndDesc    = (status === 'completed');
+  const nameEl  = document.getElementById('diagNameInput');
+  const sDateEl = document.getElementById('diagStartDate');
+  const sTimeEl = document.getElementById('diagStartTime');
+  const eDateEl = document.getElementById('diagEndDate');
+  const eTimeEl = document.getElementById('diagEndTime');
+  const descEl  = document.getElementById('diagDescription');
+  [nameEl, sDateEl, sTimeEl].forEach(el => { if (el) el.disabled = lockNameStart; });
+  [eDateEl, eTimeEl, descEl].forEach(el => { if (el) el.disabled = lockEndDesc; });
+
+  // STEP6 헤드에 "부분 수정 가능" 안내 배지 (완전잠금 상태에서는 기존 🔒 배지가 별도로 붙으므로 제외)
+  const head = document.querySelector('#step-content-6 .wiz-card-head');
+  if (head) {
+    const old = head.querySelector('.step-partial-badge');
+    if (old) old.remove();
+    if (status === 'after' || status === 'expired') {
+      head.style.display = 'flex';
+      head.style.justifyContent = 'space-between';
+      head.style.alignItems = 'flex-start';
+      const badge = document.createElement('span');
+      badge.className = 'step-partial-badge';
+      badge.innerHTML = '🔓 일부 항목만 수정 가능';
+      badge.style.cssText = 'font-size:12px;font-weight:700;color:#b8860b;background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:4px 10px;white-space:nowrap;';
+      head.appendChild(badge);
+    }
+  }
+
+  // 진단 기간 행 옆 "종료일만 변경 가능" 힌트 — 부분잠금(진행 중/마감 전) 상태에서만 노출
+  const endDateHint = document.getElementById('step5-enddate-hint');
+  if (endDateHint) endDateHint.style.display = (status === 'after' || status === 'expired') ? '' : 'none';
+}
+
+function setDiagStatus(status) {
+  _diagStatus = status;
+
+  /* ── after/expired/completed는 이미 생성(임시저장 완료)된 진단이므로 대상자 등록 잠금 해제 ── */
+  /*    before는 데모용 초기 상태로, 아직 한 번도 임시저장하지 않은 신규 생성 흐름을 재현 ── */
+  hasDraftSaved = (status !== 'before');
+
+  /* ── 수정/보기 모드에서는 모든 STEP 자유 이동 허용 ── */
+  if (status !== 'before') {
+    maxReachedStep = 8;
+    for (let i = 1; i <= 8; i++) {
+      const el = document.getElementById('wiz-step-' + i);
+      if (el) { el.classList.remove('is-done'); const b = el.querySelector('.wiz-step-badge'); if (b) b.textContent = i; }
+    }
+  }
+
+  /* ── 사이드바 버튼 강조 ── */
+  ['before','after','expired','completed'].forEach(s => {
+    const btn = document.getElementById('wiz-status-btn-' + s);
+    if (btn) btn.classList.toggle('active', s === status);
+  });
+
+  /* ── 사이드바 타이틀 ── */
+  const titles = {
+    before:    ['진단 만들기',      '아래 단계에 맞춰 설정해주세요.'],
+    after:     ['진단 수정',        '진단 진행 중'],
+    expired:   ['진단 수정',        '진단 마감 전'],
+    completed: ['진단 보기',        '진단 완료 (보기 전용)'],
+  };
+  const [t, s] = titles[status] || titles.before;
+  const titleEl = document.getElementById('wiz-aside-title-text');
+  const subEl   = document.getElementById('wiz-aside-sub-text');
+  if (titleEl) titleEl.textContent = t;
+  if (subEl)   subEl.textContent   = s;
+
+  /* ── 상태 배너 ── */
+  const banner = document.getElementById('diag-status-banner');
+  if (banner) {
+    if (status === 'before') {
+      banner.style.display = 'none';
+      banner.className = '';
+    } else {
+      const labels = {
+        after:     { cls: 'status-after',     icon: '🔵', label: '진단 진행 중' },
+        expired:   { cls: 'status-expired',   icon: '🟠', label: '진단 마감 전' },
+        completed: { cls: 'status-completed', icon: '🔴', label: '진단 완료' },
+      }[status];
+      banner.style.display = 'flex';
+      banner.className = labels.cls;
+      banner.innerHTML = `<strong>${labels.icon} ${labels.label}</strong><span class="banner-desc">${stepLockDesc(status)}</span>`;
+    }
+  }
+
+  /* ── STEP 잠금 처리: wiz-card-body에 투명 overlay 삽입, head에 배지 추가 ── */
+  /*    상시진단은 STEP3·7 자체가 없으므로 잠금 대상에서 제외 ── */
+  const lockMeta = stepDisplayMeta();
+  const locked = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).filter(i => !lockMeta.hidden.includes(i));
+  for (let i = 1; i <= 8; i++) {
+    const stepEl = document.getElementById('step-content-' + i);
+    if (!stepEl) continue;
+
+    // 기존 overlay·배지 제거
+    stepEl.querySelectorAll('.step-lock-overlay').forEach(o => o.remove());
+    stepEl.querySelectorAll('.step-lock-badge').forEach(b => b.remove());
+
+    if (locked.includes(i)) {
+      // wiz-card-body에 투명 overlay (클릭 차단, 🔒 배지로 이미 잠금 상태 안내되므로 토스트는 띄우지 않음)
+      const body = stepEl.querySelector('.wiz-card-body');
+      if (body) {
+        body.style.position = 'relative';
+        const overlay = document.createElement('div');
+        overlay.className = 'step-lock-overlay';
+        body.appendChild(overlay);
+      }
+      // wiz-card-head 우측에 🔒 배지
+      const head = stepEl.querySelector('.wiz-card-head');
+      if (head) {
+        head.style.display = 'flex';
+        head.style.justifyContent = 'space-between';
+        head.style.alignItems = 'flex-start';
+        const badge = document.createElement('span');
+        badge.className = 'step-lock-badge';
+        badge.innerHTML = '🔒 수정 불가';
+        head.appendChild(badge);
+      }
+    } else {
+      // 잠금 해제: body position·overlay 정리
+      const body = stepEl.querySelector('.wiz-card-body');
+      if (body) body.style.position = '';
+      const head = stepEl.querySelector('.wiz-card-head');
+      if (head) { head.style.display = ''; head.style.justifyContent = ''; head.style.alignItems = ''; }
+    }
+  }
+
+  applyStep5PartialLock(status);
+
+  /* ── STEP 7 버튼 분기 ── */
+  const createBtn = document.getElementById('step7-create-btn');
+  const saveBtn   = document.getElementById('step7-save-btn');
+  const prevBtn   = document.getElementById('step7-prev-btn');
+  if (createBtn) createBtn.style.display = status === 'before' ? '' : 'none';
+  if (saveBtn)   saveBtn.style.display   = (status !== 'before' && status !== 'completed') ? '' : 'none';
+  if (prevBtn)   prevBtn.style.display   = status === 'completed' ? 'none' : '';
+
+  /* ── 완료 상태: wiz-aside foot 버튼 숨김 ── */
+  const draftBtn = document.querySelector('.btn-draft');
+  if (draftBtn) draftBtn.style.display = status === 'completed' ? 'none' : '';
+}
+
+function saveDiagEdit() {
+  showToast('수정이 완료되었습니다.');
+}
+
+// 페이지 로드 시 URL 파라미터로 상태 초기화
+(function initFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const s = params.get('status');
+  if (s && ['before','after','expired','completed'].includes(s)) {
+    setDiagStatus(s);
+  }
+})();
+</script>
+
+</body>
+</html>
