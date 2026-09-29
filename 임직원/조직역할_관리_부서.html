@@ -3709,7 +3709,7 @@
               <div style="display:flex;gap:12px;flex-shrink:0;align-items:stretch;">
 
                 <!-- 부서 정보 카드 -->
-                <div id="dept-info-card" class="card" style="padding:0;overflow:hidden;flex:1;min-width:0;display:flex;flex-direction:column;">
+                <div id="dept-info-card" class="card" style="padding:0;overflow:hidden;flex:1;min-width:0;display:none;flex-direction:column;">
                   <!-- 카드 헤더 -->
                   <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f9fafb;">
                     <span style="font-size:13px;font-weight:700;color:#222;">부서 정보</span>
@@ -3719,9 +3719,7 @@
                     </div>
                   </div>
                   <!-- 부서 정보 테이블 -->
-                  <div id="dept-info-body" style="padding:10px 16px;flex:1;overflow-y:auto;">
-                    <div style="text-align:center;color:#bbb;font-size:12px;padding:20px 0;">좌측 조직도에서 부서를 선택하세요.</div>
-                  </div>
+                  <div id="dept-info-body" style="padding:10px 16px;flex:1;overflow-y:auto;"></div>
                 </div>
 
                 <!-- 부서장 정보 카드 -->
@@ -9636,20 +9634,6 @@ function findLeafOfDept(deptId, list) {
   }
   return null;
 }
-// 회사 카드 집계용: 이 회사 노드 자신 + 하위 계열사/하위계열사까지 전체 부서·인원 합산
-function collectCompanySubtreeStats(node) {
-  let ownDeptIds = [];
-  (node.depts || []).forEach(d => { ownDeptIds = ownDeptIds.concat(getDescendantIds(d)); });
-  let deptCnt = ownDeptIds.length;
-  let mbrCnt = ownDeptIds.reduce((sum, id) => sum + ((node.members || {})[id] || []).length, 0) + (node.unassigned || []).length;
-  let unasgnCnt = (node.unassigned || []).length;
-  (node.children || []).forEach(c => {
-    const sub = collectCompanySubtreeStats(c);
-    deptCnt += sub.deptCnt; mbrCnt += sub.mbrCnt; unasgnCnt += sub.unasgnCnt;
-  });
-  return { deptCnt, mbrCnt, unasgnCnt };
-}
-
 // ── 드래그앤드롭 (Pointer Events 방식) ──────────
 // HTML5 DnD 대신 pointermove 기반 구현 — iframe·flexbox 환경에서 안정적
 let _dragFloater  = null;   // 화면에 표시되는 플로팅 레이블
@@ -10030,9 +10014,8 @@ function deptRenderCompanyCard(id) {
   const parent = findCompanyParent(id);
   const childNames = (node.children||[]).map(c=>c.name).join(', ') || '없음';
   const badgeColor = node.ctype==='그룹사' ? 'background:#1e2b37;color:#fff;' : node.ctype==='계열사' ? 'background:#3a6fd8;color:#fff;' : 'background:#1aa88f;color:#fff;';
-  const stats = collectCompanySubtreeStats(node);
   document.getElementById('dept-company-card').style.display = 'block';
-  document.getElementById('dept-company-title').textContent = node.name;
+  document.getElementById('dept-company-title').textContent = '회사 정보';
   document.getElementById('dept-company-badge').innerHTML = `<span style="font-size:11px;border-radius:3px;padding:2px 8px;${badgeColor}">${node.ctype}</span>`;
   document.getElementById('dept-company-body').innerHTML = `
     <table style="border-collapse:collapse;font-size:12px;width:100%;"><colgroup><col style="width:110px"><col></colgroup><tbody>
@@ -10044,16 +10027,7 @@ function deptRenderCompanyCard(id) {
           <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${parent?parent.name:'최상위 (그룹사)'}</td></tr>
       <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">하위 회사</th>
           <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${childNames}</td></tr>
-    </tbody></table>
-    <div style="margin-top:10px;padding:10px 12px;background:#eef4ff;border:1px solid #c5d8f7;border-radius:6px;font-size:11px;color:#3a5a99;">
-      이 정보는 별도 회사 관리 화면에서 관리됩니다. 이 화면에서는 조회만 가능합니다.
-    </div>
-    <div style="margin-top:10px;font-size:12px;color:#555;">
-      하위 부서 <strong style="color:#1a73e8;">${stats.deptCnt}</strong>개 ·
-      소속 임직원 총 <strong style="color:#1a73e8;">${stats.mbrCnt}</strong>명
-      (부서 미지정 <strong style="color:#e67e22;">${stats.unasgnCnt}</strong>명 포함)
-      <span style="color:#999;">— 하위 계열사/하위계열사 포함 전체 합계</span>
-    </div>`;
+    </tbody></table>`;
 }
 
 // ── 부서장 카드 ───────────────────────────────
@@ -10173,12 +10147,10 @@ function deptRenderUnassignedCard(companyId) {
 // ── 우측 초기화 ───────────────────────────────
 function deptResetRight() {
   deptSelectedId = null;
-  ['dept-company-card','dept-head-card','dept-member-card','dept-unassigned-card','dept-empty-state']
+  ['dept-info-card','dept-company-card','dept-head-card','dept-member-card','dept-unassigned-card']
     .forEach(k=>{ document.getElementById(k).style.display='none'; });
-  document.getElementById('dept-info-card').style.display = 'block';
   document.getElementById('dept-btn-edit').style.display  = 'none';
-  document.getElementById('dept-info-body').innerHTML =
-    `<div style="text-align:center;color:#bbb;font-size:12px;padding:20px 0;">좌측 조직도에서 부서를 선택하세요.</div>`;
+  document.getElementById('dept-empty-state').style.display = 'flex';
   deptRenderTree();
 }
 
