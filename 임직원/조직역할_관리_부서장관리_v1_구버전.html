@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LABS New EDMS</title>
+<title>LABS New EDMS (부서장관리 V1·구버전)</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -1219,8 +1219,8 @@
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
   <select class="lang-select" onchange="if(this.value) location.href=this.value" title="부서장관리 버전 선택" style="margin-right:6px;">
-    <option value="조직역할_관리_부서장관리.html" selected>V2 · 그룹사/계열사/하위계열사</option>
-    <option value="조직역할_관리_부서장관리_v1_구버전.html">V1 · 구버전</option>
+    <option value="조직역할_관리_부서장관리.html">V2 · 그룹사/계열사/하위계열사</option>
+    <option value="조직역할_관리_부서장관리_v1_구버전.html" selected>V1 · 구버전</option>
   </select>
   <span class="user-name">김이름 님</span>
   <button class="btn-header">로그아웃</button>
@@ -3659,14 +3659,8 @@
         <div id="org-panel-dept" style="display:none;padding:16px;flex-direction:column;gap:12px;">
 
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-            <span style="font-size:10px;font-weight:700;color:#fff;background:#e67e22;border-radius:3px;padding:2px 7px;">V2</span>
-            <span style="font-size:11px;color:#888;">그룹사(1개 고정)·계열사·하위계열사 구조 반영 — 회사 계층 어느 레벨이든 자체 부서를 직접 보유 가능</span>
-          </div>
-          <!-- [프로토타입 시뮬레이션] 소속 회사별 시야 제한 데모 — 실제로는 로그인 세션 기준으로 자동 결정됨 -->
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;">
-            <span style="font-weight:700;white-space:nowrap;">🔐 [시뮬레이션] 로그인 계정 소속</span>
-            <select id="dept-scope-select" class="input" style="height:24px;font-size:11px;padding:0 6px;max-width:280px;" onchange="deptSetScope(this.value)"></select>
-            <span id="dept-scope-desc" style="color:#3a5a99;"></span>
+            <span style="font-size:10px;font-weight:700;color:#fff;background:#888;border-radius:3px;padding:2px 7px;">V1 · 구버전</span>
+            <span style="font-size:11px;color:#888;">그룹사/계열사 구분 없이 단일 부서 트리로 관리하던 이전 버전입니다. 최신 버전(V2, 그룹사·계열사·하위계열사 구조)은 조직역할_관리_부서장관리.html 을 참고하세요.</span>
           </div>
 
           <div style="display:flex;gap:14px;height:calc(100vh - 210px);min-height:480px;">
@@ -3691,27 +3685,29 @@
                   placeholder="부서명 검색" oninput="deptSearchTree(this.value)">
                 <span onclick="deptClearSearch()" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;color:#aaa;font-size:13px;">×</span>
               </div>
-              <!-- 트리 영역: 그룹사/계열사/하위계열사 + 각 회사 직속 부서·미지정 인원이 함께 렌더링됨 -->
+              <!-- 조직도 안내 -->
+              <div style="padding:6px 10px;background:#f7f9fc;border-bottom:1px solid #eef1f6;display:flex;align-items:center;gap:4px;">
+                <span style="font-size:10px;color:#888;">💡 드래그로 부서 순서·뎁스 변경 가능</span>
+              </div>
+              <!-- 트리 영역 -->
               <div id="dept-tree" style="flex:1;overflow-y:auto;padding:6px 0;"></div>
+              <!-- 미지정 고정 항목 -->
+              <div id="dept-tree-unassigned"
+                onclick="deptSelectNode('__unassigned__')"
+                style="padding:8px 12px;border-top:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#888;background:#fafbfc;">
+                <span>⊘ 부서 미지정</span>
+                <span id="dept-unassigned-cnt" style="font-size:11px;color:#aaa;"></span>
+              </div>
             </div>
 
             <!-- ── 우측: 부서 정보 + 소속 임직원 패널 ── -->
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;">
 
-              <!-- 회사(그룹사/계열사/하위계열사) 정보 카드 : 읽기 전용, 회사 노드 선택 시에만 노출 -->
-              <div id="dept-company-card" class="card" style="padding:0;overflow:hidden;display:none;flex-direction:column;flex-shrink:0;">
-                <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f9fafb;">
-                  <span style="font-size:13px;font-weight:700;color:#222;" id="dept-company-title">회사 정보</span>
-                  <span id="dept-company-badge"></span>
-                </div>
-                <div id="dept-company-body" style="padding:14px 16px;"></div>
-              </div>
-
               <!-- 상단: 부서 정보 + 부서장 나란히 -->
               <div style="display:flex;gap:12px;flex-shrink:0;align-items:stretch;">
 
                 <!-- 부서 정보 카드 -->
-                <div id="dept-info-card" class="card" style="padding:0;overflow:hidden;flex:1;min-width:0;display:none;flex-direction:column;">
+                <div id="dept-info-card" class="card" style="padding:0;overflow:hidden;flex:1;min-width:0;display:flex;flex-direction:column;">
                   <!-- 카드 헤더 -->
                   <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f9fafb;">
                     <span style="font-size:13px;font-weight:700;color:#222;">부서 정보</span>
@@ -3721,19 +3717,17 @@
                     </div>
                   </div>
                   <!-- 부서 정보 테이블 -->
-                  <div id="dept-info-body" style="padding:10px 16px;flex:1;overflow-y:auto;"></div>
+                  <div id="dept-info-body" style="padding:10px 16px;flex:1;overflow-y:auto;">
+                    <div style="text-align:center;color:#bbb;font-size:12px;padding:20px 0;">좌측 조직도에서 부서를 선택하세요.</div>
+                  </div>
                 </div>
 
                 <!-- 부서장 정보 카드 -->
                 <div id="dept-head-card" class="card" style="padding:0;overflow:hidden;flex:1;min-width:0;display:none;flex-direction:column;">
                   <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f9fafb;">
                     <span style="font-size:13px;font-weight:700;color:#222;">부서장</span>
-                    <div style="display:flex;gap:6px;">
-                      <button class="btn btn-reset" style="height:26px;padding:0 12px;font-size:11px;"
-                        onclick="deptOpenHeadModal()">부서장 설정</button>
-                      <button class="btn btn-reset" style="height:26px;padding:0 12px;font-size:11px;color:#1a73e8;border-color:#c5d8f7;"
-                        onclick="orgSwitchTabById('dept-head')">부서장 관리 →</button>
-                    </div>
+                    <button class="btn btn-reset" style="height:26px;padding:0 12px;font-size:11px;"
+                      onclick="deptOpenHeadModal()">부서장 설정</button>
                   </div>
                   <div id="dept-head-body" style="padding:10px 14px;font-size:12px;color:#444;max-height:200px;overflow-y:auto;flex:1;">
                   </div>
@@ -3836,20 +3830,7 @@
         <!-- ═══════════════════════════════════════
              탭 패널: 부서장 관리  (좌: 트리 | 우: 상세)
              ═══════════════════════════════════════ -->
-        <div id="org-panel-dept-head" style="display:none;flex-direction:column;gap:0;height:calc(100vh - 180px);min-height:500px;overflow:hidden;">
-
-          <div style="display:flex;align-items:center;gap:8px;padding:16px 16px 0 16px;flex-shrink:0;">
-            <span style="font-size:10px;font-weight:700;color:#fff;background:#e67e22;border-radius:3px;padding:2px 7px;">V2</span>
-            <span style="font-size:11px;color:#888;">그룹사(1개 고정)·계열사·하위계열사 구조 반영 — 회사 계층 어느 레벨이든 자체 부서를 직접 보유 가능</span>
-          </div>
-          <!-- [프로토타입 시뮬레이션] 소속 회사별 시야 제한 데모 — 실제로는 로그인 세션 기준으로 자동 결정됨 -->
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;margin:8px 16px 0 16px;flex-shrink:0;">
-            <span style="font-weight:700;white-space:nowrap;">🔐 [시뮬레이션] 로그인 계정 소속</span>
-            <select id="dh-scope-select" class="input" style="height:24px;font-size:11px;padding:0 6px;max-width:280px;" onchange="dhSetScope(this.value)"></select>
-            <span id="dh-scope-desc" style="color:#3a5a99;"></span>
-          </div>
-
-          <div style="display:flex;flex-direction:row;gap:0;flex:1;min-height:0;overflow:hidden;margin-top:12px;">
+        <div id="org-panel-dept-head" style="display:none;flex-direction:row;gap:0;height:calc(100vh - 180px);min-height:500px;overflow:hidden;">
 
           <!-- 좌측: 부서 트리 패널 -->
           <div style="width:260px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;background:#fff;">
@@ -3924,7 +3905,6 @@
               </div>
             </div><!-- /dh-right-detail -->
           </div><!-- /우측 패널 -->
-          </div><!-- /좌우 패널 행 -->
         </div><!-- /org-panel-dept-head -->
         <div id="org-panel-grade"     style="display:none;padding:60px;text-align:center;color:#aaa;font-size:13px;">준비중입니다.</div>
         <div id="org-panel-position"  style="display:none;padding:60px;text-align:center;color:#aaa;font-size:13px;">준비중입니다.</div>
@@ -9428,17 +9408,12 @@ function orgSwitchTab(btn) {
   const panel = document.getElementById('org-panel-' + tab);
   if (panel) {
     panel.style.display = 'flex';
-    // dept-head 패널도 상단 배지/시뮬레이션 바 + 하단 좌우분할(row) 구조이므로 전체는 column
-    panel.style.flexDirection = 'column';
+    // dept-head 패널은 좌우 분할 구조(row)
+    panel.style.flexDirection = (tab === 'dept-head') ? 'row' : 'column';
   }
   if (tab === 'target-div') tdInit();
   if (tab === 'dept') { deptInit(); }
   if (tab === 'dept-head') { dhRefresh(); }
-}
-// tab id로 직접 탭 전환하는 헬퍼
-function orgSwitchTabById(tabId) {
-  const btn = document.querySelector(`[data-org-tab="${tabId}"]`);
-  if (btn) orgSwitchTab(btn);
 }
 
 // ════════════════════════════════════════════
@@ -9458,56 +9433,55 @@ function maskLoginId(id) {
 }
 
 // ── 5단계 샘플 데이터 ────────────────────────
-// ── 회사 계층(그룹사 1개 고정 → 계열사 여러 개 → 하위계열사 일부만) + 각 레벨 자체 부서 트리 ──
-// 그룹사/계열사/하위계열사 어느 레벨이든 하위 회사 존재 여부와 무관하게 자체 부서(depts)를 직접 보유 가능
-const COMPANY_TREE = [
+const DEPT_DATA = [
   {
-    id:'co-grp1', ctype:'그룹사', name:'(주)휴넷',
-    depts:[
+    id:'d1', code:'0000008993', name:'휴넷',
+    headList:[{role:'대표', id:'emp_001', name:'김민준', title:'대표이사'}], parentId:null,
+    children:[
       {
         id:'d2', code:'0000008994', name:'경영지원본부',
-        headList:[{id:'emp_002', name:'이서연', title:'본부장', role:'대표'}], parentId:null,
+        headList:[{role:'대표', id:'emp_002', name:'이서연', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d5', code:'0000008997', name:'인사팀',
-            headList:[{id:'emp_005', name:'박지훈', title:'팀장', role:'대표'}], parentId:'d2',
+            headList:[{role:'대표', id:'emp_005', name:'박지훈', title:'팀장'}], parentId:'d2',
             children:[
               {
                 id:'d13', code:'0000009010', name:'채용파트',
-                headList:[{id:'emp_013', name:'유소희', title:'파트장', role:'대표'}], parentId:'d5',
+                headList:[{role:'대표', id:'emp_013', name:'유소희', title:'파트장'}], parentId:'d5',
                 children:[
                   { id:'d20', code:'0000009020', name:'신입채용셀', headList:[], parentId:'d13', children:[] },
-                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{id:'emp_020', name:'강준수', title:'셀장', role:'대표'}], parentId:'d13', children:[] },
+                  { id:'d21', code:'0000009021', name:'경력채용셀', headList:[{role:'대표', id:'emp_020', name:'강준수', title:'셀장'}], parentId:'d13', children:[] },
                 ]
               },
-              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{id:'emp_014', name:'오민정', title:'파트장', role:'대표'}], parentId:'d5', children:[] },
+              { id:'d14', code:'0000009011', name:'인사관리파트', headList:[{role:'대표', id:'emp_014', name:'오민정', title:'파트장'}], parentId:'d5', children:[] },
             ]
           },
           { id:'d6', code:'0000008998', name:'재무팀', headList:[], parentId:'d2', children:[
-            { id:'d22', code:'0000009022', name:'예산파트', headList:[{id:'emp_021', name:'문재호', title:'파트장', role:'대표'}], parentId:'d6', children:[] },
+            { id:'d22', code:'0000009022', name:'예산파트', headList:[{role:'대표', id:'emp_021', name:'문재호', title:'파트장'}], parentId:'d6', children:[] },
           ]},
-          { id:'d7', code:'0000008999', name:'총무팀', headList:[{id:'emp_007', name:'최수아', title:'팀장', role:'대표'}], parentId:'d2', children:[] },
+          { id:'d7', code:'0000008999', name:'총무팀', headList:[{role:'대표', id:'emp_007', name:'최수아', title:'팀장'}], parentId:'d2', children:[] },
         ]
       },
       {
         id:'d3', code:'0000009000', name:'IT개발본부',
-        headList:[{id:'emp_003', name:'정도현', title:'본부장', role:'대표'}], parentId:null,
+        headList:[{role:'대표', id:'emp_003', name:'정도현', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d8', code:'0000009001', name:'플랫폼팀',
-            headList:[{id:'emp_008', name:'윤지아', title:'팀장', role:'대표'},{id:'emp_009', name:'박지성', title:'겸직팀장', role:'겸직'},{id:'emp_010', name:'최아름', title:'겸직팀장', role:'겸직'}], parentId:'d3',
+            headList:[{role:'대표', id:'emp_008', name:'윤지아', title:'팀장'},{role:'겸직', id:'emp_009', name:'박지성', title:'겸직팀장'},{role:'겸직', id:'emp_010', name:'최아름', title:'겸직팀장'}], parentId:'d3',
             children:[
-              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{id:'emp_015', name:'김욱', title:'파트장', role:'대표'}], parentId:'d8', children:[
-                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{id:'emp_022', name:'이영후', title:'셀장', role:'대표'}], parentId:'d15', children:[] },
+              { id:'d15', code:'0000009012', name:'BE개발파트', headList:[{role:'대표', id:'emp_015', name:'김욱', title:'파트장'}], parentId:'d8', children:[
+                { id:'d23', code:'0000009023', name:'공통플랫폼셀', headList:[{role:'대표', id:'emp_022', name:'이영후', title:'셀장'}], parentId:'d15', children:[] },
               ]},
-              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{id:'emp_016', name:'정민혁', title:'파트장', role:'대표'}], parentId:'d8', children:[] },
+              { id:'d16', code:'0000009013', name:'FE개발파트', headList:[{role:'대표', id:'emp_016', name:'정민혁', title:'파트장'}], parentId:'d8', children:[] },
             ]
           },
           {
             id:'d9', code:'0000009002', name:'서비스개발팀',
-            headList:[{id:'emp_009', name:'장민서', title:'팀장', role:'대표'}], parentId:'d3',
+            headList:[{role:'대표', id:'emp_009', name:'장민서', title:'팀장'}], parentId:'d3',
             children:[
-              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{id:'emp_017', name:'송재혁', title:'파트장', role:'대표'}], parentId:'d9', children:[] },
+              { id:'d17', code:'0000009014', name:'LABS개발파트', headList:[{role:'대표', id:'emp_017', name:'송재혁', title:'파트장'}], parentId:'d9', children:[] },
             ]
           },
           { id:'d10', code:'0000009003', name:'QA팀', headList:[], parentId:'d3', children:[] },
@@ -9515,108 +9489,62 @@ const COMPANY_TREE = [
       },
       {
         id:'d4', code:'0000009004', name:'교육사업본부',
-        headList:[{id:'emp_004', name:'오하은', title:'본부장', role:'대표'}], parentId:null,
+        headList:[{role:'대표', id:'emp_004', name:'오하은', title:'본부장'}], parentId:'d1',
         children:[
           {
             id:'d11', code:'0000009005', name:'LABS기획팀',
-            headList:[{id:'emp_011', name:'김태연', title:'팀장', role:'대표'}], parentId:'d4',
+            headList:[{role:'대표', id:'emp_011', name:'김태연', title:'팀장'}], parentId:'d4',
             children:[
-              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{id:'emp_018', name:'이강은', title:'파트장', role:'대표'}], parentId:'d11', children:[
+              { id:'d18', code:'0000009015', name:'연수원기획파트', headList:[{role:'대표', id:'emp_018', name:'이강은', title:'파트장'}], parentId:'d11', children:[
                 { id:'d24', code:'0000009024', name:'어드민기획셀', headList:[], parentId:'d18', children:[] },
               ]},
-              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{id:'emp_019', name:'한현미', title:'파트장', role:'대표'}], parentId:'d11', children:[] },
+              { id:'d19', code:'0000009016', name:'UX디자인파트', headList:[{role:'대표', id:'emp_019', name:'한현미', title:'파트장'}], parentId:'d11', children:[] },
             ]
           },
-          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{id:'emp_012', name:'이준호', title:'팀장', role:'대표'}], parentId:'d4', children:[] },
-        ]
-      }
-    ],
-    members: {
-      'd5': [
-        { id:'m001', name:'박지훈', loginId:'park.jh', empNo:'E20210045', grade:'부장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 09:14' },
-        { id:'m002', name:'김나연', loginId:'kim.ny',  empNo:'E20220031', grade:'차장', position:'파트장', status:'재직', lastLogin:'2026-04-11 17:52' },
-        { id:'m003', name:'이성민', loginId:'lee.sm',  empNo:'E20230018', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-10 10:30' },
-      ],
-      'd8': [
-        { id:'m005', name:'윤지아', loginId:'yoon.ja', empNo:'E20200033', grade:'차장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 08:55' },
-        { id:'m006', name:'정민혁', loginId:'jung.mh', empNo:'E20230041', grade:'대리', position:'',       status:'재직', lastLogin:'2026-04-12 09:01' },
-        { id:'m007', name:'송아영', loginId:'song.ay', empNo:'E20240010', grade:'사원', position:'',       status:'재직', lastLogin:'2026-04-11 16:44' },
-      ],
-      'd11':[
-        { id:'m008', name:'김태연', loginId:'kim.ty',  empNo:'E20210058', grade:'차장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 09:32' },
-        { id:'m009', name:'이강은', loginId:'lee.ke',  empNo:'E20190014', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-12 10:01' },
-        { id:'m010', name:'한현미', loginId:'han.hm',  empNo:'E20220029', grade:'대리', position:'',       status:'재직', lastLogin:'2026-04-11 18:05' },
-      ],
-      'd15':[
-        { id:'m011', name:'김욱',   loginId:'kim.uk',  empNo:'E20180027', grade:'차장', position:'파트장', status:'재직', lastLogin:'2026-04-12 09:00' },
-        { id:'m012', name:'이영후', loginId:'lee.yh',  empNo:'E20200019', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-12 10:15' },
-      ],
-      'd18':[
-        { id:'m013', name:'이강은', loginId:'lee.ke2', empNo:'E20190014', grade:'과장', position:'파트장', status:'재직', lastLogin:'2026-04-12 10:01' },
-      ],
-    },
-    unassigned: [
-      { id:'u001', name:'권민준', loginId:'kwon.mj', empNo:'E20251003', grade:'사원', position:'-',    status:'재직', lastLogin:'2026-03-28 11:22' },
-      { id:'u002', name:'임수진', loginId:'lim.sj',  empNo:'E20251009', grade:'사원', position:'-',    status:'재직', lastLogin:'2026-03-15 09:44' },
-    ],
-    children:[
-      { // 계열사 예시 1: 하위계열사 없이 계열사에 부서가 바로 붙는 경우 (그룹사>계열사, 2뎁스)
-        id:'co-aff1', ctype:'계열사', name:'테크솔루션(주)', children:[],
-        depts:[
-          { id:'t-d1', code:'0000020001', name:'솔루션개발본부', headList:[{id:'temp_001', name:'김욱', title:'본부장', role:'대표'}], parentId:null, children:[
-            { id:'t-d2', code:'0000020002', name:'백엔드팀', headList:[{id:'temp_002', name:'이영후', title:'팀장', role:'대표'}], parentId:'t-d1', children:[] },
-            { id:'t-d3', code:'0000020003', name:'프론트팀', headList:[{id:'temp_003', name:'정민혁', title:'팀장', role:'대표'}], parentId:'t-d1', children:[] },
-          ]},
-        ],
-        members:{
-          't-d2':[ { id:'tm01', name:'이영후', loginId:'lee.yh2', empNo:'E20200019', grade:'과장', position:'팀장', status:'재직', lastLogin:'2026-04-12 10:15' } ],
-          't-d3':[ { id:'tm02', name:'정민혁', loginId:'jung.mh2', empNo:'E20230041', grade:'대리', position:'팀장', status:'재직', lastLogin:'2026-04-12 09:01' } ],
-        },
-        unassigned:[
-          { id:'tu01', name:'조현우', loginId:'jo.hw2', empNo:'E20241022', grade:'사원', position:'-', status:'재직', lastLogin:'2026-04-01 14:30' },
-        ],
-      },
-      { // 계열사 예시 2: 하위계열사를 보유 + 계열사 자신에게도 직속 부서가 있는 경우 (그룹사>계열사>하위계열사, 3뎁스)
-        id:'co-aff2', ctype:'계열사', name:'글로벌커머스',
-        depts:[
-          { id:'g-d0', code:'0000030000', name:'글로벌전략실', headList:[{id:'gemp_001', name:'서지완', title:'실장', role:'대표'}], parentId:null, children:[] },
-        ],
-        members:{
-          'g-d0':[ { id:'gm01', name:'서지완', loginId:'seo.jw', empNo:'E20180022', grade:'부장', position:'실장', status:'재직', lastLogin:'2026-04-09 13:15' } ],
-        },
-        unassigned:[
-          { id:'gu01', name:'노하은', loginId:'noh.he', empNo:'E20250017', grade:'사원', position:'-', status:'재직', lastLogin:'2026-03-20 15:10' },
-        ],
-        children:[
-          { id:'co-sub1', ctype:'하위계열사', name:'글로벌커머스재팬', children:[],
-            depts:[
-              { id:'j-d1', code:'0000030001', name:'재팬사업부', headList:[{id:'jemp_001', name:'한현미', title:'사업부장', role:'대표'}], parentId:null, children:[
-                { id:'j-d2', code:'0000030002', name:'영업팀', headList:[], parentId:'j-d1', children:[] },
-              ]},
-            ],
-            members:{},
-            unassigned:[],
-          }
+          { id:'d12', code:'0000009006', name:'콘텐츠팀', headList:[{role:'대표', id:'emp_012', name:'이준호', title:'팀장'}], parentId:'d4', children:[] },
         ]
       }
     ]
   }
 ];
 
+const DEPT_MEMBERS = {
+  'd5': [
+    { id:'m001', name:'박지훈', loginId:'park.jh', empNo:'E20210045', grade:'부장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 09:14' },
+    { id:'m002', name:'김나연', loginId:'kim.ny',  empNo:'E20220031', grade:'차장', position:'파트장', status:'재직', lastLogin:'2026-04-11 17:52' },
+    { id:'m003', name:'이성민', loginId:'lee.sm',  empNo:'E20230018', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-10 10:30' },
+  ],
+  'd8': [
+    { id:'m005', name:'윤지아', loginId:'yoon.ja', empNo:'E20200033', grade:'차장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 08:55' },
+    { id:'m006', name:'정민혁', loginId:'jung.mh', empNo:'E20230041', grade:'대리', position:'',       status:'재직', lastLogin:'2026-04-12 09:01' },
+    { id:'m007', name:'송아영', loginId:'song.ay', empNo:'E20240010', grade:'사원', position:'',       status:'재직', lastLogin:'2026-04-11 16:44' },
+  ],
+  'd11':[
+    { id:'m008', name:'김태연', loginId:'kim.ty',  empNo:'E20210058', grade:'차장', position:'팀장',   status:'재직', lastLogin:'2026-04-12 09:32' },
+    { id:'m009', name:'이강은', loginId:'lee.ke',  empNo:'E20190014', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-12 10:01' },
+    { id:'m010', name:'한현미', loginId:'han.hm',  empNo:'E20220029', grade:'대리', position:'',       status:'재직', lastLogin:'2026-04-11 18:05' },
+  ],
+  'd15':[
+    { id:'m011', name:'김욱',   loginId:'kim.uk',  empNo:'E20180027', grade:'차장', position:'파트장', status:'재직', lastLogin:'2026-04-12 09:00' },
+    { id:'m012', name:'이영후', loginId:'lee.yh',  empNo:'E20200019', grade:'과장', position:'',       status:'재직', lastLogin:'2026-04-12 10:15' },
+  ],
+  'd18':[
+    { id:'m013', name:'이강은', loginId:'lee.ke2', empNo:'E20190014', grade:'과장', position:'파트장', status:'재직', lastLogin:'2026-04-12 10:01' },
+  ],
+};
+const DEPT_UNASSIGNED = [
+  { id:'u001', name:'권민준', loginId:'kwon.mj', empNo:'E20251003', grade:'사원', lastLogin:'2026-03-28 11:22' },
+  { id:'u002', name:'임수진', loginId:'lim.sj',  empNo:'E20251009', grade:'사원', lastLogin:'2026-03-15 09:44' },
+];
 const ALL_MEMBERS_POOL = [
-  { id:'p001', name:'권민준', loginId:'kwon.mj',  empNo:'E20251003', co:'(주)휴넷', dept:'부서 미지정', grade:'사원',  position:'-',    status:'재직', lastLogin:'2026-03-28 11:22' },
-  { id:'p002', name:'임수진', loginId:'lim.sj',   empNo:'E20251009', co:'(주)휴넷', dept:'부서 미지정', grade:'사원',  position:'-',    status:'재직', lastLogin:'2026-03-15 09:44' },
-  { id:'p003', name:'조현우', loginId:'jo.hw',    empNo:'E20241022', co:'(주)휴넷', dept:'IT개발본부',  grade:'사원',  position:'-',    status:'재직', lastLogin:'2026-04-01 14:30' },
-  { id:'p004', name:'박소연', loginId:'park.sy',  empNo:'E20231018', co:'(주)휴넷', dept:'경영지원본부', grade:'대리',  position:'팀장', status:'재직', lastLogin:'2026-04-08 09:05' },
-  { id:'p005', name:'최준형', loginId:'choi.jh',  empNo:'E20221034', co:'(주)휴넷', dept:'교육사업본부', grade:'과장',  position:'-',    status:'재직', lastLogin:'2026-04-10 16:22' },
-  { id:'p006', name:'황지수', loginId:'hwang.js', empNo:'E20211045', co:'(주)휴넷', dept:'IT개발본부',  grade:'대리',  position:'-',    status:'재직', lastLogin:'2026-04-11 11:40' },
-  { id:'p007', name:'류민아', loginId:'ryu.ma',   empNo:'E20201056', co:'(주)휴넷', dept:'경영지원본부', grade:'과장',  position:'파트장',status:'재직', lastLogin:'2026-04-09 13:15' },
-  { id:'p008', name:'신동혁', loginId:'shin.dh',  empNo:'E20191067', co:'(주)휴넷', dept:'교육사업본부', grade:'차장',  position:'팀장', status:'재직', lastLogin:'2026-04-07 10:00' },
-  { id:'p009', name:'조현우', loginId:'jo.hw2',   empNo:'E20241022', co:'테크솔루션(주)', dept:'부서 미지정', grade:'사원', position:'-', status:'재직', lastLogin:'2026-04-01 14:30' },
-  { id:'p010', name:'배소율', loginId:'bae.sy',   empNo:'E20190008', co:'테크솔루션(주)', dept:'솔루션개발본부', grade:'차장', position:'-', status:'재직', lastLogin:'2026-04-05 09:20' },
-  { id:'p011', name:'노하은', loginId:'noh.he',   empNo:'E20250017', co:'글로벌커머스', dept:'부서 미지정', grade:'사원', position:'-', status:'재직', lastLogin:'2026-03-20 15:10' },
-  { id:'p012', name:'최도윤', loginId:'choi.dy',  empNo:'E20150002', co:'글로벌커머스', dept:'글로벌전략실', grade:'상무', position:'-', status:'재직', lastLogin:'2026-04-11 09:00' },
-  { id:'p013', name:'유서준', loginId:'yoo.sj',   empNo:'E20260003', co:'글로벌커머스재팬', dept:'부서 미지정', grade:'사원', position:'-', status:'재직', lastLogin:'2026-04-02 11:15' },
+  { id:'p001', name:'권민준', loginId:'kwon.mj',  empNo:'E20251003', co:'(주)휴넷', dept:'부서 미지정', grade:'사원', status:'재직', lastLogin:'2026-03-28 11:22' },
+  { id:'p002', name:'임수진', loginId:'lim.sj',   empNo:'E20251009', co:'(주)휴넷', dept:'부서 미지정', grade:'사원', status:'재직', lastLogin:'2026-03-15 09:44' },
+  { id:'p003', name:'조현우', loginId:'jo.hw',    empNo:'E20241022', co:'(주)휴넷', dept:'IT개발본부',  grade:'사원', status:'재직', lastLogin:'2026-04-01 14:30' },
+  { id:'p004', name:'박소연', loginId:'park.sy',  empNo:'E20231018', co:'(주)휴넷', dept:'경영지원본부', grade:'대리', status:'재직', lastLogin:'2026-04-08 09:05' },
+  { id:'p005', name:'최준형', loginId:'choi.jh',  empNo:'E20221034', co:'(주)휴넷', dept:'교육사업본부', grade:'과장', status:'재직', lastLogin:'2026-04-10 16:22' },
+  { id:'p006', name:'황지수', loginId:'hwang.js', empNo:'E20211045', co:'(주)휴넷', dept:'IT개발본부',  grade:'대리', status:'재직', lastLogin:'2026-04-11 11:40' },
+  { id:'p007', name:'류민아', loginId:'ryu.ma',   empNo:'E20201056', co:'(주)휴넷', dept:'경영지원본부', grade:'과장', status:'재직', lastLogin:'2026-04-09 13:15' },
+  { id:'p008', name:'신동혁', loginId:'shin.dh',  empNo:'E20191067', co:'(주)휴넷', dept:'교육사업본부', grade:'차장', status:'재직', lastLogin:'2026-04-07 10:00' },
 ];
 
 let deptSelectedId  = null;
@@ -9624,68 +9552,9 @@ let deptDragId      = null;
 let deptDragOverId  = null;
 let deptDragGhost   = null;
 const deptCollapsed = new Set();
-let deptScopeCompanyId = null; // [프로토타입 시뮬레이션] 로그인 계정의 소속 회사 범위 — null이면 전체(최상위) 시야
 
 // ── 초기화 ────────────────────────────────────
-function deptInit() { deptPopulateScopeSelect(); deptRenderTree(); deptResetRight(); }
-
-// ── [프로토타입 시뮬레이션] 로그인 계정 소속 범위 선택 ──
-// 실제로는 로그인 세션의 소속 회사로 자동 결정되며, 이 셀렉트는 화면 동작을 시연하기 위한 도구임
-function deptFlattenCompanies(list, depth, out) {
-  out = out || [];
-  (list || []).forEach(n => {
-    out.push({ node: n, depth });
-    deptFlattenCompanies(n.children, depth + 1, out);
-  });
-  return out;
-}
-function deptPopulateScopeSelect() {
-  const sel = document.getElementById('dept-scope-select');
-  if (!sel) return;
-  const flat = deptFlattenCompanies(COMPANY_TREE, 0);
-  sel.innerHTML = `<option value="">🔓 전체 보기 (최상위 관리자)</option>` +
-    flat.map(f => `<option value="${f.node.id}" ${f.node.id===deptScopeCompanyId?'selected':''}>${'&nbsp;&nbsp;&nbsp;'.repeat(f.depth)}${f.node.ctype} · ${f.node.name} 소속으로 보기</option>`).join('');
-  const desc = document.getElementById('dept-scope-desc');
-  if (deptScopeCompanyId) {
-    const node = findCompanyNode(deptScopeCompanyId);
-    desc.textContent = node
-      ? `→ "${node.name}"(${node.ctype}) 소속 교육담당자 시야: 이 회사와 그 하위 조직만 조회되며, 상위·타 계열사의 조직도·임직원 정보는 노출되지 않습니다.`
-      : '';
-  } else {
-    desc.textContent = '';
-  }
-}
-function deptSetScope(companyId) {
-  deptScopeCompanyId = companyId || null;
-  const desc = document.getElementById('dept-scope-desc');
-  if (deptScopeCompanyId) {
-    const node = findCompanyNode(deptScopeCompanyId);
-    desc.textContent = node
-      ? `→ "${node.name}"(${node.ctype}) 소속 교육담당자 시야: 이 회사와 그 하위 조직만 조회되며, 상위·타 계열사의 조직도·임직원 정보는 노출되지 않습니다.`
-      : '';
-  } else {
-    desc.textContent = '';
-  }
-  deptSelectedId = null;
-  document.getElementById('dept-search-input').value = '';
-  if (deptScopeCompanyId) {
-    deptSelectNode(deptScopeCompanyId);
-  } else {
-    deptRenderTree();
-    deptResetRight();
-  }
-}
-// 로그인 계정의 소속 범위(deptScopeCompanyId) 내 회사명 목록 — 범위 없으면 전체 회사명
-// 부서장 설정/임직원 추가 팝업의 "회사" 드롭다운이 상위관리자 소속 범위에 따라 노출되도록 사용
-function deptGetScopeCompanyNames() {
-  const root = deptScopeCompanyId ? findCompanyNode(deptScopeCompanyId) : null;
-  const list = root ? [root] : COMPANY_TREE;
-  return deptFlattenCompanies(list, 0).map(f => f.node.name);
-}
-function deptGetScopedMemberPool() {
-  const names = deptGetScopeCompanyNames();
-  return ALL_MEMBERS_POOL.filter(m => names.includes(m.co));
-}
+function deptInit() { deptRenderTree(); deptResetRight(); }
 
 // ── 자손 id 수집 ──────────────────────────────
 function getDescendantIds(node) {
@@ -9694,32 +9563,6 @@ function getDescendantIds(node) {
   return ids;
 }
 
-// ── 회사 계층(그룹사/계열사/하위계열사) 순회 헬퍼 ──
-function findCompanyNode(id, list) {
-  list = list || COMPANY_TREE;
-  for (const n of list) {
-    if (n.id === id) return n;
-    if (n.children) { const f = findCompanyNode(id, n.children); if (f) return f; }
-  }
-  return null;
-}
-function findCompanyParent(id, list, parent) {
-  list = list || COMPANY_TREE; parent = parent || null;
-  for (const n of list) {
-    if (n.id === id) return parent;
-    if (n.children) { const f = findCompanyParent(id, n.children, n); if (f !== undefined) return f; }
-  }
-  return undefined;
-}
-// 부서 id → 그 부서가 직접 소속된 회사 노드(그룹사/계열사/하위계열사 어느 레벨이든 가능)
-function findLeafOfDept(deptId, list) {
-  list = list || COMPANY_TREE;
-  for (const n of list) {
-    if (findDeptNode(deptId, n.depts || [])) return n;
-    if (n.children) { const f = findLeafOfDept(deptId, n.children); if (f) return f; }
-  }
-  return null;
-}
 // ── 드래그앤드롭 (Pointer Events 방식) ──────────
 // HTML5 DnD 대신 pointermove 기반 구현 — iframe·flexbox 환경에서 안정적
 let _dragFloater  = null;   // 화면에 표시되는 플로팅 레이블
@@ -9758,8 +9601,7 @@ function _deptPointerDown(e, id) {
 
 function _deptStartDrag(id, cx, cy) {
   _dragSrcId = id;
-  const srcLeaf = findLeafOfDept(id);
-  const node = srcLeaf ? findDeptNode(id, srcLeaf.depts) : null;
+  const node = findDeptNode(id, DEPT_DATA);
   // 플로팅 레이블 생성
   const f = document.createElement('div');
   f.id = 'dept-drag-floater';
@@ -9787,15 +9629,9 @@ function _deptDragMove(cx, cy) {
   const targetId = item ? item.dataset.id : null;
 
   if (targetId && targetId !== _dragSrcId) {
-    const srcLeaf = findLeafOfDept(_dragSrcId);
-    const srcNode = srcLeaf ? findDeptNode(_dragSrcId, srcLeaf.depts) : null;
+    const srcNode = findDeptNode(_dragSrcId, DEPT_DATA);
     const descIds = srcNode ? getDescendantIds(srcNode) : [];
-    const srcParent = srcLeaf ? findParentNode(_dragSrcId, srcLeaf.depts) : null;
-    // 타겟이 회사 노드(그룹사/계열사/하위계열사)인 경우: 같은 회사일 때만 그 회사의 최상위 부서로 이동 허용
-    const targetIsCompany = targetId.indexOf('co-') === 0;
-    const targetLeafId = targetIsCompany ? targetId : (findLeafOfDept(targetId) || {}).id;
-    const crossCompany = !srcLeaf || targetLeafId !== srcLeaf.id;
-    const illegal = crossCompany || (!targetIsCompany && (descIds.includes(targetId) || (srcParent != null && srcParent.id === targetId)));
+    const illegal = descIds.includes(targetId);
     _dragIllegal  = illegal;
     if (_dragOverId !== targetId) {
       _dragOverId = targetId;
@@ -9822,45 +9658,30 @@ function _deptDragEnd(cx, cy) {
     deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
     return;
   }
-  const srcLeaf = findLeafOfDept(srcId);
-  if (!srcLeaf) { deptRenderTree(); return; }
-  // 다른 회사(그룹사/계열사/하위계열사) 소속 부서로는 이동 불가
-  const targetIsCompany = targetId.indexOf('co-') === 0;
-  const targetLeafId = targetIsCompany ? targetId : (findLeafOfDept(targetId) || {}).id;
-  if (targetLeafId !== srcLeaf.id) {
-    alert('다른 회사(그룹사/계열사/하위계열사) 소속 부서로는 이동할 수 없습니다.');
-    deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
-    return;
-  }
   // 현재 부모와 동일한 위치로 드롭 시 무시
-  const srcParentCheck = findParentNode(srcId, srcLeaf.depts);
-  const srcParentId = srcParentCheck ? srcParentCheck.id : srcLeaf.id;
+  const srcParentCheck = findParentNode(srcId, DEPT_DATA);
+  const srcParentId = srcParentCheck ? srcParentCheck.id : '__root__';
   if (srcParentId === targetId) {
     deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
     return;
   }
-  const srcNode = findDeptNode(srcId, srcLeaf.depts);
+  const srcNode = findDeptNode(srcId, DEPT_DATA);
   if (!srcNode) { deptRenderTree(); return; }
   const descIds = getDescendantIds(srcNode);
-  if (!targetIsCompany && descIds.includes(targetId)) {
+  if (descIds.includes(targetId)) {
     alert('상위 부서를 하위 부서로 이동할 수 없습니다.');
     deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
     return;
   }
-  const srcParent = srcParentCheck || findParentNode(srcId, srcLeaf.depts);
-  const srcList = srcParent ? srcParent.children : srcLeaf.depts;
+  const srcParent = srcParentCheck || findParentNode(srcId, DEPT_DATA);
+  const destNode  = findDeptNode(targetId, DEPT_DATA);
+  if (!destNode) { deptRenderTree(); return; }
+  const srcList = srcParent ? srcParent.children : DEPT_DATA;
   const idx = srcList.findIndex(n => n.id === srcId);
   if (idx > -1) srcList.splice(idx, 1);
-  if (targetIsCompany) {
-    srcLeaf.depts.push(srcNode);
-    srcNode.parentId = null;
-  } else {
-    const destNode = findDeptNode(targetId, srcLeaf.depts);
-    if (!destNode) { deptRenderTree(); return; }
-    destNode.children.push(srcNode);
-    srcNode.parentId = targetId;
-    deptCollapsed.delete(targetId);
-  }
+  destNode.children.push(srcNode);
+  srcNode.parentId = targetId;
+  deptCollapsed.delete(targetId);
   deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
   deptSelectNode(srcNode.id);
 }
@@ -9914,7 +9735,7 @@ function deptRenderTree(filter, dragging, overTarget, isIllegal) {
       <span data-drag="${node.id}" style="color:${dragColor};font-size:11px;padding:0 3px;cursor:grab;flex-shrink:0;" title="드래그하여 이동">${dragIcon}</span>
       ${toggleHtml}
       <span data-label="${node.id}" style="flex:1;font-weight:${depth===0?'700':'400'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;" title="${node.name}">${nameHtml}</span>
-      ${(()=>{ const lead=(node.headList||[]).find(h=>h.role==='대표')||(node.headList||[])[0]; return lead?`<span style="font-size:10px;color:#888;background:#f0f2f5;border-radius:3px;padding:1px 5px;white-space:nowrap;flex-shrink:0;margin-left:2px;">${maskName(lead.name)}</span>`:''; })()}
+      ${node.headList&&node.headList.length ? `<span style="font-size:10px;color:#888;background:#f0f2f5;border-radius:3px;padding:1px 5px;white-space:nowrap;flex-shrink:0;margin-left:2px;">${maskName(node.headList[0].name)}</span>` : ''}
     `;
 
     // ── 클릭: 여닫기 / 선택 / 드래그 구분 ──
@@ -9954,66 +9775,17 @@ function deptRenderTree(filter, dragging, overTarget, isIllegal) {
     }
   }
 
-  // ── 회사 노드(그룹사/계열사/하위계열사) 렌더 — 조회 전용, 자체 부서를 직속으로 가질 수 있음 ──
-  function companyMatchesFilter(node, filter) {
-    if (!filter) return true;
-    if (node.name.includes(filter)) return true;
-    const ownMatch = (node.depts||[]).some(d => nodeMatchesFilter(d, filter));
-    const childMatch = (node.children||[]).some(c => companyMatchesFilter(c, filter));
-    return ownMatch || childMatch;
-  }
-  function renderCompanyNode(node, depth) {
-    if (filter && !companyMatchesFilter(node, filter)) return;
-    const isSel = node.id === deptSelectedId;
-    const isCollapsed = !filter && deptCollapsed.has(node.id);
-    const indent = depth * 16;
-    const item = document.createElement('div');
-    item.dataset.id = node.id;
-    item.style.cssText = `padding:8px 10px 8px ${8+indent}px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:12px;
-      background:${isSel?'#e8f0fe':'#f7f9fc'};border-left:${isSel?'3px solid #1a73e8':'3px solid transparent'};user-select:none;`;
-    const badgeColor = node.ctype==='그룹사' ? 'background:#1e2b37;color:#fff;' : node.ctype==='계열사' ? 'background:#3a6fd8;color:#fff;' : 'background:#1aa88f;color:#fff;';
-    item.innerHTML = `
-      <span data-toggle="${node.id}" style="color:#888;font-size:9px;width:14px;text-align:center;flex-shrink:0;cursor:pointer;">${isCollapsed?'▶':'▼'}</span>
-      <span style="font-size:13px;">🏢</span>
-      <span style="font-size:10px;border-radius:3px;padding:1px 6px;white-space:nowrap;${badgeColor}">${node.ctype}</span>
-      <span style="flex:1;font-weight:700;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;" title="${node.name}">${node.name}</span>`;
-    item.querySelector('[data-toggle]').addEventListener('click', e => {
-      e.stopPropagation();
-      if (deptCollapsed.has(node.id)) deptCollapsed.delete(node.id); else deptCollapsed.add(node.id);
-      deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
-    });
-    item.addEventListener('click', e => {
-      if (e.target.closest('[data-toggle]')) return;
-      if (!_dragSrcId) deptSelectNode(node.id);
-    });
-    container.appendChild(item);
-    if (!isCollapsed) {
-      // 이 회사에 직속된 부서·미지정 인원을 바로 아래에 렌더링
-      (node.depts||[]).forEach(d => renderNode(d, depth+1));
-      renderUnassignedRow(node, depth+1);
-    }
-    // 하위 회사(계열사/하위계열사)는 상위 회사의 접힘 여부와 무관하게 항상 노출
-    (node.children||[]).forEach(c => renderCompanyNode(c, depth+1));
-  }
-  function renderUnassignedRow(companyNode, depth) {
-    const id = '__unassigned__:' + companyNode.id;
-    const isSel = deptSelectedId === id;
-    const indent = depth * 16;
-    const row = document.createElement('div');
-    row.dataset.id = id;
-    row.style.cssText = `padding:7px 10px 7px ${8+indent}px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;
-      color:#888;background:${isSel?'#fff8f0':'#fafbfc'};border-left:${isSel?'3px solid #e67e22':'3px solid transparent'};`;
-    row.innerHTML = `<span>⊘ 부서 미지정</span><span style="font-size:11px;color:#aaa;">${(companyNode.unassigned||[]).length}명</span>`;
-    row.addEventListener('click', () => { if (!_dragSrcId) deptSelectNode(id); });
-    container.appendChild(row);
-  }
+  DEPT_DATA.forEach(n => renderNode(n, 0));
 
-  // [프로토타입 시뮬레이션] 소속 범위가 설정된 경우 해당 회사(및 그 하위 조직)만 노출 — 상위/타 계열사 비노출
-  if (deptScopeCompanyId) {
-    const scopeNode = findCompanyNode(deptScopeCompanyId);
-    if (scopeNode) renderCompanyNode(scopeNode, 0);
-  } else {
-    COMPANY_TREE.forEach(n => renderCompanyNode(n, 0));
+  // 미지정 행
+  const uEl = document.getElementById('dept-unassigned-cnt');
+  if (uEl) uEl.textContent = DEPT_UNASSIGNED.length + '명';
+  const unEl = document.getElementById('dept-tree-unassigned');
+  if (unEl) {
+    const uSel = deptSelectedId === '__unassigned__';
+    unEl.style.borderLeft = uSel ? '3px solid #e67e22' : '3px solid transparent';
+    unEl.style.background = uSel ? '#fff8f0' : '#fafbfc';
+    unEl.style.color      = uSel ? '#b45309' : '#888';
   }
 }
 
@@ -10030,25 +9802,21 @@ function deptClearSearch() {
 
 // ── 노드 선택 ─────────────────────────────────
 function deptSelectNode(id) {
-  const isCompany    = id.indexOf('co-') === 0;
-  const isUnassigned = id.indexOf('__unassigned__:') === 0;
-  // 같은 부서 재클릭 → 선택 해제 (회사/미지정 행은 토글 해제하지 않음)
-  if (deptSelectedId === id && !isCompany && !isUnassigned) {
+  // 같은 부서 재클릭 → 선택 해제
+  if (deptSelectedId === id && id !== '__unassigned__') {
     deptSelectedId = null;
     deptRenderTree(document.getElementById('dept-search-input').value||null);
-    ['dept-info-card','dept-company-card','dept-head-card','dept-member-card','dept-unassigned-card']
+    ['dept-info-card','dept-head-card','dept-member-card','dept-unassigned-card']
       .forEach(k => { document.getElementById(k).style.display='none'; });
     document.getElementById('dept-empty-state').style.display = 'flex';
     return;
   }
   deptSelectedId = id;
   deptRenderTree(document.getElementById('dept-search-input').value||null);
-  ['dept-info-card','dept-company-card','dept-head-card','dept-member-card','dept-unassigned-card','dept-empty-state']
+  ['dept-info-card','dept-head-card','dept-member-card','dept-unassigned-card','dept-empty-state']
     .forEach(k => { document.getElementById(k).style.display='none'; });
-  if (isUnassigned) { deptRenderUnassignedCard(id.slice('__unassigned__:'.length)); return; }
-  if (isCompany) { deptRenderCompanyCard(id); return; }
-  const leaf = findLeafOfDept(id);
-  const node = leaf ? findDeptNode(id, leaf.depts) : null;
+  if (id === '__unassigned__') { deptRenderUnassignedCard(); return; }
+  const node = findDeptNode(id, DEPT_DATA);
   if (!node) return;
   document.getElementById('dept-info-card').style.display = 'block';
   deptMbrCurrentPage = 1;
@@ -10074,8 +9842,7 @@ function findParentNode(childId, list) {
 
 // ── 부서 정보 카드 ────────────────────────────
 function deptRenderInfoCard(node) {
-  const leaf   = findLeafOfDept(node.id);
-  const parent = leaf ? findParentNode(node.id, leaf.depts) : null;
+  const parent = findParentNode(node.id, DEPT_DATA);
   const kids   = node.children||[];
   document.getElementById('dept-btn-edit').style.display = 'inline-flex';
   document.getElementById('dept-info-body').innerHTML = `
@@ -10084,8 +9851,6 @@ function deptRenderInfoCard(node) {
           <td style="padding:7px 12px;border:1px solid var(--border);color:#222;font-weight:600;">${node.name}</td></tr>
       <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">부서코드</th>
           <td style="padding:7px 12px;border:1px solid var(--border);color:#666;font-family:monospace;">${node.code}</td></tr>
-      <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">소속 회사</th>
-          <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${leaf?leaf.name:'-'} ${leaf?`<span style="font-size:10px;border-radius:3px;padding:1px 6px;margin-left:4px;${leaf.ctype==='그룹사'?'background:#1e2b37;color:#fff;':leaf.ctype==='계열사'?'background:#3a6fd8;color:#fff;':'background:#1aa88f;color:#fff;'}">${leaf.ctype}</span>`:''}</td></tr>
       <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">상위부서</th>
           <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${parent?parent.name:'<span style="color:#bbb;">최상위 부서</span>'}</td></tr>
       <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">하위부서</th>
@@ -10093,34 +9858,11 @@ function deptRenderInfoCard(node) {
     </tbody></table>`;
 }
 
-// ── 회사(그룹사/계열사/하위계열사) 정보 카드 : 읽기 전용 ──
-function deptRenderCompanyCard(id) {
-  const node = findCompanyNode(id);
-  if (!node) return;
-  const parent = findCompanyParent(id);
-  const childNames = (node.children||[]).map(c=>c.name).join(', ') || '없음';
-  const badgeColor = node.ctype==='그룹사' ? 'background:#1e2b37;color:#fff;' : node.ctype==='계열사' ? 'background:#3a6fd8;color:#fff;' : 'background:#1aa88f;color:#fff;';
-  document.getElementById('dept-company-card').style.display = 'block';
-  document.getElementById('dept-company-title').textContent = '회사 정보';
-  document.getElementById('dept-company-badge').innerHTML = `<span style="font-size:11px;border-radius:3px;padding:2px 8px;${badgeColor}">${node.ctype}</span>`;
-  document.getElementById('dept-company-body').innerHTML = `
-    <table style="border-collapse:collapse;font-size:12px;width:100%;"><colgroup><col style="width:110px"><col></colgroup><tbody>
-      <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;white-space:nowrap;">회사명</th>
-          <td style="padding:7px 12px;border:1px solid var(--border);color:#222;font-weight:600;">${node.name}</td></tr>
-      <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">구분</th>
-          <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${node.ctype}</td></tr>
-      <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">상위 회사</th>
-          <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${parent?parent.name:'최상위 (그룹사)'}</td></tr>
-      <tr><th style="padding:7px 12px;background:#f7f9fb;border:1px solid var(--border);text-align:left;font-weight:600;color:#555;">하위 회사</th>
-          <td style="padding:7px 12px;border:1px solid var(--border);color:#333;">${childNames}</td></tr>
-    </tbody></table>`;
-}
-
 // ── 부서장 카드 ───────────────────────────────
 function deptRenderHeadCard(node) {
   document.getElementById('dept-head-card').style.display = 'block';
   const body = document.getElementById('dept-head-body');
-  const list = (node.headList || []).slice().sort((a, b) => (a.role === '대표' ? -1 : 1));
+  const list = node.headList || [];
   if (list.length === 0) {
     body.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:#bbb;font-size:12px;">
       <span>설정된 부서장이 없습니다.</span>
@@ -10129,21 +9871,23 @@ function deptRenderHeadCard(node) {
     return;
   }
   const cells = list.map(h => {
-    const isLead = h.role === '대표';
-    const roleBadge = isLead
-      ? `<span style="font-size:10px;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:3px;padding:1px 5px;white-space:nowrap;">대표</span>`
-      : ``;
+    const isLead    = h.role === '대표';
+    const roleColor = isLead ? '#1a73e8' : '#e67e22';
+    const roleBg    = isLead ? '#e8f0fe' : '#fef3e6';
+    const roleIcon  = isLead ? '👑' : '🔀';  // 대표=왕관, 겸직=교차화살표
+    const roleLabel = isLead ? '대표부서장' : '겸직부서장';
     return `<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fafbfc;border:1px solid var(--border);border-radius:6px;">
       <!-- 프로필 이미지 -->
-      <div style="width:36px;height:36px;border-radius:50%;background:${isLead ? '#1a73e8' : '#64748b'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">
+      <div style="width:36px;height:36px;border-radius:50%;background:${roleColor};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;position:relative;">
         ${h.name.charAt(0)}
+        <span style="position:absolute;bottom:-2px;right:-2px;font-size:12px;line-height:1;">${roleIcon}</span>
       </div>
       <!-- 정보 -->
       <div style="flex:1;min-width:0;">
-        <!-- 1행: 역할 뱃지 + 이름 -->
+        <!-- 1행: 이름 + 역할 뱃지 -->
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
-          ${roleBadge}
           <span style="font-weight:700;color:#222;font-size:12px;">${maskName(h.name)}</span>
+          <span style="font-size:10px;font-weight:700;color:${roleColor};background:${roleBg};border-radius:10px;padding:1px 7px;white-space:nowrap;">${roleLabel}</span>
         </div>
         <!-- 2행: 직책 -->
         <div style="font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${h.title||'직책 미설정'}</div>
@@ -10169,8 +9913,7 @@ function deptMbrPageSizeChange() {
 function deptRenderMemberCard(deptId) {
   deptMbrCurrentId = deptId;
   document.getElementById('dept-member-card').style.display = 'block';
-  const leaf = findLeafOfDept(deptId);
-  const members = (leaf && leaf.members && leaf.members[deptId]) || [];
+  const members = DEPT_MEMBERS[deptId] || [];
   const total   = members.length;
   const ps      = deptMbrPageSize;
   const cp      = deptMbrCurrentPage;
@@ -10202,29 +9945,23 @@ function deptRenderMemberCard(deptId) {
 }
 
 // ── 미지정 카드 ───────────────────────────────
-let deptUnassignedCompanyId = null;
-function deptRenderUnassignedCard(companyId) {
-  deptUnassignedCompanyId = companyId;
-  const company = findCompanyNode(companyId);
-  const list = (company && company.unassigned) || [];
+function deptRenderUnassignedCard() {
   document.getElementById('dept-info-body').innerHTML =
-    `<div style="color:#888;font-size:12px;padding:8px 0;">${company?company.name:''} 소속 부서 미지정 임직원 목록입니다. 부서를 배정해 주세요.</div>`;
+    `<div style="color:#888;font-size:12px;padding:8px 0;">부서 미지정 임직원 목록입니다. 부서를 배정해 주세요.</div>`;
   document.getElementById('dept-btn-edit').style.display = 'none';
   document.getElementById('dept-info-card').style.display = 'block';
   document.getElementById('dept-unassigned-card').style.display = 'block';
-  document.getElementById('dept-unasgn-cnt').textContent = list.length;
+  document.getElementById('dept-unasgn-cnt').textContent = DEPT_UNASSIGNED.length;
   const tbody = document.getElementById('dept-unasgn-tbody');
-  tbody.innerHTML = list.length===0
+  tbody.innerHTML = DEPT_UNASSIGNED.length===0
     ? `<tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">미지정 임직원이 없습니다.</td></tr>`
-    : list.map((m,i)=>`
+    : DEPT_UNASSIGNED.map((m,i)=>`
       <tr>
-        <td><input type="checkbox" class="dept-mbr-chk" data-id="${m.id}"></td><td>${list.length - i}</td>
+        <td><input type="checkbox"></td><td>${DEPT_UNASSIGNED.length - i}</td>
         <td>${maskName(m.name)}</td>
         <td style="color:var(--primary);">${maskLoginId(m.loginId)}</td>
         <td style="font-family:monospace;color:#666;">${m.empNo}</td>
         <td>${m.grade}</td>
-        <td>${m.position || '<span style="color:#ccc;">-</span>'}</td>
-        <td><span style="background:#e8f5e9;color:#2e7d32;border-radius:3px;padding:1px 6px;font-size:11px;">${m.status}</span></td>
         <td style="color:#888;">${m.lastLogin}</td>
         <td><button onclick="deptMoveSingle('${m.id}')" style="background:#1a73e8;color:#fff;border:none;border-radius:3px;padding:2px 8px;font-size:11px;cursor:pointer;">배정</button></td>
       </tr>`).join('');
@@ -10233,10 +9970,12 @@ function deptRenderUnassignedCard(companyId) {
 // ── 우측 초기화 ───────────────────────────────
 function deptResetRight() {
   deptSelectedId = null;
-  ['dept-info-card','dept-company-card','dept-head-card','dept-member-card','dept-unassigned-card']
+  ['dept-head-card','dept-member-card','dept-unassigned-card','dept-empty-state']
     .forEach(k=>{ document.getElementById(k).style.display='none'; });
+  document.getElementById('dept-info-card').style.display = 'block';
   document.getElementById('dept-btn-edit').style.display  = 'none';
-  document.getElementById('dept-empty-state').style.display = 'flex';
+  document.getElementById('dept-info-body').innerHTML =
+    `<div style="text-align:center;color:#bbb;font-size:12px;padding:20px 0;">좌측 조직도에서 부서를 선택하세요.</div>`;
   deptRenderTree();
 }
 
@@ -10245,24 +9984,10 @@ function deptToggleAll(checked) {
 }
 
 // ── 부서 추가 팝업 ────────────────────────────
-function deptAddModalContext() {
-  // 회사(그룹사/계열사/하위계열사) 선택 시: 그 회사의 최상위 부서로 추가
-  // 부서 선택 시: 그 부서의 하위 부서로 추가
-  // 미지정 행 또는 미선택 시: 어느 회사에 추가할지 알 수 없으므로 선택 요청
-  if (deptSelectedId && deptSelectedId.indexOf('co-') === 0) {
-    const leaf = findCompanyNode(deptSelectedId);
-    return { leaf, parentNode: null };
-  }
-  if (deptSelectedId && deptSelectedId.indexOf('__unassigned__') !== 0) {
-    const leaf = findLeafOfDept(deptSelectedId);
-    if (leaf) return { leaf, parentNode: findDeptNode(deptSelectedId, leaf.depts) };
-  }
-  return null;
-}
 function deptOpenAddModal() {
-  const ctx = deptAddModalContext();
-  if (!ctx) { alert('부서를 추가할 그룹사/계열사/하위계열사 또는 부서를 좌측 조직도에서 먼저 선택해주세요.'); return; }
-  document.getElementById('dept-add-parent-label').textContent = ctx.parentNode ? ctx.parentNode.name : `최상위 부서 (${ctx.leaf.name} 소속)`;
+  const node = (deptSelectedId && deptSelectedId!=='__unassigned__')
+    ? findDeptNode(deptSelectedId, DEPT_DATA) : null;
+  document.getElementById('dept-add-parent-label').textContent = node ? node.name : '최상위';
   document.getElementById('dept-add-name-input').value = '';
   document.getElementById('dept-add-name-input').style.borderColor = '';
   document.getElementById('dept-name-cnt').textContent = '0';
@@ -10277,15 +10002,13 @@ function deptConfirmAdd() {
   if (!name) { document.getElementById('dept-add-name-input').style.borderColor='#e53935'; document.getElementById('dept-add-name-input').focus(); return; }
   if (name.length > 20) { alert('부서명은 최대 20자까지 입력 가능합니다.'); return; }
   document.getElementById('dept-add-name-input').style.borderColor='';
-  const ctx = deptAddModalContext();
-  if (!ctx) { deptCloseAddModal(); return; }
   const code = '000000'+(Math.floor(Math.random()*9000)+1000);
+  const parentNode = (deptSelectedId && deptSelectedId!=='__unassigned__')
+    ? findDeptNode(deptSelectedId, DEPT_DATA) : null;
   const newNode = { id:'d_'+Date.now(), code, name, headList:[],
-    parentId: ctx.parentNode ? ctx.parentNode.id : null, children:[] };
-  if (ctx.parentNode) ctx.parentNode.children.push(newNode);
-  else ctx.leaf.depts.push(newNode);
-  if (!ctx.leaf.members) ctx.leaf.members = {};
-  ctx.leaf.members[newNode.id] = [];
+    parentId: parentNode ? parentNode.id : null, children:[] };
+  if (parentNode) parentNode.children.push(newNode);
+  else DEPT_DATA.push(newNode);
   deptCloseAddModal();
   deptRenderTree();
   deptSelectNode(newNode.id);
@@ -10294,11 +10017,10 @@ function deptConfirmAdd() {
 // ── 부서 수정 ─────────────────────────────────
 function deptOpenEditModal() {
   if (!deptSelectedId) return;
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!node) return;
-  const parent = findParentNode(node.id, leaf.depts);
-  document.getElementById('dept-add-parent-label').textContent = parent ? parent.name : `최상위 부서 (${leaf.name} 소속)`;
+  const parent = findParentNode(node.id, DEPT_DATA);
+  document.getElementById('dept-add-parent-label').textContent = parent ? parent.name : '최상위';
   document.getElementById('dept-add-name-input').value = node.name;
   document.getElementById('dept-add-name-input').style.borderColor = '';
   document.getElementById('dept-add-modal-title').textContent = '부서명 수정';
@@ -10321,9 +10043,8 @@ function deptOpenEditModal() {
 
 // ── 부서 삭제 ─────────────────────────────────
 function deptDeleteSelected() {
-  if (!deptSelectedId || deptSelectedId.indexOf('__unassigned__') === 0 || deptSelectedId.indexOf('co-') === 0) { alert('삭제할 부서를 선택해주세요.'); return; }
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
+  if (!deptSelectedId || deptSelectedId==='__unassigned__') { alert('삭제할 부서를 선택해주세요.'); return; }
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!node) return;
   const hasKids = node.children && node.children.length > 0;
   // 모달 세팅
@@ -10342,20 +10063,8 @@ function deptDeleteSelected() {
 }
 function deptConfirmDelete() {
   document.getElementById('dept-del-modal').style.display = 'none';
-  const leaf = findLeafOfDept(deptSelectedId);
-  if (!leaf) return;
-  const node = findDeptNode(deptSelectedId, leaf.depts);
-  if (!node) return;
-  // 삭제되는 부서(하위 부서 포함) 소속 임직원 전원을 같은 회사의 미지정으로 이동
-  const descIds = getDescendantIds(node);
-  if (!leaf.unassigned) leaf.unassigned = [];
-  descIds.forEach(id => {
-    const mm = (leaf.members || {})[id] || [];
-    leaf.unassigned = leaf.unassigned.concat(mm);
-    if (leaf.members) delete leaf.members[id];
-  });
-  const parent = findParentNode(deptSelectedId, leaf.depts);
-  const list   = parent ? parent.children : leaf.depts;
+  const parent = findParentNode(deptSelectedId, DEPT_DATA);
+  const list   = parent ? parent.children : DEPT_DATA;
   const idx    = list.findIndex(n=>n.id===deptSelectedId);
   if (idx>-1) list.splice(idx, 1);
   deptResetRight();
@@ -10363,35 +10072,28 @@ function deptConfirmDelete() {
 
 // ── 부서장 설정 팝업 ──────────────────────────
 function deptOpenHeadModal() {
-  if (!deptSelectedId || deptSelectedId.indexOf('__unassigned__') === 0 || deptSelectedId.indexOf('co-') === 0) return;
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
-  if (!node) return;
+  if (!deptSelectedId || deptSelectedId==='__unassigned__') return;
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
   document.getElementById('dept-head-modal-dept').textContent = node.name;
   document.getElementById('dept-head-kw').value = '';
   document.getElementById('dept-head-type').value = 'name';
   document.getElementById('dept-head-company').value = '';
-  // 회사 드롭다운: 로그인 계정의 소속 범위(상위관리자 기준)에 노출되는 회사만 구성
+  // 회사 드롭다운 동적 생성
   const coSel = document.getElementById('dept-head-company');
-  const coList = deptGetScopeCompanyNames();
+  const coList = [...new Set(ALL_MEMBERS_POOL.map(m => m.co).filter(Boolean))];
   coSel.innerHTML = '<option value="">회사 선택</option>' + coList.map(c => `<option value="${c}">${c}</option>`).join('');
   deptHeadSelected = null;
   deptHeadCurrentPage = 1;
   deptHeadPageSize = 50;
-  deptHeadFilteredList = deptGetScopedMemberPool();
+  deptHeadFilteredList = [...ALL_MEMBERS_POOL];
   deptHeadRenderTable();
   document.getElementById('dept-head-modal').style.display = 'flex';
 }
-function deptCloseHeadModal() {
-  document.getElementById('dept-head-modal').style.display='none';
-  deptHeadSelected = null;
-  const btn = document.getElementById('dept-head-confirm-btn');
-  if (btn) { btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none'; }
-}
+function deptCloseHeadModal() { document.getElementById('dept-head-modal').style.display='none'; }
 function deptHeadSearchAll() {
   document.getElementById('dept-head-kw').value = '';
   document.getElementById('dept-head-company').value = '';
-  deptHeadFilteredList = deptGetScopedMemberPool();
+  deptHeadFilteredList = [...ALL_MEMBERS_POOL];
   deptHeadCurrentPage = 1;
   deptHeadRenderTable();
 }
@@ -10399,7 +10101,7 @@ function deptSearchHead() {
   const kw   = document.getElementById('dept-head-kw').value.trim();
   const type = document.getElementById('dept-head-type').value;
   const co   = document.getElementById('dept-head-company').value;
-  deptHeadFilteredList = deptGetScopedMemberPool().filter(m => {
+  deptHeadFilteredList = ALL_MEMBERS_POOL.filter(m => {
     if (co && m.co !== co) return false;
     if (!kw) return true;
     if (type==='loginId') return m.loginId.includes(kw);
@@ -10424,13 +10126,14 @@ function deptHeadRenderTable() {
   document.getElementById('dept-head-total-cnt').textContent = total;
   const tbody = document.getElementById('dept-head-search-result');
   tbody.innerHTML = page.length===0
-    ? `<tr><td colspan="7" style="padding:30px;text-align:center;color:#bbb;">검색 결과가 없습니다.</td></tr>`
+    ? `<tr><td colspan="8" style="padding:30px;text-align:center;color:#bbb;">검색 결과가 없습니다.</td></tr>`
     : page.map((m, i) => {
         const globalNo = total - (start + i);
         let deptName = m.dept || '-';
         const isSel = deptHeadSelected && deptHeadSelected.id === m.id;
         return `<tr style="cursor:pointer;background:${isSel?'#e8f0fe':''}" onclick="deptSelectHead('${m.id}','${m.name}','${m.loginId}')">
           <td onclick="event.stopPropagation()"><input type="radio" name="head-radio" data-id="${m.id}" ${isSel?'checked':''} onchange="deptSelectHead('${m.id}','${m.name}','${m.loginId}')"></td>
+          <td>${globalNo}</td>
           <td>${maskName(m.name)}</td>
           <td style="text-align:left;padding-left:10px;color:#444;">${m.co||'-'}</td>
           <td style="text-align:left;padding-left:10px;color:#444;">${deptName}</td>
@@ -10449,60 +10152,35 @@ let deptHeadCurrentPage  = 1;
 let deptHeadPageSize     = 50;
 let deptHeadFilteredList = [];
 function deptSelectHead(id, name, loginId) {
-  const m = ALL_MEMBERS_POOL.find(p => p.id === id);
-  const title = (m && m.position && m.position !== '-') ? m.position : '';
-  deptHeadSelected = { id, name, loginId, title };
+  deptHeadSelected = { id, name, loginId };
   deptHeadRenderTable();
-  const btn = document.getElementById('dept-head-confirm-btn');
-  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
 }
 function deptConfirmHead() {
-  if (!deptHeadSelected) return;
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
+  if (!deptHeadSelected) { alert('부서장으로 설정할 임직원을 선택해주세요.'); return; }
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
   if (!node) return;
   if (!node.headList) node.headList = [];
   // 동일 인물 중복 등록 방지
   if (node.headList.some(h => h.id === deptHeadSelected.id)) {
     alert('이미 부서장으로 설정된 임직원입니다.'); return;
   }
-  // 첫 번째 등록 → 대표, 이후 → 겸직
-  const hasLead = node.headList.some(h => h.role === '대표');
-  const role = hasLead ? '겸직' : '대표';
-  node.headList.push({ id: deptHeadSelected.id, name: deptHeadSelected.name, title: deptHeadSelected.title || '', role });
+  // 첫 등록 → 대표, 추가 등록 → 자동 겸직 (팝업 없음, 1명씩 등록)
+  const role = node.headList.length === 0 ? '대표' : '겸직';
+  node.headList.push({
+    role,
+    id: deptHeadSelected.id,
+    name: deptHeadSelected.name,
+    title: role === '대표' ? '대표부서장' : '겸직부서장'
+  });
   deptCloseHeadModal();
   deptRenderHeadCard(node);
   deptRenderTree();
   deptHeadSelected = null;
 }
 function deptClearHead(deptId, empId) {
-  if (!confirm('해당 부서장을 해제하시겠습니까?')) return;
-  const leaf = findLeafOfDept(deptId);
-  const node = leaf ? findDeptNode(deptId, leaf.depts) : null;
-  if (!node) return;
-  const target = (node.headList || []).find(h => h.id === empId);
-  const wasLead = target && target.role === '대표';
-  node.headList = (node.headList || []).filter(h => h.id !== empId);
-  // 대표 해제 시 겸직 중 첫 번째를 자동 승격
-  if (wasLead && node.headList.length > 0) {
-    const firstGeonjik = node.headList.find(h => h.role === '겸직');
-    if (firstGeonjik) firstGeonjik.role = '대표';
-  }
-  deptRenderHeadCard(node);
-  deptRenderTree();
-}
-function deptPromoteHead(deptId, empId) {
-  if (!confirm('해당 겸직 부서장을 대표 부서장으로 설정하시겠습니까?')) return;
-  const leaf = findLeafOfDept(deptId);
-  const node = leaf ? findDeptNode(deptId, leaf.depts) : null;
-  if (!node || !node.headList) return;
-  // 기존 대표를 겸직으로 변경
-  node.headList.forEach(h => { if (h.role === '대표') h.role = '겸직'; });
-  // 선택한 겸직을 대표로 승격
-  const target = node.headList.find(h => h.id === empId);
-  if (target) target.role = '대표';
-  // 대표를 맨 앞으로 정렬
-  node.headList.sort((a, b) => (a.role === '대표' ? -1 : 1));
+  if (!confirm('해당 부서장을 해제하시겠습니까?\n부서장을 해제하면 해당 부서에서도 삭제됩니다.')) return;
+  const node = findDeptNode(deptId, DEPT_DATA);
+  if (node) { node.headList = (node.headList||[]).filter(h => h.id !== empId); }
   deptRenderHeadCard(node);
   deptRenderTree();
 }
@@ -10513,42 +10191,30 @@ let deptAddMbrCurrentPage  = 1;
 let deptAddMbrPageSize     = 50;
 
 function deptAddMember() {
-  if (!deptSelectedId || deptSelectedId.indexOf('__unassigned__') === 0 || deptSelectedId.indexOf('co-') === 0) return;
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
-  if (!node) return;
-  const currentIds = ((leaf.members||{})[deptSelectedId]||[]).map(m=>m.id);
+  if (!deptSelectedId || deptSelectedId==='__unassigned__') return;
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
+  const currentIds = (DEPT_MEMBERS[deptSelectedId]||[]).map(m=>m.id);
   document.getElementById('dept-add-mbr-dept').textContent = node.name;
   document.getElementById('dept-add-mbr-kw').value = '';
   document.getElementById('dept-add-mbr-type').value = 'name';
-  // 회사 드롭다운: 로그인 계정의 소속 범위(상위관리자 기준)에 노출되는 회사만 구성
-  const coSel = document.getElementById('dept-add-mbr-company');
-  const coList = deptGetScopeCompanyNames();
-  coSel.innerHTML = '<option value="">회사 선택</option>' + coList.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('dept-add-mbr-unassigned').checked = false;
   deptAddMbrCurrentPage = 1; deptAddMbrPageSize = 50;
-  // 부서 미지정 임직원만 노출 (이미 부서가 배정된 임직원은 목록에서 제외)
-  deptAddMbrFilteredPool = deptGetScopedMemberPool().filter(m=>!currentIds.includes(m.id) && m.dept==='부서 미지정');
+  deptAddMbrFilteredPool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id));
   deptAddMbrRenderTable();
   document.getElementById('dept-add-mbr-modal').style.display = 'flex';
 }
-function deptCloseAddMbrModal() {
-  document.getElementById('dept-add-mbr-modal').style.display='none';
-  const btn = document.getElementById('dept-add-mbr-confirm-btn');
-  if (btn) { btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none'; }
-}
+function deptCloseAddMbrModal() { document.getElementById('dept-add-mbr-modal').style.display='none'; }
 function deptAddMbrSearch() {
-  const leaf = findLeafOfDept(deptSelectedId);
-  const currentIds = ((leaf&&leaf.members||{})[deptSelectedId]||[]).map(m=>m.id);
+  const currentIds = (DEPT_MEMBERS[deptSelectedId]||[]).map(m=>m.id);
   const kw = document.getElementById('dept-add-mbr-kw').value.trim();
   const type = document.getElementById('dept-add-mbr-type').value;
-  const co   = document.getElementById('dept-add-mbr-company').value;
-  // 부서 미지정 임직원만 검색 대상 (이미 부서가 배정된 임직원은 제외)
-  let pool = deptGetScopedMemberPool().filter(m=>!currentIds.includes(m.id) && m.dept==='부서 미지정');
-  if (co) pool = pool.filter(m => m.co === co);
+  const onlyUnasgn = document.getElementById('dept-add-mbr-unassigned').checked;
+  let pool = ALL_MEMBERS_POOL.filter(m=>!currentIds.includes(m.id));
+  if (onlyUnasgn) pool = pool.filter(m=>m.dept==='부서 미지정');
   if (kw) pool = pool.filter(m=>{
     if(type==='name')   return m.name.includes(kw);
     if(type==='loginId')return m.loginId.includes(kw);
-    if(type==='empno')  return m.empNo.includes(kw);
+    if(type==='dept')   return m.dept.includes(kw);
     return m.name.includes(kw)||m.loginId.includes(kw);
   });
   deptAddMbrFilteredPool = pool;
@@ -10576,9 +10242,9 @@ function deptAddMbrRenderTable() {
         <td onclick="event.stopPropagation()"><input type="checkbox" class="dept-add-mbr-chk" data-id="${m.id}" data-name="${m.name}" onchange="deptAddMbrUpdateRow(this)"></td>
         <td>${total - (start+i)}</td>
         <td>${maskName(m.name)}</td>
-        <td style="text-align:left;padding-left:10px;color:#444;">${m.co||'-'}</td>
         <td style="color:var(--primary);">${maskLoginId(m.loginId)}</td>
         <td style="font-family:monospace;color:#666;">${m.empNo}</td>
+        <td>${m.dept}</td>
         <td>${m.grade}</td>
       </tr>`).join('');
   renderPagination('dept-add-mbr-pagination', Math.ceil(total/ps)||1, cp, p => {
@@ -10589,20 +10255,16 @@ function deptAddMbrRenderTable() {
 function deptAddMbrRender() { /* legacy compat */ }
 function deptConfirmAddMbr() {
   const checked = [...document.querySelectorAll('.dept-add-mbr-chk:checked')];
-  if (checked.length===0) return;
-
-  const leaf = findLeafOfDept(deptSelectedId);
-  const node = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
-  if (!leaf || !node) return;
-  if (!leaf.members) leaf.members = {};
-  if (!leaf.members[deptSelectedId]) leaf.members[deptSelectedId] = [];
-  // 추가된 임직원을 회사의 members에 반영
+  if (checked.length===0) { alert('추가할 임직원을 선택해주세요.'); return; }
+  const node = findDeptNode(deptSelectedId, DEPT_DATA);
+  if (!DEPT_MEMBERS[deptSelectedId]) DEPT_MEMBERS[deptSelectedId] = [];
+  // 추가된 임직원을 DEPT_MEMBERS에 반영
   checked.forEach(chk => {
     const m = ALL_MEMBERS_POOL.find(p => p.id === chk.dataset.id);
     if (!m) return;
-    const alreadyIn = leaf.members[deptSelectedId].some(x => x.id === m.id);
+    const alreadyIn = DEPT_MEMBERS[deptSelectedId].some(x => x.id === m.id);
     if (!alreadyIn) {
-      leaf.members[deptSelectedId].unshift({
+      DEPT_MEMBERS[deptSelectedId].unshift({
         id: m.id, name: m.name, loginId: m.loginId, empNo: m.empNo,
         grade: m.grade, position: '', status: m.status,
         lastLogin: m.lastLogin
@@ -10614,7 +10276,7 @@ function deptConfirmAddMbr() {
   // 우측 패널 즉시 업데이트
   deptMbrCurrentPage = 1;
   deptRenderMemberCard(deptSelectedId);
-  document.getElementById('dept-mbr-cnt').textContent = leaf.members[deptSelectedId].length;
+  document.getElementById('dept-mbr-cnt').textContent = DEPT_MEMBERS[deptSelectedId].length;
   // 토스트 알림
   deptShowToast(`${node.name}에 ${checked.length}명이 추가되었습니다.`);
 }
@@ -10622,22 +10284,9 @@ function deptConfirmAddMbr() {
 function deptMoveMember() {
   const checked = [...document.querySelectorAll('.dept-mbr-chk:checked')];
   if (checked.length===0) { alert('이동할 임직원을 선택해주세요.'); return; }
-  const ids = checked.map(c=>c.dataset.id);
-  const leaf = findLeafOfDept(deptSelectedId);
-  const curNode = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
-  if (curNode && ids.some(id => (curNode.headList||[]).some(h => h.id === id))) {
-    alert('부서장인 임직원의 소속을 이동 시 부서장도 함께 해제 됩니다.');
-  }
-  deptOpenMoveModal(ids);
+  deptOpenMoveModal(checked.map(c=>c.dataset.id));
 }
-function deptMoveSingle(id) {
-  const leaf = findLeafOfDept(deptSelectedId);
-  const curNode = leaf ? findDeptNode(deptSelectedId, leaf.depts) : null;
-  if (curNode && (curNode.headList||[]).some(h => h.id === id)) {
-    alert('부서장인 임직원의 소속을 이동 시 부서장도 함께 해제 됩니다.');
-  }
-  deptOpenMoveModal([id]);
-}
+function deptMoveSingle(id) { deptOpenMoveModal([id]); }
 // ── 임직원 추가 팝업 체크박스 행 클릭 헬퍼 ──────
 function deptAddMbrRowClick(e, id) {
   // td 자체 클릭 시 체크박스 토글 (체크박스 셀은 stopPropagation)
@@ -10647,9 +10296,6 @@ function deptAddMbrRowClick(e, id) {
 function deptAddMbrUpdateRow(chk) {
   const tr = chk.closest('tr');
   if (tr) tr.style.background = chk.checked ? '#e8f0fe' : '';
-  const anyChecked = [...document.querySelectorAll('.dept-add-mbr-chk:checked')].length > 0;
-  const btn = document.getElementById('dept-add-mbr-confirm-btn');
-  if (btn) { btn.style.opacity = anyChecked ? '1' : '0.45'; btn.style.pointerEvents = anyChecked ? 'auto' : 'none'; }
 }
 // ── 부서이동 팝업 ─────────────────────────────
 let deptMoveMbrIds = [];
@@ -10665,8 +10311,6 @@ function deptCloseMoveModal() { document.getElementById('dept-move-modal').style
 function deptRenderMoveTree(filter, selectedId) {
   const container = document.getElementById('dept-move-tree');
   container.innerHTML = '';
-  const leaf = findLeafOfDept(deptSelectedId);
-  if (!leaf) return;
   function renderNode(node, depth) {
     const isMatch = !filter || node.name.includes(filter);
     const childMatch = (node.children||[]).some(c => nodeMatchesMoveFilter(c, filter));
@@ -10690,22 +10334,17 @@ function deptRenderMoveTree(filter, selectedId) {
     container.appendChild(item);
     (node.children||[]).forEach(c=>renderNode(c, depth+1));
   }
-  const hint = document.createElement('div');
-  hint.style.cssText = 'padding:6px 10px;font-size:11px;color:#999;';
-  hint.textContent = `${leaf.name} 소속 부서로만 이동할 수 있습니다.`;
-  container.appendChild(hint);
-  (leaf.depts||[]).forEach(n=>renderNode(n,0));
-  // 미지정 항목 (같은 회사 범위)
-  const unassignedId = '__unassigned__:' + leaf.id;
+  DEPT_DATA.forEach(n=>renderNode(n,0));
+  // 미지정 항목
   const uItem = document.createElement('div');
-  const uSel = selectedId === unassignedId;
+  const uSel = selectedId === '__unassigned__';
   uItem.style.cssText = `padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:12px;border-top:1px solid var(--border);border-left:3px solid ${uSel?'#e67e22':'transparent'};background:${uSel?'#fff8f0':'#fafbfc'};color:${uSel?'#b45309':'#888'};`;
   uItem.innerHTML = `<span>⊘ 소속 미지정</span>`;
   uItem.onclick = () => {
-    document.getElementById('dept-move-selected-id').value = unassignedId;
+    document.getElementById('dept-move-selected-id').value = '__unassigned__';
     const ub = document.getElementById('dept-move-confirm-btn');
     ub.disabled = false; ub.style.opacity = '1';
-    deptRenderMoveTree(filter, unassignedId);
+    deptRenderMoveTree(filter, '__unassigned__');
   };
   container.appendChild(uItem);
 }
@@ -10718,59 +10357,43 @@ function deptConfirmMove() {
   const targetId = document.getElementById('dept-move-selected-id').value;
   if (!targetId) { alert('이동할 부서를 선택해주세요.'); return; }
   if (targetId === deptSelectedId) { alert('기존 부서와 동일합니다. 다른 부서를 선택해주세요.'); return; }
+  const targetNode = targetId==='__unassigned__' ? {name:'소속 미지정'} : findDeptNode(targetId, DEPT_DATA);
   const srcId = deptSelectedId;
-  const leaf = findLeafOfDept(srcId);
-  if (!leaf) return;
-  const isTargetUnassigned = targetId.indexOf('__unassigned__:') === 0;
-  const targetNode = isTargetUnassigned ? {name:'소속 미지정'} : findDeptNode(targetId, leaf.depts);
-  if (!targetNode) return;
 
-  // 이동 대상이 현재 부서장인 경우 부서장 해제
-  const srcNode = findDeptNode(srcId, leaf.depts);
-  if (srcNode && srcNode.headList) {
-    srcNode.headList = srcNode.headList.filter(h => !deptMoveMbrIds.includes(h.id));
+  // 현재 부서에서 대상 임직원 제거
+  if (DEPT_MEMBERS[srcId]) {
+    DEPT_MEMBERS[srcId] = DEPT_MEMBERS[srcId].filter(m => !deptMoveMbrIds.includes(m.id));
   }
-  // 이동할 임직원 정보를 먼저 확보한 뒤 현재 부서에서 제거 (데이터 유실 방지)
-  if (!leaf.members) leaf.members = {};
-  const srcList = leaf.members[srcId] || [];
-  const movedMembers = srcList.filter(m => deptMoveMbrIds.includes(m.id));
-  leaf.members[srcId] = srcList.filter(m => !deptMoveMbrIds.includes(m.id));
-  // 이동 대상에 추가
-  if (isTargetUnassigned) {
-    if (!leaf.unassigned) leaf.unassigned = [];
-    movedMembers.forEach(m => { if (!leaf.unassigned.some(x=>x.id===m.id)) leaf.unassigned.push({...m}); });
-  } else {
-    if (!leaf.members[targetId]) leaf.members[targetId] = [];
-    movedMembers.forEach(m => { if (!leaf.members[targetId].some(x=>x.id===m.id)) leaf.members[targetId].unshift({...m}); });
+  // 이동 대상 부서에 추가 (미지정 제외)
+  if (targetId !== '__unassigned__') {
+    if (!DEPT_MEMBERS[targetId]) DEPT_MEMBERS[targetId] = [];
+    const movedMembers = (DEPT_MEMBERS[srcId+'_moved_tmp'] || []);
+    // 원래 srcId 에서 이미 제거됐으니 ALL_MEMBERS_POOL 에서 찾아 추가
+    deptMoveMbrIds.forEach(mid => {
+      const m = [...(DEPT_MEMBERS[srcId]||[]), ...ALL_MEMBERS_POOL].find(x => x.id === mid);
+      if (m && !DEPT_MEMBERS[targetId].some(x => x.id === mid)) {
+        DEPT_MEMBERS[targetId].unshift({...m});
+      }
+    });
   }
   deptCloseMoveModal();
   // 현재 부서 패널 즉시 업데이트
   deptMbrCurrentPage = 1;
   deptRenderMemberCard(srcId);
-  document.getElementById('dept-mbr-cnt').textContent = (leaf.members[srcId]||[]).length;
-  deptRenderTree(document.getElementById('dept-search-input').value.trim()||null);
+  document.getElementById('dept-mbr-cnt').textContent = (DEPT_MEMBERS[srcId]||[]).length;
   deptShowToast(`${deptMoveMbrIds.length}명이 [${targetNode.name}]으로 이동되었습니다.`);
 }
 
 // ── 토스트 알림 ──────────────────────────────
-function deptShowToast(msg, type) {
-  const bg = type === 'error' ? '#c0392b' : '#323232';
+function deptShowToast(msg) {
   const t = document.createElement('div');
   t.style.cssText = `position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
-    background:${bg};color:#fff;font-size:12px;padding:10px 20px;border-radius:6px;
+    background:#323232;color:#fff;font-size:12px;padding:10px 20px;border-radius:6px;
     box-shadow:0 4px 12px rgba(0,0,0,0.25);z-index:9999;pointer-events:none;
     animation:toastIn 0.2s ease;white-space:nowrap;`;
   t.textContent = msg;
   document.body.appendChild(t);
-  const duration = type === 'error' ? 3500 : 2200;
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>document.body.removeChild(t),300); }, duration);
-}
-
-function deptExcelDown()    { alert('소속 임직원 목록 엑셀 파일이 다운로드됩니다.'); }
-function deptSearchMbr() {
-  const kw = document.getElementById('dept-mbr-kw').value.trim();
-  if (!kw) { alert('검색어를 입력해주세요.'); return; }
-  alert(`"${kw}" 키워드로 검색합니다.`);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>document.body.removeChild(t),300); }, 2200);
 }
 
 
@@ -10782,60 +10405,27 @@ function deptSearchMbr() {
 let dhSelectedNodeId = null;  // 현재 선택된 부서 ID
 
 // ── 탭 진입 시 초기화 ──
-// deptScopeCompanyId([프로토타입 시뮬레이션] 로그인 계정 소속 범위)는 "부서" 탭과 공유되는 전역 상태이므로
-// 탭 전환 시 초기화하지 않고, 드롭다운 선택 표시만 현재 값에 맞춰 다시 그림
 function dhRefresh() {
   dhSelectedNodeId = null;
   document.getElementById('dh-tree-kw').value = '';
   document.getElementById('dh-filter-unset').checked = false;
-  dhPopulateScopeSelect();
-  dhRenderTree('');
+  dhRenderTree(DEPT_DATA, '');
   dhUpdateUnsetBadge();
   dhShowEmpty();
 }
 
-// ── [프로토타입 시뮬레이션] 로그인 계정 소속 범위 선택 (부서 탭과 deptScopeCompanyId 공유) ──
-function dhPopulateScopeSelect() {
-  const sel = document.getElementById('dh-scope-select');
-  if (!sel) return;
-  const flat = deptFlattenCompanies(COMPANY_TREE, 0);
-  sel.innerHTML = `<option value="">🔓 전체 보기 (최상위 관리자)</option>` +
-    flat.map(f => `<option value="${f.node.id}" ${f.node.id===deptScopeCompanyId?'selected':''}>${'&nbsp;&nbsp;&nbsp;'.repeat(f.depth)}${f.node.ctype} · ${f.node.name} 소속으로 보기</option>`).join('');
-  const desc = document.getElementById('dh-scope-desc');
-  if (deptScopeCompanyId) {
-    const node = findCompanyNode(deptScopeCompanyId);
-    desc.textContent = node
-      ? `→ "${node.name}"(${node.ctype}) 소속 교육담당자 시야: 이 회사와 그 하위 조직만 조회되며, 상위·타 계열사의 조직도·임직원 정보는 노출되지 않습니다.`
-      : '';
-  } else {
-    desc.textContent = '';
-  }
-}
-function dhSetScope(companyId) {
-  deptScopeCompanyId = companyId || null;
-  dhSelectedNodeId = null;
-  document.getElementById('dh-tree-kw').value = '';
-  document.getElementById('dh-filter-unset').checked = false;
-  dhPopulateScopeSelect();
-  dhRenderTree('');
-  dhUpdateUnsetBadge();
-  dhShowEmpty();
-}
-
-// ── 미설정 부서 수 배지 업데이트 (소속 범위 내 회사 계층만 순회) ──
+// ── 미설정 부서 수 배지 업데이트 ──
 function dhUpdateUnsetBadge() {
   let cnt = 0;
-  function walkDepts(arr) { (arr||[]).forEach(n => { if (!n.headList || n.headList.length === 0) cnt++; if (n.children) walkDepts(n.children); }); }
-  function walkCompanies(arr) { (arr||[]).forEach(n => { walkDepts(n.depts||[]); walkCompanies(n.children||[]); }); }
-  const scopeRoot = deptScopeCompanyId ? findCompanyNode(deptScopeCompanyId) : null;
-  walkCompanies(scopeRoot ? [scopeRoot] : COMPANY_TREE);
+  function walk(arr) { arr.forEach(n => { if (!n.headList || n.headList.length === 0) cnt++; if (n.children) walk(n.children); }); }
+  walk(DEPT_DATA);
   const el = document.getElementById('dh-unset-badge');
   if (cnt > 0) { el.textContent = cnt + '개 미설정'; el.style.display = ''; }
   else { el.textContent = ''; el.style.display = 'none'; }
 }
 
-// ── 트리 렌더 (연결선 포함, 그룹사/계열사/하위계열사 헤더 행 포함) ──
-function dhRenderTree(kw) {
+// ── 트리 렌더 (연결선 포함) ──
+function dhRenderTree(data, kw) {
   const filterUnset = document.getElementById('dh-filter-unset').checked;
   const container = document.getElementById('dh-tree-body');
 
@@ -10845,41 +10435,9 @@ function dhRenderTree(kw) {
     const childMatch = (node.children || []).some(c => nodeMatchesFilter(c));
     return (nameMatch && unsetMatch) || childMatch;
   }
-  function companyMatchesFilter(node) {
-    const ownMatch = (node.depts||[]).some(d => nodeMatchesFilter(d));
-    const childMatch = (node.children||[]).some(c => companyMatchesFilter(c));
-    return ownMatch || childMatch;
-  }
-  function buildLinePrefix(depth, isLast, ancestorLines) {
-    let linePrefix = '';
-    if (depth === 0) return linePrefix;
-    // 조상 depth 세로선
-    for (let d = 0; d < depth - 1; d++) {
-      linePrefix += ancestorLines[d]
-        ? `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
-            <span style="position:absolute;left:7px;top:0;bottom:0;width:1px;background:#dde1e7;"></span>
-           </span>`
-        : `<span style="display:inline-block;width:14px;flex-shrink:0;"></span>`;
-    }
-    // 현재 노드 꺾임선 (├ 또는 └)
-    if (isLast) {
-      // └ : 위쪽 절반만 세로선 + 수평선
-      linePrefix += `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
-        <span style="position:absolute;left:7px;top:0;height:50%;width:1px;background:#dde1e7;"></span>
-        <span style="position:absolute;left:7px;top:50%;width:7px;height:1px;background:#dde1e7;"></span>
-      </span>`;
-    } else {
-      // ├ : 전체 세로선 + 수평선
-      linePrefix += `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
-        <span style="position:absolute;left:7px;top:0;bottom:0;width:1px;background:#dde1e7;"></span>
-        <span style="position:absolute;left:7px;top:50%;width:7px;height:1px;background:#dde1e7;"></span>
-      </span>`;
-    }
-    return linePrefix;
-  }
 
   // ancestorLines: 각 depth에서 세로선을 이을지 여부 배열
-  function buildDeptHtml(nodes, depth, ancestorLines) {
+  function buildHtml(nodes, depth, ancestorLines) {
     let html = '';
     // 필터 통과 노드만 추림
     const visibleNodes = nodes.filter(n => nodeMatchesFilter(n));
@@ -10888,7 +10446,34 @@ function dhRenderTree(kw) {
       const hasChildren = node.children && node.children.length > 0;
       const isSelected = node.id === dhSelectedNodeId;
       const hasHead = node.headList && node.headList.length > 0;
-      const linePrefix = buildLinePrefix(depth, isLast, ancestorLines);
+
+      // ── 연결선 SVG 조합 ──
+      // 각 depth(0~depth-1) 에 대해 ancestorLines[d] 면 │ 계속, 아니면 공백
+      let linePrefix = '';
+      if (depth > 0) {
+        // 조상 depth 세로선
+        for (let d = 0; d < depth - 1; d++) {
+          linePrefix += ancestorLines[d]
+            ? `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
+                <span style="position:absolute;left:7px;top:0;bottom:0;width:1px;background:#dde1e7;"></span>
+               </span>`
+            : `<span style="display:inline-block;width:14px;flex-shrink:0;"></span>`;
+        }
+        // 현재 노드 꺾임선 (├ 또는 └)
+        if (isLast) {
+          // └ : 위쪽 절반만 세로선 + 수평선
+          linePrefix += `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
+            <span style="position:absolute;left:7px;top:0;height:50%;width:1px;background:#dde1e7;"></span>
+            <span style="position:absolute;left:7px;top:50%;width:7px;height:1px;background:#dde1e7;"></span>
+          </span>`;
+        } else {
+          // ├ : 전체 세로선 + 수평선
+          linePrefix += `<span style="display:inline-block;width:14px;flex-shrink:0;position:relative;">
+            <span style="position:absolute;left:7px;top:0;bottom:0;width:1px;background:#dde1e7;"></span>
+            <span style="position:absolute;left:7px;top:50%;width:7px;height:1px;background:#dde1e7;"></span>
+          </span>`;
+        }
+      }
 
       // 부서장 미설정 표시
       const unsetDot = !hasHead
@@ -10919,51 +10504,28 @@ function dhRenderTree(kw) {
       if (hasChildren) {
         // 자식의 ancestorLines: 현재가 마지막이면 false(세로선 없음), 아니면 true
         const childAncestorLines = [...ancestorLines, !isLast];
-        html += buildDeptHtml(node.children, depth + 1, childAncestorLines);
+        html += buildHtml(node.children, depth + 1, childAncestorLines);
       }
     });
     return html;
   }
 
-  // 회사(그룹사/계열사/하위계열사) 헤더 행 — 조회 전용, 자체 부서(depts)를 바로 아래에 렌더링
-  function buildCompanyHtml(nodes, depth, ancestorLines) {
-    let html = '';
-    const visibleNodes = nodes.filter(n => companyMatchesFilter(n));
-    visibleNodes.forEach((node, idx) => {
-      const isLast = (idx === visibleNodes.length - 1);
-      const linePrefix = buildLinePrefix(depth, isLast, ancestorLines);
-      const badgeColor = node.ctype==='그룹사' ? 'background:#1e2b37;color:#fff;' : node.ctype==='계열사' ? 'background:#3a6fd8;color:#fff;' : 'background:#1aa88f;color:#fff;';
-      html += `<div style="display:flex;align-items:center;padding:6px 10px;font-size:12px;min-height:30px;background:#f7f9fc;color:#333;">
-        ${linePrefix}
-        <span style="font-size:13px;margin-right:4px;">🏢</span>
-        <span style="font-size:10px;border-radius:3px;padding:1px 6px;white-space:nowrap;margin-right:6px;${badgeColor}">${node.ctype}</span>
-        <span style="flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${node.name}">${node.name}</span>
-      </div>`;
-      const childAncestorLines = [...ancestorLines, !isLast];
-      html += buildDeptHtml(node.depts||[], depth+1, childAncestorLines);
-      html += buildCompanyHtml(node.children||[], depth+1, childAncestorLines);
-    });
-    return html;
-  }
-
-  const scopeRoot = deptScopeCompanyId ? findCompanyNode(deptScopeCompanyId) : null;
-  container.innerHTML = buildCompanyHtml(scopeRoot ? [scopeRoot] : COMPANY_TREE, 0, []) ||
+  container.innerHTML = buildHtml(data, 0, []) ||
     `<div style="text-align:center;padding:24px;color:#bbb;font-size:12px;">일치하는 부서가 없습니다.</div>`;
 }
 
 // ── 트리 검색 ──
 function dhTreeSearch(kw) {
-  dhRenderTree(kw);
+  dhRenderTree(DEPT_DATA, kw);
 }
 
 // ── 부서 선택 ──
 function dhSelectDept(nodeId) {
   dhSelectedNodeId = nodeId;
   // 트리 재렌더 (선택 하이라이트)
-  dhRenderTree(document.getElementById('dh-tree-kw').value);
+  dhRenderTree(DEPT_DATA, document.getElementById('dh-tree-kw').value);
   // 우측 상세 표시
-  const leaf = findLeafOfDept(nodeId);
-  const node = leaf ? findDeptNode(nodeId, leaf.depts) : null;
+  const node = findDeptNode(nodeId, DEPT_DATA);
   if (!node) return;
   dhShowDetail(node);
 }
@@ -11059,8 +10621,7 @@ function dhRenderHeadTable(node) {
 
 // ── 대표 부서장 승격 확인 팝업 ──
 function dhOpenPromote(nodeId, headIdx) {
-  const leaf = findLeafOfDept(nodeId);
-  const node = leaf ? findDeptNode(nodeId, leaf.depts) : null;
+  const node = findDeptNode(nodeId, DEPT_DATA);
   if (!node) return;
   const h = (node.headList || [])[headIdx];
   if (!h) return;
@@ -11076,15 +10637,14 @@ function dhConfirmPromote() {
   const modal = document.getElementById('dh-promote-modal');
   const { nodeId, headIdx } = modal._target || {};
   if (nodeId == null) return;
-  const leaf = findLeafOfDept(nodeId);
-  const node = leaf ? findDeptNode(nodeId, leaf.depts) : null;
+  const node = findDeptNode(nodeId, DEPT_DATA);
   if (node && node.headList && node.headList[headIdx]) {
     node.headList[headIdx].role = '대표';
     node.headList[headIdx].title = '대표부서장';
   }
   dhClosePromote();
   dhUpdateUnsetBadge();
-  dhRenderTree(document.getElementById('dh-tree-kw').value);
+  dhRenderTree(DEPT_DATA, document.getElementById('dh-tree-kw').value);
   if (dhSelectedNodeId === nodeId) dhShowDetail(node);
   dhShowToast('대표 부서장으로 설정되었습니다.');
 }
@@ -11099,8 +10659,7 @@ function dhOpenSetModal() {
 
 // ── 부서장 해제 ──
 function dhOpenRelease(nodeId, headIdx) {
-  const leaf = findLeafOfDept(nodeId);
-  const node = leaf ? findDeptNode(nodeId, leaf.depts) : null;
+  const node = findDeptNode(nodeId, DEPT_DATA);
   if (!node) return;
   const h = (node.headList || [])[headIdx];
   if (!h) return;
@@ -11117,13 +10676,12 @@ function dhConfirmRelease() {
   const modal = document.getElementById('dh-release-modal');
   const { nodeId, headIdx } = modal._target || {};
   if (nodeId == null) return;
-  const leaf = findLeafOfDept(nodeId);
-  const node = leaf ? findDeptNode(nodeId, leaf.depts) : null;
+  const node = findDeptNode(nodeId, DEPT_DATA);
   if (node && node.headList) node.headList.splice(headIdx, 1);
   dhCloseRelease();
   // 트리 & 우측 즉시 갱신
   dhUpdateUnsetBadge();
-  dhRenderTree(document.getElementById('dh-tree-kw').value);
+  dhRenderTree(DEPT_DATA, document.getElementById('dh-tree-kw').value);
   if (dhSelectedNodeId === nodeId) dhShowDetail(node);
   // 부서 탭 부서장 카드도 동기화
   if (typeof deptSelectedId !== 'undefined' && deptSelectedId === nodeId) deptRenderHeadCard(node);
@@ -11150,9 +10708,8 @@ if (typeof _deptConfirmHeadOrig === 'function') {
     _deptConfirmHeadOrig();
     // 부서장 탭 우측이 표시 중이면 즉시 반영
     if (dhSelectedNodeId) {
-      const leaf = findLeafOfDept(dhSelectedNodeId);
-      const n = leaf ? findDeptNode(dhSelectedNodeId, leaf.depts) : null;
-      if (n) { dhUpdateUnsetBadge(); dhRenderTree(document.getElementById('dh-tree-kw').value); dhShowDetail(n); }
+      const n = findDeptNode(dhSelectedNodeId, DEPT_DATA);
+      if (n) { dhUpdateUnsetBadge(); dhRenderTree(DEPT_DATA, document.getElementById('dh-tree-kw').value); dhShowDetail(n); }
     }
   };
 }
