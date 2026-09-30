@@ -272,7 +272,7 @@ function _meMbrInjectDOM() {
     <!-- 개별등록 패널 -->
     <div id="me-mbr-panel-single" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
       <div style="padding:10px 14px;border-bottom:1px solid var(--border,#e0e3e8);flex-shrink:0;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-        <select class="select" style="height:28px;font-size:12px;width:100px;" id="me-mbr-s-company"></select>
+        <select class="select" style="height:28px;font-size:12px;width:100px;" id="me-mbr-s-company" onchange="meMbrSingleSearch()"></select>
         <select class="select" style="height:28px;font-size:12px;width:76px;" id="me-mbr-s-type">
           <option value="name">이름</option>
           <option value="loginId">아이디</option>
@@ -693,10 +693,15 @@ function meMbrSelectLeft(idx, type) {
 }
 
 // ── 개별 탭 ─────────────────────────────────────────────────────────
+// 소비 페이지가 getCompanies()로 좁힌 회사 목록(예: 로그인 계정 소속 범위)만 후보 인원 풀에 노출
+function _meMbrScopedPool() {
+  const companies = (_meMbrConfig.getCompanies() || []).slice(1); // 첫 항목은 플레이스홀더
+  return companies.length ? ME_SAMPLE_MEMBERS.filter(m => companies.includes(m.company)) : ME_SAMPLE_MEMBERS;
+}
 function meMbrSingleAll() {
   const tbody = document.getElementById('me-mbr-s-tbody');
   if (!tbody) return;
-  // 검색 필터 초기화
+  // 검색 필터 전체 초기화
   const compSel = document.getElementById('me-mbr-s-company');
   const typeSel = document.getElementById('me-mbr-s-type');
   const kwInput = document.getElementById('me-mbr-s-kw');
@@ -704,7 +709,8 @@ function meMbrSingleAll() {
   if (typeSel) typeSel.selectedIndex = 0;
   if (kwInput) kwInput.value = '';
   const registered = _meMbrConfig.getRegistered();
-  tbody.innerHTML = ME_SAMPLE_MEMBERS.map(m => {
+  const pool = _meMbrScopedPool();
+  tbody.innerHTML = pool.map(m => {
     const isReg = registered.some(r => r.empno === m.empno) || ME_COLLECTED.some(r => r.empno === m.empno);
     return `<tr data-name="${m.name}" data-empno="${m.empno}" data-loginid="${m.loginId||m.empno}" data-company="${m.company}" data-dept="${m.dept}"${isReg ? ' style="background:#fafafa;"' : ''}>
     <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : '<input type="checkbox" class="me-mbr-s-chk" onchange="meMbrSelCount()">'}</td>
@@ -716,15 +722,16 @@ function meMbrSingleAll() {
     <td style="text-align:center;padding:3px 4px;">${isReg ? '' : '<button class="btn btn-reset" style="height:20px;padding:0 6px;font-size:11px;" onclick="meMbrAddSingleRowToCollected(this)">추가</button>'}</td>
     </tr>`;
   }).join('');
-  document.getElementById('me-mbr-s-total').textContent = ME_SAMPLE_MEMBERS.length;
+  document.getElementById('me-mbr-s-total').textContent = pool.length;
   meMbrSelCount();
 }
 function meMbrSingleSearch() {
   const kw = document.getElementById('me-mbr-s-kw')?.value.trim();
-  if (!kw) { meMbrSingleAll(); return; }
+  const company = document.getElementById('me-mbr-s-company')?.value;
   const registered = _meMbrConfig.getRegistered();
-  const filtered = ME_SAMPLE_MEMBERS.filter(m =>
-    m.name.includes(kw) || m.empno.includes(kw) || m.dept.includes(kw) || (m.loginId||'').includes(kw)
+  const filtered = _meMbrScopedPool().filter(m =>
+    (!company || m.company === company) &&
+    (!kw || m.name.includes(kw) || m.empno.includes(kw) || m.dept.includes(kw) || (m.loginId||'').includes(kw))
   );
   const tbody = document.getElementById('me-mbr-s-tbody');
   tbody.innerHTML = filtered.length

@@ -419,6 +419,13 @@
       </div>
     </div>
 
+    <!-- [프로토타입 시뮬레이션] 로그인 계정 소속 범위 — 실제로는 로그인 세션 기준으로 자동 결정됨 -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;margin-bottom:16px;">
+      <span style="font-weight:700;white-space:nowrap;">🔐 [시뮬레이션] 로그인 계정 소속</span>
+      <select id="diag-scope-select" style="height:24px;font-size:11px;padding:0 6px;max-width:280px;border:1px solid #ccc;border-radius:3px;" onchange="diagSetScope(this.value)"></select>
+      <span id="diag-scope-desc" style="color:#3a5a99;"></span>
+    </div>
+
     <!-- 기본 정보 (모든 상태 공통 노출) -->
     <div class="summary-stat-card" style="margin-bottom:16px;">
       <div class="summary-stat-title">기본 정보</div>
@@ -464,6 +471,8 @@
         <option>완료</option>
         <option>중단</option>
       </select>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">회사</span>
+      <select id="after-filter-company" class="select" style="width:130px;"></select>
       <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
       <select id="after-filter-search-type" class="select" style="width:80px;">
         <option value="name">이름</option>
@@ -510,7 +519,7 @@
               <tbody>
                 <tr class="before-data-row" data-name="김*준" data-boss="1" data-member="3" data-peer="2" data-rowno="1">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>1</td><td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td>
+                  <td>1</td><td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>동아쏘시오홀딩스</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td>
                   <td class="resp-self">김*준</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -518,7 +527,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="이*진" data-boss="1" data-member="0" data-peer="3" data-rowno="2">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>2</td><td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td>
+                  <td>2</td><td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>동아ST</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td>
                   <td class="resp-self">이*진</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -526,7 +535,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="박*훈" data-boss="1" data-member="5" data-peer="2" data-rowno="3">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>3</td><td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td>
+                  <td>3</td><td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>동아ST랩스</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td>
                   <td class="resp-self">박*훈</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -534,7 +543,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="최*리" data-boss="1" data-member="0" data-peer="4" data-rowno="4">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>4</td><td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td>
+                  <td>4</td><td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>동아쏘시오홀딩스</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td>
                   <td class="resp-self">최*리</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -542,7 +551,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="정*호" data-boss="1" data-member="7" data-peer="2" data-rowno="5">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>5</td><td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td>
+                  <td>5</td><td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>동아ST</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td>
                   <td class="resp-self">정*호</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -550,7 +559,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="한*래" data-boss="1" data-member="0" data-peer="3" data-rowno="6">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>6</td><td>한*래</td><td>m***@hunet.co.kr</td><td>2022044</td><td>휴넷</td><td>재무팀</td><td>차장</td><td>010-****-0123</td>
+                  <td>6</td><td>한*래</td><td>m***@hunet.co.kr</td><td>2022044</td><td>동아ST랩스</td><td>재무팀</td><td>차장</td><td>010-****-0123</td>
                   <td class="resp-self">한*래</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -558,7 +567,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="오*현" data-boss="1" data-member="4" data-peer="0" data-rowno="7">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>7</td><td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td>
+                  <td>7</td><td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>동아쏘시오홀딩스</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td>
                   <td class="resp-self">오*현</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -566,7 +575,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="강*연" data-boss="1" data-member="0" data-peer="2" data-rowno="8">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>8</td><td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td>
+                  <td>8</td><td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>동아ST</td><td>구매팀</td><td>과장</td><td>010-****-2345</td>
                   <td class="resp-self">강*연</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -574,7 +583,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="윤*양" data-boss="1" data-member="6" data-peer="3" data-rowno="9">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>9</td><td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td>
+                  <td>9</td><td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>동아ST랩스</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td>
                   <td class="resp-self">윤*양</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -582,7 +591,7 @@
                 </tr>
                 <tr class="before-data-row" data-name="신*원" data-boss="1" data-member="0" data-peer="2" data-rowno="10">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>10</td><td>신*원</td><td>h***@hunet.co.kr</td><td>2024038</td><td>휴넷</td><td>법무팀</td><td>차장</td><td>010-****-4567</td>
+                  <td>10</td><td>신*원</td><td>h***@hunet.co.kr</td><td>2024038</td><td>동아쏘시오홀딩스</td><td>법무팀</td><td>차장</td><td>010-****-4567</td>
                   <td class="resp-self">신*원</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -591,7 +600,7 @@
                 <!-- 신규 등록 행 — 응답자 미할당 -->
                 <tr class="before-data-row" style="background:#fafff5;" data-name="임*현" data-boss="0" data-member="0" data-peer="0" data-rowno="11">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>11</td><td>임*현</td><td>l***@hunet.co.kr</td><td>2025101</td><td>휴넷</td><td>디지털전략팀</td><td>과장</td><td>010-****-6677</td>
+                  <td>11</td><td>임*현</td><td>l***@hunet.co.kr</td><td>2025101</td><td>동아ST</td><td>디지털전략팀</td><td>과장</td><td>010-****-6677</td>
                   <td class="resp-self">임*현</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -599,7 +608,7 @@
                 </tr>
                 <tr class="before-data-row" style="background:#fafff5;" data-name="황*은" data-boss="0" data-member="0" data-peer="0" data-rowno="12">
                   <td><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></td>
-                  <td>12</td><td>황*은</td><td>c***@hunet.co.kr</td><td>2025102</td><td>휴넷</td><td>글로벌사업팀</td><td>대리</td><td>010-****-7788</td>
+                  <td>12</td><td>황*은</td><td>c***@hunet.co.kr</td><td>2025102</td><td>동아ST랩스</td><td>글로벌사업팀</td><td>대리</td><td>010-****-7788</td>
                   <td class="resp-self">황*은</td>
                   <td class="resp-boss">-</td>
                   <td class="resp-member">-</td>
@@ -691,7 +700,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>1</td>
-                <td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>휴넷</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td><td><span class="badge badge-blue">본인</span></td>
+                <td>김*준</td><td>m***@hunet.co.kr</td><td>2024001</td><td>동아쏘시오홀딩스</td><td>경영전략팀</td><td>팀장</td><td>010-****-5678</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
@@ -701,7 +710,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>2</td>
-                <td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>휴넷</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td><td><span class="badge badge-blue">본인</span></td>
+                <td>이*진</td><td>s***@hunet.co.kr</td><td>2022015</td><td>동아ST</td><td>인재개발팀</td><td>차장</td><td>010-****-6789</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
@@ -716,8 +725,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>3</td>
-                <td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>휴넷</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td><td><span class="badge badge-green">상사</span></td>
-                <td>이*우</td><td>g***@hunet.co.kr</td><td>2019005</td><td>휴넷</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
+                <td>박*훈</td><td>j***@hunet.co.kr</td><td>2021008</td><td>동아ST랩스</td><td>영업1팀</td><td>팀장</td><td>010-****-7890</td><td><span class="badge badge-green">상사</span></td>
+                <td>이*우</td><td>g***@hunet.co.kr</td><td>2019005</td><td>동아ST랩스</td><td>영업2팀</td><td>부장</td><td>010-****-2222</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
                 <td style="font-size:11px;">2025.05.31 23:59</td>
@@ -726,7 +735,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>4</td>
-                <td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>휴넷</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
+                <td>최*리</td><td>y***@hunet.co.kr</td><td>2023022</td><td>동아쏘시오홀딩스</td><td>마케팅팀</td><td>과장</td><td>010-****-8901</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">진행 전</span></td>
@@ -741,7 +750,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>5</td>
-                <td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>휴넷</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td><td><span class="badge badge-blue">본인</span></td>
+                <td>정*호</td><td>s***@hunet.co.kr</td><td>2020031</td><td>동아ST</td><td>IT개발팀</td><td>팀장</td><td>010-****-9012</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
@@ -751,8 +760,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>6</td>
-                <td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>휴넷</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td><td><span class="badge badge-purple">구성원</span></td>
-                <td>이*우</td><td>j***@hunet.co.kr</td><td>2021030</td><td>휴넷</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
+                <td>오*현</td><td>d***@hunet.co.kr</td><td>2019003</td><td>동아쏘시오홀딩스</td><td>고객서비스팀</td><td>부장</td><td>010-****-1234</td><td><span class="badge badge-purple">구성원</span></td>
+                <td>이*우</td><td>j***@hunet.co.kr</td><td>2021030</td><td>동아쏘시오홀딩스</td><td>고객서비스팀</td><td>과장</td><td>010-****-3333</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-blue">진행중</span></td>
                 <td>
@@ -766,7 +775,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>7</td>
-                <td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>휴넷</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
+                <td>강*연</td><td>n***@hunet.co.kr</td><td>2023011</td><td>동아ST</td><td>구매팀</td><td>과장</td><td>010-****-2345</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-gray">진행 전</span></td>
@@ -781,8 +790,8 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>8</td>
-                <td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>휴넷</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td><td><span class="badge badge-orange">동료</span></td>
-                <td>박*경</td><td>s***@hunet.co.kr</td><td>2022055</td><td>휴넷</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
+                <td>윤*양</td><td>t***@hunet.co.kr</td><td>2021019</td><td>동아ST랩스</td><td>품질관리팀</td><td>팀장</td><td>010-****-3456</td><td><span class="badge badge-orange">동료</span></td>
+                <td>박*경</td><td>s***@hunet.co.kr</td><td>2022055</td><td>동아ST랩스</td><td>품질관리팀</td><td>차장</td><td>010-****-4444</td>
                 <td><span class="badge badge-green">발송완료</span></td>
                 <td><span class="badge badge-green">완료</span></td>
                 <td style="font-size:11px;">2025.05.31 23:59</td>
@@ -791,7 +800,7 @@
               <tr>
                 <td><input type="checkbox" class="after-row-chk" style="cursor:pointer;accent-color:var(--primary);" onchange="updateSelCount()"></td>
                 <td>9</td>
-                <td>류*나</td><td>r***@hunet.co.kr</td><td>2025055</td><td>휴넷</td><td>인사팀</td><td>대리</td><td>010-****-9988</td><td><span class="badge badge-blue">본인</span></td>
+                <td>류*나</td><td>r***@hunet.co.kr</td><td>2025055</td><td>동아ST</td><td>인사팀</td><td>대리</td><td>010-****-9988</td><td><span class="badge badge-blue">본인</span></td>
                 <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-gray">진행 전</span></td>
@@ -816,7 +825,7 @@
               <tr class="withdrawn-row">
                 <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>10</td>
-                <td>정*은</td><td>d***@hunet.co.kr</td><td>2023055</td><td>휴넷</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
+                <td>정*은</td><td>d***@hunet.co.kr</td><td>2023055</td><td>동아쏘시오홀딩스</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
                 <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
@@ -959,12 +968,7 @@
           <!-- 검색 -->
           <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fb;">
             <div style="display:flex;gap:6px;align-items:center;">
-              <select id="diag-resp-search-company" class="select" style="width:130px;">
-                <option value="">회사 선택</option>
-                <option>동아ST</option>
-                <option>동아쏘시오홀딩스</option>
-                <option>휴넷</option>
-              </select>
+              <select id="diag-resp-search-company" class="select" style="width:130px;"></select>
               <select id="diag-resp-search-type" class="select" style="width:70px;">
                 <option value="name">이름</option>
                 <option value="empno">사번</option>
@@ -1052,6 +1056,7 @@
     <!-- 검색 영역 -->
     <div style="padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
       <div style="display:flex;gap:6px;align-items:center;">
+        <select id="tl-search-company" class="select" style="width:100px;" onchange="targetListSearch()"></select>
         <select id="tl-search-type" class="select" style="width:80px;">
           <option value="name">이름</option>
           <option value="empno">사번</option>
@@ -1078,6 +1083,7 @@
             <th style="width:36px;">NO</th>
             <th style="width:80px;">이름</th>
             <th style="width:100px;">사번</th>
+            <th style="width:90px;">회사</th>
             <th>부서명</th>
             <th style="width:60px;">직급</th>
             <th style="width:50px;">삭제</th>
@@ -1349,6 +1355,7 @@
   function resetAfterFilter() {
     document.getElementById('after-filter-mail').selectedIndex = 0;
     document.getElementById('after-filter-status').selectedIndex = 0;
+    document.getElementById('after-filter-company').selectedIndex = 0;
     document.getElementById('after-filter-search-type').selectedIndex = 0;
     document.getElementById('after-filter-keyword').value = '';
   }
@@ -1362,7 +1369,7 @@
         onRegister: (members) => {
           showToast(members.length + '명이 대상자로 등록되었습니다.');
         },
-        getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
+        getCompanies: () => ['회사 선택', ..._diagScopeCompanyNames()],
       });
     }
   });
@@ -1552,6 +1559,7 @@
   // ── 진단 대상자 목록 팝업 ──
   // BEFORE STATE 테이블의 현재 데이터를 읽어 팝업에 렌더링
   function openTargetListModal() {
+    _tlPopulateCompanySelect();
     _renderTargetList('');
     document.getElementById('tl-search-keyword').value = '';
     document.getElementById('tl-search-type').selectedIndex = 0;
@@ -1562,8 +1570,17 @@
     document.getElementById('targetListModal').style.display = 'none';
   }
 
+  // 로그인 계정 소속 범위 내 회사만 노출 (전체=범위 전체, 선택 시 해당 회사로 추가 필터)
+  function _tlPopulateCompanySelect() {
+    const sel = document.getElementById('tl-search-company');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">회사 전체</option>' + _diagScopeCompanyNames().map(n => `<option>${n}</option>`).join('');
+  }
+
   function _renderTargetList(keyword) {
     const type = document.getElementById('tl-search-type').value;
+    const company = document.getElementById('tl-search-company').value;
+    const scopeNames = _diagScopeCompanyNames();
     const rows = [...document.querySelectorAll('#state-before tbody tr.before-data-row')];
     const tbody = document.getElementById('tl-tbody');
     tbody.innerHTML = '';
@@ -1572,8 +1589,11 @@
       const cells = tr.querySelectorAll('td');
       const name  = cells[2] ? cells[2].textContent.trim() : '';
       const empno = cells[4] ? cells[4].textContent.trim() : '';
+      const co    = cells[5] ? cells[5].textContent.trim() : '';
       const dept  = cells[6] ? cells[6].textContent.trim() : '';
       const rank  = cells[7] ? cells[7].textContent.trim() : '';
+      if (!scopeNames.includes(co)) return;
+      if (company && co !== company) return;
       const kw = keyword.trim().toLowerCase();
       if (kw) {
         const target = type === 'name' ? name : type === 'empno' ? empno : dept;
@@ -1587,6 +1607,7 @@
         <td style="text-align:center;">${seq}</td>
         <td>${name}</td>
         <td>${empno}</td>
+        <td>${co}</td>
         <td>${dept}</td>
         <td>${rank}</td>
         <td style="text-align:center;"><button class="btn btn-danger btn-xs" onclick="targetListDeleteRow(this)">삭제</button></td>`;
@@ -1602,6 +1623,7 @@
   }
   function targetListResetSearch() {
     document.getElementById('tl-search-keyword').value = '';
+    document.getElementById('tl-search-company').selectedIndex = 0;
     _renderTargetList('');
   }
   function targetListSelectAll(checked) {
@@ -1657,6 +1679,80 @@
     showToast(checked.length + '명이 삭제되었습니다.');
   }
 
+  // ── [프로토타입 시뮬레이션] 회사 계층(그룹사/계열사/하위계열사) 및 로그인 계정 소속 범위 ──
+  // 조직/역할 관리(부서·부서장) 화면과 동일한 정책: 로그인 계정 소속 범위에 따라 진단 응답자 검색 범위가 제한됨
+  const DIAG_COMPANY_TREE = [
+    { id:'co-grp1', ctype:'그룹사', name:'동아쏘시오홀딩스', children:[
+      { id:'co-aff1', ctype:'계열사', name:'동아ST', children:[
+        { id:'co-sub1', ctype:'하위계열사', name:'동아ST랩스', children:[] }
+      ]}
+    ]}
+  ];
+  let _diagScopeCompanyId = null;
+  function _diagFlattenCompanies(list, depth, out) {
+    out = out || [];
+    (list || []).forEach(n => { out.push({ node:n, depth }); _diagFlattenCompanies(n.children, depth+1, out); });
+    return out;
+  }
+  function _diagFindCompanyNode(id, list) {
+    list = list || DIAG_COMPANY_TREE;
+    for (const n of list) {
+      if (n.id === id) return n;
+      if (n.children) { const f = _diagFindCompanyNode(id, n.children); if (f) return f; }
+    }
+    return null;
+  }
+  function _diagScopeCompanyNames() {
+    const root = _diagScopeCompanyId ? _diagFindCompanyNode(_diagScopeCompanyId) : null;
+    const list = root ? [root] : DIAG_COMPANY_TREE;
+    return _diagFlattenCompanies(list, 0).map(f => f.node.name);
+  }
+  function _diagPopulateScopeSelect() {
+    const sel = document.getElementById('diag-scope-select');
+    if (!sel) return;
+    const flat = _diagFlattenCompanies(DIAG_COMPANY_TREE, 0);
+    sel.innerHTML = `<option value="">🔓 전체 보기 (최상위 관리자)</option>` +
+      flat.map(f => `<option value="${f.node.id}" ${f.node.id===_diagScopeCompanyId?'selected':''}>${'&nbsp;&nbsp;&nbsp;'.repeat(f.depth)}${f.node.ctype} · ${f.node.name} 소속으로 보기</option>`).join('');
+  }
+  function diagSetScope(companyId) {
+    _diagScopeCompanyId = companyId || null;
+    const desc = document.getElementById('diag-scope-desc');
+    if (_diagScopeCompanyId) {
+      const node = _diagFindCompanyNode(_diagScopeCompanyId);
+      desc.textContent = node
+        ? `→ "${node.name}"(${node.ctype}) 소속 교육담당자 시야: 이 회사와 그 하위 조직만 조회되며, 상위·타 계열사의 진단 대상자·응답자 정보는 노출되지 않습니다.`
+        : '';
+    } else {
+      desc.textContent = '';
+    }
+    _afterPopulateCompanyFilter();
+    _applyScopeToMainTables();
+  }
+  // 메인 목록(대상자/응답자 현황) 검색 필터의 회사 드롭다운: 로그인 계정 소속 범위만 노출
+  function _afterPopulateCompanyFilter() {
+    const sel = document.getElementById('after-filter-company');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">전체</option>' + _diagScopeCompanyNames().map(n => `<option>${n}</option>`).join('');
+  }
+  // 진단 전/진행중 메인 테이블: 로그인 계정 소속 범위 밖 회사의 행은 숨김 (회사 정보가 없는 탈퇴 행은 항상 노출)
+  function _applyScopeToMainTables() {
+    const scopeNames = _diagScopeCompanyNames();
+    document.querySelectorAll('#state-before tbody tr.before-data-row').forEach(tr => {
+      const co = tr.querySelectorAll('td')[5]?.textContent.trim();
+      tr.style.display = (!co || co === '—' || scopeNames.includes(co)) ? '' : 'none';
+    });
+    const afterTable = document.getElementById('afterTable');
+    if (afterTable) {
+      afterTable.querySelectorAll('tbody tr').forEach(tr => {
+        const co = tr.querySelectorAll('td')[5]?.textContent.trim();
+        tr.style.display = (!co || co === '—' || scopeNames.includes(co)) ? '' : 'none';
+      });
+    }
+  }
+  document.addEventListener('DOMContentLoaded', _diagPopulateScopeSelect);
+  document.addEventListener('DOMContentLoaded', _afterPopulateCompanyFilter);
+  document.addEventListener('DOMContentLoaded', _applyScopeToMainTables);
+
   // ── 응답자 설정 팝업 (역량진단관리와 동일) ──
   // 샘플 인원 풀
   const DIAG_MEMBERS_POOL = [
@@ -1668,6 +1764,7 @@
     {name:'정유진', loginId:'jungyj@hunet.co.kr',  empno:'20190040', company:'동아쏘시오홀딩스', dept:'재무팀'},
     {name:'강동원', loginId:'kangdw@hunet.co.kr',  empno:'20180050', company:'동아ST',          dept:'전략팀'},
     {name:'이강은', loginId:'leegeun@hunet.co.kr', empno:'20250001', company:'동아ST',          dept:'기획팀'},
+    {name:'윤도현', loginId:'yoondh@hunet.co.kr',  empno:'20260001', company:'동아ST랩스',       dept:'연구개발팀'},
   ];
 
   // 응답자 등록 데이터 저장소 { "rowNo_type": [member, ...] }
@@ -1749,7 +1846,9 @@
     // 검색 초기화
     document.getElementById('diag-resp-search-keyword').value = '';
     document.getElementById('diag-resp-search-type').value = 'name';
-    document.getElementById('diag-resp-search-company').value = '';
+    // 회사 드롭다운: 로그인 계정의 소속 범위(상위관리자 기준)에 노출되는 회사만 구성
+    const coSel = document.getElementById('diag-resp-search-company');
+    coSel.innerHTML = '<option value="">회사 선택</option>' + _diagScopeCompanyNames().map(c => `<option value="${c}">${c}</option>`).join('');
     _diagRespRenderPool();
     _diagRespRenderRegistered();
   }
@@ -1768,7 +1867,9 @@
     const keyword = (document.getElementById('diag-resp-search-keyword')?.value || '').trim().toLowerCase();
     const sType   = document.getElementById('diag-resp-search-type')?.value || 'name';
     const company = document.getElementById('diag-resp-search-company')?.value || '';
+    const scopeNames = _diagScopeCompanyNames();
     _diagRespFilteredPool = DIAG_MEMBERS_POOL.filter(m => {
+      if (!scopeNames.includes(m.company)) return false;
       if (company && m.company !== company) return false;
       if (keyword) {
         const v = sType === 'name' ? (m.name||'').toLowerCase() : (m.empno||'').toLowerCase();

@@ -496,6 +496,13 @@
       <div class="breadcrumb">부가서비스 &gt; 진단 관리</div>
     </div>
 
+    <!-- [프로토타입 시뮬레이션] 로그인 계정 소속 범위 — 실제로는 로그인 세션 기준으로 자동 결정됨 -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;margin-top:12px;">
+      <span style="font-weight:700;white-space:nowrap;">🔐 [시뮬레이션] 로그인 계정 소속</span>
+      <select id="diag-scope-select" style="height:24px;font-size:11px;padding:0 6px;max-width:280px;border:1px solid #ccc;border-radius:3px;" onchange="diagSetScope(this.value)"></select>
+      <span id="diag-scope-desc" style="color:#3a5a99;"></span>
+    </div>
+
     <!-- 탭 바 -->
     <div class="tab-bar" style="margin-top:16px;">
       <button class="tab-btn active" onclick="switchTab('manage')">진단 관리</button>
@@ -630,7 +637,7 @@
                 <span class="progress-text">152/245 <span style="color:#1a73e8;">(62%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 리더십 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 리더십 역량진단', this)">다운로드</button></td>
             <td style="color:#bbb;">—</td>
             <td><span class="badge badge-blue">진행중</span></td>
             <td style="font-size:11px;">2025.04.20</td>
@@ -649,7 +656,7 @@
                 <span class="progress-text">18/38 <span style="color:#1a73e8;">(47%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('팀장급 코칭리더십 진단 (2차)')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('팀장급 코칭리더십 진단 (2차)', this)">다운로드</button></td>
             <td style="color:#bbb;">—</td>
             <td><span class="badge badge-blue">진행중</span></td>
             <td style="font-size:11px;">2025.04.28</td>
@@ -673,7 +680,7 @@
                 <span class="progress-text">18/22 <span style="color:#b35c00;">(82%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('신임 팀장 온보딩 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('신임 팀장 온보딩 역량진단', this)">다운로드</button></td>
             <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
@@ -702,7 +709,7 @@
                 <span class="progress-text">45/45 <span style="color:#b35c00;">(100%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 핵심인재 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 상반기 핵심인재 역량진단', this)">다운로드</button></td>
             <td style="color:#bbb;">—</td>
             <td class="status-cell">
               <div class="status-stack">
@@ -786,7 +793,7 @@
                 <span class="progress-text">52/52 <span style="color:#b35c00;">(100%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 2분기 마케팅팀 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 2분기 마케팅팀 역량진단', this)">다운로드</button></td>
             <td><button class="btn btn-sm btn-gray" disabled style="opacity:.4;cursor:not-allowed;" title="리포트 생성 완료 후 확인 가능합니다.">확인</button></td>
             <td class="status-cell"><span class="badge badge-loading">리포트 생성중</span></td>
             <td style="font-size:11px;">2025.03.28</td>
@@ -807,7 +814,7 @@
                 <span class="progress-text">67/67 <span style="color:#b35c00;">(100%)</span></span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 1분기 영업팀 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2025년 1분기 영업팀 역량진단', this)">다운로드</button></td>
             <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2025년 1분기 영업팀 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2025.02.10</td>
@@ -828,7 +835,7 @@
                 <span class="progress-text" style="color:#1a7a4a;">294/303 (97%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 하반기 리더십 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 하반기 리더십 역량진단', this)">다운로드</button></td>
             <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 하반기 리더십 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.10.01</td>
@@ -847,7 +854,7 @@
                 <span class="progress-text" style="color:#1a7a4a;">89/89 (100%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 중간리더 핵심역량 진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 중간리더 핵심역량 진단', this)">다운로드</button></td>
             <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 중간리더 핵심역량 진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.08.20</td>
@@ -866,7 +873,7 @@
                 <span class="progress-text" style="color:#1a7a4a;">476/507 (94%)</span>
               </div>
             </td>
-            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 상반기 전사 역량진단')">다운로드</button></td>
+            <td><button class="btn btn-sm btn-outline" onclick="directDownload('2024년 상반기 전사 역량진단', this)">다운로드</button></td>
             <td><button class="btn btn-sm btn-outline" onclick="openReportModal('2024년 상반기 전사 역량진단')">확인</button></td>
             <td><span class="badge badge-green">완료</span></td>
             <td style="font-size:11px;">2024.04.01</td>
@@ -1057,7 +1064,8 @@
     <div style="flex:1;overflow-y:auto;padding:20px 22px;">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
         <select class="select" style="width:100px;" id="reportSearchType">
-          <option>이름</option>
+          <option>회사</option>
+          <option selected>이름</option>
           <option>아이디</option>
           <option>사번</option>
         </select>
@@ -1072,6 +1080,7 @@
             <th style="width:70px;">이름</th>
             <th style="width:150px;">아이디</th>
             <th style="width:75px;">사번</th>
+            <th style="width:100px;">회사</th>
             <th>부서/팀</th>
             <th style="width:260px;">진단기간</th>
             <th style="width:80px;">개인리포트</th>
@@ -1238,15 +1247,25 @@
     if (!isOpen) group.classList.add('open');
   }
 
-  function directDownload(diagName) {
-    const header = '순번,이름,사번,직급,부서/팀,아이디,휴대번호,응답상태,응답일시';
-    const rows = [
-      '1,김민준,2024001,팀장,경영전략팀,minjun.kim,010-1234-5678,완료,2025-05-10 09:32',
-      '2,이수진,2022015,차장,인재개발팀,sujin.lee,010-2345-6789,완료,2025-05-11 14:20',
-      '3,박지훈,2021008,팀장,영업1팀,jihoon.park,010-3456-7890,완료,2025-05-09 10:05',
-      '4,최유리,2023022,과장,마케팅팀,yuri.choi,010-4567-8901,미완료,',
-      '5,정승호,2020031,팀장,IT개발팀,seungho.jung,010-5678-9012,완료,2025-05-12 16:45',
+  function directDownload(diagName, btnEl) {
+    const header = '순번,이름,사번,회사,직급,부서/팀,아이디,휴대번호,응답상태,응답일시';
+    const sampleRows = [
+      '1,김민준,2024001,,팀장,경영전략팀,minjun.kim,010-1234-5678,완료,2025-05-10 09:32',
+      '2,이수진,2022015,,차장,인재개발팀,sujin.lee,010-2345-6789,완료,2025-05-11 14:20',
+      '3,박지훈,2021008,,팀장,영업1팀,jihoon.park,010-3456-7890,완료,2025-05-09 10:05',
+      '4,최유리,2023022,,과장,마케팅팀,yuri.choi,010-4567-8901,미완료,',
+      '5,정승호,2020031,,팀장,IT개발팀,seungho.jung,010-5678-9012,완료,2025-05-12 16:45',
     ];
+    // 실제 응답자 데이터(회사 정보 포함)가 있는 행이면 로그인 계정 소속 범위로 필터링하여 다운로드
+    const tr = btnEl ? btnEl.closest('tr') : null;
+    const rowIdx = tr ? [...tr.parentElement.children].indexOf(tr) : -1;
+    const respondents = (DIAG_ROW_RESPONDENTS[rowIdx] || []).filter(m => {
+      const scopeNames = _diagScopeCompanyNames();
+      return !m.company || scopeNames.includes(m.company);
+    });
+    const rows = respondents.length
+      ? respondents.map((m, i) => [i+1, m.name, m.empno||'-', m.company||'-', '-', m.dept||'-', m.loginId||'-', '-', '완료', ''].join(','))
+      : sampleRows;
     const csv = '﻿' + [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'application/vnd.ms-excel' });
     const url = URL.createObjectURL(blob);
@@ -1647,11 +1666,12 @@
           <th style="width:36px;">No</th>
           <th>이름</th>
           <th style="width:100px;">사번</th>
+          <th style="width:100px;">회사</th>
           <th>부서명</th>
           <th style="width:60px;">삭제</th>
         </tr></thead>
         <tbody id="diag-list-tbody">
-          <tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa;">등록된 대상자가 없습니다.</td></tr>
+          <tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">등록된 대상자가 없습니다.</td></tr>
         </tbody>
       </table>
     </div>
@@ -1725,11 +1745,7 @@
           <!-- 검색 -->
           <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fb;">
             <div style="display:flex;gap:6px;align-items:center;">
-              <select id="diag-resp-search-company" class="select" style="width:130px;">
-                <option value="">회사 선택</option>
-                <option>동아ST</option>
-                <option>동아쏘시오홀딩스</option>
-              </select>
+              <select id="diag-resp-search-company" class="select" style="width:130px;"></select>
               <select id="diag-resp-search-type" class="select" style="width:70px;">
                 <option value="name">이름</option>
                 <option value="empno">사번</option>
@@ -1811,6 +1827,55 @@
 <script src="../공통/emp-register-popup.js"></script>
 
 <script>
+// ── [프로토타입 시뮬레이션] 회사 계층(그룹사/계열사/하위계열사) 및 로그인 계정 소속 범위 ──
+// 조직/역할 관리(부서·부서장) 화면과 동일한 정책: 로그인 계정 소속 범위에 따라 진단 대상자·응답자 검색 범위가 제한됨
+const DIAG_COMPANY_TREE = [
+  { id:'co-grp1', ctype:'그룹사', name:'동아쏘시오홀딩스', children:[
+    { id:'co-aff1', ctype:'계열사', name:'동아ST', children:[
+      { id:'co-sub1', ctype:'하위계열사', name:'동아ST랩스', children:[] }
+    ]}
+  ]}
+];
+let _diagScopeCompanyId = null;
+function _diagFlattenCompanies(list, depth, out) {
+  out = out || [];
+  (list || []).forEach(n => { out.push({ node:n, depth }); _diagFlattenCompanies(n.children, depth+1, out); });
+  return out;
+}
+function _diagFindCompanyNode(id, list) {
+  list = list || DIAG_COMPANY_TREE;
+  for (const n of list) {
+    if (n.id === id) return n;
+    if (n.children) { const f = _diagFindCompanyNode(id, n.children); if (f) return f; }
+  }
+  return null;
+}
+function _diagScopeCompanyNames() {
+  const root = _diagScopeCompanyId ? _diagFindCompanyNode(_diagScopeCompanyId) : null;
+  const list = root ? [root] : DIAG_COMPANY_TREE;
+  return _diagFlattenCompanies(list, 0).map(f => f.node.name);
+}
+function _diagPopulateScopeSelect() {
+  const sel = document.getElementById('diag-scope-select');
+  if (!sel) return;
+  const flat = _diagFlattenCompanies(DIAG_COMPANY_TREE, 0);
+  sel.innerHTML = `<option value="">🔓 전체 보기 (최상위 관리자)</option>` +
+    flat.map(f => `<option value="${f.node.id}" ${f.node.id===_diagScopeCompanyId?'selected':''}>${'&nbsp;&nbsp;&nbsp;'.repeat(f.depth)}${f.node.ctype} · ${f.node.name} 소속으로 보기</option>`).join('');
+}
+function diagSetScope(companyId) {
+  _diagScopeCompanyId = companyId || null;
+  const desc = document.getElementById('diag-scope-desc');
+  if (_diagScopeCompanyId) {
+    const node = _diagFindCompanyNode(_diagScopeCompanyId);
+    desc.textContent = node
+      ? `→ "${node.name}"(${node.ctype}) 소속 교육담당자 시야: 이 회사와 그 하위 조직만 조회되며, 상위·타 계열사의 진단 대상자·응답자 정보는 노출되지 않습니다.`
+      : '';
+  } else {
+    desc.textContent = '';
+  }
+}
+document.addEventListener('DOMContentLoaded', _diagPopulateScopeSelect);
+
 // ── 샘플 인원 풀 ──
 const DIAG_MEMBERS_POOL = [
   {name:'홍길동', loginId:'hong@hunet.co.kr',   empno:'20240001', company:'동아ST',          dept:'인사팀'},
@@ -1821,6 +1886,7 @@ const DIAG_MEMBERS_POOL = [
   {name:'정유진', loginId:'jungyj@hunet.co.kr',  empno:'20190040', company:'동아쏘시오홀딩스', dept:'재무팀'},
   {name:'강동원', loginId:'kangdw@hunet.co.kr',  empno:'20180050', company:'동아ST',          dept:'전략팀'},
   {name:'이강은', loginId:'leegeun@hunet.co.kr', empno:'20250001', company:'동아ST',          dept:'기획팀'},
+  {name:'윤도현', loginId:'yoondh@hunet.co.kr',  empno:'20260001', company:'동아ST랩스',       dept:'연구개발팀'},
 ];
 const DIAG_ROW_MEMBERS = {};      // 진단대상자 { rowIdx: [member, ...] }
 const DIAG_ROW_RESPONDENTS = {};   // 진단응답자 { rowIdx: [member, ...] }
@@ -1913,8 +1979,9 @@ function openDiagListModal(rowIdx, cell, type, readOnly) {
     _diagSearchKeyword = '';
     _diagSearchType    = 'name';
     _diagSearchCompany = '';
-    // 회사 드롭다운 갱신
-    const allMembers = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+    // 회사 드롭다운 갱신 (로그인 계정 소속 범위 내 회사만 노출)
+    const scopeNames = _diagScopeCompanyNames();
+    const allMembers = (DIAG_ROW_MEMBERS[_currentDiagRowIdx] || []).filter(m => !m.company || scopeNames.includes(m.company));
     const companies = [...new Set(allMembers.map(m => m.company).filter(Boolean))];
     const sel = document.getElementById('diag-search-company');
     sel.innerHTML = '<option value="">회사 전체</option>' + companies.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -1939,7 +2006,9 @@ function diagRespModalInit() {
   _diagRespTempList = [...(DIAG_ROW_RESPONDENTS[_currentDiagRowIdx] || [])];
   document.getElementById('diag-resp-search-keyword').value = '';
   document.getElementById('diag-resp-search-type').value = 'name';
-  document.getElementById('diag-resp-search-company').value = '';
+  // 회사 드롭다운: 로그인 계정의 소속 범위(상위관리자 기준)에 노출되는 회사만 구성
+  const coSel = document.getElementById('diag-resp-search-company');
+  coSel.innerHTML = '<option value="">회사 선택</option>' + _diagScopeCompanyNames().map(c => `<option value="${c}">${c}</option>`).join('');
   // 탭 초기화: 개별 탭 활성화
   document.querySelectorAll('.diag-resp-tab').forEach(t => {
     t.style.borderBottom = '2px solid transparent';
@@ -1957,7 +2026,8 @@ function diagRespModalInit() {
 }
 
 function _diagRespRenderSidebar() {
-  const targets = DIAG_ROW_MEMBERS[_currentDiagRowIdx] || [];
+  const scopeNames = _diagScopeCompanyNames();
+  const targets = (DIAG_ROW_MEMBERS[_currentDiagRowIdx] || []).filter(m => !m.company || scopeNames.includes(m.company));
   // 인물 정보 (선택된 대상자)
   const sel = targets[_diagRespSelPersonIdx];
   document.getElementById('diag-resp-person-name').textContent = sel ? _maskN(sel.name) : '—';
@@ -2023,7 +2093,9 @@ function _diagRespRenderPool() {
   const keyword = (document.getElementById('diag-resp-search-keyword')?.value || '').trim().toLowerCase();
   const sType   = document.getElementById('diag-resp-search-type')?.value || 'name';
   const company = document.getElementById('diag-resp-search-company')?.value || '';
+  const scopeNames = _diagScopeCompanyNames();
   _diagRespFilteredPool = DIAG_MEMBERS_POOL.filter(m => {
+    if (!scopeNames.includes(m.company)) return false;
     if (company && m.company !== company) return false;
     if (keyword) {
       const v = sType === 'name' ? (m.name||'').toLowerCase() : (m.empno||'').toLowerCase();
@@ -2223,7 +2295,8 @@ function diagRespListClose() {
   document.getElementById('diag-resp-list-modal').style.display = 'none';
 }
 function diagListRender() {
-  const allMembers = _currentDict()[_currentDiagRowIdx] || [];
+  const scopeNames = _diagScopeCompanyNames();
+  const allMembers = (_currentDict()[_currentDiagRowIdx] || []).filter(m => !m.company || scopeNames.includes(m.company));
   document.getElementById('diag-list-cnt').textContent = allMembers.length + '명';
   _diagFilteredMembers = allMembers
     .map((m, i) => ({m, origIdx: i}))
@@ -2241,7 +2314,7 @@ function diagListRender() {
   const tbody = document.getElementById('diag-list-tbody');
   const emptyLabel = _currentDiagType === 'respondent' ? '등록된 응답자가 없습니다.' : '등록된 대상자가 없습니다.';
   if (!_diagFilteredMembers.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:#aaa;">${allMembers.length ? '검색 결과가 없습니다.' : emptyLabel}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa;">${allMembers.length ? '검색 결과가 없습니다.' : emptyLabel}</td></tr>`;
     return;
   }
   const ro = _currentDiagReadOnly;
@@ -2250,6 +2323,7 @@ function diagListRender() {
     <td style="text-align:center;padding:5px 4px;color:#888;font-size:11px;">${i+1}</td>
     <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
     <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
+    <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.company||'-'}</td>
     <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
     <td style="text-align:center;padding:5px 4px;">${ro ? '' : `<button onclick="diagListDelete(${origIdx})" style="height:22px;padding:0 8px;font-size:11px;background:none;border:1px solid #fcc;color:#e53935;border-radius:3px;cursor:pointer;">삭제</button>`}</td>
   </tr>`).join('');
@@ -2332,21 +2406,21 @@ function openDiagAddModal() {
 // ── 개인리포트 모달 ──
 const REPORT_DATA_MAP = {
   '2025년 1분기 영업팀 역량진단': [
-    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
-    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', dept:'인재개발팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
-    { no:3, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', dept:'영업1팀',    period:'2025.03.03 00:00 ~ 2025.03.28 23:59', canReport:false },
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', company:'동아쏘시오홀딩스', dept:'경영전략팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
+    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', company:'동아ST',          dept:'인재개발팀', period:'2025.03.03 00:00 ~ 2025.03.28 23:59' },
+    { no:3, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', company:'동아ST랩스',       dept:'영업1팀',    period:'2025.03.03 00:00 ~ 2025.03.28 23:59', canReport:false },
   ],
   '2024년 하반기 리더십 역량진단': [
-    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59' },
-    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', dept:'인재개발팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59', canReport:false },
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', company:'동아쏘시오홀딩스', dept:'경영전략팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59' },
+    { no:2, name:'이*진', id:'s***@hunet.co.kr', empno:'2022015', company:'동아ST',          dept:'인재개발팀', period:'2024.11.01 00:00 ~ 2024.11.30 23:59', canReport:false },
   ],
   '2024년 중간리더 핵심역량 진단': [
-    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
-    { no:2, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', dept:'영업1팀',    period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', company:'동아쏘시오홀딩스', dept:'경영전략팀', period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
+    { no:2, name:'박*훈', id:'j***@hunet.co.kr', empno:'2021008', company:'동아ST랩스',       dept:'영업1팀',    period:'2024.09.02 00:00 ~ 2024.09.27 23:59' },
   ],
   '2024년 상반기 전사 역량진단': [
-    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'2024.05.01 00:00 ~ 2024.05.31 23:59' },
-    { no:2, name:'정*호', id:'s***@hunet.co.kr', empno:'2020031', dept:'IT개발팀',  period:'2024.05.01 00:00 ~ 2024.05.31 23:59', canReport:false },
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', company:'동아쏘시오홀딩스', dept:'경영전략팀', period:'2024.05.01 00:00 ~ 2024.05.31 23:59' },
+    { no:2, name:'정*호', id:'s***@hunet.co.kr', empno:'2020031', company:'동아ST',          dept:'IT개발팀',  period:'2024.05.01 00:00 ~ 2024.05.31 23:59', canReport:false },
   ],
 };
 let currentReportDiag = '';
@@ -2362,17 +2436,27 @@ function renderReportTable(data) {
       <td>${r.name}</td>
       <td>${r.id}</td>
       <td>${r.empno}</td>
+      <td>${r.company||'-'}</td>
       <td>${r.dept}</td>
       <td style="font-size:11.5px;">${r.period}</td>
       <td>${r.canReport === false ? '' : `<button class="btn btn-primary btn-sm" onclick="showToast('${r.name} 개인리포트 페이지로 이동합니다. (연동 예정)')">확인</button>`}</td>
     </tr>`).join('');
 }
 
+function _reportScopedBase(diagName) {
+  const scopeNames = _diagScopeCompanyNames();
+  const base = REPORT_DATA_MAP[diagName] || [
+    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', company:'동아쏘시오홀딩스', dept:'경영전략팀', period:'-' },
+  ];
+  return base.filter(r => !r.company || scopeNames.includes(r.company));
+}
+
 function filterReportTable() {
   const type = document.getElementById('reportSearchType').value;
   const kw   = document.getElementById('reportSearchInput').value.trim().toLowerCase();
-  const base = REPORT_DATA_MAP[currentReportDiag] || [];
+  const base = _reportScopedBase(currentReportDiag);
   const filtered = kw ? base.filter(r => {
+    if (type === '회사')  return (r.company||'').toLowerCase().includes(kw);
     if (type === '이름')  return r.name.toLowerCase().includes(kw);
     if (type === '아이디') return r.id.toLowerCase().includes(kw);
     if (type === '사번')  return r.empno.toLowerCase().includes(kw);
@@ -2385,10 +2469,7 @@ function openReportModal(diagName) {
   currentReportDiag = diagName;
   document.getElementById('reportModalTitle').textContent = diagName + ' 개인리포트 확인';
   document.getElementById('reportSearchInput').value = '';
-  const base = REPORT_DATA_MAP[diagName] || [
-    { no:1, name:'김*준', id:'m***@hunet.co.kr', empno:'2024001', dept:'경영전략팀', period:'-' },
-  ];
-  renderReportTable(base);
+  renderReportTable(_reportScopedBase(diagName));
   document.getElementById('reportModal').classList.add('open');
 }
 
@@ -2421,7 +2502,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (document.getElementById('diag-target-list-modal')?.style.display !== 'none') diagListRender();
       },
-      getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스'],
+      getCompanies: () => ['회사 선택', ..._diagScopeCompanyNames()],
     });
   }
 });

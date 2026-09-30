@@ -379,15 +379,7 @@ body {
 .prev-q-input:hover { border-color: #a8c0f0; background: #fff; }
 .prev-q-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px #e8f0fe; }
 
-/* 질문 카드 삭제 버튼 */
 .prev-q-card { position: relative; }
-.prev-q-del {
-  position: absolute; top: 10px; right: 10px;
-  background: none; border: none; color: #ccc; cursor: pointer;
-  font-size: 15px; line-height: 1; padding: 3px 5px; border-radius: 3px;
-  transition: background .12s, color .12s;
-}
-.prev-q-del:hover { background: #fef2f2; color: #e11d48; }
 
 .preview-stats {
   display: flex;
@@ -546,6 +538,14 @@ body {
   background: var(--primary); border-color: var(--primary);
 }
 .prev-likert-lbl { font-size: 10px; color: #6b7280; text-align: center; line-height: 1.4; word-break: keep-all; }
+.prev-likert-lbl-input {
+  width: 100%; margin-top: 6px; border: 1px solid transparent; border-radius: 4px;
+  background: transparent; font-size: 10px; color: #6b7280; text-align: center;
+  font-family: inherit; padding: 2px 3px; outline: none;
+  transition: border-color .15s, background .15s;
+}
+.prev-likert-lbl-input:hover { border-color: #a8c0f0; background: #fff; }
+.prev-likert-lbl-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px #e8f0fe; }
 
 /* ── STEP 2: 응답자 역할 카드 (튜토리얼형) ── */
 .respondent-cards { display: flex; flex-direction: column; gap: 28px; }
@@ -987,6 +987,12 @@ body {
           <button class="wiz-status-btn"        id="wiz-status-btn-expired"   onclick="setDiagStatus('expired')">진단 마감 전</button>
           <button class="wiz-status-btn"        id="wiz-status-btn-completed" onclick="setDiagStatus('completed')">진단 완료</button>
         </div>
+        <!-- 프로토타입 전용: 로그인 계정 소속 범위 시뮬레이션 (Step6 응답자 등록에 적용) -->
+        <div style="margin:0 0 14px 0;padding:10px 12px;background:#f4f6fa;border:1px solid #e1e5ec;border-radius:6px;">
+          <div style="font-size:11px;font-weight:700;color:#5b6472;margin-bottom:6px;">⚙ 로그인 계정 소속 범위 시뮬레이션</div>
+          <select id="mk-scope-select" onchange="mkSetScope(this.value)" style="width:100%;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff;margin-bottom:4px;"></select>
+          <span id="mk-scope-desc" style="font-size:11px;color:#8a94a6;"></span>
+        </div>
         <div class="wiz-step-list">
           <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
             <div class="wiz-step-badge">1</div>
@@ -1211,6 +1217,7 @@ body {
           </div>
           <div class="wiz-card-body padded">
             <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+              <button class="btn btn-gray btn-sm" onclick="downloadRecommendedCourses()">📤 추천과정 다운로드</button>
               <button class="btn btn-gray btn-sm" onclick="openBulkUploadModal()">📥 일괄 업로드</button>
             </div>
             <div class="tree-container" id="courseTreeContainer"></div>
@@ -1696,7 +1703,7 @@ body {
         </div>
         <div id="mk-search-row" style="display:flex;gap:6px;padding:7px 12px;border-bottom:1px solid #f0f2f5;flex-shrink:0;">
           <select id="mk-search-company" style="width:90px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;background:#fff;">
-            <option value="">회사 전체</option><option>동아ST</option><option>동아쏘시오홀딩스</option><option>휴넷</option>
+            <option value="">회사 전체</option>
           </select>
           <select id="mk-search-type" style="width:68px;height:28px;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px;font-family:inherit;background:#fff;">
             <option value="name">이름</option><option value="empno">사번</option><option value="dept">부서</option>
@@ -2346,7 +2353,6 @@ function renderPreview(questionnaire) {
           const qKey = `prev_${typeIdx}_${gidx}_${subIdx}_${qi}`;
           return `
             <div class="prev-q-card">
-              <button class="prev-q-del" onclick="deletePreviewQuestion(this)" title="문항 삭제">×</button>
               <textarea class="prev-q-input" rows="2" oninput="autoResize(this)">${q}</textarea>
               <div class="prev-likert">
                 ${LIKERT.map((lbl, vi) => `
@@ -2354,8 +2360,8 @@ function renderPreview(questionnaire) {
                     <input type="radio" name="${qKey}" id="${qKey}_${vi}" value="${vi+1}">
                     <label for="${qKey}_${vi}">
                       <div class="prev-likert-circle"></div>
-                      <span class="prev-likert-lbl">${lbl}</span>
                     </label>
+                    <input type="text" class="prev-likert-lbl-input" value="${lbl}">
                   </div>`).join('')}
               </div>
             </div>`;
@@ -2406,48 +2412,6 @@ function toggleTreeTypeNode(header) {
 function togglePreviewSub(blockId) {
   const block = document.getElementById(blockId);
   if (block) block.classList.toggle('open');
-}
-
-function deletePreviewQuestion(btn) {
-  const card       = btn.closest('.prev-q-card');
-  // remove() 전에 조상 참조 미리 저장
-  const subBlock   = card.closest('.preview-sub-block');
-  const groupBlock = subBlock  ? subBlock.closest('.tree-group-block') : null;
-  const treeType   = groupBlock ? groupBlock.closest('.tree-type')      : null;
-
-  card.style.transition = 'opacity .15s';
-  card.style.opacity = '0';
-  setTimeout(() => {
-    card.remove();
-
-    // 1단계: 세부역량 내 문항이 모두 삭제되면 세부역량 제거
-    if (!subBlock) return;
-    if (subBlock.querySelectorAll('.prev-q-card').length > 0) return;
-
-    subBlock.style.transition = 'opacity .15s';
-    subBlock.style.opacity = '0';
-    setTimeout(() => {
-      subBlock.remove();
-
-      // 2단계: 역량군 내 세부역량이 모두 삭제되면 역량군 제거
-      if (!groupBlock) return;
-      if (groupBlock.querySelectorAll('.preview-sub-block').length > 0) return;
-
-      groupBlock.style.transition = 'opacity .15s';
-      groupBlock.style.opacity = '0';
-      setTimeout(() => {
-        groupBlock.remove();
-
-        // 3단계: 유형 내 역량군이 모두 삭제되면 유형 제거
-        if (!treeType) return;
-        if (treeType.querySelectorAll('.tree-group-block').length > 0) return;
-
-        treeType.style.transition = 'opacity .15s';
-        treeType.style.opacity = '0';
-        setTimeout(() => treeType.remove(), 150);
-      }, 150);
-    }, 150);
-  }, 150);
 }
 
 function autoResize(el) {
@@ -2643,15 +2607,15 @@ function generateScoreSettings() {
         <div class="score-inputs-wrap">
           <div class="score-group">
             <div class="score-group-label strong"><span class="dot"></span> 강점 기준</div>
-            <input type="number" class="score-num-input" id="score-strong-${groupId}" value="${defaultStrong}" min="${scaleMin}" max="${scaleMax}" step="1">
+            <input type="number" class="score-num-input" id="score-strong-${groupId}" value="${defaultStrong}" min="${scaleMin}" max="${scaleMax}" step="0.1">
             <div class="score-num-unit">이 점수 이상이면 강점</div>
-            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax} (소수점 1자리까지 입력 가능)</div>
           </div>
           <div class="score-group">
             <div class="score-group-label weak"><span class="dot"></span> 약점 기준</div>
-            <input type="number" class="score-num-input" id="score-weak-${groupId}" value="${defaultWeak}" min="${scaleMin}" max="${scaleMax}" step="1">
+            <input type="number" class="score-num-input" id="score-weak-${groupId}" value="${defaultWeak}" min="${scaleMin}" max="${scaleMax}" step="0.1">
             <div class="score-num-unit">이 점수 미만이면 약점</div>
-            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax}</div>
+            <div style="font-size:10px;color:#aaa;margin-top:3px;">입력 가능 범위: ${scaleMin}~${scaleMax} (소수점 1자리까지 입력 가능)</div>
           </div>
           <div style="flex:1;min-width:200px;">
             <div style="font-size:11px;color:#aaa;margin-bottom:6px;">점수 구간 미리보기</div>
@@ -2677,8 +2641,8 @@ function generateScoreSettings() {
           bar.style.setProperty('--weak-pct',   (w / scaleMax * 100) + '%');
           bar.style.setProperty('--strong-pct', (s / scaleMax * 100) + '%');
         }
-        if (s <= w) {
-          errEl.textContent = '강점 기준은 약점 기준보다 높아야 합니다.';
+        if (s < w) {
+          errEl.textContent = '강점 기준은 약점 기준보다 낮을 수 없습니다.';
           errEl.style.display = 'block';
           strongEl.style.borderColor = '#c0392b';
           weakEl.style.borderColor   = '#c0392b';
@@ -2693,8 +2657,15 @@ function generateScoreSettings() {
           weakEl.style.borderColor   = '';
         }
       };
+      const roundToOneDecimal = (e) => {
+        if (e.target.value === '') return;
+        e.target.value = Math.round(parseFloat(e.target.value) * 10) / 10;
+        updateZone();
+      };
       div.querySelector('#score-weak-'   + groupId).addEventListener('input', updateZone);
       div.querySelector('#score-strong-' + groupId).addEventListener('input', updateZone);
+      div.querySelector('#score-weak-'   + groupId).addEventListener('blur', roundToOneDecimal);
+      div.querySelector('#score-strong-' + groupId).addEventListener('blur', roundToOneDecimal);
       container.appendChild(div);
     });
   });
@@ -2973,7 +2944,9 @@ function generateStep4Tabs() {
     tabGroup.appendChild(tabEl);
 
     const isSelf = tab.key === '본인';
-    const sampleRows = MK_DIAG_TARGETS.map((t, ri) => {
+    const scopeNames = _diagScopeCompanyNames();
+    const scopedTargets = MK_DIAG_TARGETS.filter(t => !t.company || scopeNames.includes(t.company));
+    const sampleRows = scopedTargets.map((t, ri) => {
       const respCell = isSelf
         ? `<span style="font-size:12px;color:#555;">${t.name}</span>`
         : `<button class="resp-set-btn" onclick="openRespondentModal('${tab.id}',${ri},'${tab.name}')">설정</button>`;
@@ -2982,6 +2955,7 @@ function generateStep4Tabs() {
         <td>${ri+1}</td>
         <td class="name-col">${t.name}</td>
         <td>${t.empno}</td>
+        <td>${t.company||'-'}</td>
         <td>${t.dept}</td>
         <td>팀장</td>
         <td>${respCell}</td>
@@ -2992,7 +2966,7 @@ function generateStep4Tabs() {
     paneEl.className = `tab-pane ${idx === 0 ? 'active' : ''}`;
     paneEl.innerHTML = `
       <div class="toolbar">
-        <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">${MK_DIAG_TARGETS.length}</strong>명 등록됨</div>
+        <div style="font-size:12px;color:#666;"><strong id="target-count-${idx}">${scopedTargets.length}</strong>명 등록됨</div>
         <div class="spacer"></div>
         <button class="btn btn-gray btn-sm" onclick="deleteSelectedTargets(${idx})">삭제</button>
         <button class="btn btn-gray btn-sm" onclick="openTargetBulkModal(${idx})">일괄 등록</button>
@@ -3006,6 +2980,7 @@ function generateStep4Tabs() {
               <th style="width:40px;">No</th>
               <th class="name-col">이름</th>
               <th style="width:100px;">사번</th>
+              <th style="width:100px;">회사</th>
               <th style="width:120px;">부서/팀</th>
               <th style="width:80px;">직급</th>
               <th style="width:110px;">응답자</th>
@@ -3066,6 +3041,33 @@ function downloadTemplate() {
 
   XLSX.writeFile(wb, '추천과정_업로드_템플릿.xlsx');
   showToast('템플릿이 다운로드됩니다.');
+}
+
+function downloadRecommendedCourses() {
+  if (!selectedQuestionnaire) { showToast('진단지를 먼저 선택해주세요.'); return; }
+
+  const rows = [['세부유형코드', '세부유형명', '과정명']];
+  selectedQuestionnaire.types.forEach(type => {
+    type.groups.forEach((group, gidx) => {
+      group.subs.forEach((sub, sidx) => {
+        const code  = `${type.id}_G${String(gidx+1).padStart(2,'0')}_${String(sidx+1).padStart(2,'0')}`;
+        const label = `[${group.name}] ${sub.name}`;
+        const courses = courseData[`${type.id}-g${gidx}-s${sidx}`] || [];
+        if (courses.length === 0) {
+          rows.push([code, label, '']);
+        } else {
+          courses.forEach(c => rows.push([code, label, c]));
+        }
+      });
+    });
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:14},{wch:26},{wch:36}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '추천과정_설정');
+  XLSX.writeFile(wb, '추천과정_설정현황.xlsx');
+  showToast('설정된 추천과정이 다운로드됩니다.');
 }
 
 function uploadBulkFile() {
@@ -3213,12 +3215,68 @@ function addSelectedTargets() {
   closeModal('addTargetModal');
 }
 
+/* ══ 프로토타입 전용: 회사 계층 + 로그인 계정 소속 범위 시뮬레이션 ══ */
+const DIAG_COMPANY_TREE = [
+  { id:'co-grp1', ctype:'그룹사', name:'동아쏘시오홀딩스', children:[
+    { id:'co-aff1', ctype:'계열사', name:'동아ST', children:[
+      { id:'co-sub1', ctype:'하위계열사', name:'동아ST랩스', children:[] }
+    ]}
+  ]}
+];
+let _diagScopeCompanyId = null;
+function _diagFlattenCompanies(list, depth, out) {
+  (list || []).forEach(c => {
+    out.push({ id:c.id, name:c.name, ctype:c.ctype, depth });
+    _diagFlattenCompanies(c.children, depth + 1, out);
+  });
+  return out;
+}
+function _diagFindCompanyNode(id, list) {
+  for (const c of (list || [])) {
+    if (c.id === id) return c;
+    const found = _diagFindCompanyNode(id, c.children);
+    if (found) return found;
+  }
+  return null;
+}
+function _diagScopeCompanyNames() {
+  if (!_diagScopeCompanyId) return _diagFlattenCompanies(DIAG_COMPANY_TREE, 0, []).map(c => c.name);
+  const node = _diagFindCompanyNode(_diagScopeCompanyId, DIAG_COMPANY_TREE);
+  return node ? _diagFlattenCompanies([node], 0, []).map(c => c.name) : [];
+}
+function _mkPopulateScopeSelect() {
+  const sel = document.getElementById('mk-scope-select');
+  if (!sel) return;
+  const flat = _diagFlattenCompanies(DIAG_COMPANY_TREE, 0, []);
+  sel.innerHTML = '<option value="">전체보기 (최상위 관리자)</option>' +
+    flat.map(c => `<option value="${c.id}" ${c.id===_diagScopeCompanyId?'selected':''}>${'　'.repeat(c.depth)}${c.depth>0?'· ':''}${c.name} (${c.ctype})</option>`).join('');
+  const desc = document.getElementById('mk-scope-desc');
+  if (desc) desc.textContent = _diagScopeCompanyId ? '선택한 회사 및 그 계열사/하위계열사만 조회 가능' : '전체 회사 조회 가능 (범위 제한 없음)';
+}
+function mkSetScope(companyId) {
+  _diagScopeCompanyId = companyId || null;
+  const desc = document.getElementById('mk-scope-desc');
+  if (desc) desc.textContent = _diagScopeCompanyId ? '선택한 회사 및 그 계열사/하위계열사만 조회 가능' : '전체 회사 조회 가능 (범위 제한 없음)';
+  const companySel = document.getElementById('mk-search-company');
+  if (companySel) {
+    companySel.innerHTML = '<option value="">회사 전체</option>' + _diagScopeCompanyNames().map(n => `<option>${n}</option>`).join('');
+  }
+  if (typeof _mkFilterPool === 'function' && typeof _mkRenderPool === 'function') {
+    _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []);
+    _mkRenderPool();
+  }
+  if (typeof generateStep4Tabs === 'function' && typeof selectedQuestionnaire !== 'undefined' && selectedQuestionnaire) {
+    generateStep4Tabs();
+  }
+}
+document.addEventListener('DOMContentLoaded', _mkPopulateScopeSelect);
+
 /* ══ 응답자 등록 3패널 ══ */
 const MK_RESPONDENTS = {};   // key: "tabId:rowIdx" → [{empno,name,loginId,company,dept}, ...]
 const MK_DIAG_TARGETS = [
-  {name:'홍*동', meta:'팀장 · 인재개발팀', empno:'20230101', dept:'인재개발팀'},
-  {name:'김*수', meta:'팀장 · 전략기획팀', empno:'20210505', dept:'전략기획팀'},
-  {name:'이*희', meta:'팀장 · 마케팅팀',   empno:'20190812', dept:'마케팅팀'},
+  {name:'홍*동', meta:'팀장 · 인재개발팀', empno:'20230101', company:'동아쏘시오홀딩스', dept:'인재개발팀'},
+  {name:'김*수', meta:'팀장 · 전략기획팀', empno:'20210505', company:'동아ST',          dept:'전략기획팀'},
+  {name:'이*희', meta:'팀장 · 마케팅팀',   empno:'20190812', company:'동아ST랩스',       dept:'마케팅팀'},
 ];
 
 let _mkCurrentTabId = '';
@@ -3327,7 +3385,9 @@ function _mkFilterPool(members) {
   const company = document.getElementById('mk-search-company').value;
   const type    = document.getElementById('mk-search-type').value;
   const kw      = document.getElementById('mk-search-keyword').value.trim().toLowerCase();
+  const scopeNames = _diagScopeCompanyNames();
   _mkFilteredPool = members.filter(m => {
+    if (!scopeNames.includes(m.company)) return false;
     if (company && m.company !== company) return false;
     if (kw) {
       const val = type === 'empno' ? m.empno : (type === 'dept' ? m.dept : m.name);
@@ -3700,7 +3760,7 @@ function validateScores() {
       const groupId = `${type.id}-${gidx}`;
       const s = +document.getElementById('score-strong-' + groupId)?.value;
       const w = +document.getElementById('score-weak-'   + groupId)?.value;
-      if (s <= w) { showToast('강점 기준은 약점 기준보다 높아야 합니다.'); valid = false; }
+      if (s < w) { showToast('강점 기준은 약점 기준보다 낮을 수 없습니다.'); valid = false; }
     });
   });
   return valid;
@@ -3864,7 +3924,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         showToast(members.length + '명이 추가되었습니다.');
       },
-      getCompanies: () => ['회사 선택', '동아ST', '동아쏘시오홀딩스', '휴넷'],
+      getCompanies: () => ['회사 선택', ..._diagScopeCompanyNames()],
     });
   }
 });
