@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI리터러시 진단 결과 리포트 | LABS 3.0</title>
+<style>
+:root{
+  --bg:        #F5F6FA;
+  --white:     #FFFFFF;
+  --border:    #E5E7EB;
+  --chip-bg:   #F3F4F6;
+  --track:     #E5E7EB;
+  --text:      #111827;
+  --text-2:    #374151;
+  --muted:     #6B7280;
+  --blue:      #246CF9;
+  --blue-tint: #EEF3FF;
+  --red:       #DC2626;
+  --red-tint:  #FEF2F2;
+  --font: 'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+
+.topbar{height:56px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:10;}
+.topbar-icon{width:32px;height:32px;border:none;background:none;color:var(--text-2);display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;}
+.topbar-icon:hover{background:var(--chip-bg);}
+.topbar-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--text);}
+.topbar-logo .dot{width:24px;height:24px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;}
+.topbar-search{flex:1;max-width:420px;margin-left:8px;height:34px;border-radius:17px;background:var(--chip-bg);color:var(--muted);font-size:12.5px;display:flex;align-items:center;padding:0 14px;gap:8px;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:6px;}
+
+.container{max-width:900px;margin:0 auto;padding:24px 20px 100px;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:14px;}
+.page-title{font-size:20px;font-weight:700;margin-bottom:18px;}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 1px 2px rgba(17,24,39,.04);}
+.meta-row{display:flex;gap:36px;flex-wrap:wrap;}
+.meta-item .label{font-size:12px;color:var(--muted);margin-bottom:5px;}
+.meta-item .val{font-size:14px;font-weight:600;color:var(--text);}
+
+.section-title{font-size:20px;font-weight:700;margin:0 0 14px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.section-title .scale{font-size:12px;font-weight:500;color:var(--muted);}
+.section-sub{font-size:13px;font-weight:400;color:var(--muted);margin-top:2px;}
+
+/* 종합점수 hero */
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.hero-name{font-size:16px;font-weight:600;}
+.hero-scale{font-size:12px;color:var(--muted);}
+.hero-num-row{display:flex;align-items:baseline;gap:8px;margin-bottom:30px;}
+.hero-num-row .prefix{font-size:14px;color:var(--muted);}
+.hero-num-row .num{font-size:32px;font-weight:800;}
+.hero-num-row .denom{font-size:15px;color:var(--muted);font-weight:600;}
+
+.slider{position:relative;height:4px;background:var(--track);border-radius:2px;margin:0 4px;}
+.slider-fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--blue);}
+.slider-fill.neg{background:var(--red);}
+.slider-dot{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--blue);transform:translate(-50%,-50%);}
+.slider-dot.neg{background:var(--red);}
+.slider-tick{position:absolute;top:-9px;bottom:-9px;width:1px;background:#5b5c60;}
+.slider-tick-label{position:absolute;top:-24px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap;}
+.slider-self-label{position:absolute;top:12px;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap;}
+.slider-self-label.neg{color:var(--red);}
+
+.gap-badge{display:inline-flex;padding:2px 9px;border-radius:900px;font-size:12px;font-weight:700;}
+.gap-badge.pos{color:var(--blue);background:var(--blue-tint);}
+.gap-badge.neg{color:var(--red);background:var(--red-tint);}
+.hero-comment{background:var(--blue-tint);border-left:4px solid var(--blue);border-radius:8px;padding:16px 18px;margin-top:22px;font-size:13.5px;color:var(--text-2);line-height:1.85;}
+.hero-comment b{color:var(--text);font-weight:700;}
+
+/* 강점/약점 */
+.sw-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.btn-ghost{background:var(--chip-bg);color:var(--text);border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-ghost:hover{background:#333438;}
+.sw-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:640px){.sw-grid{grid-template-columns:1fr;}}
+.sw-card{background:var(--white);border:1px solid;border-radius:16px;padding:18px 20px;}
+.sw-card.strength{border-color:#BFDBFE;background:var(--blue-tint);}
+.sw-card.weakness{border-color:#FECACA;background:var(--red-tint);}
+.sw-card h4{font-size:16px;font-weight:700;margin-bottom:14px;}
+.sw-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+.sw-row:last-child{margin-bottom:0;}
+.sw-chip{background:var(--chip-bg);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;}
+
+/* 요인별 지수 (슬라이더 리스트) */
+.factor-table{border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.factor-row{display:grid;grid-template-columns:150px 1fr 110px;gap:20px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);}
+.factor-row:last-child{border-bottom:none;}
+.factor-name{font-size:13.5px;font-weight:600;}
+.factor-slider-wrap{position:relative;padding:22px 0 2px;}
+.factor-score{text-align:right;}
+.factor-score .self{font-size:12px;color:var(--muted);}
+.factor-score .self b{font-size:15px;color:var(--text);margin-left:4px;}
+.factor-legend{display:flex;gap:22px;padding:14px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+.factor-legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.factor-legend .dot.blue{background:var(--blue);}
+.factor-legend .dot.red{background:var(--red);}
+
+/* 이러닝 추천 */
+.top2-grid{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+.top2-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.top2-title-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.top2-badge{display:inline-flex;padding:4px 13px;border-radius:900px;font-size:13px;font-weight:700;flex-shrink:0;}
+.top2-badge.r1{background:var(--blue-tint);color:var(--blue);}
+.top2-badge.r2{background:var(--chip-bg);color:var(--text-2);}
+.top2-factor{font-size:20px;font-weight:800;}
+.top2-reason{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:14px;}
+.top2-course{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.top2-course-wrap{position:relative;}
+.top2-arrow{position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;background:var(--white);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 3px rgba(17,24,39,.12);color:var(--text-2);z-index:1;}
+.top2-arrow svg{width:16px;height:16px;}
+.top2-arrow:hover{background:var(--chip-bg);}
+.top2-arrow.left{left:-14px;}
+.top2-arrow.right{right:-14px;}
+.top2-counter{position:absolute;top:10px;right:12px;font-size:11.5px;font-weight:600;color:var(--muted);background:var(--white);padding:2px 9px;border-radius:900px;border:1px solid var(--border);}
+
+/* 과정 카드 공통 (TOP2 / 약점보완·역량확장 공용) — 좌측 썸네일 + 우측 설명 */
+.course-flex{display:flex;gap:14px;}
+.course-thumb{width:130px;height:82px;object-fit:cover;border-radius:8px;background:var(--chip-bg);flex-shrink:0;display:block;}
+.course-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px;}
+.course-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);flex-wrap:wrap;}
+.course-tag svg{width:12px;height:12px;flex-shrink:0;}
+.course-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.4;}
+.course-desc{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.course-meta{display:flex;flex-wrap:wrap;gap:14px;}
+.course-meta span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);white-space:nowrap;}
+.course-meta svg{width:13px;height:13px;flex-shrink:0;}
+
+/* TOP2 과정 카드 — 썸네일 확대 */
+.top2-course .course-thumb{width:190px;height:120px;}
+
+/* 약점보완/역량확장 — 탭 전환 */
+.rec-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.rec-tab{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:10px 4px;margin-right:24px;cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:6px;}
+.rec-tab.active{color:var(--text);}
+.rec-tab[data-tab="weak"].active{color:var(--red);border-bottom-color:var(--red);}
+.rec-tab[data-tab="strong"].active{color:var(--blue);border-bottom-color:var(--blue);}
+.rec-tab-count{font-size:12px;font-weight:600;color:var(--muted);}
+.rec-tab[data-tab="weak"].active .rec-tab-count{color:var(--red);}
+.rec-tab[data-tab="strong"].active .rec-tab-count{color:var(--blue);}
+.rec-list{display:flex;flex-direction:column;gap:12px;}
+.rec-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="topbar-icon" aria-label="사이드바 열기">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+  </button>
+  <div class="topbar-logo">
+    <span class="dot">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </span>
+    LABS
+  </div>
+  <div class="topbar-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    원하는 콘텐츠를 검색해 보세요.
+  </div>
+  <div class="topbar-right">
+    <button class="topbar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+  </div>
+</header>
+
+<div class="container">
+
+  <a href="진단_연수원.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    목록으로
+  </a>
+  <div class="page-title">진단 결과 보기</div>
+
+  <!-- 메타 -->
+  <div class="card meta-row">
+    <div class="meta-item"><div class="label">진단명</div><div class="val">AI리터러시 진단 (상품형)</div></div>
+    <div class="meta-item"><div class="label">응답일</div><div class="val">2026.08.20</div></div>
+    <div class="meta-item"><div class="label">대상자</div><div class="val">홍길동 (본인)</div></div>
+  </div>
+
+  <!-- AI Literacy 종합점수 -->
+  <div class="card">
+    <div class="hero-top">
+      <div class="hero-name">종합결과</div>
+      <div class="hero-scale">척도 0 ~ 100</div>
+    </div>
+    <div class="hero-num-row">
+      <span class="prefix">본인</span><span class="num">80</span><span class="denom">/ 100</span>
+      <span class="gap-badge pos" style="margin-left:auto;">+3</span>
+    </div>
+    <div class="slider">
+      <div class="slider-fill" style="width:80%;"></div>
+      <div class="slider-tick" style="left:77%;"></div>
+      <span class="slider-tick-label" style="left:77%;">조직평균 77</span>
+      <span class="slider-dot" style="left:80%;"></span>
+      <span class="slider-self-label" style="left:80%;">본인 80</span>
+    </div>
+    <div class="hero-comment">
+      <b>홍길동</b> 님은 AI Literacy 진단 결과, 조직 평균 대비 <b>우수한 Literacy역량</b>을 갖춘 것으로 나타났습니다.<br>
+      아래 세부 역량별 점수를 통해 자신의 강약점 역량을 확인하세요.<br>
+      Hunet이 준비한 이러닝 콘텐츠로 학습하면 AI Literacy 점수가 더욱 상승할 것입니다.
+    </div>
+  </div>
+
+  <!-- 역량별 상세 분석 -->
+  <div class="section-title">역량별 상세 분석</div>
+  <div class="card" style="padding:0;">
+    <div class="factor-table">
+
+      <div class="factor-row">
+        <div class="factor-name">AI 개념 이해</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:86%;"></div>
+            <div class="slider-tick" style="left:75%;"></div>
+            <span class="slider-tick-label" style="left:75%;">조직평균 7.5</span>
+            <span class="slider-dot" style="left:86%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>8.6</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">AI 툴 활용</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill neg" style="width:56%;"></div>
+            <div class="slider-tick" style="left:68%;"></div>
+            <span class="slider-tick-label" style="left:68%;">조직평균 6.8</span>
+            <span class="slider-dot neg" style="left:56%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b style="color:var(--red);">5.6</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">프롬프트 설계</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:84%;"></div>
+            <div class="slider-tick" style="left:76%;"></div>
+            <span class="slider-tick-label" style="left:76%;">조직평균 7.6</span>
+            <span class="slider-dot" style="left:84%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>8.4</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">데이터 사고력</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:78%;"></div>
+            <div class="slider-tick" style="left:79%;"></div>
+            <span class="slider-tick-label" style="left:79%;">조직평균 7.9</span>
+            <span class="slider-dot" style="left:78%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>7.8</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">AI 보안/윤리</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:90%;"></div>
+            <div class="slider-tick" style="left:81%;"></div>
+            <span class="slider-tick-label" style="left:81%;">조직평균 8.1</span>
+            <span class="slider-dot" style="left:90%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>9.0</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">직무별 AI 활용</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill neg" style="width:69%;"></div>
+            <div class="slider-tick" style="left:74%;"></div>
+            <span class="slider-tick-label" style="left:74%;">조직평균 7.4</span>
+            <span class="slider-dot neg" style="left:69%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b style="color:var(--red);">6.9</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">업무 효율화</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:82%;"></div>
+            <div class="slider-tick" style="left:78%;"></div>
+            <span class="slider-tick-label" style="left:78%;">조직평균 7.8</span>
+            <span class="slider-dot" style="left:82%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>8.2</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">AI 전략 이해</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:76%;"></div>
+            <div class="slider-tick" style="left:79%;"></div>
+            <span class="slider-tick-label" style="left:79%;">조직평균 7.9</span>
+            <span class="slider-dot" style="left:76%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>7.6</b></span></div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-name">AI 혁신 자동화</div>
+        <div class="factor-slider-wrap">
+          <div class="slider">
+            <div class="slider-fill" style="width:95%;"></div>
+            <div class="slider-tick" style="left:86%;"></div>
+            <span class="slider-tick-label" style="left:86%;">조직평균 8.6</span>
+            <span class="slider-dot" style="left:95%;"></span>
+          </div>
+        </div>
+        <div class="factor-score"><span class="self">본인 <b>9.5</b></span></div>
+      </div>
+
+    </div>
+    <div class="factor-legend">
+      <span><i class="dot blue"></i>강점 기준(7.0점) 이상</span>
+      <span><i class="dot red"></i>강점 기준 미만</span>
+    </div>
+  </div>
+
+  <div class="hero-comment" style="margin:0 0 20px;">
+    <b>홍길동</b> 님은 AI Literacy 세부 역량 중 <b>[AI 툴 활용]</b>에 대한 이해가 상대적으로 가장 낮게 나타났습니다. 아래 이러닝 추천 리스트를 참고하여 부족한 영역을 보완해 보세요.
+  </div>
+
+  <!-- 강점/약점 -->
+  <div class="card">
+    <div class="sw-head">
+      <div class="hero-name">홍길동님의 강점 / 약점 역량</div>
+    </div>
+    <div class="sw-grid">
+      <div class="sw-card strength">
+        <h4>강점 역량</h4>
+        <div class="sw-row">
+          <span class="sw-chip">AI 혁신 자동화 9.5</span>
+          <span class="sw-chip">AI 보안/윤리 9.0</span>
+          <span class="sw-chip">AI 개념 이해 8.6</span>
+        </div>
+        <div class="sw-row">
+          <span class="sw-chip">프롬프트 설계 8.4</span>
+          <span class="sw-chip">업무 효율화 8.2</span>
+          <span class="sw-chip">데이터 사고력 7.8</span>
+        </div>
+        <div class="sw-row">
+          <span class="sw-chip">AI 전략 이해 7.6</span>
+        </div>
+      </div>
+      <div class="sw-card weakness">
+        <h4>약점 역량</h4>
+        <div class="sw-row">
+          <span class="sw-chip">AI 툴 활용 5.6</span>
+          <span class="sw-chip">직무별 AI 활용 6.9</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이러닝 추천 -->
+  <div class="section-title" id="rec" style="margin-top:32px;">이러닝 추천</div>
+
+  <div class="card">
+    <div class="hero-name" style="margin-bottom:14px;">추천 TOP 2 과정</div>
+    <div class="top2-grid">
+      <div class="top2-card">
+        <div class="top2-title-row">
+          <span class="top2-badge r1">1순위</span>
+          <span class="top2-factor">AI 툴 활용</span>
+        </div>
+        <div class="top2-reason">9가지 요인 중 <b>AI 툴 활용</b>이(가) <b>5.6점</b>으로 가장 낮은 역량으로 나타나 최우선으로 추천합니다.</div>
+        <div class="top2-course-wrap">
+          <button class="top2-arrow left" onclick="top2Nav('r1',-1)" aria-label="이전 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div class="top2-course" id="top2Course-r1"></div>
+          <button class="top2-arrow right" onclick="top2Nav('r1',1)" aria-label="다음 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+          <span class="top2-counter" id="top2Counter-r1"></span>
+        </div>
+      </div>
+      <div class="top2-card">
+        <div class="top2-title-row">
+          <span class="top2-badge r2">2순위</span>
+          <span class="top2-factor">직무별 AI 활용</span>
+        </div>
+        <div class="top2-reason"><b>직무별 AI 활용</b>은(는) 조직 평균(<b>7.4점</b>) 대비 회원님의 점수(<b>6.9점</b>)가 상대적으로 낮아, 격차 해소를 위해 학습을 추천합니다.</div>
+        <div class="top2-course-wrap">
+          <button class="top2-arrow left" onclick="top2Nav('r2',-1)" aria-label="이전 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div class="top2-course" id="top2Course-r2"></div>
+          <button class="top2-arrow right" onclick="top2Nav('r2',1)" aria-label="다음 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+          <span class="top2-counter" id="top2Counter-r2"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <div class="hero-name" style="margin-bottom:16px;">약점 보완 · 역량 확장 추천과정</div>
+
+    <div class="rec-tabs">
+      <button class="rec-tab active" data-tab="weak" onclick="switchRecTab('weak')">약점 보완<span class="rec-tab-count" id="weakCount"></span></button>
+      <button class="rec-tab" data-tab="strong" onclick="switchRecTab('strong')">역량 확장<span class="rec-tab-count" id="strongCount"></span></button>
+    </div>
+    <div class="rec-list" id="weakScroll"></div>
+    <div class="rec-list" id="strongScroll" style="display:none;"></div>
+  </div>
+
+</div>
+
+<script>
+const WEAK_COURSES = [
+  { title: '[AIder College] 생성형 AI를 제대로 다루는 핵심 원리 강의', type: '온라인', time: '1시간 10분', price: '무료', seed: 'rec1' },
+  { title: '[AIder College] 생성형 AI 시대, 윤리는 선택이 아니라 생존입니다', type: '마이크로러닝', time: '40분', price: '무료', seed: 'rec2' },
+  { title: '프롬프트 엔지니어링 기초와 실전 활용법', type: '마이크로러닝', time: '45분', price: '무료', seed: 'rec5' },
+  { title: '생성형 AI 결과물 팩트체크와 검증 실무', type: '마이크로러닝', time: '50분', price: '무료', seed: 'rec6' },
+  { title: '직무별 AI 활용 가이드: 나에게 맞는 툴 찾기', type: '온라인', time: '1시간', price: '15,000원', seed: 'rec7' },
+];
+const STRONG_COURSES = [
+  { title: 'AI 기초 크리에이티브 & 생산성 도구 완전정복', type: '온라인', time: '2시간 30분', price: '49,000원', seed: 'rec3' },
+  { title: 'AI로 업무 흐름 설계부터 결과 창출까지, 자동화 워크플로우!', type: '온라인', time: '1시간 50분', price: '35,000원', seed: 'rec4' },
+  { title: 'AI 전략 수립과 조직 적용 사례', type: '온라인', time: '1시간 30분', price: '39,000원', seed: 'rec8' },
+  { title: '데이터 기반 의사결정을 위한 AI 활용법', type: '온라인', time: '1시간 40분', price: '29,000원', seed: 'rec9' },
+  { title: 'AI 윤리 리더십: 조직에 확산시키기', type: '온라인', time: '55분', price: '무료', seed: 'rec10' },
+  { title: '차세대 AI 트렌드와 미래 업무 방식', type: '온라인', time: '1시간 10분', price: '무료', seed: 'rec11' },
+];
+
+const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>';
+const ICON_TARGET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>';
+const ICON_CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+const ICON_PRICE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41L11 3.83A2 2 0 009.5 3H4a1 1 0 00-1 1v5.5a2 2 0 00.59 1.41l9.58 9.58a2 2 0 002.83 0l4.59-4.59a2 2 0 000-2.83z"/><circle cx="6.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
+const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>';
+const ICON_CHEVRON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+const TOP2_COURSES = {
+  r1: {
+    factor: 'AI 툴 활용',
+    items: [
+      { title: '말해봐, ChatGPT가 다 해줄게: 실전 업무 활용', desc: '보고서 요약, 발표자료 구성, 이미지 생성 등 멀티모달 콘텐츠 제작 역량을 중심으로 구성된 AI 업무 활용 실전 강의', type: '온라인', target: '직무공통', time: '1시간 20분', price: '무료', seed: 'ail1' },
+      { title: '프롬프트 엔지니어링 기초와 실전 활용법', desc: '질문 설계부터 반복 개선까지, 실무에 바로 쓰는 프롬프트 작성 노하우를 익히는 강의', type: '마이크로러닝', target: '직무공통', time: '45분', price: '무료', seed: 'ail1b' },
+      { title: '생성형 AI 툴 비교와 업무별 활용 가이드', desc: 'ChatGPT·Gemini·Copilot 등 주요 AI 툴의 특징을 비교하고 업무 상황별 최적 툴 선택법을 안내하는 강의', type: '온라인', target: '직무공통', time: '55분', price: '12,000원', seed: 'ail1c' },
+    ],
+  },
+  r2: {
+    factor: '직무별 AI 활용',
+    items: [
+      { title: '[일머리스쿨] AI로 완성하는 일잘러의 보고서', desc: '기획 → 자료 조사 → 논리 구조화 → 시각화 → 작성까지, 보고 업무 전 과정을 AI로 빠르고 체계적으로 적용하는 강의', type: '온라인', target: '직무공통', time: '1시간 50분', price: '무료', seed: 'ail2' },
+      { title: '직무별 AI 활용 가이드: 나에게 맞는 툴 찾기', desc: '기획·영업·개발 등 직무별로 자주 쓰이는 AI 활용 사례를 모아 소개하는 강의', type: '온라인', target: '직무공통', time: '1시간', price: '15,000원', seed: 'ail2b' },
+      { title: 'AI로 회의록부터 실행계획까지 한 번에', desc: '회의 녹음·메모를 AI로 정리해 회의록과 실행 계획을 자동 생성하는 실무 노하우 강의', type: '마이크로러닝', target: '직무공통', time: '35분', price: '무료', seed: 'ail2c' },
+    ],
+  },
+};
+const top2Index = { r1: 0, r2: 0 };
+
+function top2ItemHTML(c, factorLabel) {
+  return `<div class="course-flex">
+    <img class="course-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
+    <div class="course-info">
+      <div class="course-tag">${ICON_FOLDER}<span>AI활용실무역량군</span>${ICON_CHEVRON}<span>${factorLabel}</span></div>
+      <div class="course-title">${c.title}</div>
+      <div class="course-desc">${c.desc}</div>
+      <div class="course-meta">
+        <span>${ICON_TYPE}${c.type}</span>
+        <span>${ICON_TARGET}${c.target}</span>
+        <span>${ICON_CLOCK}${c.time}</span>
+        <span>${ICON_PRICE}${c.price}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTop2(rank) {
+  const group = TOP2_COURSES[rank];
+  const idx = top2Index[rank];
+  const c = group.items[idx];
+  document.getElementById('top2Course-' + rank).innerHTML = top2ItemHTML(c, group.factor);
+  document.getElementById('top2Counter-' + rank).textContent = (idx + 1) + ' / ' + group.items.length;
+}
+
+function top2Nav(rank, dir) {
+  const len = TOP2_COURSES[rank].items.length;
+  top2Index[rank] = (top2Index[rank] + dir + len) % len;
+  renderTop2(rank);
+}
+
+renderTop2('r1');
+renderTop2('r2');
+
+function itemHTML(c, focusLabel) {
+  return `<div class="rec-item">
+    <div class="course-flex">
+      <img class="course-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
+      <div class="course-info">
+        <div class="course-tag">${ICON_FOLDER}<span>${focusLabel}</span>${ICON_CHEVRON}<span>AI·디지털</span></div>
+        <div class="course-title">${c.title}</div>
+        <div class="course-meta">
+          <span>${ICON_TYPE}${c.type}</span>
+          <span>${ICON_TARGET}직무공통</span>
+          <span>${ICON_CLOCK}${c.time}</span>
+          <span>${ICON_PRICE}${c.price}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCourseList(scrollId, countId, data, focusLabel) {
+  document.getElementById(countId).textContent = data.length + '개';
+  document.getElementById(scrollId).innerHTML = data.map(c => itemHTML(c, focusLabel)).join('');
+}
+
+function switchRecTab(tab) {
+  document.querySelectorAll('.rec-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('weakScroll').style.display = tab === 'weak' ? 'flex' : 'none';
+  document.getElementById('strongScroll').style.display = tab === 'strong' ? 'flex' : 'none';
+}
+
+renderCourseList('weakScroll', 'weakCount', WEAK_COURSES, '약점 보완');
+renderCourseList('strongScroll', 'strongCount', STRONG_COURSES, '역량 확장');
+</script>
+
+</body>
+</html>
