@@ -4042,7 +4042,9 @@ function createDiagnosis() {
   if (!validateDates()) return;
   if (!validateResponseCount()) return;
   if (!validateScores()) return;
-  showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
+  showToast(selectedDiagnosticType === '상시'
+    ? '진단이 생성되었습니다. 진단 시작일이 되면 자동으로 오픈됩니다.'
+    : '진단이 생성되었습니다. 대기 상태로 저장됩니다.');
   setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
 }
 
