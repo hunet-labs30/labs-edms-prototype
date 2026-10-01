@@ -858,7 +858,7 @@ body {
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
   <select class="lang-select" onchange="if(this.value) location.href=this.value" title="진단 만들기 버전 선택" style="margin-right:6px;">
-    <option value="edms_진단_만들기.html" selected>V2 · 단일/상시/사전사후 3유형</option>
+    <option value="edms_진단_만들기.html" selected>V2 · 범용/상시/사전사후 3유형</option>
     <option value="edms_진단_만들기_v1_구버전.html">V1 · 구버전</option>
   </select>
   <span class="user-name">김이름 님</span>
@@ -1073,7 +1073,7 @@ body {
           </div>
         </div>
         <div class="wiz-aside-foot">
-          <a href="edms_역량진단_관리_상시진단.html"
+          <a href="edms_역량진단_관리.html"
              style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;transition:border-color .15s,color .15s;"
              onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
              onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
@@ -1099,9 +1099,9 @@ body {
           </div>
           <div class="wiz-card-body padded">
             <div style="display:flex;gap:16px;max-width:1020px;">
-              <div class="diagtype-choice-card selected" data-type="단일" onclick="chooseDiagType('단일')">
+              <div class="diagtype-choice-card selected" data-type="범용" onclick="chooseDiagType('범용')">
                 <div style="font-size:26px;margin-bottom:10px;">🎯</div>
-                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">단일진단</div>
+                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">범용진단</div>
                 <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자·응답자를 지정해 진행하고, 기간 종료 후 결과를 확인합니다.</div>
               </div>
               <div class="diagtype-choice-card" data-type="상시" onclick="chooseDiagType('상시')">
@@ -1112,7 +1112,7 @@ body {
               <div class="diagtype-choice-card" data-type="사전사후" onclick="chooseDiagType('사전사후')">
                 <div style="font-size:26px;margin-bottom:10px;">📈</div>
                 <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">사전사후진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">완료된 단일진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
+                <div style="font-size:12.5px;color:#777;line-height:1.6;">완료된 범용진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
               </div>
             </div>
           </div>
@@ -1139,7 +1139,7 @@ body {
           </div>
           <div class="wiz-card-body">
 
-            <!-- ▸ 사전사후진단: 사전진단(완료된 단일진단) 선택 뷰 -->
+            <!-- ▸ 사전사후진단: 사전진단(완료된 범용진단) 선택 뷰 -->
             <div id="step2PrePostView" style="display:none;flex:1;">
               <div class="step1-panel-wrap" style="flex:1;">
                 <div class="step1-left">
@@ -1896,7 +1896,7 @@ const QUESTIONNAIRES = [
     subCount: 11,
     qCount: 50,
     date: '2025-03-15',
-    compatTypes: ['단일', '상시'],
+    compatTypes: ['범용', '상시'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -1981,7 +1981,7 @@ const QUESTIONNAIRES = [
     subCount: 9,
     qCount: 72,
     date: '2025-01-20',
-    compatTypes: ['단일', '상시'],
+    compatTypes: ['범용', '상시'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2076,7 +2076,7 @@ const QUESTIONNAIRES = [
     subCount: 5,
     qCount: 26,
     date: '2025-11-01',
-    compatTypes: ['단일', '상시'],
+    compatTypes: ['범용', '상시'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2128,7 +2128,7 @@ const QUESTIONNAIRES = [
     subCount: 3,
     qCount: 15,
     date: '2026-01-15',
-    compatTypes: ['단일', '상시'],
+    compatTypes: ['범용', '상시'],
     locked: true,
     resultTemplate: 'ai_literacy',
     types: [
@@ -2192,9 +2192,9 @@ let respondentSettings = {};
 let courseSettings = {};
 let currentCourseSettingKey = null;
 let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부 — 대상자 등록(일괄/개별)은 이 값이 true여야 사용 가능
-let selectedDiagnosticType = '단일'; // 진단유형: 단일 | 상시 | 사전사후 (기본값: 단일진단)
+let selectedDiagnosticType = '범용'; // 진단유형: 범용 | 상시 | 사전사후 (기본값: 범용진단)
 
-// 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 단일진단" (프로토타입 샘플)
+// 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 범용진단" (프로토타입 샘플)
 // respondents = 대상자 1인당 응답자 수 (본인은 0 = 별도 지정 없음)
 let selectedPreDiag = null;
 const PRE_DIAGNOSES = [
@@ -2350,7 +2350,7 @@ function applyStepVisibility() {
   const s2 = (id) => document.getElementById(id);
   if (s2('step2Title')) s2('step2Title').textContent = isPrePost ? '사전진단을 선택해주세요.' : '진단지를 선택해주세요.';
   if (s2('step2Desc')) s2('step2Desc').innerHTML = isPrePost
-    ? '사후진단의 기준이 될 완료된 단일진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
+    ? '사후진단의 기준이 될 완료된 범용진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
     : '진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.';
   if (s2('wiz-step2-title')) s2('wiz-step2-title').textContent = isPrePost ? '사전진단 선택' : '진단지 선택';
   if (s2('wiz-step2-desc')) s2('wiz-step2-desc').textContent = isPrePost ? '사후진단의 기준 진단 선택' : '어떤 역량을 진단할지 선택';
@@ -2422,7 +2422,7 @@ function renderStep1() {
   if (keepId) selectQuestionnaire(keepId);
 }
 
-// ─── 사전사후진단: 사전진단(완료된 단일진단) 선택 ───
+// ─── 사전사후진단: 사전진단(완료된 범용진단) 선택 ───
 
 let preDiagPage = 1;
 
@@ -2720,7 +2720,7 @@ function generateRespondentCards() {
     container.innerHTML = `
       <div style="padding:24px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;">
         <div style="font-size:14px;font-weight:600;color:#2a3a6a;margin-bottom:8px;">상시진단은 본인 자기진단만 가능합니다</div>
-        <div style="font-size:12px;color:#4a5a8a;">다면평가(상사, 동료 등)는 단일진단·사전사후진단 유형에서만 사용할 수 있습니다.</div>
+        <div style="font-size:12px;color:#4a5a8a;">다면평가(상사, 동료 등)는 범용진단·사전사후진단 유형에서만 사용할 수 있습니다.</div>
       </div>
       <div style="display:flex;gap:12px;margin-top:16px;">
         <div class="resp-role-card" style="opacity:1;cursor:default;">
@@ -2735,7 +2735,7 @@ function generateRespondentCards() {
     return;
   }
 
-  // 단일진단·사전사후진단: 기존 로직
+  // 범용진단·사전사후진단: 기존 로직
   respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
 
   const section = document.createElement('div');
@@ -4043,7 +4043,7 @@ function createDiagnosis() {
   if (!validateResponseCount()) return;
   if (!validateScores()) return;
   showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
-  setTimeout(() => { location.href = 'edms_역량진단_관리_상시진단.html'; }, 1400);
+  setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
 }
 
 function validateScores() {
@@ -4307,17 +4307,17 @@ let _diagStatus = 'before';
 // (STEP1 "진단유형 선택"이 새로 추가되며 기존 STEP 번호가 전부 +1 밀림)
 // before:    전체 수정 가능
 // after(진행 중)/expired(마감 전):
-//   단일진단·사전사후진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
+//   범용진단·사전사후진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
 //              STEP 6(진단 기본 설정)는 완전잠금이 아닌 "부분 수정"(applyStep5PartialLock 별도 처리) — 이 목록에는 포함하지 않음.
 //   사전사후진단 — STEP 3·4는 사전진단 설정이 자동 적용되어 노출하지 않음. STEP 1·2 항상 잠금, STEP 7(자동 적용된 대상자·응답자)은 마감 전엔 잠금.
-//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 단일진단과 동일하게 부분 수정으로 별도 처리.
+//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 범용진단과 동일하게 부분 수정으로 별도 처리.
 // STEP 1(진단유형 선택)은 진단이 생성된 이후(진행 중/마감 전/완료)에는 항상 잠금 — STEP2와 동일하게 변경 불가
 // completed: 전체 잠금 (STEP6도 이때만 완전 잠금이라 이 목록에 포함)
 const STEP_LOCK_MAP = {
-  before:    { 단일: [],         상시: [],         사전사후: [] },
-  after:     { 단일: [1, 2, 3],     상시: [1, 2],     사전사후: [1, 2] },
-  expired:   { 단일: [1, 2, 3, 7],  상시: [1, 2],     사전사후: [1, 2, 7] },
-  completed: { 단일: [1, 2, 3, 4, 5, 6, 7], 상시: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
+  before:    { 범용: [],         상시: [],         사전사후: [] },
+  after:     { 범용: [1, 2, 3],     상시: [1, 2],     사전사후: [1, 2] },
+  expired:   { 범용: [1, 2, 3, 7],  상시: [1, 2],     사전사후: [1, 2, 7] },
+  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 상시: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
 };
 
 // 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)
