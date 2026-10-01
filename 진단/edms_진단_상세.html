@@ -1316,6 +1316,149 @@
         if (btnDateChg) btnDateChg.style.display  = 'none';
       }
     }
+
+    // 상시진단(type=ontime) 전용 화면: 대상자·응답자 선정 없음(본인 자기진단)
+    if (params.get('type') === 'ontime') applyOntimeMode(state, isCompleted);
+  }
+
+  // ── 상시진단(type=ontime) 전용 화면 ──
+  // - 진행 전: 대상자·응답자가 없고 엑셀다운로드/삭제/일괄 등록/대상자 관리/응답자 관리 모두 불가
+  // - 진행 후: 응답이 실시간으로 쌓이며 진단진행율·대상자 관리·응답자 관리는 불가
+  // - 본인 진단만 가능 → 대상자 = 응답자, 응답상태는 응답완료/응답중단 두 가지 (여러 번 응답해도 인원수 기준 유지)
+  //   응답중단 = 응답을 진행한 뒤 탈퇴한 임직원 (탈퇴한 임직원으로 표기)
+  const ONTIME_ROWS = [
+    ['김*준','m***@hunet.co.kr','2024001','동아쏘시오홀딩스','경영전략팀','팀장','010-****-5678','done','2026.09.28 10:12'],
+    ['이*진','s***@hunet.co.kr','2022015','동아ST','인재개발팀','차장','010-****-6789','out','2026.09.30 14:05'],
+    ['박*훈','j***@hunet.co.kr','2021008','동아ST랩스','영업1팀','팀장','010-****-7890','done','2026.09.27 09:40'],
+    ['최*리','y***@hunet.co.kr','2023022','동아쏘시오홀딩스','마케팅팀','과장','010-****-8901','done','2026.09.26 16:21'],
+    ['정*호','s***@hunet.co.kr','2020031','동아ST','IT개발팀','팀장','010-****-9012','done','2026.09.25 11:03'],
+    ['한*래','m***@hunet.co.kr','2022044','동아ST랩스','재무팀','차장','010-****-0123','out','2026.10.01 08:47'],
+    ['오*현','d***@hunet.co.kr','2019003','동아쏘시오홀딩스','고객서비스팀','부장','010-****-1234','done','2026.09.24 13:30'],
+    ['강*연','n***@hunet.co.kr','2023011','동아ST','구매팀','과장','010-****-2345','done','2026.09.23 17:55'],
+    ['윤*양','t***@hunet.co.kr','2021019','동아ST랩스','품질관리팀','팀장','010-****-3456','out','2026.09.30 19:12'],
+    ['신*원','h***@hunet.co.kr','2024038','동아쏘시오홀딩스','법무팀','차장','010-****-4567','done','2026.09.22 10:08'],
+    ['임*현','l***@hunet.co.kr','2025101','동아ST','디지털전략팀','과장','010-****-6677','done','2026.09.21 15:44'],
+    ['황*은','c***@hunet.co.kr','2025102','동아ST랩스','글로벌사업팀','대리','010-****-7788','done','2026.09.20 09:16'],
+  ];
+
+  function applyOntimeMode(state, isCompleted) {
+    const $ = id => document.getElementById(id);
+    const isBefore = state === 'before';
+
+    // 기본 정보: 진단진행율 제거, 대상자 = 응답자 (응답중단 = 응답 진행 후 탈퇴한 임직원)
+    $('diagName').textContent      = '자주하는 실수 체크리스트 (상시)';
+    $('diagStartDate').textContent = '2025.12.01 00:00';
+    $('diagEndDate').textContent   = '2026.12.31 23:59';
+    const sumHeads = document.querySelectorAll('.summary-stat-table thead th');
+    const sumCells = document.querySelectorAll('.summary-stat-table tbody td');
+    [sumHeads[2], sumCells[2]].forEach(el => { if (el) el.style.display = 'none'; });
+    const total = isBefore ? 0 : ONTIME_ROWS.length;
+    const done  = isBefore ? 0 : ONTIME_ROWS.filter(r => r[7] === 'done').length;
+    $('sumTarget').textContent  = total;
+    $('sumResp').textContent    = total;
+    $('sumDone').textContent    = done;
+    $('sumStopped').textContent = total - done;
+
+    // 화면 전환 버튼: 유형 유지, 상시진단은 마감하기 단계가 없으므로 '진단 마감 전' 제외
+    ['btnBefore', 'btnAfter', 'btnCompleted'].forEach(id => { const a = $(id); if (a) a.href += '&type=ontime'; });
+    if ($('btnExpired')) $('btnExpired').style.display = 'none';
+
+    if (isBefore) {
+      // 진행 전: 대상자·응답자 없음, 모든 작업 버튼 미노출
+      const card = $('state-before');
+      const actionRow = card.querySelector('.action-row');
+      if (actionRow) actionRow.style.display = 'none';
+      const pagRow = card.querySelector('.pagination-row');
+      if (pagRow) pagRow.style.display = 'none';
+      card.querySelector('thead').innerHTML = `<tr>
+        <th style="width:36px;">NO</th><th style="width:70px;">이름</th><th style="width:130px;">아이디</th>
+        <th style="width:75px;">사번</th><th style="width:65px;">회사</th><th>부서/팀</th>
+        <th style="width:52px;">직급</th><th style="width:100px;">휴대번호</th></tr>`;
+      card.querySelector('tbody').innerHTML =
+        `<tr><td colspan="8" style="text-align:center;padding:48px 0;color:#999;font-size:13px;line-height:1.7;">
+           대상자·응답자를 선정하지 않는 상시진단입니다.<br>진단이 시작되면 응시한 임직원이 이곳에 실시간으로 표시됩니다.</td></tr>`;
+      return;
+    }
+
+    // 진행 후: 대상자 관리·응답자 관리·작업 선택 불가
+    ['afterWorkSelect', 'selCountText', 'btnAfterAddTarget', 'btnAfterAddResp', 'btnExpiredDateChange']
+      .forEach(id => { if ($(id)) $(id).style.display = 'none'; });
+
+    // 검색 필터: 메일발송상태 제거, 진단진행상태 → 응답상태(응답중/응답완료)
+    const mail = $('after-filter-mail');
+    mail.style.display = 'none';
+    if (mail.previousElementSibling) mail.previousElementSibling.style.display = 'none';
+    const st = $('after-filter-status');
+    st.innerHTML = '<option value="">전체</option><option>응답완료</option><option>응답중단</option>';
+    if (st.previousElementSibling) {
+      st.previousElementSibling.textContent = '응답상태';
+      st.previousElementSibling.style.marginLeft = '0';
+    }
+
+    // 목록: 대상자 = 응답자(본인)이므로 한 묶음으로 표시, 응답은 실시간 누적
+    $('afterTable').innerHTML = `
+      <thead>
+        <tr>
+          <th rowspan="2" style="width:32px;">No</th>
+          <th colspan="7" class="group-header">진단 대상자(응답자) 정보</th>
+          <th colspan="2" class="group-header">응답 현황</th>
+        </tr>
+        <tr>
+          <th style="width:60px;">이름</th><th style="width:130px;">아이디</th><th style="width:68px;">사번</th>
+          <th style="width:100px;">회사</th><th style="width:90px;">부서/팀</th><th style="width:48px;">직급</th>
+          <th style="width:95px;">휴대번호</th><th style="width:80px;">응답상태</th><th style="width:130px;">최종 응답일시</th>
+        </tr>
+      </thead>
+      <tbody id="ontimeTbody"></tbody>`;
+
+    // 검색결과 건수 (작업 선택이 없는 자리에 표시)
+    const cntHost = $('selCountText') ? $('selCountText').parentElement : null;
+    if (cntHost && !$('ontimeResultCnt')) {
+      cntHost.insertAdjacentHTML('beforeend', '<span id="ontimeResultCnt" style="font-size:12px;color:#666;"></span>');
+    }
+
+    // 기본값: 전체 (응답상태 필터로 응답완료/응답중단만 볼 수 있음)
+    st.value = '';
+    const searchBtn = $('afterFilterRow').querySelector('.btn-primary');
+    if (searchBtn) searchBtn.onclick = renderOntimeRows;
+    // 첫 렌더링은 로그인 계정 소속 범위가 준비된 뒤(DOMContentLoaded → _applyScopeToMainTables)에 수행
+  }
+
+  // 상시진단 상세 목록 렌더링 (응답상태 / 회사 / 검색어 필터)
+  function renderOntimeRows() {
+    const $ = id => document.getElementById(id);
+    const status  = $('after-filter-status').value;
+    const company = $('after-filter-company').value;
+    const type    = $('after-filter-search-type').value;   // name | empno | loginId
+    const kw      = $('after-filter-keyword').value.trim().toLowerCase();
+    const badge = s => s === 'done'
+      ? '<span class="badge badge-green">응답완료</span>'
+      : '<span class="badge badge-red">응답중단</span>';
+    const filtered = ONTIME_ROWS
+      .filter(r => {
+        if (status && (status === '응답완료') !== (r[7] === 'done')) return false;
+        if (r[7] === 'out') return !company && !kw;               // 탈퇴한 임직원은 회사·검색어 조건에 매칭되지 않음
+        if (!_diagScopeCompanyNames().includes(r[3])) return false;   // 로그인 계정 소속 범위 밖 회사는 미노출
+        if (company && !/전체|선택/.test(company) && r[3] !== company) return false;
+        if (kw) {
+          const target = { name: r[0], loginId: r[1], empno: r[2] }[type] || '';
+          if (!target.toLowerCase().includes(kw)) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => b[8].localeCompare(a[8]));           // 최종 응답일시 최신순
+    const rows = filtered.map((r, i) => ({ r, no: filtered.length - i }));   // No는 내림차순
+    $('ontimeTbody').innerHTML = rows.length ? rows.map(({ r, no }) => r[7] === 'out' ? `
+        <tr class="withdrawn-row">
+          <td>${no}</td><td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+          <td>${badge(r[7])}</td><td style="font-size:11px;">${r[8]}</td>
+        </tr>` : `
+        <tr>
+          <td>${no}</td><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td>
+          <td>${badge(r[7])}</td><td style="font-size:11px;">${r[8]}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="10" style="text-align:center;padding:36px 0;color:#999;">조건에 맞는 인원이 없습니다.</td></tr>';
+    if ($('ontimeResultCnt')) $('ontimeResultCnt').textContent = '검색결과 ' + rows.length + '명';
   }
 
   // ── 진단 기본 정보(진단명/진단 기간)는 모든 상태에서 텍스트로만 노출, 수정 불가 ──
@@ -1358,6 +1501,11 @@
     document.getElementById('after-filter-company').selectedIndex = 0;
     document.getElementById('after-filter-search-type').selectedIndex = 0;
     document.getElementById('after-filter-keyword').value = '';
+    // 상시진단: 응답상태 기본값(전체)으로 복귀
+    if (new URLSearchParams(window.location.search).get('type') === 'ontime') {
+      document.getElementById('after-filter-status').value = '';
+      renderOntimeRows();
+    }
   }
 
   // ── 공통 모듈 초기화 ──
@@ -1742,7 +1890,9 @@
       tr.style.display = (!co || co === '—' || scopeNames.includes(co)) ? '' : 'none';
     });
     const afterTable = document.getElementById('afterTable');
-    if (afterTable) {
+    if (document.getElementById('ontimeTbody')) {
+      renderOntimeRows();   // 상시진단 목록은 직접 렌더링하며 로그인 계정 소속 범위도 함께 적용
+    } else if (afterTable) {
       afterTable.querySelectorAll('tbody tr').forEach(tr => {
         const co = tr.querySelectorAll('td')[5]?.textContent.trim();
         tr.style.display = (!co || co === '—' || scopeNames.includes(co)) ? '' : 'none';

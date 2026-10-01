@@ -574,12 +574,6 @@
         <span class="result-count" id="mainResultCount">검색결과 <strong>0</strong>건</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <button class="btn btn-primary" onclick="location.href='edms_진단_만들기.html'" style="height:28px;font-size:12px;padding:0 14px;">+ 진단 만들기</button>
-          <select class="select" id="mainPageSizeSelect" onchange="mainChangePageSize()" style="height:26px; font-size:11px;">
-            <option value="30">30개씩 보기</option>
-            <option value="50" selected>50개씩 보기</option>
-            <option value="100">100개씩 보기</option>
-            <option value="200">200개씩 보기</option>
-          </select>
         </div>
       </div>
       <table class="main-table" id="diagnostic-table">
@@ -604,7 +598,12 @@
         </tbody>
       </table>
       <div class="table-footer">
-        <div></div>
+        <select class="select" id="mainPageSizeSelect" onchange="mainChangePageSize()" style="height:26px; font-size:11px;">
+          <option value="30">30개씩 보기</option>
+          <option value="50" selected>50개씩 보기</option>
+          <option value="100">100개씩 보기</option>
+          <option value="200">200개씩 보기</option>
+        </select>
         <div class="pagination" id="main-pagination">
         </div>
       </div>
@@ -1038,6 +1037,7 @@
 
     // 상시진단 (새로 추가) — endDate가 지나면 자동으로 완료 처리(마감하기 액션 없음, getEffectiveStatus 참조)
     { id:'ONTIME1', name:'자주하는 실수 체크리스트 (상시)', diagType:'상시', startDate:'2025.12.01', endDate:'2026.12.31', questions:20, participantCount:245, unlimitedResponse:true, status:'진행중', createdDate:'2025.12.01', progress:null },
+    { id:'ONTIME3', name:'신규 입사자 온보딩 체크리스트 (상시)', diagType:'상시', startDate:'2027.01.04', endDate:'2027.12.31', questions:12, participantCount:0, unlimitedResponse:false, status:'대기', createdDate:'2026.10.01', progress:null },
     { id:'ONTIME2', name:'AI리터러시 진단 (상품형)', diagType:'상시', startDate:'2026.01.15', endDate:'2026.08.31', questions:15, participantCount:118, unlimitedResponse:false, status:'진행중', createdDate:'2026.01.15', progress:null },
   ];
 
@@ -1079,6 +1079,12 @@
       const today = new Date();
       const end = new Date(diag.endDate.replace(/\./g, '-'));
       if (today > end) return '완료';
+    }
+    // 상시진단은 대기→시작하기 없이, 진단 시작일이 되면 자동으로 진행중 처리됨(안내 메일 발송 없음)
+    if (diag.diagType === '상시' && diag.startDate && diag.status === '대기') {
+      const today = new Date();
+      const start = new Date(diag.startDate.replace(/\./g, '-'));
+      if (today >= start) return '진행중';
     }
     return diag.status;
   }
@@ -1203,7 +1209,9 @@
         <td class="status-cell">
           <div class="status-stack">
             <span class="badge badge-yellow">대기</span>
-            <button class="status-action-btn action-start" onclick="openDaegiFlow(this, '${diag.name}', ${diag.memberCount}, '${diag.startDate}', '${diag.endDate}')">시작하기</button>
+            ${diag.diagType === '상시'
+              ? '<span style="font-size:11px;color:#888;">시작일에 자동 오픈</span>'
+              : `<button class="status-action-btn action-start" onclick="openDaegiFlow(this, '${diag.name}', ${diag.memberCount}, '${diag.startDate}', '${diag.endDate}')">시작하기</button>`}
           </div>
         </td>
       `;
@@ -1235,7 +1243,7 @@
         <td>${no}</td>
         <td>${dateStr}</td>
         <td style="text-align:left; padding-left:10px;">
-          <a class="diag-link" href="edms_진단_상세.html?state=${displayStatus === '임시저장' || displayStatus === '대기' ? 'before' : 'after'}" ${displayStatus === '임시저장' ? 'style="color:#7c3aed;"' : ''}>
+          <a class="diag-link" href="edms_진단_상세.html?state=${displayStatus === '임시저장' || displayStatus === '대기' ? 'before' : 'after'}${isOngoing ? '&type=ontime' + (displayStatus === '완료' ? '&completed=true' : '') : ''}" ${displayStatus === '임시저장' ? 'style="color:#7c3aed;"' : ''}>
             ${diag.name}
           </a>
           ${diag.step ? `<span style="font-size:10px; color:#bbb; margin-left:4px;">[임시저장 · ${diag.step} 완료]</span>` : ''}
