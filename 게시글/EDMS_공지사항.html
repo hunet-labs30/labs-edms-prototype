@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS New EDMS — EDMS 공지사항</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --bg: #f5f6fa;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #cdd3da;
+    --sidebar-hover: #3d5166;
+    --header-bg: #1e2b37;
+    --white: #ffffff;
+    --border: #dde1e7;
+    --text: #333;
+    --table-header: #f0f2f5;
+  }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', -apple-system, sans-serif;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* TOP HEADER */
+  .top-header {
+    background: var(--header-bg);
+    color: #fff;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 200;
+  }
+  .top-header .logo { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+  .top-header .logo span { color: #7eb8f7; }
+  .top-header .subtitle { font-size: 12px; color: #aab; }
+  .top-header .spacer { flex: 1; }
+  .top-header .user-name { font-size: 13px; color: #ccc; }
+  .top-header .btn-header {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 12px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+  .top-header .btn-header:hover { background: #4a6278; }
+  .top-header .lang-select {
+    background: #3a4f63; border: 1px solid #556; color: #ccc;
+    padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer;
+  }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 180px; background: var(--sidebar-bg);
+    overflow-y: auto; flex-shrink: 0; padding: 6px 0 20px;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #455; border-radius: 4px; }
+  .nav-group { }
+  .nav-group-header {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-group.open > .nav-group-header {
+    color: #7eb8f7;
+    background: rgba(126,184,247,0.07);
+    border-left-color: #7eb8f7;
+  }
+  .nav-group-label { flex: 1; }
+  .nav-arrow {
+    font-size: 9px; color: #556;
+    transition: transform 0.2s; display: inline-block; line-height: 1;
+  }
+  .nav-group.open > .nav-group-header .nav-arrow {
+    transform: rotate(90deg); color: #7eb8f7;
+  }
+  .nav-sub {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.25s ease;
+    padding: 0;
+  }
+  .nav-group.open > .nav-sub {
+    max-height: 300px;
+    padding: 2px 0 6px;
+  }
+  .nav-item {
+    display: block; padding: 5px 12px 5px 22px;
+    color: #8da0b0; font-size: 12px;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+  }
+  .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .nav-flat {
+    display: block; padding: 10px 14px;
+    color: #b8c4ce; font-size: 12px; font-weight: 700;
+    text-decoration: none; cursor: pointer; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-flat:hover { background: var(--sidebar-hover); color: #fff; }
+  .nav-flat.active { background: var(--primary); color: #fff; border-left-color: #fff; }
+  .sidebar-company {
+    padding: 10px 14px 6px;
+    font-size: 11px; color: #6a7f8e; font-weight: 600;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex; align-items: flex-end;
+    border-bottom: 2px solid var(--border);
+    gap: 2px; padding: 0 2px;
+  }
+  .tab-btn {
+    height: 36px; padding: 0 22px;
+    background: transparent; border: 1px solid transparent; border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    font-size: 13px; font-weight: 600; color: #888;
+    cursor: pointer; transition: color .15s, background .15s, border-color .15s;
+    font-family: inherit; margin-bottom: -2px;
+  }
+  .tab-btn:hover { color: var(--primary); background: #f0f4fb; }
+  .tab-btn.active {
+    color: var(--primary); background: var(--white);
+    border-color: var(--border); border-bottom-color: var(--white);
+  }
+  .tab-panel { display: none; flex-direction: column; gap: 16px; }
+  .tab-panel.active { display: flex; }
+  .tab-iframe {
+    width: 100%; min-height: calc(100vh - 200px);
+    border: 1px solid var(--border); border-radius: 6px;
+    background: #fff;
+  }
+  .main::-webkit-scrollbar { width: 6px; }
+  .main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  /* CARD */
+  .card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; }
+
+  /* PAGE HEADER */
+  .page-header-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 2px;
+  }
+  .page-header-title { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+  .breadcrumb { font-size: 11px; color: #999; }
+
+  /* SEARCH */
+  .search-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; }
+  .label { width: 72px; font-size: 12px; font-weight: 600; color: #555; flex-shrink: 0; }
+  .input, .select {
+    height: 34px; border: 1px solid #d0d5dd; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.15s;
+  }
+  .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.10); }
+  .input { min-width: 140px; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .search-actions { display: flex; gap: 6px; margin-left: auto; }
+  .search-input-wrap { position: relative; display: inline-flex; align-items: center; }
+  .search-input-wrap .ico-search {
+    position: absolute; left: 10px; color: #aaa; font-size: 14px; pointer-events: none; line-height: 1;
+  }
+  .search-input-wrap .input { padding-left: 30px; width: 240px; }
+  .btn { height: 30px; padding: 0 16px; border-radius: 3px; font-size: 12px; font-weight: 400; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-dark { background: #1a1a2e; color: #fff; }
+  .btn-reset { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm { height: 26px; padding: 0 10px; border-radius: 3px; font-size: 11px; cursor: pointer; border: none; transition: opacity 0.15s; }
+  .btn-sm:hover { opacity: 0.85; }
+  .btn-sm-outline { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-sm-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .btn-sm-red { background: #fff; color: #e53935; border: 1px solid #e53935; }
+
+  /* TABLE */
+  .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .result-count { font-size: 12px; color: #666; }
+  .result-count strong { color: var(--primary); }
+  .result-right { display: flex; align-items: center; gap: 8px; }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: var(--table-header); border: 1px solid var(--border); padding: 8px 6px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .main-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .main-table tbody tr:hover td { background: #f5f8ff; }
+  .main-table tbody tr:nth-child(even) td { background: #fafbfc; }
+  .main-table tbody tr:nth-child(even):hover td { background: #f0f4ff; }
+
+  /* PAGINATION */
+  .table-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .page-size-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #555; }
+  .page-size-wrap .select { height: 26px; font-size: 12px; }
+  .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; color: #555; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .pg-btn:disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.45);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 8px; width: 520px;
+    max-height: 90vh; display: flex; flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .modal-header h3 { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+  .modal-close {
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    color: #888; line-height: 1; padding: 0 2px;
+  }
+  .modal-close:hover { color: #333; }
+  .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+  .modal-footer {
+    padding: 14px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0;
+  }
+  .mbtn {
+    height: 32px; padding: 0 16px; border-radius: 3px; font-size: 13px;
+    font-weight: 400; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; white-space: nowrap;
+    transition: opacity .15s; border: none;
+  }
+  .mbtn:hover { opacity: .85; }
+  .mbtn:disabled { opacity: .45; cursor: default; pointer-events: none; }
+  .mbtn-gray { background: #f0f2f5; color: #555; border: 1px solid #ccc; }
+  .mbtn-blue { background: var(--primary); color: #fff; }
+  .mbtn-dark { background: #1a1a2e; color: #fff; }
+  .mbtn-red { background: #e53935; color: #fff; }
+
+  /* FORM TABLE (모달 내 입력 폼) */
+  .form-table { width: 100%; border-collapse: collapse; }
+  .form-table th {
+    width: 130px; background: #f8f9fb;
+    border: 1px solid #e0e3e8; padding: 10px 14px;
+    text-align: left; font-size: 12px; font-weight: 600; color: #444;
+    vertical-align: top;
+    white-space: nowrap;
+  }
+  .form-table td {
+    border: 1px solid #e0e3e8; padding: 8px 12px;
+    font-size: 12px; color: #333;
+    vertical-align: top;
+  }
+  .required-mark { color: #e53935; margin-left: 2px; }
+  .form-input {
+    width: 100%; height: 32px; border: 1px solid #ccc; border-radius: 4px;
+    padding: 0 10px; font-size: 12px; font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--primary); }
+  .form-input.readonly { background: #f5f6fa; color: #888; cursor: default; }
+  .form-input-row { display: flex; gap: 6px; align-items: center; }
+  .form-hint { font-size: 11px; color: #888; margin-top: 4px; line-height: 1.5; }
+  .form-hint.blue { color: #1a73e8; }
+  .form-hint.red { color: #e53935; }
+  .radio-group { display: flex; align-items: center; gap: 16px; padding-top: 4px; }
+  .radio-label { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #444; cursor: pointer; }
+  .radio-label input[type="radio"] { cursor: pointer; accent-color: var(--primary); }
+  .btn-check {
+    height: 32px; padding: 0 12px; border-radius: 4px; font-size: 12px;
+    font-family: inherit; cursor: pointer; border: 1px solid #1a1a2e;
+    background: #1a1a2e; color: #fff; white-space: nowrap; flex-shrink: 0;
+    transition: opacity 0.15s;
+  }
+  .btn-check:hover { opacity: 0.85; }
+
+  /* 비밀번호 초기화 확인 모달 (작은 사이즈) */
+  .modal-sm { width: 420px; }
+  .confirm-msg { font-size: 13px; color: #333; line-height: 1.8; }
+  .confirm-msg strong { color: #1a1a2e; }
+  .confirm-sub { font-size: 12px; color: #888; margin-top: 8px; }
+
+  /* INFO BOX */
+  .info-box {
+    background: #fffde7; border: 1px solid #fdd835;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #6d4c00; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .info-box .info-lead { font-weight: 700; margin: 0 0 6px; }
+  .info-box .info-list { margin: 0; padding-left: 16px; }
+  .info-box .info-list li { margin-top: 4px; }
+  .info-box .info-list li:first-child { margin-top: 0; }
+
+  /* 등록 모달 검색 결과 */
+  .reg-search-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 0; }
+  .reg-search-table th { background: #f0f2f5; border: 1px solid #e0e3e8; padding: 7px 8px; font-weight: 600; color: #444; text-align: center; white-space: nowrap; }
+  .reg-search-table td { border: 1px solid #e8eaed; padding: 7px 8px; text-align: center; color: #333; white-space: nowrap; }
+  .reg-search-table tbody tr:hover td { background: #f5f8ff; }
+  .already-reg { font-size: 11px; color: #e53935; }
+  .selected-info-box {
+    background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 4px; padding: 10px 14px;
+    font-size: 12px; color: #1b5e20; line-height: 1.7;
+    margin-top: 12px;
+  }
+
+  /* ── LM 탭 전용 ── */
+  .lm-subnav { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  .lm-subbtn { height: 32px; padding: 0 18px; background: transparent; border: none; border-bottom: 2px solid transparent; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; margin-bottom: -1px; transition: color .15s, border-color .15s; font-family: inherit; }
+  .lm-subbtn:hover { color: var(--primary); }
+  .lm-subbtn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .lm-screen { display: none; flex-direction: column; gap: 16px; padding-top: 4px; }
+  .lm-screen.active { display: flex; }
+  .setting-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .setting-card-header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #f8f9fb; }
+  .setting-card-title { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+  .setting-table { width: 100%; border-collapse: collapse; }
+  .setting-table tr { border-bottom: 1px solid var(--border); }
+  .setting-table tr:last-child { border-bottom: none; }
+  .setting-table th { background: #f8f9fb; width: 180px; font-size: 12px; font-weight: 600; color: #444; padding: 12px 20px; text-align: left; vertical-align: top; border-right: 1px solid var(--border); white-space: nowrap; }
+  .setting-table td { padding: 12px 20px; vertical-align: top; font-size: 12px; }
+  .s-radio-group { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .s-radio-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .s-radio-item input[type=radio] { accent-color: var(--primary); cursor: pointer; }
+  .s-radio-item label { font-size: 12px; color: #444; cursor: pointer; }
+  .desc-list p { font-size: 11px; color: #666; line-height: 1.8; padding-left: 10px; position: relative; margin-top: 2px; }
+  .desc-list p::before { content: '*'; position: absolute; left: 0; color: #888; }
+  .r-group { display: flex; align-items: center; gap: 14px; }
+  .r-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .r-item input[type=radio] { accent-color: var(--primary); width: 13px; height: 13px; cursor: pointer; }
+  .r-item label { font-size: 12px; color: #333; cursor: pointer; }
+  .modal-lg { width: 820px; max-width: 96vw; }
+  .modal-lg .modal-body { padding: 0; overflow: hidden; display: flex; flex-direction: column; max-height: calc(85vh - 120px); }
+  .popup-search-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .popup-list-area { flex: 1; overflow-y: auto; padding: 12px 20px 0; }
+  .btn-area-center { display: flex; justify-content: center; gap: 8px; padding: 20px 0 4px; }
+  #lm-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a2e; color: #fff; font-size: 13px; padding: 12px 24px; border-radius: 6px; opacity: 0; transition: all .3s; pointer-events: none; z-index: 9999; }
+  #lm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<style>
+  .nt-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .nt-table th { background:var(--table-header); border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:10px 8px; font-weight:600; color:#555; text-align:center; }
+  .nt-table td { border-bottom:1px solid #eef0f3; padding:11px 8px; text-align:center; }
+  .nt-table tbody tr:hover td { background:#fafbfc; }
+  .nt-link { color:var(--primary); cursor:pointer; text-decoration:underline; text-underline-offset:2px; }
+  .nt-pin { display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600; background:#fff3cd; color:#8a6100; margin-right:6px; }
+  .nt-foot { display:flex; align-items:center; justify-content:space-between; padding:16px 0 4px; }
+  .nt-foot-l { display:flex; align-items:center; gap:14px; font-size:12px; color:#666; }
+  .nt-foot-l select { height:32px; border:1px solid #dde1e7; border-radius:4px; padding:0 8px; font-size:12px; font-family:inherit; background:#fff; }
+  .nt-pg { display:flex; gap:4px; }
+  .nt-pg button { min-width:28px; height:28px; border:1px solid #ddd; background:#fff; border-radius:4px; font-size:12px; color:#666; cursor:pointer; }
+  .nt-pg button.active { background:#1a1a2e; color:#fff; border-color:#1a1a2e; font-weight:700; }
+  .nt-pg button:disabled { opacity:.35; cursor:default; }
+  .nt-meta { display:flex; justify-content:space-between; align-items:flex-start; padding:16px 4px 14px; border-bottom:1px solid var(--border); }
+  .nt-title { font-size:17px; font-weight:700; color:#1a1a2e; line-height:1.5; }
+  .nt-date { font-size:12px; color:#888; white-space:nowrap; margin-left:16px; }
+  .nt-body { padding:20px 4px; font-size:13px; line-height:1.9; color:#333; min-height:160px; }
+  .nt-nav { border-top:1px solid var(--border); }
+  .nt-nav-row { display:flex; gap:12px; padding:11px 8px; border-bottom:1px solid #f1f2f4; font-size:12px; cursor:pointer; }
+  .nt-nav-row:hover { background:#fafbfc; }
+  .nt-nav-row .l { width:64px; font-weight:600; color:#555; }
+  .nt-nav-row .t { flex:1; color:var(--primary); }
+  .nt-nav-row .d { color:#999; }
+  .nt-actions { display:flex; justify-content:center; padding:18px 0 4px; }
+</style>
+<style>
+  .nt-search { background:#f5f6fa; border-radius:6px; padding:16px 20px; margin-bottom:18px; display:flex; align-items:flex-end; gap:32px; }
+  .nt-search-col { display:flex; flex-direction:column; gap:8px; }
+  .nt-search-col.grow { flex:1; }
+  .nt-search-label { font-size:12px; font-weight:700; color:#333; }
+  .nt-radio { display:flex; gap:14px; height:38px; align-items:center; }
+  .nt-radio label { display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer; }
+  .nt-radio input { accent-color:#1a1a2e; width:15px; height:15px; }
+  .nt-input-wrap { position:relative; }
+  .nt-input-wrap input { width:100%; height:38px; border:1px solid #dde1e7; border-radius:6px; padding:0 12px 0 36px; font-size:13px; font-family:inherit; outline:none; background:#fff; }
+  .nt-input-wrap input:focus { border-color:#1a73e8; }
+  .nt-input-wrap .ic { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#999; font-size:13px; }
+  .nt-search-actions { display:flex; gap:8px; }
+  .nt-search-actions button { height:38px; padding:0 18px; border-radius:6px; font-size:13px; font-family:inherit; cursor:pointer; }
+  .nt-btn-search { background:#1a1a2e; color:#fff; border:none; }
+  .nt-btn-reset { background:#fff; color:#333; border:1px solid #dde1e7; }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-header">
+  <div class="logo">LABS <span>New EDMS</span></div>
+  <div class="subtitle">365연수원(40)</div>
+  <div class="spacer"></div>
+  <span class="user-name">김이름 님</span>
+  <button class="btn-header">로그아웃</button>
+  <select class="lang-select"><option>한국어</option><option>English</option></select>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <a class="nav-flat" href="#">LABS Studio</a>
+    <a class="nav-flat" href="#">대시보드</a>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">임직원</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">임직원 관리</a>
+        <a class="nav-item" href="#">조직/역할 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 신청 현황</a>
+        <a class="nav-item" href="#">과정별 신청 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학습</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">개인별 학습 현황</a>
+        <a class="nav-item" href="#">과정별 학습 현황</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">결과</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수료결과</a>
+        <a class="nav-item" href="#">결과보고서</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">교육비용</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육비용 현황</a>
+        <a class="nav-item" href="#">교육비용 결제</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">사외교육</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사외교육 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">커넥트</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">커넥트 관리</a>
+      </div>
+    </div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">게시글</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item active" href="#" onclick="showList();return false;">EDMS 공지사항</a>
+        <a class="nav-item" href="#">공지사항 관리</a>
+        <a class="nav-item" href="#">띠배너 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">부가서비스</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">결재 관리</a>
+        <a class="nav-item" href="#">계획수립 관리</a>
+        <a class="nav-item" href="#">파일 다운로드</a>
+        <a class="nav-item" href="#">필수교육</a>
+        <a class="nav-item" href="#">이용가이드</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">학점</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">학점 관리</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">수강신청 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">수강신청 기간설정</a>
+        <a class="nav-item" href="#">수강신청 제한설정</a>
+      </div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">아이런 설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">사용 설정 (+아이런 키 발급)</a>
+        <a class="nav-item" href="#">주제별 대화 탭 등록</a>
+        <a class="nav-item" href="#">대화 탭 세부 설정</a>
+      </div>
+    </div>
+    <!-- 설정 (활성) -->
+    <div class="nav-group">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <span class="nav-group-label">설정</span>
+        <span class="nav-arrow">▶</span>
+      </div>
+      <div class="nav-sub">
+        <a class="nav-item" href="#">교육담당자 계정 관리</a>
+        <a class="nav-item" href="#">약관 설정</a>
+        <a class="nav-item" href="#">연수원 설정</a>
+        <a class="nav-item" href="#">SSO 설정</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div id="view-list">
+      <div class="page-header-row">
+        <div class="page-header-title">EDMS 공지사항</div>
+        <div class="breadcrumb">게시글 &gt; EDMS 공지사항</div>
+      </div>
+      <div class="card">
+        <div class="nt-search">
+          <div class="nt-search-col">
+            <div class="nt-search-label">검색 기준</div>
+            <div class="nt-radio">
+              <label><input type="radio" name="s-type" value="title" checked> 제목</label>
+              <label><input type="radio" name="s-type" value="content"> 내용</label>
+            </div>
+          </div>
+          <div class="nt-search-col grow">
+            <div class="nt-search-label">검색어</div>
+            <div class="nt-input-wrap"><span class="ic">🔍</span><input id="s-keyword" type="text" placeholder="검색어를 입력해주세요." onkeydown="if(event.key==='Enter') doSearch();"></div>
+          </div>
+          <div class="nt-search-actions">
+            <button class="nt-btn-search" onclick="doSearch()">검색</button>
+            <button class="nt-btn-reset" onclick="resetSearch()">초기화</button>
+          </div>
+        </div>
+        <div class="result-header"><div class="result-count">검색결과 <strong id="total">0</strong>건</div></div>
+        <table class="nt-table">
+          <thead><tr><th style="width:70px;">No.</th><th style="text-align:left;padding-left:14px;">제목</th><th style="width:160px;">등록일</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="nt-foot">
+          <div class="nt-foot-l"><span><select id="page-size" onchange="changePageSize()"><option value="30">30</option><option value="50" selected>50</option><option value="100">100</option><option value="200">200</option></select> 씩 보기</span></div>
+          <div class="nt-pg" id="pg"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-detail" style="display:none;">
+      <div class="page-header-row">
+        <div class="page-header-title">EDMS 공지사항</div>
+        <div class="breadcrumb">게시글 &gt; EDMS 공지사항 &gt; 상세</div>
+      </div>
+      <div class="card">
+        <div class="nt-meta">
+          <div class="nt-title" id="d-title"></div>
+          <div class="nt-date" id="d-date"></div>
+        </div>
+        <div class="nt-body" id="d-body"></div>
+        <div class="nt-nav" id="d-nav"></div>
+      </div>
+      <div class="nt-actions"><button class="btn btn-dark" onclick="showList()">목록</button></div>
+    </div>
+  </main>
+</div>
+
+<script>
+function toggleNavGroup(h){ h.parentElement.classList.toggle('open'); }
+// 고정글 최상단 → 등록일 내림차순. 공개 + 게시기간 내 공지만 노출 (PC 전용)
+const ALL = [
+  { title:'[업데이트] New EDMS 10월 정기 업데이트 안내', pin:true,  date:'2026.09.30 10:00' },
+  { title:'[점검] 10월 15일(목) 00:00~06:00 시스템 점검 안내', pin:true,  date:'2026.09.29 14:00' },
+  { title:'[업데이트] 임직원 일괄등록 기능 개선 안내', pin:false, date:'2026.09.22 09:00' },
+  { title:'[업데이트] 오프라인 과정 회차/일정 관리 신규 오픈', pin:false, date:'2026.09.10 09:00' },
+  { title:'[안내] New EDMS 오픈 안내', pin:false, date:'2026.08.01 09:00' }
+].sort(function(a,b){ return (b.pin-a.pin) || b.date.localeCompare(a.date); });
+var BODY='안녕하세요. LABS 연수원 운영팀입니다.<br><br><strong>■ 안내 내용</strong><br>New EDMS 업데이트 내용을 안내드립니다.<br>- 임직원 일괄등록 기능 개선<br>- 오프라인 과정 회차/일정 관리 신규 오픈<br><br>감사합니다.';
+ALL.forEach(function(r){ r.body=BODY; });
+var DATA=ALL.slice();
+function doSearch(){
+  var kw=document.getElementById('s-keyword').value.trim().toLowerCase();
+  var type=document.querySelector('input[name="s-type"]:checked').value;
+  DATA=ALL.filter(function(r){
+    if(!kw) return true;
+    var t=(type==='title'?r.title:r.body.replace(/<[^>]*>/g,' ')).toLowerCase();
+    return t.indexOf(kw)>-1;
+  });
+  page=1; render();
+}
+function resetSearch(){
+  document.getElementById('s-keyword').value='';
+  document.querySelector('input[name="s-type"][value="title"]').checked=true;
+  DATA=ALL.slice(); page=1; render();
+}
+var PAGE=50, page=1;
+function changePageSize(){ PAGE=parseInt(document.getElementById("page-size").value,10); page=1; render(); }
+function showList(){ document.getElementById('view-list').style.display=''; document.getElementById('view-detail').style.display='none'; render(); }
+function render(){
+  document.getElementById('total').textContent=DATA.length;
+  var rows=DATA.slice((page-1)*PAGE,page*PAGE), h='';
+  if(!rows.length){ h='<tr><td colspan="3" style="padding:40px 0;color:#999;">조회된 데이터가 없습니다.</td></tr>'; }
+  rows.forEach(function(r,i){
+    var idx=(page-1)*PAGE+i;
+    h+='<tr><td>'+(DATA.length-idx)+'</td><td style="text-align:left;padding-left:14px;">'+(r.pin?'<span class="nt-pin">고정글</span>':'')+'<span class="nt-link" onclick="showDetail('+idx+')">'+r.title+'</span></td><td>'+r.date+'</td></tr>';
+  });
+  document.getElementById('tbody').innerHTML=h;
+  var tp=Math.max(1,Math.ceil(DATA.length/PAGE));
+  var p='<button onclick="go('+(page-1)+')"'+(page===1?' disabled':'')+'>‹</button>';
+  for(var i=1;i<=tp;i++) p+='<button class="'+(i===page?'active':'')+'" onclick="go('+i+')">'+i+'</button>';
+  p+='<button onclick="go('+(page+1)+')"'+(page===tp?' disabled':'')+'>›</button>';
+  document.getElementById('pg').innerHTML=p;
+}
+function go(p){ var tp=Math.max(1,Math.ceil(DATA.length/PAGE)); if(p<1||p>tp) return; page=p; render(); }
+function showDetail(i){
+  var r=DATA[i];
+  document.getElementById('view-list').style.display='none'; document.getElementById('view-detail').style.display='';
+  document.getElementById('d-title').innerHTML=(r.pin?'<span class="nt-pin">고정글</span>':'')+r.title;
+  document.getElementById('d-date').textContent=r.date;
+  document.getElementById('d-body').innerHTML='안녕하세요. LABS 연수원 운영팀입니다.<br><br><strong>■ 안내 내용</strong><br>New EDMS 업데이트 내용을 안내드립니다.<br>- 임직원 일괄등록 기능 개선<br>- 오프라인 과정 회차/일정 관리 신규 오픈<br><br>감사합니다.';
+  var prev=DATA[i-1], next=DATA[i+1], n='';
+  if(prev) n+='<div class="nt-nav-row" onclick="showDetail('+(i-1)+')"><span class="l">▲ 이전 글</span><span class="t">'+prev.title+'</span><span class="d">'+prev.date.slice(0,10)+'</span></div>';
+  if(next) n+='<div class="nt-nav-row" onclick="showDetail('+(i+1)+')"><span class="l">▼ 다음 글</span><span class="t">'+next.title+'</span><span class="d">'+next.date.slice(0,10)+'</span></div>';
+  document.getElementById('d-nav').innerHTML=n;
+}
+render();
+</script>
+</body>
+</html>
