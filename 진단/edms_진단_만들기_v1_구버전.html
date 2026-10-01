@@ -244,17 +244,6 @@ body {
   gap: 6px;
 }
 
-/* 진단지가 선택된 이후 비공개/삭제 처리된 경우 노출되는 상태 배지 */
-.qset-status-badge {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-.qset-status-badge.badge-private { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
-.qset-status-badge.badge-deleted { background: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
-
 .diag-tag {
   display: inline-flex;
   padding: 1px 6px;
@@ -321,13 +310,6 @@ body {
   white-space: nowrap;
 }
 .proto-toggle:hover { color: var(--primary); border-color: var(--primary); }
-
-.diagtype-choice-card {
-  flex: 1; border: 1.5px solid #dde1e7; border-radius: 8px; padding: 22px 18px;
-  cursor: pointer; transition: border-color .15s, box-shadow .15s;
-}
-.diagtype-choice-card:hover { border-color: var(--primary); box-shadow: 0 2px 10px rgba(26,115,232,.15); }
-.diagtype-choice-card.selected { border-color: var(--primary); border-width: 2px; background: #f0f4ff; box-shadow: 0 2px 10px rgba(26,115,232,.12); }
 .proto-toggle.active-deleted { background: #fdecea; border-color: #f5b7b1; color: #c0392b; }
 
 /* 오른쪽 패널: 빈 상태 */
@@ -575,9 +557,6 @@ body {
   transition: all .15s;
 }
 .resp-role-card.selected .resp-role-check { background: var(--primary); border-color: var(--primary); color: #fff; }
-.resp-role-card.required { cursor: default; }
-.resp-role-card.required:hover { transform: none; box-shadow: none; }
-.resp-role-required-tag { font-size: 10.5px; font-weight: 700; color: var(--primary); margin-left: 3px; }
 
 /* ── STEP 3: 트리 구조 ── */
 .tree-container { background: #fff; border: 1px solid var(--border); border-radius: 6px; }
@@ -747,7 +726,6 @@ body {
 .wiz-step-desc { font-size: 11px; color: #ccc; margin-top: 3px; line-height: 1.4; }
 .wiz-step-item.is-active .wiz-step-desc { color: #7aaaf7; }
 .wiz-step-item.is-done .wiz-step-desc { color: #999; }
-
 .wiz-aside-foot { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
 
 /* 오른쪽 콘텐츠 영역 */
@@ -847,6 +825,10 @@ body {
   <div class="logo"><span>LABS</span> New EDMS</div>
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
+  <select class="lang-select" onchange="if(this.value) location.href=this.value" title="진단 만들기 버전 선택" style="margin-right:6px;">
+    <option value="edms_진단_만들기.html">V2 · 단일/상시/사전사후 3유형</option>
+    <option value="edms_진단_만들기_v1_구버전.html" selected>V1 · 구버전</option>
+  </select>
   <span class="user-name">김이름 님</span>
   <button class="btn-header">로그아웃</button>
   <select class="lang-select"><option>한국어</option><option>English</option></select>
@@ -997,61 +979,53 @@ body {
           <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
             <div class="wiz-step-badge">1</div>
             <div class="wiz-step-meta">
-              <div class="wiz-step-title">진단 유형 선택</div>
-              <div class="wiz-step-desc">어떤 진단을 만들지 선택</div>
+              <div class="wiz-step-title">진단지 선택</div>
+              <div class="wiz-step-desc">어떤 역량을 진단할지 선택</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
           <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
             <div class="wiz-step-badge">2</div>
             <div class="wiz-step-meta">
-              <div class="wiz-step-title">진단지 선택</div>
-              <div class="wiz-step-desc">어떤 역량을 진단할지 선택</div>
-            </div>
-          </div>
-          <div class="wiz-step-connector" id="wiz-connector-3"></div>
-          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
-            <div class="wiz-step-badge">3</div>
-            <div class="wiz-step-meta">
               <div class="wiz-step-title">응답자 유형</div>
               <div class="wiz-step-desc">누가 응답하는지 설정</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
-          <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
-            <div class="wiz-step-badge">4</div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
             <div class="wiz-step-meta">
               <div class="wiz-step-title">역량 점수 설정</div>
               <div class="wiz-step-desc">강점/약점 기준 점수</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
-          <div class="wiz-step-item" id="wiz-step-5" onclick="goToStep(5)">
-            <div class="wiz-step-badge">5</div>
+          <div class="wiz-step-item" id="wiz-step-4" onclick="goToStep(4)">
+            <div class="wiz-step-badge">4</div>
             <div class="wiz-step-meta">
               <div class="wiz-step-title">추천 과정 연결</div>
               <div class="wiz-step-desc">결과 기반 과정 설정 (선택)</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
-          <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
-            <div class="wiz-step-badge">6</div>
+          <div class="wiz-step-item" id="wiz-step-5" onclick="goToStep(5)">
+            <div class="wiz-step-badge">5</div>
             <div class="wiz-step-meta">
               <div class="wiz-step-title">진단 기본 설정</div>
               <div class="wiz-step-desc">이름·기간·설명 입력</div>
             </div>
           </div>
-          <div class="wiz-step-connector" id="wiz-connector-7"></div>
-          <div class="wiz-step-item" id="wiz-step-7" onclick="goToStep(7)">
-            <div class="wiz-step-badge">7</div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-6" onclick="goToStep(6)">
+            <div class="wiz-step-badge">6</div>
             <div class="wiz-step-meta">
               <div class="wiz-step-title">응답자 등록</div>
               <div class="wiz-step-desc">진단 참여자 등록</div>
             </div>
           </div>
           <div class="wiz-step-connector"></div>
-          <div class="wiz-step-item" id="wiz-step-8" onclick="goToStep(8)">
-            <div class="wiz-step-badge">8</div>
+          <div class="wiz-step-item" id="wiz-step-7" onclick="goToStep(7)">
+            <div class="wiz-step-badge">7</div>
             <div class="wiz-step-meta">
               <div class="wiz-step-title">검토 및 진단 생성</div>
               <div class="wiz-step-desc">최종 확인 후 진단 생성</div>
@@ -1059,7 +1033,7 @@ body {
           </div>
         </div>
         <div class="wiz-aside-foot">
-          <a href="edms_역량진단_관리_상시진단.html"
+          <a href="edms_역량진단_관리.html"
              style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;transition:border-color .15s,color .15s;"
              onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
              onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
@@ -1076,40 +1050,11 @@ body {
         <!-- 진단 상태 배너 (수정/보기 모드) -->
         <div id="diag-status-banner"></div>
 
-        <!-- STEP 1: 진단 유형 선택 -->
+        <!-- STEP 1: 진단지 선택 -->
         <div class="step-content active wiz-card" id="step-content-1">
-          <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-1">STEP 1 / 8</span>
-            <h2>진단 유형을 선택해주세요.</h2>
-            <p>선택한 유형에 따라 이후 설정 단계가 달라집니다.</p>
-          </div>
-          <div class="wiz-card-body padded">
-            <div style="display:flex;gap:16px;max-width:700px;">
-              <div class="diagtype-choice-card selected" data-type="범용" onclick="chooseDiagType('범용')">
-                <div style="font-size:26px;margin-bottom:10px;">🎯</div>
-                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">범용진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자를 직접 지정해 정해진 기간 동안 진행합니다.</div>
-              </div>
-              <div class="diagtype-choice-card" data-type="상시" onclick="chooseDiagType('상시')">
-                <div style="font-size:26px;margin-bottom:10px;">🔁</div>
-                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">상시진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">전체 임직원을 대상으로 상시 오픈하는 자가진단입니다.<br>응답 허용 횟수(1회/무제한)를 설정할 수 있습니다.</div>
-              </div>
-            </div>
-          </div>
-          <div class="wiz-card-foot">
-            <div class="foot-left"></div>
-            <div class="foot-right">
-              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 2: 진단지 선택 -->
-        <div class="step-content wiz-card" id="step-content-2">
           <div class="wiz-card-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
             <div>
-              <span class="wiz-step-tag" id="stepTag-2">STEP 2 / 8</span>
+              <span class="wiz-step-tag">STEP 1 / 6</span>
               <h2>진단지를 선택해주세요.</h2>
               <p>진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.</p>
             </div>
@@ -1156,6 +1101,10 @@ body {
                     <div class="preview-empty-icon">📋</div>
                     <div>왼쪽에서 진단지를 선택하면<br>문항을 미리 확인할 수 있어요</div>
                   </div>
+                  <div id="step1PreviewDeleted" class="preview-empty" style="display:none;">
+                    <div class="preview-empty-icon">🗑</div>
+                    <div style="color:#c0392b;font-weight:700;">삭제된 진단지 입니다.</div>
+                  </div>
                   <div id="step1PreviewContent" class="preview-content" style="display:none;">
                     <div class="preview-title" id="previewQuestionnaireName"></div>
                     <div class="preview-stats" id="previewStats"></div>
@@ -1174,10 +1123,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 3: 응답자 유형 -->
-        <div class="step-content wiz-card" id="step-content-3">
+        <!-- STEP 2: 응답자 유형 -->
+        <div class="step-content wiz-card" id="step-content-2">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-3">STEP 3 / 8</span>
+            <span class="wiz-step-tag">STEP 2 / 6</span>
             <h2>응답자 유형을 선택해주세요.</h2>
             <p>선택한 응답자 유형은 모든 진단 유형에 동일하게 적용됩니다.</p>
           </div>
@@ -1194,10 +1143,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 4: 역량 점수 설정 -->
-        <div class="step-content wiz-card" id="step-content-4">
+        <!-- STEP 3: 역량 점수 설정 -->
+        <div class="step-content wiz-card" id="step-content-3">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-4">STEP 4 / 8</span>
+            <span class="wiz-step-tag">STEP 3 / 6</span>
             <h2>역량 점수 기준을 설정해주세요</h2>
             <p>진단 리포트에서 강점과 약점을 구분할 점수 기준을 역량군별로 설정합니다.</p>
           </div>
@@ -1208,10 +1157,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 5: 추천과정 연결 -->
-        <div class="step-content wiz-card" id="step-content-5">
+        <!-- STEP 4: 추천과정 연결 -->
+        <div class="step-content wiz-card" id="step-content-4">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-5">STEP 5 / 8 · 선택사항</span>
+            <span class="wiz-step-tag">STEP 4 / 6 · 선택사항</span>
             <h2>추천 과정을 설정해주세요.</h2>
             <p>세부역량별로 강점·약점 결과에 따라 학습자에게 자동 추천할 과정을 설정합니다.</p>
           </div>
@@ -1233,10 +1182,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 6: 진단 기본 설정 -->
-        <div class="step-content wiz-card" id="step-content-6">
+        <!-- STEP 5: 진단 기본 설정 -->
+        <div class="step-content wiz-card" id="step-content-5">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-6">STEP 6 / 8</span>
+            <span class="wiz-step-tag">STEP 5 / 6</span>
             <h2>진단 기본 정보를 입력해주세요</h2>
             <p>진단 이름과 진행 기간을 설정합니다.</p>
           </div>
@@ -1279,21 +1228,6 @@ body {
 감사합니다.</textarea>
                   </td>
                 </tr>
-                <tr id="step5-response-count-row" style="display:none;">
-                  <th class="form-th">응답 허용 횟수 <span class="req">*</span></th>
-                  <td class="form-td">
-                    <div class="radio-group">
-                      <label>
-                        <input type="radio" name="responseCount" value="1" checked style="cursor:pointer;">
-                        1회만 (제출 후 응시 불가)
-                      </label>
-                      <label style="margin-left:16px;">
-                        <input type="radio" name="responseCount" value="unlimited" style="cursor:pointer;">
-                        무제한 (제출 후에도 재응시 가능)
-                      </label>
-                    </div>
-                  </td>
-                </tr>
               </table>
             </div>
           </div>
@@ -1303,10 +1237,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 7: 대상자 & 응답자 설정 -->
-        <div class="step-content wiz-card" id="step-content-7">
+        <!-- STEP 6: 대상자 & 응답자 설정 -->
+        <div class="step-content wiz-card" id="step-content-6">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-7">STEP 7 / 8</span>
+            <span class="wiz-step-tag">STEP 6 / 7</span>
             <h2>진단 대상자와 응답자를 설정해주세요</h2>
             <p>진단대상자와 응답할 응답자를 등록합니다.</p>
           </div>
@@ -1330,10 +1264,10 @@ body {
           </div>
         </div>
 
-        <!-- STEP 8: 검토 및 진단 생성 -->
-        <div class="step-content wiz-card" id="step-content-8">
+        <!-- STEP 7: 검토 및 진단 생성 -->
+        <div class="step-content wiz-card" id="step-content-7">
           <div class="wiz-card-head">
-            <span class="wiz-step-tag" id="stepTag-8">STEP 8 / 8 · 마지막 단계</span>
+            <span class="wiz-step-tag">STEP 7 / 7 · 마지막 단계</span>
             <h2>진단 생성 전 검토해주세요.</h2>
             <p>지금까지 설정한 내용을 확인한 후 진단을 생성합니다.</p>
           </div>
@@ -1787,30 +1721,19 @@ body {
   </div>
 </div>
 
-<!-- 진단 유형 변경 경고 팝업 -->
-<div class="modal-overlay" id="diagTypeChangeModal">
-  <div class="modal-box" style="width:400px;">
-    <div class="modal-body" style="padding:24px 24px 20px;">
-      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
-      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">진단 유형을 변경하면<br>지금까지 설정한 내용이 초기화됩니다.</p>
-    </div>
-    <div class="modal-footer" style="gap:8px;">
-      <button class="btn btn-gray" onclick="cancelDiagTypeChange()">닫기</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="confirmDiagTypeChange()">확인</button>
-    </div>
-  </div>
-</div>
-
 <!-- 응답자 유형 변경 경고 팝업 -->
 <div class="modal-overlay" id="respTypeChangeModal">
-  <div class="modal-box" style="width:400px;">
-    <div class="modal-body" style="padding:24px 24px 20px;">
-      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
-      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">응답자 유형 변경 시<br>응답자 설정이 초기화됩니다.</p>
+  <div class="modal-box" style="width:380px;">
+    <div class="modal-header" style="border-bottom:none; padding:14px 16px 0; justify-content:flex-end;">
+      <button class="modal-close" onclick="cancelRespTypeChange()">×</button>
     </div>
-    <div class="modal-footer" style="gap:8px;">
-      <button class="btn btn-gray" onclick="cancelRespTypeChange()">닫기</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="confirmRespTypeChange()">확인</button>
+    <div class="modal-body" style="text-align:center; padding:4px 28px 24px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">알림</div>
+      <p style="font-size:13px; color:#444; line-height:1.8;">응답자 유형 변경 시<br>응답자 설정이 초기화됩니다.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center; gap:8px;">
+      <button class="btn btn-reset" onclick="cancelRespTypeChange()">취소</button>
+      <button class="btn btn-primary" onclick="confirmRespTypeChange()">확인</button>
     </div>
   </div>
 </div>
@@ -1833,9 +1756,6 @@ const QUESTIONNAIRES = [
     subCount: 11,
     qCount: 50,
     date: '2025-03-15',
-    compatTypes: ['범용', '상시'],
-    locked: false,
-    resultTemplate: 'standard',
     types: [
       {
         id: 'LC',
@@ -1918,9 +1838,6 @@ const QUESTIONNAIRES = [
     subCount: 9,
     qCount: 72,
     date: '2025-01-20',
-    compatTypes: ['범용', '상시'],
-    locked: false,
-    resultTemplate: 'standard',
     types: [
       {
         id: 'BS',
@@ -2010,27 +1927,24 @@ const QUESTIONNAIRES = [
     name: '조직문화진단 2026',
     tags: ['OC'],
     typeCount: 1,
-    subCount: 5,
-    qCount: 26,
+    subCount: 4,
+    qCount: 28,
     date: '2025-11-01',
-    compatTypes: ['범용', '상시'],
-    locked: false,
-    resultTemplate: 'standard',
     types: [
       {
         id: 'OC',
         name: '조직문화',
-        qCount: 26,
+        qCount: 28,
         groups: [
           {
             name: '심리안전역량군',
-            qCount: 9,
+            qCount: 14,
             avg: 3.9,
             subs: [
               { name: '심리적 안전감', qCount: 7, scale: '5점 척도',
                 questions: ['우리 팀에서는 실수를 해도 불이익이 없다고 느낀다.','팀원들이 문제를 제기할 때 수용적인 반응을 보인다.','나는 팀 내에서 불편한 의견도 자유롭게 표현할 수 있다.','팀원들은 서로의 약점을 공격적으로 이용하지 않는다.','우리 팀에서는 도움을 요청하는 것이 자연스럽다.','실패한 경험을 팀 학습의 기회로 활용한다.','팀원들은 서로의 아이디어를 존중하며 발전시킨다.'] },
-              { name: '협업 문화', qCount: 2, scale: '서술형',
-                questions: ['우리 팀의 협업 문화에서 가장 잘 되고 있다고 느끼는 점은 무엇인가요?','협업 과정에서 개선이 필요하다고 느끼는 부분을 자유롭게 서술해주세요.'] }
+              { name: '협업 문화', qCount: 7, scale: '5점 척도',
+                questions: ['우리 팀은 공동 목표를 위해 협력하는 문화가 있다.','팀원들은 자신의 업무 범위를 넘어 서로 돕는다.','부서 간 협업이 원활하게 이루어진다.','팀 내 정보 공유가 적극적으로 이루어진다.','협업 과정에서 발생하는 갈등을 건설적으로 해결한다.','팀 성과는 개인이 아닌 모두의 것으로 인정받는다.','협업 도구와 프로세스가 잘 갖추어져 있다.'] }
             ]
           },
           {
@@ -2042,63 +1956,6 @@ const QUESTIONNAIRES = [
                 questions: ['우리 조직은 명확한 성과 기준과 목표를 가지고 있다.','성과에 대한 공정한 평가와 보상이 이루어진다.','높은 성과를 위한 도전적인 목표를 추구한다.','성과 달성을 위한 필요 자원이 충분히 제공된다.','성과 창출에 방해가 되는 장애물이 신속히 제거된다.','우수한 성과자는 조직 내에서 인정받는다.','성과 목표는 구성원의 의견을 반영하여 설정된다.'] },
               { name: '학습 조직화', qCount: 7, scale: '5점 척도',
                 questions: ['조직은 구성원의 지속적인 학습을 적극 지원한다.','우리 조직은 실패에서 배우는 문화를 가지고 있다.','새로운 지식과 아이디어가 조직 내에서 빠르게 공유된다.','구성원들은 자기 주도적으로 학습하고 성장한다.','조직은 변화하는 환경에 맞게 지속적으로 혁신한다.','학습 결과가 실제 업무 개선으로 이어진다.','지식 관리 시스템이 효과적으로 운영된다.'] }
-            ]
-          },
-          {
-            name: '정성 피드백역량군',
-            qCount: 3,
-            avg: null,
-            subs: [
-              { name: '자유 의견', qCount: 3, scale: '서술형',
-                questions: ['조직문화 개선을 위해 제안하고 싶은 의견을 자유롭게 작성해주세요.','최근 인상 깊었던 조직문화 관련 경험이 있다면 공유해주세요.','앞으로 우리 조직이 나아갔으면 하는 방향을 서술해주세요.'] }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: 'AI리터러시 진단 (상품형)',
-    tags: ['AI'],
-    typeCount: 1,
-    subCount: 3,
-    qCount: 15,
-    date: '2026-01-15',
-    compatTypes: ['범용', '상시'],
-    locked: true,
-    resultTemplate: 'ai_literacy',
-    types: [
-      {
-        id: 'AIL',
-        name: 'AI리터러시',
-        qCount: 15,
-        groups: [
-          {
-            name: 'AI개념이해역량군',
-            qCount: 5,
-            avg: 3.2,
-            subs: [
-              { name: 'AI기초개념', qCount: 5, scale: '5점 척도',
-                questions: ['나는 AI의 기본 개념을 이해한다.','나는 머신러닝과 딥러닝의 차이를 안다.','나는 AI의 한계를 인식한다.','나는 AI 윤리의 중요성을 이해한다.','나는 AI 관련 최신 뉴스를 관심있게 본다.'] }
-            ]
-          },
-          {
-            name: 'AI활용실무역량군',
-            qCount: 5,
-            avg: 2.8,
-            subs: [
-              { name: 'AI도구활용', qCount: 5, scale: '5점 척도',
-                questions: ['나는 ChatGPT 같은 생성형 AI를 업무에 활용한다.','나는 AI 도구의 한계를 이해하고 결과를 검증한다.','나는 AI를 통해 업무 효율을 높인다.','나는 AI 도구 사용 시 개인정보를 보호한다.','나는 AI를 지속적으로 학습하려 한다.'] }
-            ]
-          },
-          {
-            name: 'AI윤리책임역량군',
-            qCount: 5,
-            avg: 3.4,
-            subs: [
-              { name: 'AI윤리실천', qCount: 5, scale: '5점 척도',
-                questions: ['나는 AI가 만든 편향된 결과를 인식한다.','나는 AI 도구 사용 시 투명성을 유지한다.','나는 AI 결과에 무비판적으로 의존하지 않는다.','나는 AI 관련 규정을 준수한다.','나는 팀원들의 책임있는 AI 사용을 권장한다.'] }
             ]
           }
         ]
@@ -2122,21 +1979,18 @@ QUESTIONNAIRES.forEach(q => {
 });
 
 let selectedQuestionnaire = null;
-let selectedDiagnosticId = null;
-// 이미 선택된 진단지가 이후 비공개/삭제 처리된 경우를 시뮬레이션 (id -> 'private' | 'deleted')
-let qsetVisibilityOverride = {};
+let selectedQsetDeleted = false;
 let respondentSettings = {};
 let courseSettings = {};
 let currentCourseSettingKey = null;
 let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부 — 대상자 등록(일괄/개별)은 이 값이 true여야 사용 가능
-let selectedDiagnosticType = '범용'; // 새로 추가: 진단유형 (기본값: 범용진단)
 
 function toggleNav(el) {
   const group = el.parentElement;
   group.classList.toggle('open');
 }
 
-// ─── STEP 2(진단지 선택) 함수들 ───
+// ─── STEP 1 함수들 ───
 
 let step1HasData = true;
 function toggleStep1State() {
@@ -2155,137 +2009,29 @@ function toggleStep1State() {
   }
 }
 
-function filterQuestionnaires() {
-  // 선택된 진단유형에 호환되는 진단지만 필터링
-  // 비공개/삭제 처리된 진단지는 신규 선택 목록에서 제외하되, 이미 선택된 상태(수정 진입 등)라면 계속 노출
-  return QUESTIONNAIRES.filter(q => {
-    if (!q.compatTypes || !q.compatTypes.includes(selectedDiagnosticType)) return false;
-    const override = qsetVisibilityOverride[q.id];
-    if (override && q.id !== selectedDiagnosticId) return false;
-    return true;
-  });
-}
-
-// ─── STEP 1: 진단유형 선택 ───
-
-let _pendingDiagType = null;
-
-function chooseDiagType(type) {
-  if (type === selectedDiagnosticType) return;
-  // STEP1 이후로 진행한 적이 있다면(=이미 뭔가 설정한 상태) 유형 변경 시 초기화 경고를 먼저 띄운다
-  if (maxReachedStep > 1) {
-    _pendingDiagType = type;
-    document.getElementById('diagTypeChangeModal').classList.add('open');
-    return;
-  }
-  applyDiagTypeChange(type);
-}
-
-function applyDiagTypeChange(type) {
-  selectedDiagnosticType = type;
-  document.querySelectorAll('.diagtype-choice-card').forEach(c => c.classList.toggle('selected', c.dataset.type === type));
-  applyStepVisibility();
-  currentStep = 1;
-  maxReachedStep = 1;
-  goToStep(1);
-}
-
-function cancelDiagTypeChange() {
-  document.getElementById('diagTypeChangeModal').classList.remove('open');
-  _pendingDiagType = null;
-}
-
-function confirmDiagTypeChange() {
-  document.getElementById('diagTypeChangeModal').classList.remove('open');
-  if (_pendingDiagType) applyDiagTypeChange(_pendingDiagType);
-  _pendingDiagType = null;
-}
-
-// 내부 스텝(1~8) ↔ 화면표시 스텝 매핑. STEP1은 진단유형 선택, 상시진단은 STEP3(응답자 유형)·STEP7(응답자 등록)을 건너뜀
-function stepDisplayMeta() {
-  if (selectedDiagnosticType === '상시') {
-    // STEP3(응답자 유형)·STEP7(응답자 등록)은 상시진단에서 자동 처리되어 노출하지 않음
-    return { total: 6, map: { 1: 1, 2: 2, 4: 3, 5: 4, 6: 5, 8: 6 }, hidden: [3, 7] };
-  }
-  return { total: 8, map: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8 }, hidden: [] };
-}
-
-const STEP_TAG_SUFFIX = { 5: ' · 선택사항', 8: ' · 마지막 단계' };
-
-function applyStepVisibility() {
-  const meta = stepDisplayMeta();
-
-  for (let i = 1; i <= 8; i++) {
-    const navItem = document.getElementById('wiz-step-' + i);
-    if (navItem) navItem.style.display = meta.hidden.includes(i) ? 'none' : '';
-    const connector = document.getElementById('wiz-connector-' + i);
-    if (connector) connector.style.display = meta.hidden.includes(i) ? 'none' : '';
-    const tag = document.getElementById('stepTag-' + i);
-    if (tag) tag.textContent = 'STEP ' + meta.map[i] + ' / ' + meta.total + (STEP_TAG_SUFFIX[i] || '');
-  }
-
-  // 상시진단만 응답 허용 횟수(1회/무제한) 설정 노출
-  const responseCountRow = document.getElementById('step5-response-count-row');
-  if (responseCountRow) responseCountRow.style.display = selectedDiagnosticType === '상시' ? '' : 'none';
-}
-
-// 스텝 이동 시 숨겨진 스텝을 건너뛴 다음/이전 내부 스텝 번호 반환
-function getAdjacentStep(from, dir) {
-  const meta = stepDisplayMeta();
-  let step = from + dir;
-  while (step >= 1 && step <= 8 && meta.hidden.includes(step)) {
-    step += dir;
-  }
-  return step;
-}
-
 function renderStep1() {
   const cardList = document.getElementById('step1CardList');
   cardList.innerHTML = '';
 
-  const filteredQs = filterQuestionnaires();
-
-  filteredQs.forEach(q => {
+  QUESTIONNAIRES.forEach(q => {
     const card = document.createElement('div');
     card.className = 'diag-card';
-    card.dataset.qid = q.id;
-
-    // 호환되지 않는 진단지는 비활성 처리
-    if (!q.compatTypes.includes(selectedDiagnosticType)) {
-      card.style.opacity = '0.5';
-      card.style.cursor = 'not-allowed';
-      card.title = '선택한 진단유형과 호환되지 않습니다.';
-    }
-
-    const override = qsetVisibilityOverride[q.id];
-    const overrideBadge = override === 'private' ? '<span class="qset-status-badge badge-private">비공개</span>'
-                         : override === 'deleted' ? '<span class="qset-status-badge badge-deleted">삭제됨</span>' : '';
+    if (q.id === 1) card.classList.add('selected'); // 기본 선택: id=1
 
     card.innerHTML = `
       <div class="diag-card-title">
         <span>${q.name}</span>
-        ${q.locked ? '<span style="font-size:14px;">🔒</span>' : ''}
-        ${overrideBadge}
       </div>
       <div class="diag-card-meta">유형 ${q.typeCount}개 · 역량군 ${q.types.reduce((s,t)=>s+(t.groups?t.groups.length:0),0)}개 · 세부역량 ${q.subCount}개 · ${q.qCount}문항</div>
       <div class="diag-card-date">등록일 ${q.date}</div>
     `;
 
-    if (!q.compatTypes.includes(selectedDiagnosticType)) {
-      card.onclick = (e) => {
-        showToast('상시진단 전용 진단지입니다.');
-        e.preventDefault();
-      };
-    } else {
-      card.onclick = () => selectQuestionnaire(q.id);
-    }
-
+    card.onclick = () => selectQuestionnaire(q.id);
     cardList.appendChild(card);
   });
 
-  // 기본 선택: 기존 선택이 목록에 남아있으면 유지, 없으면 첫 번째 항목
-  const keepId = filteredQs.some(q => q.id === selectedDiagnosticId) ? selectedDiagnosticId : filteredQs[0]?.id;
-  if (keepId) selectQuestionnaire(keepId);
+  // 기본 선택
+  selectQuestionnaire(1);
 }
 
 function selectQuestionnaire(id) {
@@ -2296,41 +2042,35 @@ function selectQuestionnaire(id) {
   document.querySelectorAll('.diag-card').forEach(card => {
     card.classList.remove('selected');
   });
-  document.querySelector(`.diag-card[data-qid="${id}"]`)?.classList.add('selected');
+  document.querySelectorAll('.diag-card')[id - 1]?.classList.add('selected');
 
   // 오른쪽 패널 업데이트
   renderPreview(selectedQuestionnaire);
 }
 
-// 현재 선택된 진단지를 공개 → 비공개 → 삭제됨 순으로 순환 시뮬레이션
-// (이미 선택된 진단지가 저장 이후 비공개/삭제 처리되어도 STEP1 선택 상태는 유지되는 스펙 시연용)
 function toggleQsetDeletedDemo() {
-  if (!selectedDiagnosticId) return;
-  const cur = qsetVisibilityOverride[selectedDiagnosticId] || 'public';
-  const next = cur === 'public' ? 'private' : cur === 'private' ? 'deleted' : 'public';
-  if (next === 'public') delete qsetVisibilityOverride[selectedDiagnosticId];
-  else qsetVisibilityOverride[selectedDiagnosticId] = next;
-
-  const btn = document.getElementById('step1DeletedToggleBtn');
-  btn.classList.toggle('active-deleted', next !== 'public');
-  btn.textContent = next === 'private' ? '🔒 비공개 상태 시뮬레이션 중'
-                   : next === 'deleted' ? '🗑 삭제됨 상태 시뮬레이션 중'
-                   : '🗑 진단지 삭제 시뮬레이션';
-  renderStep1();
+  selectedQsetDeleted = !selectedQsetDeleted;
+  document.getElementById('step1DeletedToggleBtn').classList.toggle('active-deleted', selectedQsetDeleted);
+  if (selectedQuestionnaire) renderPreview(selectedQuestionnaire);
 }
 
 function renderPreview(questionnaire) {
   const empty = document.getElementById('step1PreviewEmpty');
   const content = document.getElementById('step1PreviewContent');
+  const deletedPanel = document.getElementById('step1PreviewDeleted');
 
+  if (selectedQsetDeleted) {
+    empty.style.display = 'none';
+    content.style.display = 'none';
+    deletedPanel.style.display = 'flex';
+    return;
+  }
+  deletedPanel.style.display = 'none';
   empty.style.display = 'none';
   content.style.display = 'block';
 
-  // 제목 (+ 이미 선택된 진단지가 이후 비공개/삭제 처리된 경우 상태 배지)
-  const override = qsetVisibilityOverride[questionnaire.id];
-  const overrideBadge = override === 'private' ? ' <span class="qset-status-badge badge-private">비공개</span>'
-                       : override === 'deleted' ? ' <span class="qset-status-badge badge-deleted">삭제됨</span>' : '';
-  document.getElementById('previewQuestionnaireName').innerHTML = questionnaire.name + overrideBadge;
+  // 제목
+  document.getElementById('previewQuestionnaireName').textContent = questionnaire.name;
 
   // 통계 칩 (유형 > 역량군 > 세부역량 동적 계산)
   const groupCount = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
@@ -2447,45 +2187,20 @@ function generateRespondentCards() {
   if (!selectedQuestionnaire) return;
   const container = document.getElementById('respondentCardsContainer');
   container.innerHTML = '';
-
-  // 상시진단이면 고정 메시지 표시
-  if (selectedDiagnosticType === '상시') {
-    container.innerHTML = `
-      <div style="padding:24px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;">
-        <div style="font-size:14px;font-weight:600;color:#2a3a6a;margin-bottom:8px;">상시진단은 본인 자기진단만 가능합니다</div>
-        <div style="font-size:12px;color:#4a5a8a;">다면평가(상사, 동료 등)는 범용진단 유형에서만 사용할 수 있습니다.</div>
-      </div>
-      <div style="display:flex;gap:12px;margin-top:16px;">
-        <div class="resp-role-card" style="opacity:1;cursor:default;">
-          <div style="font-size:18px;margin-bottom:8px;">👤</div>
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">본인</div>
-          <div style="font-size:11px;color:#666;">자기진단</div>
-          <input type="checkbox" checked disabled style="margin-top:12px;cursor:default;">
-        </div>
-      </div>
-    `;
-    respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false }; // 자동으로 본인만 선택
-    return;
-  }
-
-  // 범용진단: 기존 로직
   respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
 
   const section = document.createElement('div');
   section.innerHTML = `
     <p class="resp-section-hint">클릭하여 응답자를 선택하세요. 복수 선택 가능합니다.</p>
     <div class="resp-role-grid">
-      ${RESP_ROLES.map(role => {
-        const isRequired = role.key === '본인';
-        return `
-        <div class="resp-role-card${isRequired ? ' selected required' : ''}"
-             ${isRequired ? '' : `onclick="toggleRespRole(this, '${role.key}')"`}>
+      ${RESP_ROLES.map(role => `
+        <div class="resp-role-card${role.key === '본인' ? ' selected' : ''}"
+             onclick="toggleRespRole(this, '${role.key}')">
           <div class="resp-role-check">✓</div>
           <div class="resp-role-icon">${role.icon}</div>
-          <div class="resp-role-name">${role.name}${isRequired ? '<span class="resp-role-required-tag">(필수)</span>' : ''}</div>
+          <div class="resp-role-name">${role.name}</div>
           <div class="resp-role-desc">${role.desc.replace(/\n/g,'<br>')}</div>
-        </div>`;
-      }).join('')}
+        </div>`).join('')}
     </div>`;
   container.appendChild(section);
 }
@@ -2493,10 +2208,6 @@ function generateRespondentCards() {
 let _pendingRespToggle = null;
 
 function toggleRespRole(el, roleKey) {
-  if (roleKey === '본인') {
-    showToast('본인 응답은 필수이며 해제할 수 없습니다.');
-    return;
-  }
   const isCurrentlySelected = el.classList.contains('selected');
   if (isCurrentlySelected) {
     const hasRespondents = Object.keys(MK_RESPONDENTS).some(k => k.startsWith(roleKey + ':') && MK_RESPONDENTS[k].length > 0);
@@ -2549,13 +2260,8 @@ function generateScoreSettings() {
     type.groups.forEach((group, gidx) => {
       const groupId = `${type.id}-${gidx}`;
 
-      // 서술형 전용 세부역량은 점수화 대상에서 제외 (강점/약점 판정 불가 — 결과보기의 "주관식 응답"에서 별도 확인)
-      const scoredSubs = group.subs.filter(s => s.scale !== '서술형');
-      // 역량군의 모든 세부역량이 서술형이면 점수 설정 카드 자체를 노출하지 않음
-      if (scoredSubs.length === 0) return;
-
-      // 역량군 내 세부역량별 척도 파악 (서술형 제외한 세부역량만 대상)
-      const subScaleMaxes = scoredSubs.map(s => parseInt(s.scale) || 5);
+      // 역량군 내 세부역량별 척도 파악
+      const subScaleMaxes = group.subs.map(s => parseInt(s.scale) || 5);
       const rawMax = Math.min(...subScaleMaxes);
       const hasAB = subScaleMaxes.some(m => m === 6);
       // AB선택형이 포함된 역량군은 정규화 기준 5점으로 고정
@@ -2589,7 +2295,6 @@ function generateScoreSettings() {
         : '';
 
       const mixedNote = '';
-      const scoredQCount = scoredSubs.reduce((s, x) => s + x.qCount, 0);
 
       const defaultStrong = Math.round(scaleMax * 0.7);
       const defaultWeak   = Math.round(scaleMax * 0.5);
@@ -2601,7 +2306,7 @@ function generateScoreSettings() {
           <span class="score-type-name" style="font-size:14px;">${type.name}</span>
           <span style="font-size:12px;color:#888;margin:0 6px;">—</span>
           <span class="score-type-name">${group.name}</span>
-          <span class="score-type-qcnt">${scoredQCount}문항</span>
+          <span class="score-type-qcnt">${group.qCount}문항</span>
         </div>
         ${abNotice}${mixedNote}
         <div class="score-inputs-wrap">
@@ -2669,16 +2374,6 @@ function generateScoreSettings() {
       container.appendChild(div);
     });
   });
-
-  // 진단지 전체 문항이 서술형이라 점수화할 역량군이 하나도 없는 경우
-  if (container.children.length === 0) {
-    container.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#999;text-align:center;">
-        <div style="font-size:32px;margin-bottom:12px;">✍️</div>
-        <div style="font-size:14px;font-weight:600;color:#555;">진단지 전체 문항이 서술형으로 구성되어<br>역량 점수 기준 설정이 필요하지 않습니다.</div>
-      </div>
-    `;
-  }
 }
 
 function generateCourseTree() {
@@ -2912,21 +2607,6 @@ function generateStep4Tabs() {
   const tabPanesContainer = document.getElementById('step4TabPanes');
   tabGroup.innerHTML = '';
   tabPanesContainer.innerHTML = '';
-
-  // 상시진단이면 안내 카드만 표시
-  if (selectedDiagnosticType === '상시') {
-    tabGroup.innerHTML = '';
-    tabPanesContainer.innerHTML = `
-      <div style="padding:32px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-size:16px;font-weight:700;color:#2a3a6a;margin-bottom:12px;">전체 임직원이 실시간으로 자동 대상입니다</div>
-        <div style="font-size:13px;color:#4a5a8a;line-height:1.6;">
-          신규 입사자도 자동으로 진단 대상에 포함되며, 별도 대상자 등록이 필요하지 않습니다.<br>
-          진단기간 내에 모든 임직원이 자유롭게 응시할 수 있습니다.
-        </div>
-      </div>
-    `;
-    return;
-  }
 
   const tabs = [];
   RESP_ROLES.forEach(role => {
@@ -3652,7 +3332,7 @@ function openDiagnosisPreview() {
   // STEP 1에서 선택된 진단지 데이터를 sessionStorage에 저장 후 미리보기 페이지 오픈
   const q = selectedQuestionnaire;
   if (!q) {
-    showToast('진단지를 먼저 선택해주세요. (STEP 2)');
+    showToast('진단지를 먼저 선택해주세요. (STEP 1)');
     return;
   }
 
@@ -3702,40 +3382,24 @@ function generateStep7Review() {
 
   const totalCourses = Object.values(courseData).reduce((s, arr) => s + arr.length, 0);
 
-  const responseCountChecked = document.querySelector('input[name="responseCount"]:checked');
-  const responseCountText = responseCountChecked ? (responseCountChecked.value === '1' ? '1회만' : '무제한') : '';
-
-  const meta = stepDisplayMeta();
-  const allRows = [
-    { step: 1, label: '진단 유형 선택',    value: selectedDiagnosticType === '상시' ? '상시진단' : '범용진단' },
-    { step: 2, label: '진단지 선택',      value: qName },
-    { step: 3, label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)' },
-    { step: 4, label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨' },
-    { step: 5, label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정` },
-    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${period}` + (selectedDiagnosticType === '상시' ? ` / 응답 허용 횟수: ${responseCountText}` : '') },
-    { step: 7, label: selectedDiagnosticType === '상시' ? '대상자 범위' : '응답자 등록',
-      value: selectedDiagnosticType === '상시' ? '전체 임직원(신규입사자 포함)' : '유형별 응답자 등록됨' },
+  const rows = [
+    { step: 'STEP 1', label: '진단지 선택',      value: qName, target: 1 },
+    { step: 'STEP 2', label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)', target: 2 },
+    { step: 'STEP 3', label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨', target: 3 },
+    { step: 'STEP 4', label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정`, target: 4 },
+    { step: 'STEP 5', label: '진단 기본 설정',    value: `${diagName} / ${period}`, target: 5 },
+    { step: 'STEP 6', label: '응답자 등록',       value: '유형별 응답자 등록됨', target: 6 },
   ];
-  // 완전히 잠긴 STEP만 "보기"로 표시, 그 외(부분수정 포함)는 "수정"으로 표시
-  const currentLocked = (STEP_LOCK_MAP[_diagStatus]?.[selectedDiagnosticType] || []);
-  const rows = allRows
-    .filter(r => !meta.hidden.includes(r.step))
-    .map(r => ({
-      ...r,
-      stepLabel: 'STEP ' + meta.map[r.step],
-      target: r.step,
-      btnLabel: (_diagStatus !== 'before' && currentLocked.includes(r.step)) ? '보기' : '수정',
-    }));
 
   container.innerHTML = `
     <table style="width:100%;border-collapse:collapse;">
       ${rows.map(r => `
         <tr style="border-bottom:1px solid #f0f2f5;">
-          <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.stepLabel}</td>
+          <td style="width:90px;padding:14px 16px;font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;">${r.step}</td>
           <td style="width:160px;padding:14px 0;font-size:13px;font-weight:700;color:#1a1a2e;">${r.label}</td>
           <td style="padding:14px 16px;font-size:13px;color:#555;">${r.value}</td>
           <td style="width:60px;padding:14px 0;text-align:right;">
-            <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">${r.btnLabel}</button>
+            <button onclick="goToStep(${r.target})" style="height:26px;padding:0 12px;background:#fff;border:1px solid #ccc;border-radius:3px;font-size:12px;color:#555;cursor:pointer;font-family:inherit;">수정</button>
           </td>
         </tr>`).join('')}
     </table>
@@ -3749,7 +3413,7 @@ function createDiagnosis() {
   if (!validateDates()) return;
   if (!validateScores()) return;
   showToast('진단이 생성되었습니다. 대기 상태로 저장됩니다.');
-  setTimeout(() => { location.href = 'edms_역량진단_관리_상시진단.html'; }, 1400);
+  setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
 }
 
 function validateScores() {
@@ -3790,20 +3454,20 @@ function validateDates() {
 }
 
 function nextStep() {
-  if (currentStep === 2 && !selectedDiagnosticId) {
+  if (currentStep === 1 && !selectedDiagnosticId) {
     showToast('진단지를 선택해주세요.');
     return;
   }
-  if (currentStep === 3) {
+  if (currentStep === 2) {
     let anySelected = false;
     RESP_ROLES.forEach(role => {
       if (respondentSettings[role.key]) anySelected = true;
     });
     if (!anySelected) { showToast('응답자 유형을 1개 이상 선택해주세요.'); return; }
   }
-  if (currentStep === 4 && !validateScores()) return;
-  if (currentStep === 6 && !validateDates()) return;
-  if (currentStep === 7) {
+  if (currentStep === 3 && !validateScores()) return;
+  if (currentStep === 5 && !validateDates()) return;
+  if (currentStep === 6) {
     const allTabs = document.querySelectorAll('#step4TabGroup .tab');
     let valid = true;
     allTabs.forEach((tab, idx) => {
@@ -3812,25 +3476,22 @@ function nextStep() {
     });
     if (!valid) { showToast('대상자를 1명 이상 등록해주세요.'); return; }
   }
-  const next = getAdjacentStep(currentStep, 1);
-  if (next <= 8) {
-    maxReachedStep = Math.max(maxReachedStep, next);
-    currentStep = next;
+  if (currentStep < 7) {
+    maxReachedStep = Math.max(maxReachedStep, currentStep + 1);
+    currentStep++;
     goToStep(currentStep);
   }
 }
 
 function prevStep() {
-  const prev = getAdjacentStep(currentStep, -1);
-  if (prev >= 1) {
-    currentStep = prev;
+  if (currentStep > 1) {
+    currentStep--;
     goToStep(currentStep);
   }
 }
 
 function goToStep(step) {
-  const meta = stepDisplayMeta();
-  if (step < 1 || step > 8 || meta.hidden.includes(step)) return;
+  if (step < 1 || step > 7) return;
   if (step > maxReachedStep) {
     showToast('이전 단계를 완료한 후 이동할 수 있습니다.');
     return;
@@ -3839,31 +3500,29 @@ function goToStep(step) {
   document.getElementById(`step-content-${step}`).classList.add('active');
 
   // wiz-aside step item 상태 업데이트
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= 7; i++) {
     const el = document.getElementById(`wiz-step-${i}`);
     if (!el) continue;
     el.classList.remove('is-active', 'is-done');
     const badge = el.querySelector('.wiz-step-badge');
-    const dispNum = meta.map[i] || i;
     if (i < step) {
       el.classList.add('is-done');
       badge.textContent = '✓';
     } else if (i === step) {
       el.classList.add('is-active');
-      badge.textContent = dispNum;
+      badge.textContent = i;
     } else {
-      badge.textContent = dispNum;
+      badge.textContent = i;
     }
   }
-  applyStepVisibility();
 
   currentStep = step;
-  if (step === 2) renderStep1();
-  if (step === 3) generateRespondentCards();
-  if (step === 4) generateScoreSettings();
-  if (step === 5) generateCourseTree();
-  if (step === 7) generateStep4Tabs();
-  if (step === 8) generateStep7Review();
+  if (step === 1) renderStep1();
+  if (step === 2) generateRespondentCards();
+  if (step === 3) generateScoreSettings();
+  if (step === 4) generateCourseTree();
+  if (step === 6) generateStep4Tabs();
+  if (step === 7) generateStep7Review();
   updateBottomButtons();
   const wc = document.querySelector('.wiz-content');
   if (wc) wc.scrollTop = 0;
@@ -3871,7 +3530,6 @@ function goToStep(step) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (history.scrollRestoration) history.scrollRestoration = 'manual';
-  applyStepVisibility();
   renderStep1();
   updateBottomButtons();
   const mainEl = document.querySelector('.main');
@@ -3935,76 +3593,17 @@ document.addEventListener('DOMContentLoaded', () => {
    ══════════════════════════════════════════════════════ */
 let _diagStatus = 'before';
 
-// 상태별 STEP 잠금 목록 (진단유형별로 다름) — Confluence "New EDMS - 진단 만들기" v3.1
-// (https://ihunet.atlassian.net/wiki/spaces/30/pages/5247827973) "진단 상태별 수정 권한" 표 기준
-// (STEP1 "진단유형 선택"이 새로 추가되며 기존 STEP 번호가 전부 +1 밀림)
+// 상태별 STEP 잠금 목록
 // before:    전체 수정 가능
-// after(진행 중)/expired(마감 전):
-//   범용진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
-//              STEP 6(진단 기본 설정)는 완전잠금이 아닌 "부분 수정"(applyStep5PartialLock 별도 처리) — 이 목록에는 포함하지 않음.
-//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 범용과 동일하게 부분 수정으로 별도 처리.
-// STEP 1(진단유형 선택)은 진단이 생성된 이후(진행 중/마감 전/완료)에는 항상 잠금 — STEP2와 동일하게 변경 불가
-// completed: 전체 잠금 (STEP6도 이때만 완전 잠금이라 이 목록에 포함)
+// after:     STEP 1·2만 잠금 (3~6 수정 가능)
+// expired:   STEP 1·2·5·6 잠금 (3·4만 수정 가능)
+// completed: 전체 잠금
 const STEP_LOCK_MAP = {
-  before:    { 범용: [],         상시: [] },
-  after:     { 범용: [1, 2, 3],     상시: [1, 2] },
-  expired:   { 범용: [1, 2, 3, 7],  상시: [1, 2] },
-  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 상시: [1, 2, 3, 4, 5, 6, 7] },
+  before:    [],
+  after:     [1, 2],
+  expired:   [1, 2, 5, 6],
+  completed: [1, 2, 3, 4, 5, 6],
 };
-
-// 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)
-function stepLockDesc(status) {
-  if (status === 'completed') return '모든 항목 수정 불가 · 보기 전용';
-  const meta = stepDisplayMeta();
-  // STEP8(검토 및 생성)은 항상 접근 가능한 요약 화면이라 잠금 대상 안내에서 제외
-  const visible = [];
-  for (let i = 1; i <= 7; i++) if (!meta.hidden.includes(i)) visible.push(i);
-  const locked = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).filter(i => visible.includes(i));
-  const hasStep6 = visible.includes(6);
-  const fullyUnlocked = visible.filter(i => !locked.includes(i) && i !== 6);
-
-  const parts = [];
-  if (fullyUnlocked.length) parts.push(`STEP ${fullyUnlocked.map(i => meta.map[i]).join('·')} 수정 가능`);
-  if (hasStep6) parts.push(`STEP ${meta.map[6]} 일부 항목만 수정 가능(종료일시·소개)`);
-  if (!fullyUnlocked.length && !hasStep6) return '모든 항목 수정 불가';
-  parts.push('나머지 수정 불가');
-  return parts.join(' / ');
-}
-
-// STEP 6(진단 기본 설정)는 진행 중·마감 전 상태에서 "부분 수정" — 진단명·시작일시는 잠그고, 종료일시·소개는 계속 편집 가능
-function applyStep5PartialLock(status) {
-  const lockNameStart = (status === 'after' || status === 'expired' || status === 'completed');
-  const lockEndDesc    = (status === 'completed');
-  const nameEl  = document.getElementById('diagNameInput');
-  const sDateEl = document.getElementById('diagStartDate');
-  const sTimeEl = document.getElementById('diagStartTime');
-  const eDateEl = document.getElementById('diagEndDate');
-  const eTimeEl = document.getElementById('diagEndTime');
-  const descEl  = document.getElementById('diagDescription');
-  [nameEl, sDateEl, sTimeEl].forEach(el => { if (el) el.disabled = lockNameStart; });
-  [eDateEl, eTimeEl, descEl].forEach(el => { if (el) el.disabled = lockEndDesc; });
-
-  // STEP6 헤드에 "부분 수정 가능" 안내 배지 (완전잠금 상태에서는 기존 🔒 배지가 별도로 붙으므로 제외)
-  const head = document.querySelector('#step-content-6 .wiz-card-head');
-  if (head) {
-    const old = head.querySelector('.step-partial-badge');
-    if (old) old.remove();
-    if (status === 'after' || status === 'expired') {
-      head.style.display = 'flex';
-      head.style.justifyContent = 'space-between';
-      head.style.alignItems = 'flex-start';
-      const badge = document.createElement('span');
-      badge.className = 'step-partial-badge';
-      badge.innerHTML = '🔓 일부 항목만 수정 가능';
-      badge.style.cssText = 'font-size:12px;font-weight:700;color:#b8860b;background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:4px 10px;white-space:nowrap;';
-      head.appendChild(badge);
-    }
-  }
-
-  // 진단 기간 행 옆 "종료일만 변경 가능" 힌트 — 부분잠금(진행 중/마감 전) 상태에서만 노출
-  const endDateHint = document.getElementById('step5-enddate-hint');
-  if (endDateHint) endDateHint.style.display = (status === 'after' || status === 'expired') ? '' : 'none';
-}
 
 function setDiagStatus(status) {
   _diagStatus = status;
@@ -4015,8 +3614,8 @@ function setDiagStatus(status) {
 
   /* ── 수정/보기 모드에서는 모든 STEP 자유 이동 허용 ── */
   if (status !== 'before') {
-    maxReachedStep = 8;
-    for (let i = 1; i <= 8; i++) {
+    maxReachedStep = 7;
+    for (let i = 1; i <= 7; i++) {
       const el = document.getElementById('wiz-step-' + i);
       if (el) { el.classList.remove('is-done'); const b = el.querySelector('.wiz-step-badge'); if (b) b.textContent = i; }
     }
@@ -4048,22 +3647,20 @@ function setDiagStatus(status) {
       banner.style.display = 'none';
       banner.className = '';
     } else {
-      const labels = {
-        after:     { cls: 'status-after',     icon: '🔵', label: '진단 진행 중' },
-        expired:   { cls: 'status-expired',   icon: '🟠', label: '진단 마감 전' },
-        completed: { cls: 'status-completed', icon: '🔴', label: '진단 완료' },
+      const info = {
+        after:     { cls: 'status-after',     icon: '🔵', label: '진단 진행 중',  desc: 'STEP 1·2 수정 불가 / STEP 3~6 수정 가능' },
+        expired:   { cls: 'status-expired',   icon: '🟠', label: '진단 마감 전',  desc: 'STEP 3·4 수정 가능 / 나머지 수정 불가' },
+        completed: { cls: 'status-completed', icon: '🔴', label: '진단 완료',     desc: '모든 항목 수정 불가 · 보기 전용' },
       }[status];
       banner.style.display = 'flex';
-      banner.className = labels.cls;
-      banner.innerHTML = `<strong>${labels.icon} ${labels.label}</strong><span class="banner-desc">${stepLockDesc(status)}</span>`;
+      banner.className = info.cls;
+      banner.innerHTML = `<strong>${info.icon} ${info.label}</strong><span class="banner-desc">${info.desc}</span>`;
     }
   }
 
   /* ── STEP 잠금 처리: wiz-card-body에 투명 overlay 삽입, head에 배지 추가 ── */
-  /*    상시진단은 STEP3·7 자체가 없으므로 잠금 대상에서 제외 ── */
-  const lockMeta = stepDisplayMeta();
-  const locked = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).filter(i => !lockMeta.hidden.includes(i));
-  for (let i = 1; i <= 8; i++) {
+  const locked = STEP_LOCK_MAP[status] || [];
+  for (let i = 1; i <= 7; i++) {
     const stepEl = document.getElementById('step-content-' + i);
     if (!stepEl) continue;
 
@@ -4072,12 +3669,13 @@ function setDiagStatus(status) {
     stepEl.querySelectorAll('.step-lock-badge').forEach(b => b.remove());
 
     if (locked.includes(i)) {
-      // wiz-card-body에 투명 overlay (클릭 차단, 🔒 배지로 이미 잠금 상태 안내되므로 토스트는 띄우지 않음)
+      // wiz-card-body에 투명 overlay (클릭 시 토스트)
       const body = stepEl.querySelector('.wiz-card-body');
       if (body) {
         body.style.position = 'relative';
         const overlay = document.createElement('div');
         overlay.className = 'step-lock-overlay';
+        overlay.onclick = () => showToast('수정이 불가합니다.');
         body.appendChild(overlay);
       }
       // wiz-card-head 우측에 🔒 배지
@@ -4099,8 +3697,6 @@ function setDiagStatus(status) {
       if (head) { head.style.display = ''; head.style.justifyContent = ''; head.style.alignItems = ''; }
     }
   }
-
-  applyStep5PartialLock(status);
 
   /* ── STEP 7 버튼 분기 ── */
   const createBtn = document.getElementById('step7-create-btn');

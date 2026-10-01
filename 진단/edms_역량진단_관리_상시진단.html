@@ -568,7 +568,7 @@
       <div class="result-header">
         <span class="result-count" id="mainResultCount">검색결과 <strong>0</strong>건</span>
         <div style="display:flex;align-items:center;gap:8px;">
-          <button class="btn btn-primary" onclick="location.href='edms_진단_만들기_상시진단.html'" style="height:28px;font-size:12px;padding:0 14px;">+ 진단 만들기</button>
+          <button class="btn btn-primary" onclick="location.href='edms_진단_만들기.html'" style="height:28px;font-size:12px;padding:0 14px;">+ 진단 만들기</button>
           <select class="select" id="mainPageSizeSelect" onchange="mainChangePageSize()" style="height:26px; font-size:11px;">
             <option value="30">30개씩 보기</option>
             <option value="50" selected>50개씩 보기</option>
@@ -1207,13 +1207,13 @@
       actionCell = `
         <td>
           <div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
-            <button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기_상시진단.html'">진단 관리</button>
+            <button class="btn btn-sm btn-gray" onclick="location.href='edms_진단_만들기.html'">진단 관리</button>
             <button class="btn btn-sm" style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;" onclick="openDraftDeleteModal('${diag.name}')">삭제</button>
           </div>
         </td>
       `;
     } else {
-      actionCell = '<td><button class="btn btn-sm btn-gray" onclick="location.href=\'edms_진단_만들기_상시진단.html\'">진단 관리</button></td>';
+      actionCell = '<td><button class="btn btn-sm btn-gray" onclick="location.href=\'edms_진단_만들기.html\'">진단 관리</button></td>';
     }
 
     return `
@@ -1444,7 +1444,7 @@
       const actionCell = row.querySelector('.action-cell');
       if (actionCell) {
         actionCell.innerHTML =
-          '<button class="btn btn-sm btn-gray" onclick="location.href=\'edms_진단_만들기_상시진단.html\'">진단 관리</button>';
+          '<button class="btn btn-sm btn-gray" onclick="location.href=\'edms_진단_만들기.html\'">진단 관리</button>';
       }
       showToast('진단이 마감되었습니다. 리포트를 생성 중입니다.');
 
