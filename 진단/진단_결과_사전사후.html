@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>역량진단 결과 — 다면진단 | LABS 3.0</title>
+<title>역량진단 결과 — 사전사후 | LABS 3.0</title>
 <style>
 :root {
   --primary:       #246CF9;
@@ -520,14 +520,81 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 /* 호버한 시리즈 강조 (나머지 흐리게) */
 .rd-svg [data-s]{transition:opacity .12s;}
 .rd-svg[data-hl] [data-s]{opacity:.18;}
-.rd-svg[data-hl="all"] [data-s="all"],.rd-svg[data-hl="self"] [data-s="self"],.rd-svg[data-hl="sub"] [data-s="sub"],.rd-svg[data-hl="sup"] [data-s="sup"],.rd-svg[data-hl="peer"] [data-s="peer"],.rd-svg[data-hl="avg"] [data-s="avg"]{opacity:1;}
+.rd-svg[data-hl="all"] [data-s="all"],.rd-svg[data-hl="pre"] [data-s="pre"],.rd-svg[data-hl="self"] [data-s="self"],.rd-svg[data-hl="sub"] [data-s="sub"],.rd-svg[data-hl="sup"] [data-s="sup"],.rd-svg[data-hl="peer"] [data-s="peer"],.rd-svg[data-hl="avg"] [data-s="avg"]{opacity:1;}
 
 .rrow.hov{cursor:pointer;transition:background .12s;}
 .rrow.hov:hover{background:#EAF1FF;}
 #ovGauge [data-k]{transition:opacity .12s;}
+.dt-gap{font-size:11px;font-weight:600;margin-top:2px;color:var(--text-400);}
+.dt-gap.gap-p,.dt-gap.gap-n{color:inherit;}
+.dt-pre{color:var(--text-400);font-weight:500;}
+.dt-arr{color:var(--text-400);margin:0 4px;font-size:11px;}
+.dt-chg{font-size:11.5px;font-weight:700;margin-top:2px;}
+.rchg{font-style:normal;font-size:11px;font-weight:700;margin-left:4px;}
+.pp-chg:empty{display:none;}
+.pp-chg{font-size:12.5px;color:var(--text-500);margin:2px 0 4px;}
+.pp-chg b{font-weight:800;}
+/* 사전/사후 막대 쌍 */
+.pb{display:flex;flex-direction:column;gap:5px;padding:4px 0;}
+.pb-row{display:grid;grid-template-columns:26px minmax(0,1fr) 34px 58px;align-items:center;gap:8px;}
+.pb-lab{font-size:11px;color:var(--text-400);}
+.pb-track{position:relative;height:9px;background:var(--border);border-radius:5px;}
+.pb-fill{height:100%;border-radius:5px;}
+.pb-fill.pre{background:#CBD5E1;}
+.pb-fill.pos{background:var(--blue);} .pb-fill.neg{background:var(--red);} .pb-fill.mid{background:#111827;}
+.pb-thr{position:absolute;top:-3px;bottom:-3px;border-left:1.5px dashed;}
+.pb-thr.s{border-color:rgba(36,108,249,.6);} .pb-thr.w{border-color:rgba(220,38,38,.55);}
+.pb-avg{position:absolute;top:-3px;bottom:-3px;width:2px;background:#9CA3AF;}
+.pb-num{font-size:12.5px;font-weight:700;color:var(--text-900);text-align:right;}
+.pb-row.pre .pb-num{color:var(--text-400);font-weight:500;}
+.pb-chg{font-size:11.5px;font-weight:700;}
+.idx-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px 6px;}
+.idx-tab{display:flex;align-items:center;gap:6px;padding:5px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:12.5px;font-family:inherit;color:var(--text-500);cursor:pointer;}
+.idx-tab:hover{border-color:#93c5fd;}
+.idx-tab.on{background:#111827;color:#fff;border-color:#111827;font-weight:700;}
+.idx-tab i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.dt-n{text-align:center;font-size:13px;}
+.dt-gh{text-align:center;border-left:1px solid var(--border);}
+.dt-h2 th{font-size:11.5px;font-weight:600;color:var(--text-400);}
 .idx-table td.gap-p{color:var(--blue);}
 .idx-table td.gap-n{color:var(--red);}
-.dt-gap{font-size:11px;font-weight:600;margin-top:2px;}
+.dt-gap2{font-size:11px;font-weight:600;margin-top:1px;}
+.dt-sc .dt-v{font-weight:700;}
+.dt-chg2{font-weight:800;background:#F8FAFC;border-right:1px solid var(--border);}
+.dt-mute{color:var(--text-400);}
+.dt-strong{font-weight:700;color:var(--text-900);}
+tr.dt-sub td{background:#F8FAFC;font-size:11.5px;font-weight:600;}
+tr.dt-sub td.pp-ph{color:var(--text-400);}
+tr.dt-item-last td{border-bottom:1px solid var(--border);}
+.dt-name{font-weight:600;}
+.pp-ph{font-size:12px;color:var(--text-500);text-align:center;}
+.pp-chgcell{font-weight:800;text-align:center;font-size:13.5px;}
+/* 점수 비교표 */
+#respList,#respListG{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;}
+.pp-card{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;white-space:nowrap;}
+.pp-cl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-500);font-weight:600;}
+.pp-cv{display:flex;align-items:baseline;gap:4px;font-size:12.5px;}
+.pp-cv .pv{color:var(--text-400);}
+.pp-cv b{font-size:14px;color:var(--text-900);}
+.pp-arr{color:var(--text-400);font-size:11px;}
+.pp-head,.pp-row{display:grid;grid-template-columns:12px minmax(0,1fr) 54px 54px 66px;align-items:center;gap:8px;}
+.pp-head{font-size:11px;color:var(--text-400);padding:0 10px 4px;}
+.pp-head span{text-align:right;}
+.pp-row{margin-bottom:6px;}
+.pp-row .pv{text-align:right;color:var(--text-400);font-size:12.5px;}
+.pp-row b{text-align:right;}
+.pp-row .rchg{margin-left:0;text-align:right;}
+.cf-seg{display:flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin-right:4px;}
+.cf-seg button{padding:4px 11px;font-size:12px;font-family:inherit;border:0;background:#fff;color:var(--text-500);cursor:pointer;}
+.cf-seg button.on{background:#111827;color:#fff;font-weight:700;}
+.sl-ex.ghost{border-width:2px;}
+.sl-pre{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#94A3B8;border:1.5px solid #fff;transform:translate(-50%,-50%);z-index:2;box-shadow:0 0 0 1px rgba(0,0,0,.1);}
+.sl-arrow{position:absolute;top:50%;height:2px;background:#94A3B8;transform:translateY(-50%);z-index:1;}
+.gauge-mini.gauge-pre{background:#94A3B8 !important;}
+.rd-pre{fill:none;stroke:#94A3B8;stroke-width:2.5;stroke-dasharray:6 4;}
+.rd-pdot{fill:#fff;stroke:#94A3B8;stroke-width:2.5;}
+.rd-chg{font-size:12.5px;font-weight:700;}
+.rd-chg.gap-p{fill:var(--blue);} .rd-chg.gap-n{fill:var(--red);}
 .rsw{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 .chart-filter{position:sticky;top:66px;z-index:30;display:flex;justify-content:flex-end;align-items:flex-start;height:0;overflow:visible;pointer-events:none;}
 .cf-box{pointer-events:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:100%;padding:6px 10px;background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:999px;box-shadow:0 2px 10px rgba(15,23,42,.12);}
@@ -538,11 +605,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .cf-opt.on .rbox{background:var(--c);border-color:var(--c);}
 .cf-opt.on .rbox svg{display:block;}
 .cf-spacer{height:44px;}
-.idx-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px 6px;}
-.idx-tab{display:flex;align-items:center;gap:6px;padding:5px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:12.5px;font-family:inherit;color:var(--text-500);cursor:pointer;}
-.idx-tab:hover{border-color:#93c5fd;}
-.idx-tab.on{background:#111827;color:#fff;border-color:#111827;font-weight:700;}
-.idx-tab i{width:8px;height:8px;border-radius:50%;display:inline-block;}
 /* ── Spec note ── */
 .spec-section{margin-top:32px;}
 .spec-title{font-size:14px;font-weight:700;color:#b45309;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
@@ -626,13 +688,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
     <main class="main">
 
       <div style="background:#eef3ff;border:1px solid #bfdbfe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#1d4ed8;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <span>방향성 ② · <b>다면진단</b> — 본인 외 구성원·상사·동료가 함께 응답한 진단의 결과 화면</span>
+        <span>방향성 ③ · <b>사전사후</b> — 다면진단 결과에 사전 → 사후 변화를 겹쳐 보여주는 결과 화면 (자가진단은 응답자 구성 &gt; ‘본인만’ 으로 확인)</span>
         <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <label for="respSet" style="font-weight:700;">응답자 구성</label>
           <select id="respSet" onchange="setRespSet(this.value)" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
             <option value="all" selected>본인 · 구성원 · 상사 · 동료</option>
             <option value="sup">본인 · 상사</option>
             <option value="subpeer">본인 · 구성원 · 동료</option>
+            <option value="self">본인만 (자가진단)</option>
           </select>
           <label for="grpCount" style="font-weight:700;">화면 구성 미리보기</label>
           <select id="grpCount" onchange="setGroupCount(+this.value)" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
@@ -678,11 +741,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       <div class="meta-card">
         <div class="meta-item">
           <div class="meta-label">진단명</div>
-          <div class="meta-val">2024 하반기 리더십 역량진단</div>
+          <div class="meta-val">2024 리더십 역량진단 (사전사후)</div>
         </div>
         <div class="meta-divider"></div>
         <div class="meta-item">
-          <div class="meta-label">진단기간</div>
+          <div class="meta-label">사전 진단</div>
+          <div class="meta-val">2024.03.04 ~ 2024.03.29</div>
+        </div>
+        <div class="meta-divider"></div>
+        <div class="meta-item">
+          <div class="meta-label">사후 진단</div>
           <div class="meta-val">2024.09.01 ~ 2024.09.30</div>
         </div>
         <div class="meta-divider"></div>
@@ -702,6 +770,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div id="ovGauge" style="display:none;">
             <div class="headline-main">
               <div class="headline-score"><span class="num"><span id="gTotalNum">3.15</span><span class="denom">/5.0</span></span></div>
+              <div class="pp-chg" id="gPpChg"></div>
               <div class="headline-gauge">
                 <div class="gauge-wrap">
                   <div class="gauge-track">
@@ -715,7 +784,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
                     <div class="gauge-marker self" data-k="all" id="gSelf" style="left:62.8%;">
                       <span class="gauge-connector"></span>
                       <span class="gauge-dot"></span>
-                      <span class="gauge-label">종합 점수 <b id="gSelfVal">3.15</b></span>
+                      <span class="gauge-label"><span id="gSelfLbl">종합 점수</span> <b id="gSelfVal">3.15</b></span>
                     </div>
                   </div>
                   <div class="gauge-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
@@ -734,8 +803,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               </div>
             </div>
             <div class="ov2-side">
-              <div class="ov2-label">종합 점수</div>
+              <div class="ov2-label" id="ovLabel">종합 점수</div>
               <div class="headline-score"><span class="num"><span id="totalNum">3.15</span><span class="denom">/5.0</span></span></div>
+              <div class="pp-chg" id="ppChg"></div>
               <div class="resp-head">응답자별 점수</div>
               <div class="resp-list" id="respList"></div>
               <div class="headline-desc" id="headlineDesc" style="margin-top:14px;"></div>
@@ -766,7 +836,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       <!-- 강점 · 약점 역량 -->
       <div class="section-card">
         <div class="section-head">
-          <h3>강점 · 약점 역량 <span class="sw-note">(종합 점수 기준)</span></h3>
+          <h3>강점 · 약점 역량 <span class="sw-note" id="swNote">(종합 점수 기준)</span></h3>
         </div>
         <div class="section-body">
           <div class="sw-detail-grid" id="swGrid"></div>
@@ -813,10 +883,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       </div>
 
       <!-- 역량 상세 결과 (숫자만) -->
-      <div class="section-card">
+      <div class="section-card" id="dtSec">
         <div class="section-head">
           <h3>역량 상세 결과</h3>
-          <div class="idx-legend"><span class="section-sub">GAP = 종합 점수 − 해당 점수</span></div>
+          <div class="idx-legend"><span class="section-sub" id="dtLegend">점수 아래 GAP = 해당 시점 종합 점수 − 해당 점수 · 변화 = 사후 − 사전</span></div>
         </div>
         <div style="overflow-x:auto;">
           <table class="idx-table">
@@ -878,7 +948,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>5. 강점 / 약점 판정 기준</h4>
           <ul>
             <li>역량군별로 진단 생성 시 관리자가 설정한 <b>강점 도달 점수(이상) / 약점 점수(미만)</b>(1~5점)를 <b>종합 점수</b>(본인 + 응답자 유형 점수의 평균)에 적용 — 세부역량 · 역량군 모두 동일 / 하나의 역량군이 강점·약점 양쪽에 나타날 수 있음</li>
-            <li>강점 · 약점 역량 섹션, 종합 평가 코멘트(가장 강점인 / 보완이 필요한 역량군), 추천 과정 대상 모두 종합 점수 기준 / 역량별 지수 그래프는 종합 점수 점의 색(파랑=강점 · 검정=보통 · 빨강=약점)과 강점·약점 기준선으로 표시하며, 역량 상세 결과에는 강점·약점 표시를 두지 않음</li>
+            <li>강점 · 약점 역량 섹션, 종합 평가 코멘트(가장 강점인 / 보완이 필요한 역량군), 추천 과정 대상 모두 종합 점수 기준 / 역량별 지수 · 역량 상세 결과에는 강점·약점 배지·색·기준선을 표시하지 않음(강점·약점 역량 섹션과 중복)</li>
           </ul>
 
           <h4>6. 인식 차이</h4>
@@ -900,8 +970,20 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
           <h4>9. 역량별 지수 · 역량 상세 결과 · GAP</h4>
           <ul>
-            <li><b>역량별 지수</b>: 종합 점수(종합) 기준 세부역량별 슬라이더 그래프와 우측 <b>종합 점수 · 전체평균 · GAP(종합 점수 − 전체평균)</b> 수치 열을 함께 노출 — 종합 점수 점의 색(파랑=강점 · 검정=보통 · 빨강=약점)과 강점·약점 기준선, 전체평균 눈금을 표시 (수치는 점에 마우스를 올리면 툴팁으로 확인) / <b>역량 상세 결과</b>: 세부역량별 종합 점수 · 본인 · 구성원 · 상사 · 동료 · 전체평균 숫자만 노출, 본인 · 구성원 · 상사 · 동료 · 전체평균 점수 하단에 GAP(종합 점수 − 해당 점수)을 함께 표기, 종합 점수에는 GAP 없음 — 두 영역을 분리하여 사전사후 비교 시 각각 그래프(전/후 겹침)와 표(전/후 수치)로 확장</li>
+            <li><b>역량별 지수</b>: 세부역량별 슬라이더 그래프만 노출 (수치는 점에 마우스를 올리면 툴팁으로 확인) / <b>역량 상세 결과</b>: 세부역량별 종합 점수 · 본인 · 구성원 · 상사 · 동료 · 전체평균 숫자만 노출, 본인 · 구성원 · 상사 · 동료 · 전체평균 점수 하단에 GAP(종합 점수 − 해당 점수)을 함께 표기, 종합 점수에는 GAP 없음 — 두 영역을 분리하여 사전사후 비교 시 각각 그래프(전/후 겹침)와 표(전/후 수치)로 확장</li>
             <li>GAP = <b>종합 점수 − 해당 점수</b> (본인 · 구성원 · 상사 · 동료 · 전체평균 각각, 종합 점수에는 없음), 양수 파란색 · 음수 빨간색 (인식 차이는 별도로 본인 − 타인 평균)</li>
+          </ul>
+
+          <h4>10. 사전사후 비교</h4>
+          <ul>
+            <li>사전 진단과 사후 진단 모두 <b>종합 점수 · 본인 · 구성원 · 상사 · 동료</b> 점수와 <b>전체평균</b>을 가짐 — 사전 · 사후의 응답자 구성은 동일한 유형으로 비교하며, 전체평균은 각 시점의 전체 응시자 평균</li>
+            <li><b>종합 평가</b>: 다면진단과 동일한 구조(사후 점수 기준 방사형 · 종합 슬라이더)이며, 우측 <b>[응답자별 점수]</b>는 종합 점수 · 본인 · 구성원 · 상사 · 동료를 <b>사전 → 사후 · 변화</b>를 2열 카드로 표시(변화 = 사후 − 사전, 상승 ▲ 파랑 · 하락 ▼ 빨강 / 전체평균도 사전 → 사후로 표시, 마우스를 올리면 방사형에서 해당 시리즈 강조)</li>
+            <li>코멘트에는 역량군이 2개 이상이고 향상된 역량군이 있을 때 "사전 대비 가장 많이 향상된 역량군" 문장만 추가</li>
+            <li>변화 = <b>사후 − 사전</b>, 상승 파란색 · 하락 빨간색</li>
+            <li><b>역량별 지수</b>: 종합 점수(종합) 기준으로 세부역량마다 <b>사전 · 사후 2행</b>의 슬라이더와 우측 <b>종합 점수 · 전체평균 · GAP(종합 점수 − 전체평균)</b> 수치 열을 표시하고, 오른쪽에 <b>전후 GAP(사후 − 사전)</b>을 두 행에 걸쳐 표시 / 사전·사후 두 행 모두 종합 점수 점의 색(파랑=강점 · 검정=보통 · 빨강=약점)과 강점·약점 기준선(각 시점의 종합 점수으로 판정)을 표시하며 전체평균 눈금도 두 행에 동일</li>
+            <li><b>역량 상세 결과</b>: 세부역량마다 <b>사전 · 사후 2행</b>으로 표시하고, 종합 점수 · 본인 · 구성원 · 상사 · 동료 · 전체평균을 각각 <b>점수 | 변화</b> 두 칸으로 나눔 — 점수 칸 아래에 GAP(해당 시점 종합 점수 − 해당 점수, 종합 점수 칸은 GAP 없음 / 전체평균은 종합 점수 − 전체평균)을 작게 표시, 변화(사후 − 사전)는 사전·사후 두 행에 걸쳐 한 번 표시(상승 ▲ 파랑 · 하락 ▼ 빨강)</li>
+            <li>강점/약점 · 추천 과정 · 인식 차이 · 서술형 응답은 <b>사후 진단</b> 기준</li>
+            <li><b>자가진단(응답자 구성 = 본인만)</b>: 종합 점수 = 본인 점수이며 화면에는 다면진단과 동일하게 <b>종합 점수</b>로 표기하고, 본인 · 구성원 · 상사 · 동료 시리즈와 열, 타인 평가 코멘트, <b>인식 차이</b> · <b>응답자별 점수</b> · <b>역량 상세 결과</b> 영역은 노출하지 않음(역량 상세 결과는 역량별 지수와 중복) / 종합 점수 옆에 "사전 → 사후 ▲변화"를 표시하고, 방사형 · 역량별 지수는 종합 점수와 전체평균의 사전 → 사후만 표시</li>
           </ul>
 
         </div>
@@ -950,16 +1032,25 @@ const ALL_GROUPS = [
 ];
 /* 응답자 유형 (표시 순서: 본인 → 구성원 → 상사 → 동료) */
 const RT = { sub:{label:'구성원',color:'#16A34A',ix:3}, sup:{label:'상사',color:'#F97316',ix:4}, peer:{label:'동료',color:'#7C3AED',ix:5} };
-const RESP_PRESETS = { all:['sub','sup','peer'], sup:['sup'], subpeer:['sub','peer'] };
+const RESP_PRESETS = { all:['sub','sup','peer'], sup:['sup'], subpeer:['sub','peer'], self:[] };   // self: 자가진단(본인만) — 종합 점수 = 본인 점수
 let ACTIVE = RESP_PRESETS.all;                      // 진단 설정에 포함된 타인 유형
-const SHOW = { self:true, sub:true, sup:true, peer:true, avg:true };   // 방사형·종합 슬라이더에 모든 시리즈를 항상 표시
+const SHOW = { self:true, sub:true, sup:true, peer:true, avg:true };   // 방사형·종합 슬라이더에 모든 시리즈를 항상 표시   // 종합 점수은 항상 표시
+let VIEW = 'post';    // 종합 평가 그래프는 사후 값 기준(다면진단과 동일)                                   // 시점: pre(사전) / post(사후) / both(비교)
+const phases = () => VIEW === 'both' ? ['pre','post'] : [VIEW];   // 차트 시리즈 표시 여부(범례 칩 토글)
 const PERC_GAP = 0.5;                               // 인식 차이 기준(점)
 const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
 const r1 = v => Math.round(v*10)/10;
 const f1 = v => r1(v).toFixed(1);
 const gapStr = d => { const g=r1(d); return g>0?'+'+g.toFixed(1):g<0?g.toFixed(1):'0.0'; };
 const gapCls = d => r1(d)>0?'gap-p':r1(d)<0?'gap-n':'';
+/* 사전 진단 값 (샘플): 사후 값에서 항목별 향상폭을 뺀 값 — 세부역량 pre = [이름, 본인, (전체평균 자리), 구성원, 상사, 동료] */
+const PRE_DELTA = [0.6,0.4,0.9,0.3,0.5,-0.2,0.7,0.2,0.4,0.8,0.1,0.6,0.3,0.5,0.0,0.7,0.4,0.2,0.6,0.3,0.5,0.1,0.8,0.4];
+(function(){ let n = 0; const c = v => Math.min(5, Math.max(1, Math.round(v*10)/10));
+  ALL_GROUPS.forEach(g => g.items.forEach(it => { const d = PRE_DELTA[n++ % PRE_DELTA.length];
+    it.pre = [it[0], c(it[1]-d), c(it[2]-0.1), c(it[3]-d*.8), c(it[4]-d*.7), c(it[5]-d*.9)]; })); })();
 ALL_GROUPS.forEach(g => {
+  g.P = { self: mean(g.items.map(i=>i.pre[1])), avg: mean(g.items.map(i=>i.pre[2])) };
+  Object.keys({sub:3,sup:4,peer:5}).forEach(k => { g.P[k] = mean(g.items.map(i=>i.pre[{sub:3,sup:4,peer:5}[k]])); });
   g.self = mean(g.items.map(i=>i[1]));
   g.avg  = mean(g.items.map(i=>i[2]));
   Object.keys(RT).forEach(k => { g[k] = mean(g.items.map(i=>i[RT[k].ix])); });
@@ -976,36 +1067,66 @@ function setGroupCount(n) {
 function setRespSet(key) { ACTIVE = RESP_PRESETS[key]; renderAll(); }
 function renderAll() { renderOverview(); renderRadar(); renderSW(); renderPerception(); renderIndex(); renderDetail(); renderTop(); renderEssays(); }
 const itemOthers = i => mean(ACTIVE.map(k=>i[RT[k].ix]));
+const TL = () => '종합 점수';   // 자가진단(본인만)도 종합 점수로 통일 (종합 점수 = 본인 점수)
 const totalScore = () => mean([TOTAL.self].concat(ACTIVE.map(k=>TOTAL[k])));   // 종합 점수: 본인 + 응답자 유형 점수의 평균
 const groupTotal = g => mean([g.self].concat(ACTIVE.map(k=>g[k])));               // 역량군별 종합 점수
 const itemTotal = it => mean([it[1]].concat(ACTIVE.map(k => it[RT[k].ix])));       // 세부역량별 종합 점수
+const groupTotalPre = g => mean([g.P.self].concat(ACTIVE.map(k=>g.P[k])));        // 사전 값
+const itemTotalPre = it => mean([it.pre[1]].concat(ACTIVE.map(k => it.pre[RT[k].ix])));
+const typePre = k => mean(GROUPS.map(g => g.P[k]));
+const totalScorePre = () => mean([typePre('self')].concat(ACTIVE.map(typePre)));
+const PRE_C = '#94A3B8';
+// 시리즈(k: all=종합 점수 / self=본인 / sub·sup·peer) × 시점(ph: pre/post) 값 접근
+const gVal = (g,k,ph) => k==='all' ? (ph==='pre'?groupTotalPre(g):groupTotal(g)) : k==='self' ? (ph==='pre'?g.P.self:g.self) : (ph==='pre'?g.P[k]:g[k]);
+const tVal = (k,ph) => k==='all' ? (ph==='pre'?totalScorePre():totalScore()) : k==='self' ? (ph==='pre'?typePre('self'):TOTAL.self) : (ph==='pre'?typePre(k):TOTAL[k]);
+const r2 = v => Math.round(v*100)/100;
+const chg1 = d => r1(d)>0 ? '▲'+r1(d).toFixed(1) : r1(d)<0 ? '▼'+Math.abs(r1(d)).toFixed(1) : '-';
+const chg2 = d => Math.round(d*100)>0 ? '▲'+d.toFixed(2) : Math.round(d*100)<0 ? '▼'+Math.abs(d).toFixed(2) : '-';
 const SELF_C = '#246CF9';
 const pos = v => ((v-1)/4*100).toFixed(1) + '%';
 const TAG_BADGE = { s:'<span class="mini-badge s">강점</span>', w:'<span class="mini-badge w">약점</span>', '':'' };
 
-function slider(self, avg, thr, ex, label, col) {
+function slider(self, avg, thr, ex, label, pre, col) {
+  // self: 현재 시점의 대표(종합 점수) 값, pre: 비교 모드에서만 전달되는 사전 종합 점수
   const neutral = thr === 'none';   // 강점/약점 구분 없이 단색(보통) 표시
   if (neutral) thr = null;
-  const cls = neutral ? 'mid' : thr ? (self >= thr.s ? 'pos' : self < thr.w ? 'neg' : 'mid')   // 역량별 지수: 강점/약점/보통
-                  : (r1(self) >= r1(avg) ? 'pos' : 'neg');                  // 카드: 전체평균 대비
+  const cls = neutral ? 'mid' : thr ? (self >= thr.s ? 'pos' : self < thr.w ? 'neg' : 'mid')
+                  : (r1(self) >= r1(avg) ? 'pos' : 'neg');
   const t = thr ? `<div class="sl-thr s" style="left:${pos(thr.s)}"></div><div class="sl-thr w" style="left:${pos(thr.w)}"></div>` : '';
-  const dots = (ex||[]).filter(e=>e.k==='all'||SHOW[e.k]).map(e=>`<div class="sl-ex" style="left:${pos(e.v)};background:${e.c}" data-tip="${e.l} ${f1(e.v)}"></div>`).join('');
+  // 본인·응답 유형 점: 사후는 채운 점, 사전(비교 모드)은 같은 색의 빈 점
+  const dots = (ex||[]).filter(e=>SHOW[e.k]).map(e => `<div class="sl-ex" style="left:${pos(e.v)};background:${e.c}" data-tip="${e.l} ${f1(e.v)}"></div>`).join('');
   const avgMark = SHOW.avg ? `<div class="sl-avg" data-tip="전체평균 ${f1(avg)}" style="left:${pos(avg)}"><span>전체 ${f1(avg)}</span></div>` : '';
-  const lv = thr ? ` (${cls==='pos'?'강점':cls==='neg'?'약점':'보통'})` : '';
+  const lo = pre != null ? Math.min(pre, self) : 0, hi = pre != null ? Math.max(pre, self) : 0;
+  const preMark = pre != null ? `<div class="sl-arrow" style="left:${pos(lo)};width:calc(${pos(hi)} - ${pos(lo)})"></div><div class="sl-pre" data-tip="${label || '본인'} 사전 ${f1(pre)}" style="left:${pos(pre)}"></div>` : '';
+  const chgTip = pre != null ? ` (사전 ${f1(pre)} → ${chg1(self-pre)})` : '';
+  const ph = '';
   return `<div class="sl"><div class="sl-track">${t}
     <div class="sl-fill ${cls}" style="width:${pos(self)}${col?`;background:${col}`:''}"></div>
-    ${avgMark}${dots}
-    <div class="sl-dot ${cls}" data-tip="${label || '본인'} ${f1(self)}${lv}" style="left:${pos(self)}${col?`;border-color:${col}`:''}"></div></div></div>`;
+    ${avgMark}${preMark}${dots}
+    <div class="sl-dot ${cls}" data-tip="${label || '본인'} ${ph}${f1(self)}${chgTip}" style="left:${pos(self)}${col?`;border-color:${col}`:''}"></div></div></div>`;
 }
-const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : src[k], c: RT[k].color, l: RT[k].label }));
+// 사전 · 사후 막대 한 쌍 (사후: 강점/보통/약점 색 또는 전체평균 대비 색, 사전: 회색) + 전체평균 눈금 + 강점/약점 기준선
+function barPair(pre, post, avg, thr) {
+  const cls = thr ? (post >= thr.s ? 'pos' : post < thr.w ? 'neg' : 'mid') : (r1(post) >= r1(avg) ? 'pos' : 'neg');
+  const lv = thr ? ` (${cls==='pos'?'강점':cls==='neg'?'약점':'보통'})` : '';
+  const aux = `${thr ? `<div class="pb-thr s" style="left:${pos(thr.s)}"></div><div class="pb-thr w" style="left:${pos(thr.w)}"></div>` : ''}<div class="pb-avg" style="left:${pos(avg)}" data-tip="전체평균 ${f1(avg)}"></div>`;
+  const d = r2(post) - r2(pre);
+  return `<div class="pb">
+    <div class="pb-row pre"><span class="pb-lab">사전</span><div class="pb-track" data-tip="사전 ${f1(pre)}"><div class="pb-fill pre" style="width:${pos(pre)}"></div>${aux}</div><span class="pb-num">${f1(pre)}</span><span></span></div>
+    <div class="pb-row"><span class="pb-lab">사후</span><div class="pb-track" data-tip="사후 ${f1(post)}${lv} · 사전 ${f1(pre)} → ${chg1(post-pre)}"><div class="pb-fill ${cls}" style="width:${pos(post)}"></div>${aux}</div><span class="pb-num">${f1(post)}</span><span class="pb-chg ${gapCls(d)}">${chg1(post-pre)}</span></div>
+  </div>`;
+}
+const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : src[k], pre: isItem ? src.pre[RT[k].ix] : src.P[k], c: RT[k].color, l: RT[k].label }));
 
 function chipsHTML() {
-  // 점수 표시용(정적) — 차트 표시 여부와 무관하게 항상 전체 노출
-  const row = (label, color, val, k) => `<div class="rrow static hov" onmouseenter="hlSeries('${k}')" onmouseleave="hlSeries(null)"><i class="rsw" style="background:${color}"></i><span class="rl">${label}</span><b>${val.toFixed(2)}</b></div>`;
-  return row('종합 점수','#111827',totalScore(),'all') +
-         row('본인',SELF_C,TOTAL.self,'self') +
-         ACTIVE.map(k => row(RT[k].label, RT[k].color, TOTAL[k], k)).join('') +
-         row('전체평균','#9CA3AF',TOTAL.avg,'avg');
+  // 응답자별 점수: 2열 카드 — 항목명 / 사전 → 사후 + 변화 (전체평균은 사후 기준 단일 값)
+  const card = (label, color, k) => {
+    let val;
+    { const post = tVal(k,'post'), pre = tVal(k,'pre'), d = r2(post) - r2(pre);
+      val = `<span class="pv">${pre.toFixed(2)}</span><span class="pp-arr">→</span><b>${post.toFixed(2)}</b><em class="rchg ${gapCls(d)}">${chg2(d)}</em>`; }
+    return `<div class="rrow static hov pp-card" onmouseenter="hlSeries('${k}')" onmouseleave="hlSeries(null)"><div class="pp-cl"><i class="rsw" style="background:${color}"></i>${label}</div><div class="pp-cv">${val}</div></div>`; };
+  return card(TL(),'#111827','all') + (ACTIVE.length ? card('본인',SELF_C,'self') : '') +
+         ACTIVE.map(k => card(RT[k].label, RT[k].color, k)).join('') + card('전체평균','#9CA3AF','avg');
 }
 // 응답자별 점수 목록에 마우스를 올리면 해당 시리즈를 방사형 차트에서 강조
 function hlSeries(k) {
@@ -1018,10 +1139,18 @@ function hlSeries(k) {
 
 function renderOverview() {
   const ts = totalScore();
-  document.getElementById('totalNum').textContent = ts.toFixed(2);
+  const tsPre = totalScorePre(), dT = r2(ts) - r2(tsPre), tsV = VIEW === 'pre' ? tsPre : ts;   // tsV: 현재 시점 종합 점수
+  document.getElementById('totalNum').textContent = tsV.toFixed(2);
+  const ppHTML = `사전 ${tsPre.toFixed(2)} → 사후 <b>${ts.toFixed(2)}</b> <b class="${gapCls(dT)}">${chg2(dT)}</b>`;
+  const ppShow = ACTIVE.length ? '' : ppHTML;   // 다면: 사전→사후는 응답자별 점수·역량별 지수·상세 결과에서 표시 / 자가진단(본인만): 응답자별 점수가 없으므로 종합 점수 옆에 표시
+  document.getElementById('ppChg').innerHTML = ppShow;
+  document.getElementById('gPpChg').innerHTML = ppShow;
   const chips = chipsHTML();
   document.getElementById('respList').innerHTML = chips;
   document.getElementById('respListG').innerHTML = chips;
+  // 자가진단(본인만)은 응답자별 점수 영역 없음
+  ['respList','respListG'].forEach(id => { const el = document.getElementById(id), h = el.previousElementSibling;
+    el.style.display = ACTIVE.length ? '' : 'none'; if (h && h.classList.contains('resp-head')) h.style.display = ACTIVE.length ? '' : 'none'; });
   const d = Math.round((ts-TOTAL.avg)*100)/100;
   const cmp = d>0 ? `<b class="hi">${d.toFixed(2)}점 높습니다</b>` : d<0 ? `<b class="lo">${Math.abs(d).toFixed(2)}점 낮습니다</b>` : '<b>같습니다</b>';
   const sorted = [...GROUPS].sort((a,b)=>groupTotal(b)-groupTotal(a));
@@ -1030,41 +1159,55 @@ function renderOverview() {
   const topItem = items.reduce((a,b)=>b.self>a.self?b:a);
   const lowItem = items.reduce((a,b)=>b.self<a.self?b:a);
   const nW = items.filter(i=>i.self<i.w).length;
-  const lines = [`종합 점수(${ts.toFixed(2)}점)은 전체평균(${TOTAL.avg.toFixed(2)}점)보다 ${cmp}.`];
+
+  const lines = [`${TL()}(${ts.toFixed(2)}점)은 전체평균(${TOTAL.avg.toFixed(2)}점)보다 ${cmp}.`];
   // 타인 평가 평균과 본인 점수 비교
-  const oth = mean(ACTIVE.map(k=>TOTAL[k])), od = Math.round((oth-TOTAL.self)*100)/100;
-  const names = ACTIVE.map(k=>RT[k].label).join('·');
-  lines.push(Math.abs(od) < 0.1 ? `${names} 평가 평균(${oth.toFixed(2)}점)은 본인 점수와 비슷해요.`
-    : `${names} 평가 평균(${oth.toFixed(2)}점)은 본인보다 <b class="${od>0?'hi':'lo'}">${Math.abs(od).toFixed(2)}점 ${od>0?'높아요':'낮아요'}</b>.`);
+  if (ACTIVE.length) {   // 자가진단(본인만)에는 타인 평가 문장 없음
+    const oth = mean(ACTIVE.map(k=>TOTAL[k])), od = Math.round((oth-TOTAL.self)*100)/100;
+    const names = ACTIVE.map(k=>RT[k].label).join('·');
+    lines.push(Math.abs(od) < 0.1 ? `${names} 평가 평균(${oth.toFixed(2)}점)은 본인 점수와 비슷해요.`
+      : `${names} 평가 평균(${oth.toFixed(2)}점)은 본인보다 <b class="${od>0?'hi':'lo'}">${Math.abs(od).toFixed(2)}점 ${od>0?'높아요':'낮아요'}</b>.`);
+  }
   // 역량군 2개 이상이면 역량군 기준 문장, 1개뿐이면 세부역량 기준 문장 (둘 중 하나만 노출)
-  if (best !== worst) lines.push(`종합 점수 기준으로 가장 강점인 역량군은 <b class="hi">${best.name}(${f1(groupTotal(best))}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${worst.name}(${f1(groupTotal(worst))}점)</b>이에요.`);
-  else if (topItem !== lowItem) lines.push(`종합 점수 기준으로 세부역량 중 가장 높은 항목은 <b class="hi">${topItem.name}(${f1(topItem.self)}점)</b>, 가장 낮은 항목은 <b class="lo">${lowItem.name}(${f1(lowItem.self)}점)</b>이에요.`);
+  if (best !== worst) lines.push(`${TL()} 기준으로 가장 강점인 역량군은 <b class="hi">${best.name}(${f1(groupTotal(best))}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${worst.name}(${f1(groupTotal(worst))}점)</b>이에요.`);
+  else if (topItem !== lowItem) lines.push(`${TL()} 기준으로 세부역량 중 가장 높은 항목은 <b class="hi">${topItem.name}(${f1(topItem.self)}점)</b>, 가장 낮은 항목은 <b class="lo">${lowItem.name}(${f1(lowItem.self)}점)</b>이에요.`);
+  if (GROUPS.length >= 2) {   // 사전 대비 가장 많이 향상된 역량군 (향상된 역량군이 있을 때만)
+    const imp = GROUPS.reduce((a, g) => (groupTotal(g)-groupTotalPre(g)) > (groupTotal(a)-groupTotalPre(a)) ? g : a);
+    const di = groupTotal(imp) - groupTotalPre(imp);
+    if (r1(di) > 0) lines.push(`사전 대비 가장 많이 향상된 역량군은 <b class="hi">${imp.name}(${chg1(di)})</b>이에요.`);
+  }
   if (nW > 0) lines.push('보완이 필요한 역량에 도움이 되는 추천 과정을 아래에서 확인해 보세요.');
   const desc = lines.join('<br>');
   document.getElementById('headlineDesc').innerHTML = desc;
   document.getElementById('gDesc').innerHTML = desc;
-  document.getElementById('gTotalNum').textContent = ts.toFixed(2);
-  document.getElementById('gFill').style.width = (ts/5*100)+'%';
-  document.getElementById('gSelf').style.left = (ts/5*100)+'%';
+  document.getElementById('gTotalNum').textContent = tsV.toFixed(2);
+  document.getElementById('gFill').style.width = (tsV/5*100)+'%';
+  document.getElementById('gSelf').style.left = (tsV/5*100)+'%';
   document.getElementById('gAvg').style.left = (TOTAL.avg/5*100)+'%';
   document.getElementById('gAvg').style.display = SHOW.avg ? '' : 'none';
-  document.getElementById('gSelfVal').textContent = ts.toFixed(2);
+  document.getElementById('gSelfVal').textContent = tsV.toFixed(2);
+  document.getElementById('gSelfLbl').textContent = TL();
+  document.getElementById('ovLabel').textContent = TL();
+  document.getElementById('swNote').textContent = `(${TL()} 기준)`;
+  document.getElementById('dtLegend').textContent = `점수 아래 GAP = 해당 시점 ${TL()} − 해당 점수 · 변화 = 사후 − 사전`;
   document.getElementById('gAvgVal').textContent = TOTAL.avg.toFixed(2);
-  document.getElementById('gSelf').setAttribute('data-tip', `종합 점수 ${ts.toFixed(2)}`);
+  document.getElementById('gSelf').setAttribute('data-tip', `${TL()} ${tsV.toFixed(2)}`);
   document.getElementById('gAvg').setAttribute('data-tip', `전체평균 ${TOTAL.avg.toFixed(2)}`);
-  document.getElementById('gOthers').innerHTML = (SHOW.self ? `<span class="gauge-mini" data-k="self" style="left:${TOTAL.self/5*100}%;background:#246CF9" data-tip="본인 ${TOTAL.self.toFixed(2)}"></span>` : '') + ACTIVE.filter(k=>SHOW[k]).map(k =>
-    `<span class="gauge-mini" data-k="${k}" style="left:${TOTAL[k]/5*100}%;background:${RT[k].color}" data-tip="${RT[k].label} ${TOTAL[k].toFixed(2)}"></span>`).join('');
+  document.getElementById('gOthers').innerHTML = (VIEW === 'both' ? `<span class="gauge-mini" data-k="all" style="left:${tsPre/5*100}%;background:#fff;border-color:#111827" data-tip="${TL()} 사전 ${tsPre.toFixed(2)}"></span>` : '') +
+    (ACTIVE.length ? ['self'].concat(ACTIVE) : []).filter(k=>SHOW[k]).flatMap(k => phases().map(ph => {
+      const v = tVal(k,ph), c = k==='self' ? SELF_C : RT[k].color, gh = ph==='pre' && VIEW==='both';
+      return `<span class="gauge-mini" data-k="${k}" style="left:${v/5*100}%;background:${gh?'#fff':c};${gh?`border-color:${c}`:''}" data-tip="${k==='self'?'본인':RT[k].label} ${ph==='pre'?'사전':'사후'} ${v.toFixed(2)}"></span>`; })).join('');
 }
 
 function renderGroupCards() {
   document.getElementById('groupCards').innerHTML = GROUPS.map(g => {
-    const t = groupTotal(g);
+    const t = groupTotal(g), tv = t;
     const ex = [];   // 역량군별 점수 카드는 종합 점수 · 전체평균만 표시 (본인·응답 유형 점 제외)
     return `<div class="gc-card">
       <div class="gc-head"><div class="gc-name">${g.name}</div></div>
-      <div class="gc-score"><span class="lbl">종합 점수</span><span class="num">${f1(t)}</span></div>
-      ${slider(t, g.avg, null, ex, '종합 점수')}
-      <div class="gc-foot"><span>전체평균 ${f1(g.avg)}</span><span class="${gapCls(r1(t)-r1(g.avg))}">GAP ${gapStr(r1(t)-r1(g.avg))}</span></div>
+      <div class="gc-score"><span class="lbl">${TL()}</span><span class="num">${f1(tv)}</span></div>
+      ${slider(tv, g.avg, null, ex, TL())}
+      <div class="gc-foot"><span>전체평균 ${f1(g.avg)}</span><span class="${gapCls(r1(tv)-r1(g.avg))}">GAP ${gapStr(r1(tv)-r1(g.avg))}</span></div>
     </div>`;
   }).join('');
 }
@@ -1090,6 +1233,8 @@ function renderSW() {
 }
 
 function renderPerception() {
+  document.getElementById('percSec').style.display = ACTIVE.length ? '' : 'none';   // 자가진단(본인만)은 인식 차이 없음
+  if (!ACTIVE.length) return;
   const rows = GROUPS.flatMap(g => g.items.map(i => {
     const oth = itemOthers(i), d = Math.round((i[1]-oth)*100)/100;
     return { grp:g.name, name:i[0], self:i[1], oth, d };
@@ -1106,28 +1251,34 @@ function renderPerception() {
     col('다른 평가자가 더 높게 평가한 역량', '스스로는 낮게 보지만 다른 평가자는 높게 본 역량', lo, 'gap-n');
 }
 
+const exPh = (it, ph) => [{ k:'self', v: ph==='pre' ? it.pre[1] : it[1], c:SELF_C, l:'본인' }].concat(ACTIVE.map(k => ({ k, v: ph==='pre' ? it.pre[RT[k].ix] : it[RT[k].ix], c:RT[k].color, l:RT[k].label })));
 const IDX_K = 'all';   // 역량별 지수 그래프는 종합 점수(종합)만 표시
-const idxVal = (it, k) => k==='all' ? itemTotal(it) : k==='self' ? it[1] : it[RT[k].ix];
+const idxVal = (it, k, ph) => k==='all' ? (ph==='pre' ? itemTotalPre(it) : itemTotal(it))
+  : k==='self' ? (ph==='pre' ? it.pre[1] : it[1]) : (ph==='pre' ? it.pre[RT[k].ix] : it[RT[k].ix]);
 function renderIndex() {
-  const k = IDX_K, nameOf = k==='all' ? '종합 점수' : k==='self' ? '본인' : RT[k].label;
+  const k = IDX_K, nameOf = k==='all' ? TL() : k==='self' ? '본인' : RT[k].label;
   const colOf = k==='all' ? null : k==='self' ? SELF_C : RT[k].color;
-  document.getElementById('idxLegend').innerHTML = k === 'all'
-    ? `<span><i class="lg-dot"></i>종합 점수 (<span style="color:var(--blue)">파랑</span>=강점 / <span style="color:#111827">검정</span>=보통 / <span style="color:var(--red)">빨강</span>=약점)</span><span><i class="lg-tick"></i>전체평균</span><span><i class="lg-dash" style="border-color:rgba(36,108,249,.6);"></i>강점 기준</span><span><i class="lg-dash" style="border-color:rgba(220,38,38,.55);"></i>약점 기준</span><span class="section-sub">GAP = 종합 점수 − 전체평균</span>`
-    : `<span><i style="width:8px;height:8px;border-radius:50%;background:${colOf};"></i>${nameOf}</span><span><i class="lg-tick"></i>전체평균</span>`;
-  document.getElementById('idxHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:190px;">세부역량</th>
-    <th style="min-width:320px;">역량 보유 수준 <span style="font-weight:400;color:var(--text-400);">(1.0 – 5.0)</span></th><th style="width:92px;">종합 점수</th><th style="width:72px;">전체평균</th><th style="width:64px;">GAP</th></tr>`;
+  document.getElementById('idxLegend').innerHTML = (k === 'all'
+    ? `<span><i class="lg-dot"></i>${TL()} (<span style="color:var(--blue)">파랑</span>=강점 / <span style="color:#111827">검정</span>=보통 / <span style="color:var(--red)">빨강</span>=약점)</span><span><i class="lg-tick"></i>전체평균</span><span><i class="lg-dash" style="border-color:rgba(36,108,249,.6);"></i>강점 기준</span><span><i class="lg-dash" style="border-color:rgba(220,38,38,.55);"></i>약점 기준</span>`
+    : `<span><i style="width:8px;height:8px;border-radius:50%;background:${colOf};"></i>${nameOf}</span><span><i class="lg-tick"></i>전체평균</span>`) +
+    `<span class="section-sub">GAP = ${nameOf} − 전체평균 · 전후 GAP = 사후 − 사전</span>`;
+  document.getElementById('idxHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:170px;">세부역량</th><th style="width:60px;">구분</th>
+    <th style="min-width:320px;">역량 보유 수준 <span style="font-weight:400;color:var(--text-400);">(1.0 – 5.0)</span></th><th style="width:92px;">${TL()}</th><th style="width:72px;">전체평균</th><th style="width:64px;">GAP</th><th style="width:80px;">전후 GAP</th></tr>`;
+  // 세부역량마다 사전 · 사후 2행 — 선택한 시리즈의 슬라이더 + GAP(전체평균 대비), 우측에 전후 GAP(사후 − 사전)
   let html = '';
   GROUPS.forEach(g => {
     g.items.forEach((it, idx) => {
       const [name, , avg] = it;
+      const pre = idxVal(it, k, 'pre'), post = idxVal(it, k, 'post'), d = r2(post) - r2(pre);
       const last = idx === g.items.length-1 ? ' class="grp-last"' : '';
-      const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
-        <div class="grp-name">${g.name}</div></td>` : '';
-      html += `<tr${last}>${cell}
-        <td class="ta-l">${name}</td>
-        <td>${slider(idxVal(it, k), avg, g, [], '종합 점수')}</td>
-        <td class="idx-score">${f1(idxVal(it, k))}</td><td>${f1(avg)}</td>
-        <td class="${gapCls(r1(idxVal(it, k))-r1(avg))}">${gapStr(r1(idxVal(it, k))-r1(avg))}</td></tr>`;
+      const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length*2}"><div class="grp-name">${g.name}</div></td>` : '';
+      const avgPre = it.pre[2];
+      const gap = (v, a = avg, neutral) => `<td class="${neutral ? '' : gapCls(r1(v)-r1(a))}">${gapStr(r1(v)-r1(a))}</td>`;
+      html += `<tr>${cell}<td class="ta-l" rowspan="2">${name}</td><td class="pp-ph">사전</td>
+        <td>${slider(pre, avgPre, k === 'all' ? g : 'none', [], nameOf + ' 사전', null, colOf)}</td><td class="idx-score">${f1(pre)}</td><td>${f1(avgPre)}</td>${gap(pre, avgPre, true)}
+        <td class="pp-chgcell ${gapCls(d)}" rowspan="2">${gapStr(d)}</td></tr>
+        <tr${last}><td class="pp-ph">사후</td>
+        <td>${slider(post, avg, k === 'all' ? g : 'none', [], nameOf + ' 사후', null, colOf)}</td><td class="idx-score">${f1(post)}</td><td>${f1(avg)}</td>${gap(post)}</tr>`;
     });
   });
   document.getElementById('idxBody').innerHTML = html;
@@ -1135,29 +1286,37 @@ function renderIndex() {
 
 // 역량 상세 결과: 세부역량별 점수 숫자만 
 function renderDetail() {
-  document.getElementById('dtHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:190px;">세부역량</th>
-    <th style="width:92px;">종합 점수</th><th style="width:96px;">본인 (GAP)</th>
-    ${ACTIVE.map(k=>`<th style="width:96px;">${RT[k].label} (GAP)</th>`).join('')}<th style="width:110px;">전체평균 (GAP)</th></tr>`;
-  const sc = (v, gap) => `<div class="dt-v">${f1(v)}</div><div class="dt-gap ${gapCls(gap)}">${gapStr(gap)}</div>`;   // 점수 + 하위 GAP
+  document.getElementById('dtSec').style.display = ACTIVE.length ? '' : 'none';   // 자가진단(본인만)은 역량 상세 결과 없음
+  if (!ACTIVE.length) return;
+  const grp = ACTIVE.length ? ['self'].concat(ACTIVE) : [];   // 자가진단(본인만)은 본인 열 없음(종합 점수 = 본인)
+  const nm = k => k === 'self' ? '본인' : RT[k].label;
+  // 헤더 2단: 종합 점수 · 본인 · 구성원 · 상사 · 동료 · 전체평균 각각 [점수 | 변화]
+  document.getElementById('dtHead').innerHTML =
+    `<tr><th class="ta-l" rowspan="2" style="width:130px;">역량군</th><th class="ta-l" rowspan="2" style="width:170px;">세부역량</th><th rowspan="2" style="width:64px;">구분</th>` +
+    [TL()].concat(grp.map(nm)).concat(['전체평균']).map(n => `<th colspan="2" class="dt-gh">${n}</th>`).join('') + `</tr>` +
+    `<tr class="dt-h2"><th>점수</th><th>변화</th>${'<th>점수 (GAP)</th><th>변화</th>'.repeat(grp.length + 1)}</tr>`;
+  // 세부역량마다 사전 · 사후 2행 — 점수 칸 아래 GAP(해당 시점 종합 점수 − 해당 점수), 변화(사후 − 사전)는 두 행에 걸쳐 표시
+  const sc = (v, gap, neutral) => `<td class="dt-n dt-sc"><div class="dt-v">${f1(v)}</div>${gap == null ? '' : `<div class="dt-gap2 ${neutral ? 'dt-mute' : gapCls(gap)}">${gapStr(gap)}</div>`}</td>`;   // neutral: 사전 GAP은 색 없이 표시
+  const ch = d => `<td class="dt-n dt-chg2 ${gapCls(d)}" rowspan="2">${chg1(d)}</td>`;
   let html = '';
   GROUPS.forEach(g => {
     g.items.forEach((it, idx) => {
-      const [name, self, avg] = it;
-      const tot = itemTotal(it);
-      const tag = tot >= g.s ? 's' : tot < g.w ? 'w' : '';
-      const last = idx === g.items.length-1 ? ' class="grp-last"' : '';
-      const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
-        <div class="grp-name">${g.name}</div></td>` : '';
-      html += `<tr${last}>${cell}
-        <td class="ta-l">${name}</td>
-        <td class="idx-score dt-cell"><div class="dt-v">${f1(tot)}</div></td>
-        <td class="dt-cell">${sc(self, r1(tot)-r1(self))}</td>
-        ${ACTIVE.map(k=>`<td class="dt-cell">${sc(it[RT[k].ix], r1(tot)-r1(it[RT[k].ix]))}</td>`).join('')}
-        <td class="dt-cell">${sc(avg, r1(tot)-r1(avg))}</td></tr>`;
+      const tot = { pre: itemTotalPre(it), post: itemTotal(it) };
+      const av  = { pre: it.pre[2], post: it[2] };
+      const sv  = ph => grp.map(k => idxValSeries(it, k, ph));
+      const endG = idx === g.items.length-1;
+      const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length*2}"><div class="grp-name">${g.name}</div></td>` : '';
+      const cells = ph => sc(tot[ph], null) + '{{CH0}}' + sv(ph).map(v => sc(v, r1(tot[ph]) - r1(v), ph==='pre') + '{{CH}}').join('') + sc(av[ph], r1(tot[ph]) - r1(av[ph]), ph==='pre') + '{{CHA}}';
+      const preCells = cells('pre').replace('{{CH0}}', ch(tot.post - tot.pre));
+      let n = 0, preRow = preCells.replace(/\{\{CH\}\}/g, () => ch(sv('post')[n] - sv('pre')[n++])).replace('{{CHA}}', ch(av.post - av.pre));
+      const postRow = cells('post').replace(/\{\{CH0?A?\}\}/g, '');
+      html += `<tr>${cell}<td class="ta-l dt-name" rowspan="2">${it[0]}</td><td class="pp-ph">사전</td>${preRow}</tr>
+        <tr class="${endG ? 'grp-last' : 'dt-item-last'}"><td class="pp-ph">사후</td>${postRow}</tr>`;
     });
   });
   document.getElementById('dtBody').innerHTML = html;
 }
+const idxValSeries = (it, k, ph) => k==='self' ? (ph==='pre' ? it.pre[1] : it[1]) : (ph==='pre' ? it.pre[RT[k].ix] : it[RT[k].ix]);
 
 /* ── 서술형 응답 (응답자 구분별, 3명 미만 비공개 / 상사 예외) ── */
 const ESSAYS = [
@@ -1219,31 +1378,36 @@ function renderRadar() {
   for(let v=2;v<=5;v++) svg+=`<text class="rd-tick" x="${cx+4}" y="${cy-(v-1)/4*R-2}">${v}</text>`;
   GROUPS.forEach((g,i)=>{const [x,y]=pt(i,5);svg+=`<line class="rd-axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;});
   if (SHOW.avg) svg+=`<polygon class="rd-avg" data-s="avg" points="${poly(GROUPS.map(g=>g.avg))}"/>`;
-  ACTIVE.filter(k=>SHOW[k]).forEach(k => {
-    svg+=`<g data-s="${k}"><polygon class="rd-ser" style="stroke:${RT[k].color}" points="${poly(GROUPS.map(g=>g[k]))}"/>`;
-    GROUPS.forEach((g,i)=>{const [px,py]=pt(i,g[k]); svg+=`<circle cx="${px}" cy="${py}" r="3.5" fill="${RT[k].color}" stroke="#fff" stroke-width="1.5"/>`;});
+  // 시리즈별(종합 점수·본인·유형) 사후=실선 / 사전(비교 모드)=같은 색 점선
+  const colOf = k => k==='all' ? '#111827' : k==='self' ? SELF_C : RT[k].color;
+  (ACTIVE.length ? ACTIVE.concat(['self']) : []).filter(k=>SHOW[k]).concat(['all']).forEach(k => {
+    const col = colOf(k);
+    svg+=`<g data-s="${k}">`;
+    phases().forEach(ph => {
+      const vals = GROUPS.map(g=>gVal(g,k,ph)), isPre = ph==='pre' && VIEW==='both';
+      if (k==='all' && !isPre) svg+=`<polygon class="rd-total" points="${poly(vals)}"/>`;
+      else svg+=`<polygon class="rd-ser" style="stroke:${col};${isPre?'stroke-dasharray:6 4;opacity:.75;':''}${k==='all'?'stroke-width:2.5;':''}" points="${poly(vals)}"/>`;
+      vals.forEach((v,i)=>{ const [px,py]=pt(i,v);
+        svg+= isPre ? `<circle cx="${px}" cy="${py}" r="${k==='all'?4:3}" fill="#fff" stroke="${col}" stroke-width="2"/>`
+            : k==='all' ? `<circle class="rd-tdot" cx="${px}" cy="${py}" r="5"/>`
+            : `<circle cx="${px}" cy="${py}" r="3.5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`; });
+    });
     svg+='</g>';
   });
-  if (SHOW.self) {   // 본인: 파란 선
-    svg+=`<g data-s="self"><polygon class="rd-ser" style="stroke:${SELF_C}" points="${poly(GROUPS.map(g=>g.self))}"/>`;
-    GROUPS.forEach((g,i)=>{ const [px,py]=pt(i,g.self); svg+=`<circle cx="${px}" cy="${py}" r="3.5" fill="${SELF_C}" stroke="#fff" stroke-width="1.5"/>`; });
-    svg+='</g>';
-  }
-  // 종합 점수: 굵은 검은 선 + 옅은 면 (역량군별 종합 점수 = 본인 + 응답자 유형 점수의 평균)
-  svg+=`<g data-s="all"><polygon class="rd-total" points="${poly(GROUPS.map(g=>groupTotal(g)))}"/>`;
-  GROUPS.forEach((g,i)=>{ const [px,py]=pt(i,groupTotal(g)); svg+=`<circle class="rd-tdot" cx="${px}" cy="${py}" r="5"/>`; });
-  svg+='</g>';
   GROUPS.forEach((g,i)=>{
     const a=-Math.PI/2+i*2*Math.PI/n;
     const lx=cx+(R+26)*Math.cos(a), ly=cy+(R+26)*Math.sin(a);
     const anchor=Math.abs(Math.cos(a))<0.2?'middle':Math.cos(a)>0?'start':'end';
+    const dd = groupTotal(g)-groupTotalPre(g);
     svg+=`<text class="rd-lab" x="${lx}" y="${ly}" text-anchor="${anchor}">${g.name}</text>`;
-    svg+=`<text class="rd-val" x="${lx}" y="${ly+14}" text-anchor="${anchor}">${f1(groupTotal(g))}</text>`;
+    svg+=`<text class="rd-val" x="${lx}" y="${ly+14}" text-anchor="${anchor}">${f1(gVal(g,'all',VIEW==='pre'?'pre':'post'))}${VIEW==='both'?`<tspan class="rd-chg ${gapCls(dd)}" dx="4">${chg1(dd)}</tspan>`:''}</text>`;
   });
   GROUPS.forEach((g,i)=>{
-    const tip = `${g.name}\n종합 점수 ${f1(groupTotal(g))}\n본인 ${f1(g.self)}` + ACTIVE.map(k=>`\n${RT[k].label} ${f1(g[k])}`).join('') + `\n전체평균 ${f1(g.avg)}`;
-    const vals = [groupTotal(g), g.avg].concat(SHOW.self ? [g.self] : []).concat(ACTIVE.filter(k=>SHOW[k]).map(k=>g[k]));
-    vals.forEach(v => { const [hx,hy]=pt(i,v); svg+=`<circle cx="${hx}" cy="${hy}" r="12" fill="rgba(0,0,0,0)" data-tip="${tip}"/>`; });
+    const fv = k => VIEW==='both' ? `${f1(gVal(g,k,'pre'))} → ${f1(gVal(g,k,'post'))} (${chg1(gVal(g,k,'post')-gVal(g,k,'pre'))})` : f1(gVal(g,k,VIEW));
+    const tip = [g.name, `${TL()} ${fv('all')}`].concat(ACTIVE.length ? [`본인 ${fv('self')}`] : []).concat(ACTIVE.map(k=>`${RT[k].label} ${fv(k)}`)).concat([`전체평균 ${f1(g.avg)}`]).join('\n');
+    const pts = []; ['all'].concat((ACTIVE.length ? ACTIVE.concat(['self']) : []).filter(k=>SHOW[k])).forEach(k => phases().forEach(ph => pts.push(gVal(g,k,ph))));
+    if (SHOW.avg) pts.push(g.avg);
+    pts.forEach(v => { const [hx,hy]=pt(i,v); svg+=`<circle cx="${hx}" cy="${hy}" r="12" fill="rgba(0,0,0,0)" data-tip="${tip}"/>`; });
   });
   box.innerHTML=svg+'</svg>';
 }
