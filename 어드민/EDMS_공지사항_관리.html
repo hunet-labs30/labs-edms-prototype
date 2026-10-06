@@ -466,6 +466,27 @@
         </div>
       </div>
       <div class="form-row">
+        <div class="form-label">띠배너 사용 여부</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-banner" value="notUse" checked onchange="toggleBanner('reg')"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="reg-banner" value="use" onchange="toggleBanner('reg')"> 사용</label>
+          </div>
+          <div class="cond-area" id="reg-banner-area" style="display:none;">
+            <div>
+              <input class="input" id="reg-banner-text" type="text" placeholder="띠배너 노출 문구를 입력하세요 (최대 80자)" style="width:420px;" maxlength="80" value="">
+              <span class="field-error" id="err-reg-banner-text">띠배너 노출 문구를 입력해주세요.</span>
+            </div>
+            <div class="date-range">
+              <input class="input input-dt" id="reg-banner-from" type="datetime-local" value="" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="reg-banner-to" type="datetime-local" value="" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-reg-banner-period">띠배너를 사용하는 경우 시작일과 종료일을 입력해주세요.</span>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
         <div class="form-label">공개여부</div>
         <div class="form-body">
           <div class="radio-group">
@@ -530,7 +551,8 @@
       <div id="det-attr-wrap" style="padding:14px 16px 4px;">
         <table class="detail-attr">
           <tr><th>조회수</th><td id="det-views">248</td><th>게시기간</th><td id="det-period">2026.10.01 00:00 ~ 2026.10.31 23:59</td></tr>
-          <tr><th>고정글</th><td id="det-pin">고정글</td><th>공개여부</th><td id="det-visible">공개</td></tr>
+          <tr><th>고정글</th><td id="det-pin">고정글</td><th>띠배너 사용 여부</th><td id="det-banner">사용</td></tr>
+          <tr><th>공개여부</th><td colspan="3" id="det-visible">공개</td></tr>
         </table>
       </div>
       <div class="detail-body-label">본문</div>
@@ -609,6 +631,27 @@
           <div class="radio-group">
             <label class="radio-label"><input type="radio" name="edit-pin" value="notUse"> 미사용</label>
             <label class="radio-label"><input type="radio" name="edit-pin" value="use" checked> 사용</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">띠배너 사용 여부</div>
+        <div class="form-body" style="flex-direction:column;align-items:flex-start;gap:6px;">
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="edit-banner" value="notUse" onchange="toggleBanner('edit')"> 미사용</label>
+            <label class="radio-label"><input type="radio" name="edit-banner" value="use" checked onchange="toggleBanner('edit')"> 사용</label>
+          </div>
+          <div class="cond-area" id="edit-banner-area" style="display:flex;">
+            <div>
+              <input class="input" id="edit-banner-text" type="text" placeholder="띠배너 노출 문구를 입력하세요 (최대 80자)" style="width:420px;" maxlength="80" value="[업데이트] New EDMS 10월 정기 업데이트가 진행됩니다.">
+              <span class="field-error" id="err-edit-banner-text">띠배너 노출 문구를 입력해주세요.</span>
+            </div>
+            <div class="date-range">
+              <input class="input input-dt" id="edit-banner-from" type="datetime-local" value="2026-10-01T00:00" onkeydown="return false;">
+              <span class="date-sep">~</span>
+              <input class="input input-dt" id="edit-banner-to" type="datetime-local" value="2026-10-07T23:59" onkeydown="return false;">
+            </div>
+            <span class="field-error" id="err-edit-banner-period">띠배너를 사용하는 경우 시작일과 종료일을 입력해주세요.</span>
           </div>
         </div>
       </div>
@@ -816,6 +859,10 @@ function toggleDetailAttr() {
   else { wrap.style.display = 'none'; btn.textContent = '▼'; }
 }
 
+function toggleBanner(p) {
+  const v = document.querySelector('input[name="' + p + '-banner"]:checked').value;
+  document.getElementById(p + '-banner-area').style.display = v === 'use' ? 'flex' : 'none';
+}
 function togglePeriod() {
   const v = document.querySelector('input[name="reg-period"]:checked').value;
   document.getElementById('period-range').style.display = v === 'range' ? 'flex' : 'none';
@@ -859,6 +906,30 @@ function doSave(mode) {
       if (periodErr) { periodErr.textContent = '종료일은 시작일보다 같거나 빠를 수 없습니다.'; periodErr.style.display = 'block'; }
       fromEl.classList.add('input-error');
       toEl.classList.add('input-error');
+      valid = false;
+    }
+  }
+
+  // 띠배너 validation
+  const bn  = prefix + '-banner';
+  const bTx = document.getElementById(bn + '-text');
+  const bFr = document.getElementById(bn + '-from');
+  const bTo = document.getElementById(bn + '-to');
+  const bTxErr = document.getElementById('err-' + bn + '-text');
+  const bPeErr = document.getElementById('err-' + bn + '-period');
+  [bTxErr, bPeErr].forEach(e => { if (e) e.style.display = 'none'; });
+  [bTx, bFr, bTo].forEach(e => { if (e) e.classList.remove('input-error'); });
+  if (document.querySelector('input[name="' + bn + '"]:checked').value === 'use') {
+    if (!bTx.value.trim()) { bTxErr.style.display = 'block'; bTx.classList.add('input-error'); valid = false; }
+    const bFrMissing = !bFr.value, bToMissing = !bTo.value;
+    if (bFrMissing || bToMissing) {
+      bPeErr.textContent = '띠배너를 사용하는 경우 시작일과 종료일을 입력해주세요.'; bPeErr.style.display = 'block';
+      if (bFrMissing) bFr.classList.add('input-error');
+      if (bToMissing) bTo.classList.add('input-error');
+      valid = false;
+    } else if (new Date(bTo.value) <= new Date(bFr.value)) {
+      bPeErr.textContent = '종료일은 시작일보다 같거나 빠를 수 없습니다.'; bPeErr.style.display = 'block';
+      bFr.classList.add('input-error'); bTo.classList.add('input-error');
       valid = false;
     }
   }
