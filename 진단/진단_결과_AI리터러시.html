@@ -66,6 +66,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .gap-badge{display:inline-flex;padding:2px 9px;border-radius:900px;font-size:12px;font-weight:700;}
 .gap-badge.pos{color:var(--blue);background:var(--blue-tint);}
 .gap-badge.neg{color:var(--red);background:var(--red-tint);}
+.hero-name{white-space:nowrap;}
+.cut-bar{position:relative;display:flex;width:240px;max-width:60%;flex-shrink:1;height:3px;margin:16px 0 22px;}
+.cut-seg{position:relative;}
+.cut-seg span{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;font-weight:500;color:#111;}
+.cut-seg.lo{background:#EF4444;}
+.cut-seg.mid{background:#FFC000;}
+.cut-seg.hi{background:var(--blue);}
+.cut-tick{position:absolute;top:6px;transform:translateX(-50%);font-size:10.5px;color:var(--muted);}
+.cut-tick:first-of-type{transform:none;}
 .hero-comment{background:var(--blue-tint);border-left:4px solid var(--blue);border-radius:8px;padding:16px 18px;margin-top:22px;font-size:13.5px;color:var(--text-2);line-height:1.85;}
 .hero-comment b{color:var(--text);font-weight:700;}
 
@@ -183,7 +192,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
   <div class="card">
     <div class="hero-top">
       <div class="hero-name">종합결과</div>
-      <div class="hero-scale">척도 0 ~ 100</div>
+      <div class="cut-bar">
+        <div class="cut-seg lo" style="width:60%;"><span>기초</span></div>
+        <div class="cut-seg mid" style="width:20%;"><span>보통</span></div>
+        <div class="cut-seg hi" style="width:20%;"><span>높음</span></div>
+        <span class="cut-tick" style="left:0;">0</span>
+        <span class="cut-tick" style="left:60%;">60</span>
+        <span class="cut-tick" style="left:80%;">80</span>
+        <span class="cut-tick" style="left:100%;">100</span>
+      </div>
     </div>
     <div class="hero-num-row">
       <span class="prefix">본인</span><span class="num">80</span><span class="denom">/ 100</span>
@@ -197,7 +214,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
       <span class="slider-self-label" style="left:80%;">본인 80</span>
     </div>
     <div class="hero-comment">
-      <b>홍길동</b> 님은 AI Literacy 진단 결과, 조직 평균 대비 <b>우수한 Literacy역량</b>을 갖춘 것으로 나타났습니다.<br>
+      <b>홍길동</b>님의 AI Literacy 총점은 <b>80점</b>으로 <b>높은</b> 수준이며, 조직 평균 <b>77점</b>보다 <b>3점 높습니다</b>.<br>
       아래 세부 역량별 점수를 통해 자신의 강약점 역량을 확인하세요.<br>
       Hunet이 준비한 이러닝 콘텐츠로 학습하면 AI Literacy 점수가 더욱 상승할 것입니다.
     </div>
@@ -372,14 +389,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
   <div class="section-title" id="rec" style="margin-top:32px;">이러닝 추천</div>
 
   <div class="card">
-    <div class="hero-name" style="margin-bottom:14px;">추천 TOP 2 과정</div>
+    <div class="hero-name" style="margin-bottom:14px;">우선 학습 추천 영역</div>
     <div class="top2-grid">
       <div class="top2-card">
         <div class="top2-title-row">
           <span class="top2-badge r1">1순위</span>
           <span class="top2-factor">AI 툴 활용</span>
         </div>
-        <div class="top2-reason">9가지 요인 중 <b>AI 툴 활용</b>이(가) <b>5.6점</b>으로 가장 낮은 역량으로 나타나 최우선으로 추천합니다.</div>
+        <div class="top2-reason">9가지 요인 중 <b>AI 툴 활용</b>이 <b>5.6점</b>으로 가장 낮게 나타나, 우선 학습 영역으로 추천하였습니다.<br>아래에 해당 영역과 연계된 이러닝 과정 3개를 선정하였습니다.</div>
         <div class="top2-course-wrap">
           <button class="top2-arrow left" onclick="top2Nav('r1',-1)" aria-label="이전 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
           <div class="top2-course" id="top2Course-r1"></div>
@@ -392,7 +409,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
           <span class="top2-badge r2">2순위</span>
           <span class="top2-factor">직무별 AI 활용</span>
         </div>
-        <div class="top2-reason"><b>직무별 AI 활용</b>은(는) 조직 평균(<b>7.4점</b>) 대비 회원님의 점수(<b>6.9점</b>)가 상대적으로 낮아, 격차 해소를 위해 학습을 추천합니다.</div>
+        <div class="top2-reason"><b>직무별 AI 활용</b>은 조직 평균 대비 회원님의 점수가 상대적으로 낮아 격차 해소를 위해 해당 영역을 추천드립니다.<br>아래에 추천 영역과 연계된 이러닝 과정 3개를 선정하였습니다.</div>
         <div class="top2-course-wrap">
           <button class="top2-arrow left" onclick="top2Nav('r2',-1)" aria-label="이전 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
           <div class="top2-course" id="top2Course-r2"></div>
