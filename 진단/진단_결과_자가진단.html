@@ -454,6 +454,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 @container (max-width:980px){.top-track{--per:2.5;}}
 @container (max-width:680px){.top-track{--per:1.5;}}
 
+
+/* ── 그래프 마우스오버 툴팁 ── */
+.tip{position:fixed;z-index:1000;background:rgba(17,24,39,.92);color:#fff;font-size:12px;line-height:1.55;padding:6px 10px;border-radius:6px;pointer-events:none;white-space:pre-line;opacity:0;transition:opacity .08s;max-width:240px;}
+.sl-avg::after{content:'';position:absolute;left:-6px;right:-6px;top:-4px;bottom:-4px;}
+.sl-dot,.sl-avg,.sl-ex,.gauge-marker,.gauge-mini{cursor:default;}
+
 /* ── Spec note ── */
 .spec-section{margin-top:32px;}
 .spec-title{font-size:14px;font-weight:700;color:#b45309;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
@@ -764,9 +770,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>3. 강점 / 약점 판정 기준</h4>
           <ul>
             <li>역량군별로 진단 생성 시 관리자가 설정한 <b>강점 도달 점수</b> / <b>약점 점수</b>(1~5점) 기준 적용</li>
-            <li>[역량군별 점수 카드·역량별 지수] 강점: 역량군 <b>평균</b> ≥ 강점 도달 점수 / 약점: 역량군 <b>평균</b> ≤ 약점 점수 / 그 외: 판정 없음</li>
-            <li>[강점·약점 역량 카드] 판정 기준값은 역량군 단위로 같지만, 비교 대상은 <b>세부역량 개별 점수</b> — 같은 역량군 안에서도 어떤 세부역량은 기준 이상(강점), 어떤 세부역량은 기준 이하(약점)일 수 있음</li>
-            <li>따라서 <b>하나의 역량군이 강점 카드와 약점 카드에 동시에 나타날 수 있음</b> (예: 역량군 평균은 강점 기준을 넘었어도, 그 안의 특정 세부역량 점수는 약점 기준 이하인 경우)</li>
+            <li>[역량군별 점수 카드·역량별 지수] 강점: 역량군 <b>평균</b> ≥ 강점 도달 점수 / 약점: 역량군 <b>평균</b> &lt; 약점 점수 / 그 외: 판정 없음</li>
+            <li>[강점·약점 역량 카드] 판정 기준값은 역량군 단위로 같지만, 비교 대상은 <b>세부역량 개별 점수</b> — 같은 역량군 안에서도 어떤 세부역량은 기준 이상(강점), 어떤 세부역량은 기준 미만(약점)일 수 있음</li>
+            <li>따라서 <b>하나의 역량군이 강점 카드와 약점 카드에 동시에 나타날 수 있음</b> (예: 역량군 평균은 강점 기준을 넘었어도, 그 안의 특정 세부역량 점수는 약점 기준 미만인 경우)</li>
           </ul>
 
           <h4>4. GAP 정의</h4>
@@ -778,7 +784,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>5. 점수 산출 · 표기</h4>
           <ul>
             <li>역량군 점수 = 소속 세부역량 점수의 <b>평균</b>, 종합 점수 = <b>역량군 점수의 평균</b> (전체평균도 동일 산식)</li>
-            <li>[역량별 지수] 슬라이더: 본인 점수가 강점 기준 이상이면 <b>파랑</b>, 약점 기준 이하이면 <b>빨강</b>, 그 사이(보통 구간)는 <b>검정</b> / 전체평균은 눈금으로 표시 / 강점·약점 기준은 점선</li>
+            <li>[역량별 지수] 슬라이더: 본인 점수가 강점 기준 이상이면 <b>파랑</b>, 약점 기준 미만이면 <b>빨강</b>, 그 사이(보통 구간)는 <b>검정</b> / 전체평균은 눈금으로 표시 / 강점·약점 기준은 점선</li>
             <li>서술형 문항에 연결된 역량이 있으면 문항 상단에 <b>역량군 &gt; 세부역량</b> 경로를 표기하고, 질문은 아코디언으로 펼침/접힘</li>
           </ul>
 
@@ -789,7 +795,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li>역량군이 <b>9개 이상</b>일 때만 종합 평가 아래에 <b>역량군별 점수 카드</b>(본인 점수·전체평균 슬라이더·GAP·강점/약점 배지)를 추가 노출 — 1~2개는 추가 노출 없음</li>
             <li>카드는 <b>한 화면에 4개</b>씩 노출(화면 폭에 따라 3개/2개), 좌우 버튼으로 4개 단위 이동, 현재 위치(예: 1–4 / 9) 표시</li>
             <li>역량군별 슬라이더 단독 노출은 사용하지 않음 (카드 안에서만 표시)</li>
-            <li>다면진단·사전사후는 같은 차트에 시리즈(응답자 구분 / 사전·사후)를 겹쳐 표시 — 4개 시리즈 이하 권장</li>
           </ul>
 
           <h4>7. 종합 평가 코멘트 노출 규칙</h4>
@@ -804,16 +809,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
           <h4>8. 추천 과정 TOP 5</h4>
           <ul>
-            <li>보완이 필요한 세부역량(약점 기준 이하)을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 최대 5개 선정, 세부역량마다 대표 과정 1개 노출 — 약점 세부역량이 5개 미만이면 해당 개수만, 없으면 섹션 미노출</li>
+            <li>보완이 필요한 세부역량(약점 기준 미만)을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 최대 5개 선정, 세부역량마다 대표 과정 1개 노출 — 약점 세부역량이 5개 미만이면 해당 개수만, 없으면 섹션 미노출</li>
             <li>한 화면에 <b>3개</b>씩 노출, 카드 3개가 들어가지 않는 폭에서는 <b>2.5개</b>(다음 카드가 반쯤 보이게)로 노출해 옆에 더 있음을 알림 / 좌우 이동 버튼은 카드 영역 양 끝에 배치(처음·끝에서는 해당 방향 버튼 숨김), 우측 상단에는 [전체보기]만 노출 / 카드마다 순위(썸네일 좌상단)·역량군 › 세부역량·과정명·소개·유형/대상/학습시간/가격 표시 (AI리터러시 과정 카드와 동일 구성)</li>
             <li>[전체보기] 클릭 시 우측 추천 과정 패널(강점 강화 / 약점 보완 탭) 노출</li>
-          </ul>
-
-          <h4>9. 미정 / 협의 필요 항목</h4>
-          <ul>
-            <li>서술형 응답 문항이 <b>2개 초과</b>일 때 섹션 내 스크롤/페이지네이션 처리 방식</li>
-            <li>세부 역량 점수 소수점 자리수 (현재 1자리 표기)</li>
-            <li>PDF 저장 시 서술형 응답 포함 여부 및 레이아웃</li>
           </ul>
 
         </div>
@@ -843,6 +841,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   <div class="cd-body" id="courseBody"></div>
 </div>
 
+<div class="tip" id="tip"></div>
 <script>
 
 /* ── 점수 데이터 (단일 출처) — 모든 수치는 여기서 계산 ── */
@@ -866,7 +865,7 @@ const gapCls = d => r1(d)>0?'gap-p':r1(d)<0?'gap-n':'';
 ALL_GROUPS.forEach(g => {
   g.self = mean(g.items.map(i=>i[1]));
   g.avg  = mean(g.items.map(i=>i[2]));
-  g.tag  = g.self >= g.s ? 's' : g.self <= g.w ? 'w' : '';
+  g.tag  = g.self >= g.s ? 's' : g.self < g.w ? 'w' : '';
 });
 const GROUPS = [];               // 화면에 표시 중인 역량군 (드롭다운으로 개수 조절)
 let TOTAL_SELF = 0, TOTAL_AVG = 0;
@@ -881,13 +880,14 @@ const pos = v => ((v-1)/4*100).toFixed(1) + '%';
 const TAG_BADGE = { s:'<span class="mini-badge s">강점</span>', w:'<span class="mini-badge w">약점</span>', '':'' };
 
 function slider(self, avg, thr) {
-  const cls = thr ? (self >= thr.s ? 'pos' : self <= thr.w ? 'neg' : 'mid')   // 역량별 지수: 강점/약점/보통
+  const cls = thr ? (self >= thr.s ? 'pos' : self < thr.w ? 'neg' : 'mid')   // 역량별 지수: 강점/약점/보통
                   : (r1(self) >= r1(avg) ? 'pos' : 'neg');                  // 카드: 전체평균 대비
   const t = thr ? `<div class="sl-thr s" style="left:${pos(thr.s)}"></div><div class="sl-thr w" style="left:${pos(thr.w)}"></div>` : '';
+  const lv = thr ? ` (${cls==='pos'?'강점':cls==='neg'?'약점':'보통'})` : '';
   return `<div class="sl"><div class="sl-track">${t}
     <div class="sl-fill ${cls}" style="width:${pos(self)}"></div>
-    <div class="sl-avg" style="left:${pos(avg)}"><span>전체 ${f1(avg)}</span></div>
-    <div class="sl-dot ${cls}" style="left:${pos(self)}"></div></div></div>`;
+    <div class="sl-avg" data-tip="전체평균 ${f1(avg)}" style="left:${pos(avg)}"><span>전체 ${f1(avg)}</span></div>
+    <div class="sl-dot ${cls}" data-tip="본인 ${f1(self)}${lv}" style="left:${pos(self)}"></div></div></div>`;
 }
 
 function renderOverview() {
@@ -899,7 +899,7 @@ function renderOverview() {
   const items = GROUPS.flatMap(g => g.items.map(i => ({ name:i[0], self:i[1], s:g.s, w:g.w })));
   const topItem = items.reduce((a,b)=>b.self>a.self?b:a);
   const lowItem = items.reduce((a,b)=>b.self<a.self?b:a);
-  const nS = items.filter(i=>i.self>=i.s).length, nW = items.filter(i=>i.self<=i.w).length;
+  const nS = items.filter(i=>i.self>=i.s).length, nW = items.filter(i=>i.self<i.w).length;
   const lines = [`전체평균(${TOTAL_AVG.toFixed(2)}점)보다 ${cmp}.`];
   // 역량군이 2개 이상이면 역량군 기준 문장, 1개뿐이면 세부역량 기준 문장 (둘 중 하나만 노출)
   if (best !== worst) lines.push(`가장 강점인 역량군은 <b class="hi">${best.name}(${f1(best.self)}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${worst.name}(${f1(worst.self)}점)</b>이에요.`);
@@ -914,6 +914,8 @@ function renderOverview() {
   document.getElementById('gAvg').style.left = (TOTAL_AVG/5*100)+'%';
   document.getElementById('gSelfVal').textContent = TOTAL_SELF.toFixed(2);
   document.getElementById('gAvgVal').textContent = TOTAL_AVG.toFixed(2);
+  document.getElementById('gSelf').setAttribute('data-tip', `본인 ${TOTAL_SELF.toFixed(2)}`);
+  document.getElementById('gAvg').setAttribute('data-tip', `전체평균 ${TOTAL_AVG.toFixed(2)}`);
 }
 
 function renderGroupCards() {
@@ -932,9 +934,9 @@ function renderSW() {
   const build = (kind) => {
     const other = kind==='s' ? 'w' : 's';
     const blocks = GROUPS.map(g => {
-      const its = g.items.filter(i => kind==='s' ? i[1] >= g.s : i[1] <= g.w);
+      const its = g.items.filter(i => kind==='s' ? i[1] >= g.s : i[1] < g.w);
       if (!its.length) return '';
-      const thr = kind==='s' ? `기준 ${g.s.toFixed(1)}↑` : `기준 ${g.w.toFixed(1)}↓`;
+      const thr = kind==='s' ? `기준 ${g.s.toFixed(1)} 이상` : `기준 ${g.w.toFixed(1)} 미만`;
       return `<div class="sw-group-block">
         <div class="sw-group-head"><span>${g.name}</span><span class="sw-threshold ${kind}">${thr}</span></div>
         <div class="sw-item-list">${its.sort((a,b)=>kind==='s'?b[1]-a[1]:a[1]-b[1]).map(i=>`<div class="sw-item-row"><span>${i[0]}</span><span class="sw-item-score">${f1(i[1])}</span></div>`).join('')}</div>
@@ -953,7 +955,7 @@ function renderIndex() {
   GROUPS.forEach(g => {
     g.items.forEach((it, idx) => {
       const [name, self, avg] = it;
-      const tag = self >= g.s ? 's' : self <= g.w ? 'w' : '';
+      const tag = self >= g.s ? 's' : self < g.w ? 'w' : '';
       const last = idx === g.items.length-1 ? ' class="grp-last"' : '';
       const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
         <div class="grp-name">${g.name}</div></td>` : '';
@@ -1012,6 +1014,10 @@ function renderRadar() {
     svg+=`<text class="rd-lab ${g.tag}" x="${lx}" y="${ly}" text-anchor="${anchor}">${g.name}</text>`;
     svg+=`<text class="rd-val" x="${lx}" y="${ly+14}" text-anchor="${anchor}">${f1(g.self)}</text>`;
   });
+  GROUPS.forEach((g,i)=>{
+    const tip = `${g.name}\n본인 ${f1(g.self)}\n전체평균 ${f1(g.avg)}`;
+    [g.self, g.avg].forEach(v => { const [hx,hy]=pt(i,v); svg+=`<circle cx="${hx}" cy="${hy}" r="13" fill="rgba(0,0,0,0)" data-tip="${tip}"/>`; });
+  });
   box.innerHTML=svg+'</svg>';
 }
 
@@ -1034,7 +1040,7 @@ const IC = {
 let TOP_LIST = [], topIdx = 0;
 function buildTopList() {
   const weak = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:i[1], avg:i[2], w:g.w })))
-    .filter(i => i.self <= i.w)
+    .filter(i => i.self < i.w)
     .sort((a,b) => (Math.round((a.self-a.avg)*10) - Math.round((b.self-b.avg)*10)) || a.self - b.self)
     .slice(0, 5);
   TOP_LIST = weak.map(i => ({ ...i, course: REC_COURSES[i.name] || { title:`${i.name} 핵심 역량 강화`, type:'온라인', time:'1시간', seed:'c9' } }));
@@ -1073,6 +1079,25 @@ function updateTopNav() {
   document.getElementById('topPrev').disabled = t.scrollLeft <= 1;
   document.getElementById('topNext').disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 1;
 }
+
+/* ── 그래프 마우스오버 툴팁 ([data-tip] 위임) ── */
+(function () {
+  const tip = document.getElementById('tip');
+  const place = e => {
+    const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = e.clientX + pad, y = e.clientY + pad;
+    if (x + w > innerWidth - 8) x = e.clientX - w - pad;
+    if (y + h > innerHeight - 8) y = e.clientY - h - pad;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  };
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (!el) { tip.style.opacity = 0; return; }
+    tip.textContent = el.getAttribute('data-tip'); tip.style.opacity = 1; place(e);
+  });
+  document.addEventListener('mousemove', e => { if (tip.style.opacity === '1') place(e); });
+  document.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+})();
 window.addEventListener('resize', () => { updateTopNav(); updateGcNav(); });
 setGroupCount(5);
 

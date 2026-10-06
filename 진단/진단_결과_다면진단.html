@@ -120,6 +120,138 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .big-score{text-align:center;padding-top:4px;}
 .big-score .num{font-size:30px;font-weight:800;color:var(--text-900);line-height:1;}
 .big-score .denom{font-size:12px;color:var(--text-400);margin-top:2px;}
+.big-score .comp{font-size:11.5px;color:var(--text-500);margin-top:8px;}
+
+/* ── 종합 평가: 헤드라인 + 우측 추천과정 ── */
+.ov-grid{display:flex;gap:28px;align-items:flex-start;}
+.ov-main{flex:1;min-width:260px;}
+.ov-side{flex:1;min-width:260px;padding-left:26px;border-left:1px solid var(--border-light);}
+.rc-head-right{display:flex;align-items:center;gap:14px;}
+.rc-head-more{font-size:12px;color:var(--text-400);text-decoration:none;}
+@media (max-width:900px){
+  .ov-grid{flex-direction:column;}
+  .ov-side{width:100%;border-left:none;border-top:1px solid var(--border-light);padding-left:0;padding-top:16px;margin-top:16px;}
+}
+
+/* ── 종합 평가: 헤드라인 + 칩 ── */
+.headline-main{display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+.headline-gauge{flex:1;min-width:240px;}
+.gauge-wrap{padding:32px 7px 0;}
+.gauge-track{position:relative;height:5px;background:var(--border);border-radius:3px;}
+.gauge-fill{position:absolute;left:0;top:0;bottom:0;background:var(--primary);opacity:.35;border-radius:3px;}
+.gauge-marker{position:absolute;top:50%;transform:translate(-50%,-50%);}
+.gauge-marker.avg{z-index:1;}
+.gauge-marker.self{z-index:2;}
+.gauge-dot{display:block;width:12px;height:12px;border-radius:50%;background:var(--white);border:3px solid var(--text-400);box-shadow:0 1px 2px rgba(17,24,39,.15);}
+.gauge-marker.self .gauge-dot{border-color:var(--primary);width:14px;height:14px;}
+.gauge-connector{position:absolute;left:50%;width:1px;background:var(--text-400);opacity:.5;}
+.gauge-marker.avg .gauge-connector{top:-18px;height:12px;}
+.gauge-marker.self .gauge-connector{bottom:-18px;height:12px;background:var(--primary);opacity:.4;}
+.gauge-label{position:absolute;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--text-500);white-space:nowrap;}
+.gauge-label b{font-weight:800;}
+.gauge-marker.avg .gauge-label{bottom:16px;}
+.gauge-marker.self .gauge-label{top:16px;color:var(--primary);}
+.gauge-marker.self .gauge-label b{color:var(--primary);}
+.gauge-scale{display:flex;justify-content:space-between;margin-top:12px;font-size:10px;color:var(--text-400);}
+.headline-score{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.headline-score .num{font-size:32px;font-weight:800;color:var(--text-900);line-height:1;}
+.headline-score .denom{font-size:15px;font-weight:600;color:var(--text-400);margin-left:2px;}
+.grade-badge{display:inline-flex;padding:4px 12px;border-radius:14px;font-size:13px;font-weight:700;}
+.grade-badge.grade-high{background:var(--blue-bg);color:var(--blue);}
+.grade-badge.grade-mid{background:var(--gray-bg);color:var(--text-700);}
+.grade-badge.grade-low{background:var(--red-bg);color:var(--red);}
+.headline-desc{font-size:13.5px;color:var(--text-700);line-height:1.6;margin-top:18px;}
+.headline-desc b.hi{color:var(--blue);}
+.headline-desc b.lo{color:var(--red);}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+.cg-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:16px;font-size:12.5px;font-weight:600;border:1px solid;}
+.cg-chip i{font-style:normal;font-weight:800;opacity:.85;}
+.cg-chip.s{background:var(--blue-bg);color:var(--blue);border-color:#BFDBFE;}
+.cg-chip.w{background:var(--red-bg);color:var(--red);border-color:#FECACA;}
+.cg-chip.n{background:var(--gray-bg);color:var(--text-500);border-color:var(--border);}
+
+/* ── 종합 평가: 강점/약점 상세 카드 ── */
+.sw-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.sw-detail-card{border-radius:var(--r-md);padding:14px 16px;border:1px solid;}
+.sw-detail-card.strength{background:var(--blue-bg);border-color:#BFDBFE;}
+.sw-detail-card.weakness{background:var(--red-bg);border-color:#FECACA;}
+.sw-detail-title{font-size:12px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.sw-detail-card.strength .sw-detail-title{color:var(--blue);}
+.sw-detail-card.weakness .sw-detail-title{color:var(--red);}
+.sw-group-block{margin-bottom:12px;}
+.sw-group-block:last-child{margin-bottom:0;}
+.sw-group-head{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:700;color:var(--text-900);margin-bottom:5px;}
+.sw-group-score{font-size:12.5px;font-weight:700;}
+.sw-detail-card.strength .sw-group-score{color:var(--blue);}
+.sw-detail-card.weakness .sw-group-score{color:var(--red);}
+.sw-item-list{display:flex;flex-direction:column;gap:2px;}
+.sw-item-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-700);padding:3px 0 3px 13px;position:relative;}
+.sw-item-row::before{content:'';position:absolute;left:2px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--text-400);transform:translateY(-50%);}
+.sw-item-score{font-weight:600;color:var(--text-700);}
+.sw-detail-hint{font-size:10.5px;font-weight:400;opacity:.7;}
+.sw-note{font-size:10.5px;font-weight:400;color:var(--text-400);}
+
+/* ── 약점 보완 추천과정 CTA ── */
+.course-cta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px;padding:12px 16px;background:var(--bg);border-radius:var(--r-md);}
+.course-cta-row span{font-size:13px;color:var(--text-700);}
+.btn-course-cta{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:var(--r-md);font-size:12.5px;font-weight:700;color:var(--primary);background:var(--white);border:1.5px solid var(--primary);cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s;}
+.btn-course-cta:hover{background:var(--primary-light);}
+
+/* ── 추천과정 드로어 (edms_진단결과_가변계층.html 패턴 참고) ── */
+.course-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;opacity:0;pointer-events:none;transition:opacity .25s;}
+.course-overlay.open{opacity:1;pointer-events:all;}
+.course-drawer{position:fixed;top:0;right:0;height:100%;width:460px;max-width:95vw;background:var(--white);z-index:501;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.14);}
+.course-drawer.open{transform:translateX(0);}
+.cd-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-title{font-size:15px;font-weight:700;color:var(--text-900);}
+.cd-subtitle{font-size:11.5px;color:var(--text-400);margin-top:3px;}
+.cd-close{width:32px;height:32px;border:none;background:none;cursor:pointer;color:var(--text-500);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);flex-shrink:0;}
+.cd-close:hover{background:var(--bg);}
+.cd-tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cd-tab{padding:10px 14px;font-size:13px;font-weight:600;color:var(--text-400);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:5px;}
+.cd-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.cd-body{flex:1;overflow-y:auto;padding:16px 20px 24px;}
+.cd-count{font-size:12px;color:var(--text-400);margin-bottom:14px;}
+.cd-group{margin-bottom:22px;}
+.cd-group-label{font-size:11px;font-weight:700;letter-spacing:.2px;padding:4px 10px;border-radius:var(--r-sm);margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;}
+.cd-group-label.weak{background:var(--red-bg);color:var(--red);}
+.cd-group-label.strong{background:var(--green-bg);color:var(--green);}
+.cd-group-label-tag{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.6);}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px;background:var(--white);cursor:pointer;text-decoration:none;}
+.cd-item:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(36,108,249,.08);}
+.cd-item-thumb{width:72px;height:54px;border-radius:var(--r-md);object-fit:cover;flex-shrink:0;background:var(--border-light);}
+.cd-item-left{flex:1;min-width:0;}
+.cd-item-cmp{font-size:10.5px;font-weight:700;color:var(--text-400);margin-bottom:3px;}
+.cd-item-name{font-size:13px;font-weight:600;color:var(--text-900);line-height:1.4;}
+.cd-item-type{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:5px;}
+.cd-item-type.online{background:var(--blue-bg);color:var(--blue);}
+.cd-item-type.offline{background:var(--green-bg);color:var(--green);}
+.cd-item-type.hybrid{background:var(--purple-bg);color:var(--purple);}
+.cd-item-type.micro{background:var(--orange-bg);color:var(--orange);}
+.cd-tab-badge{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.cd-tab-badge.strong{background:var(--green-bg);color:var(--green);}
+.cd-tab-badge.weak{background:var(--red-bg);color:var(--red);}
+
+/* ── 종합평가 내 추천 과정 캐러셀 ── */
+.rc-wrap{margin-top:20px;padding-top:18px;border-top:1px solid var(--border-light);}
+.rc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.rc-head-title{font-size:13px;font-weight:700;color:var(--text-900);display:flex;align-items:center;gap:6px;}
+.rc-nav{display:flex;gap:6px;}
+.rc-nav-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-500);padding:0;}
+.rc-nav-btn:hover{border-color:var(--primary);color:var(--primary);}
+.rc-track{display:flex;gap:12px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:4px;scrollbar-width:thin;}
+.rc-track::-webkit-scrollbar{height:5px;}
+.rc-track::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.rc-card{flex:0 0 150px;cursor:pointer;text-decoration:none;color:inherit;display:block;}
+.rc-thumb-wrap{position:relative;width:150px;height:100px;border-radius:var(--r-md);overflow:hidden;background:var(--gray-bg);}
+.rc-thumb{width:100%;height:100%;object-fit:cover;display:block;}
+.rc-type-badge{position:absolute;top:6px;left:6px;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:8px;color:#fff;}
+.rc-type-badge.micro{background:var(--orange);}
+.rc-type-badge.online{background:var(--blue);}
+.rc-type-badge.offline{background:var(--green);}
+.rc-type-badge.hybrid{background:var(--purple);}
+.rc-title{font-size:12.5px;font-weight:600;color:var(--text-900);margin-top:8px;line-height:1.4;}
+.rc-meta{font-size:11px;color:var(--text-400);margin-top:3px;}
 
 /* ── Bar chart ── */
 .chart-section{padding:4px 0;}
@@ -137,10 +269,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .bar{height:8px;border-radius:4px;min-width:2px;}
 .bar.self  {background:var(--primary);}
 .bar.avg   {background:#9CA3AF;}
-.bar.sup   {background:#F97316;}
-.bar.peer  {background:#7C3AED;}
-.bar.sub   {background:#16A34A;}
-.bar.comp  {background:#94A3B8;}
 .chart-score{font-size:13px;font-weight:700;color:var(--text-900);}
 
 .thr-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed;}
@@ -178,17 +306,193 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .text-answer-item:last-child{margin-bottom:0;}
 .text-q{font-size:13px;font-weight:700;color:var(--text-900);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;}
 .text-q-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:var(--primary-light);color:var(--primary);border-radius:50%;font-size:11px;font-weight:800;flex-shrink:0;}
-.text-a-block{margin-bottom:10px;}
-.text-a-block:last-child{margin-bottom:0;}
-.text-a-tag{display:inline-flex;align-items:center;padding:1px 8px;border-radius:8px;font-size:10.5px;font-weight:700;margin-bottom:6px;}
-.text-a-tag.self{background:var(--blue-bg);color:var(--blue);}
-.text-a-tag.sub{background:var(--green-bg);color:var(--green);}
-.text-a-tag.sup{background:var(--orange-bg);color:var(--orange);}
-.text-a-tag.peer{background:var(--purple-bg);color:var(--purple);}
 .text-a{font-size:13px;color:var(--text-700);line-height:1.7;padding:10px 12px;background:var(--bg);border-radius:var(--r-sm);white-space:pre-wrap;}
-.masked-box{padding:10px 12px;background:var(--bg);border-radius:var(--r-sm);font-size:12px;color:var(--text-400);}
-.privacy-note{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:var(--text-400);margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);line-height:1.6;}
-.privacy-note svg{flex-shrink:0;margin-top:1px;}
+
+
+/* ── 역량군 점수 카드 (기존 리포트 "역량구분" 이관) ── */
+.gc-grid{--per:4;--gap:12px;display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;}
+.gc-grid::-webkit-scrollbar{display:none;}
+.gc-grid .gc-card{flex:0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));scroll-snap-align:start;}
+@media (max-width:1100px){.gc-grid{--per:3;}}
+@media (max-width:760px){.gc-grid{--per:2;}}
+.gc-page{font-size:12px;color:var(--text-400);min-width:52px;text-align:center;}
+.rc-nav-btn:disabled{opacity:.35;cursor:default;border-color:var(--border);color:var(--text-500);}
+.gc-card{border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px 12px;}
+.gc-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:10px;}
+.gc-name{font-size:13px;font-weight:700;color:var(--text-900);display:flex;align-items:center;gap:6px;}
+.gc-score{display:flex;align-items:baseline;gap:6px;}
+.gc-score .lbl{font-size:11px;color:var(--text-400);}
+.gc-score .num{font-size:24px;font-weight:800;color:var(--text-900);line-height:1;}
+.gc-foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-500);margin-top:8px;}
+/* ── 슬라이더 (본인 점수 / 전체평균 눈금) ── */
+.sl{position:relative;padding-top:20px;}
+.sl-track{position:relative;height:4px;background:var(--border);border-radius:2px;}
+.sl-fill{position:absolute;left:0;top:0;bottom:0;border-radius:2px;}
+.sl-fill.pos{background:var(--blue);}
+.sl-fill.neg{background:var(--red);}
+.sl-fill.mid{background:#111827;}
+.sl-dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--white);border:3px solid;transform:translate(-50%,-50%);}
+.sl-dot.pos{border-color:var(--blue);}
+.sl-dot.neg{border-color:var(--red);}
+.sl-dot.mid{border-color:#111827;}
+.sl-avg{position:absolute;top:-4px;width:2px;height:12px;background:var(--text-400);transform:translateX(-50%);}
+.sl-avg span{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--text-500);white-space:nowrap;}
+.sl-thr{position:absolute;top:-5px;height:14px;border-left:2px dashed;}
+.sl-thr.s{border-color:rgba(36,108,249,.5);}
+.sl-thr.w{border-color:rgba(220,38,38,.45);}
+/* ── 역량별 지수 표 ── */
+.idx-table{width:100%;border-collapse:collapse;font-size:13px;}
+.idx-table th{padding:10px 12px;font-size:12px;font-weight:700;color:var(--text-500);background:var(--bg);border-bottom:1px solid var(--border);text-align:center;white-space:nowrap;}
+.idx-table th.ta-l,.idx-table td.ta-l{text-align:left;}
+.idx-table td{padding:12px;border-bottom:1px solid var(--border-light);text-align:center;vertical-align:middle;color:var(--text-700);}
+.idx-table td.grp-cell{background:var(--bg);border-right:1px solid var(--border-light);vertical-align:middle;text-align:left;width:150px;}
+.idx-table tr.grp-last td{border-bottom:1px solid var(--border);}
+.idx-table tr:last-child td{border-bottom:none;}
+.idx-table td.ta-l:not(.grp-cell){white-space:nowrap;}
+/* 슬라이더 위·아래 여백을 같게 해서 막대가 행 세로 중앙에 오도록 */
+.idx-table .sl{padding:18px 0;}
+.grp-name{font-size:13px;font-weight:700;color:var(--text-900);}
+.grp-meta{font-size:11px;color:var(--text-500);margin-top:3px;line-height:1.5;}
+.idx-score{font-weight:700;}
+.idx-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-500);align-items:center;}
+.idx-legend i{display:inline-block;vertical-align:middle;margin-right:5px;}
+.lg-dot{width:10px;height:10px;border-radius:50%;border:3px solid var(--blue);box-sizing:border-box;}
+.lg-tick{width:2px;height:12px;background:var(--text-400);}
+.lg-dash{width:0;height:12px;border-left:2px dashed;}
+/* ── 서술형 아코디언 ── */
+.qa{border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:10px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.qa summary::-webkit-details-marker{display:none;}
+.qa-tag{font-size:11px;color:var(--text-400);margin-bottom:4px;}
+.qa-chev{flex-shrink:0;color:var(--text-400);transition:transform .15s;margin-top:4px;}
+.qa[open] .qa-chev{transform:rotate(180deg);}
+.qa-body{padding:0 16px 16px;}
+
+
+/* ── 시안C: 방사형 ── */
+.rd-wrap{width:100%;max-width:440px;margin:0 auto;}
+.ov2{display:grid;grid-template-columns:440px 1fr;gap:28px;align-items:center;}
+#ovGauge .headline-main{flex-wrap:nowrap;gap:28px;align-items:center;}
+#ovGauge .headline-gauge{flex:1.3;min-width:240px;}
+#ovGauge .gauge-desc{flex:1;min-width:260px;margin-top:0;padding-left:28px;border-left:1px solid var(--border-light);font-size:13px;line-height:1.7;}
+@media (max-width:1100px){
+  #ovGauge .headline-main{flex-wrap:wrap;}
+  #ovGauge .gauge-desc{flex-basis:100%;padding-left:0;border-left:none;margin-top:12px;}
+}
+.ov2-chart{padding-left:36px;}
+.ov2-side{padding-left:28px;border-left:1px solid var(--border-light);}
+.ov2-label{font-size:12px;font-weight:700;color:var(--text-500);margin-bottom:6px;}
+.ov2-side .headline-score .num{font-size:34px;}
+.ov2-side .headline-desc{font-size:13.5px;margin-top:10px;}
+@media (max-width:900px){.ov2{grid-template-columns:1fr;}.ov2-side{padding-left:0;border-left:none;border-top:1px solid var(--border-light);padding-top:20px;}}
+.rd-svg{width:100%;height:auto;display:block;}
+.rd-ring{fill:none;stroke:var(--border);stroke-width:1;}
+.rd-axis{stroke:var(--border);stroke-width:1;}
+.rd-tick{font-size:9px;fill:var(--text-400);}
+.rd-lab{font-size:19px;font-weight:700;fill:var(--text-900);}
+.rd-lab.s{fill:var(--blue);} .rd-lab.w{fill:var(--red);}
+.rd-avg{fill:rgba(156,163,175,.18);stroke:#9CA3AF;stroke-width:2;stroke-dasharray:5 4;}
+.rd-self{fill:rgba(36,108,249,.18);stroke:var(--primary);stroke-width:2.5;}
+.rd-dot{fill:var(--white);stroke:var(--primary);stroke-width:3;}
+.rd-val{font-size:18px;font-weight:800;fill:var(--primary);}
+.rd-legend{display:flex;gap:16px;font-size:12px;color:var(--text-500);margin-top:8px;justify-content:center;}
+.rd-legend i{display:inline-block;width:14px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px;}
+.rd-list{width:100%;border-collapse:collapse;font-size:13px;}
+.rd-list th{padding:8px 10px;font-size:12px;font-weight:700;color:var(--text-500);border-bottom:1px solid var(--border);text-align:center;}
+.rd-list th:first-child,.rd-list td:first-child{text-align:left;}
+.rd-list td{padding:11px 10px;border-bottom:1px solid var(--border-light);text-align:center;}
+.rd-list tr:last-child td{border-bottom:none;}
+
+
+/* ── 추천 과정 TOP5 (AI리터러시 TOP2 카드 방식) ── */
+.top-card{border:1px solid var(--border);border-radius:12px;padding:16px 18px 18px;background:var(--white);}
+.top-title-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.top-badge{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:10px;background:var(--primary-light);color:var(--primary);}
+.top-factor{font-size:14px;font-weight:700;color:var(--text-900);}
+.top-reason{font-size:12.5px;color:var(--text-500);line-height:1.6;margin-bottom:14px;}
+.top-reason b{color:var(--text-900);}
+.top-course-wrap{position:relative;padding:0 18px;}
+.top-course{display:flex;gap:16px;align-items:center;}
+.top-thumb{width:190px;height:120px;object-fit:cover;border-radius:8px;background:var(--gray-bg);flex-shrink:0;}
+.top-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+.top-tag{font-size:12px;color:var(--text-400);}
+.top-ctitle{font-size:15px;font-weight:700;color:var(--text-900);line-height:1.4;}
+.top-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text-500);}
+.top-arrow{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-500);padding:0;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.top-arrow:hover{border-color:var(--primary);color:var(--primary);}
+.top-arrow svg{width:16px;height:16px;}
+.top-arrow.left{left:-14px;}
+.top-arrow.right{right:-14px;}
+.top-counter{position:absolute;top:-4px;right:0;font-size:11.5px;font-weight:600;color:var(--text-500);background:var(--white);padding:2px 9px;border-radius:900px;border:1px solid var(--border);}
+@media (max-width:760px){.top-course{flex-direction:column;align-items:flex-start;}.top-thumb{width:100%;height:150px;}}
+
+
+/* ── 추천 과정 TOP 5: 3개씩 슬라이드 ── */
+.top-wrap{position:relative;}
+.top-arrow:disabled{opacity:0;pointer-events:none;}
+.top-arrow{z-index:2;}
+.top-wrap .top-arrow.left{left:-16px;}
+.top-wrap .top-arrow.right{right:-16px;}
+.top-track{--per:3;--gap:14px;display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;}
+.top-track::-webkit-scrollbar{display:none;}
+.tc{flex:0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));scroll-snap-align:start;border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--white);display:flex;flex-direction:column;gap:8px;min-width:0;}
+.tc{flex-direction:row !important;align-items:stretch;gap:12px !important;}
+.tc-thumb-wrap{position:relative;flex:0 0 132px;align-self:center;}
+.tc-thumb{width:132px;aspect-ratio:16/10;height:auto;object-fit:cover;border-radius:8px;background:var(--gray-bg);display:block;}
+.tc-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+.tc-rank{position:absolute;top:8px;left:8px;font-size:11px;font-weight:800;padding:2px 9px;border-radius:10px;background:rgba(17,24,39,.75);color:#fff;}
+.tc-tag{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-500);flex-wrap:wrap;}
+.tc-tag svg{width:12px;height:12px;flex-shrink:0;}
+.tc-title{font-size:14px;font-weight:700;color:var(--text-900);line-height:1.4;}
+.tc-desc{font-size:12.5px;color:var(--text-500);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.tc-meta{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:auto;}
+.tc-meta span{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text-500);white-space:nowrap;}
+.tc-meta svg{width:13px;height:13px;flex-shrink:0;}
+/* 3개가 다 들어가지 않으면 2.5개(다음 카드가 반쯤 보임)로 노출 — 카드 영역 폭 기준 */
+.top-wrap{container-type:inline-size;}
+@container (max-width:980px){.top-track{--per:2.5;}}
+@container (max-width:680px){.top-track{--per:1.5;}}
+
+
+/* ── 다면진단: 응답자 칩 / 시리즈 ── */
+.resp-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.rchip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:14px;border:1px solid var(--border);background:var(--white);font-size:12px;font-family:inherit;color:var(--text-700);cursor:pointer;}
+.rchip i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.rchip b{font-weight:800;color:var(--text-900);}
+.rchip.off{opacity:.4;} .rchip.off b{text-decoration:line-through;}
+.rchip.static{cursor:default;}
+.rd-ser{fill:none;stroke-width:2;}
+.gauge-mini{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.1);z-index:1;}
+.sl-ex{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid #fff;z-index:1;box-shadow:0 0 0 1px rgba(0,0,0,.1);}
+.sl-dot{z-index:3;}
+/* 인식 차이 */
+.perc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:900px){.perc-grid{grid-template-columns:1fr;}}
+.perc-col{border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;}
+.perc-title{font-size:13px;font-weight:700;color:var(--text-900);}
+.perc-sub{font-size:11.5px;color:var(--text-400);margin:2px 0 8px;}
+.perc-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border-light);}
+.perc-row.first{border-top:none;}
+.perc-name{font-size:13px;font-weight:600;color:var(--text-900);}
+.perc-grp{font-size:11px;color:var(--text-400);}
+.perc-val{font-size:12px;color:var(--text-500);text-align:right;white-space:nowrap;}
+.perc-diff{font-weight:800;margin-left:6px;}
+.perc-empty{font-size:12.5px;color:var(--text-400);padding:10px 0;}
+/* 서술형 응답자 블록 */
+.ans-blk{margin-bottom:12px;}
+.ans-blk:last-child{margin-bottom:0;}
+.ans-tag{display:inline-flex;font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;margin-bottom:6px;}
+.ans-blk .text-a{margin-bottom:8px;}
+.ans-who{font-size:11px;font-weight:700;color:var(--text-400);margin:2px 0 4px;}
+.ans-gray{background:var(--gray-bg);color:var(--text-700);}
+.masked-box{background:var(--bg);border:1px dashed var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;color:var(--text-500);}
+
+
+/* ── 그래프 마우스오버 툴팁 ── */
+.tip{position:fixed;z-index:1000;background:rgba(17,24,39,.92);color:#fff;font-size:12px;line-height:1.55;padding:6px 10px;border-radius:6px;pointer-events:none;white-space:pre-line;opacity:0;transition:opacity .08s;max-width:240px;}
+.sl-avg::after{content:'';position:absolute;left:-6px;right:-6px;top:-4px;bottom:-4px;}
+.sl-dot,.sl-avg,.sl-ex,.gauge-marker,.gauge-mini{cursor:default;}
 
 /* ── Spec note ── */
 .spec-section{margin-top:32px;}
@@ -272,8 +576,29 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   <div class="main-wrap">
     <main class="main">
 
-      <div style="background:#f5f0ff;border:1px solid #ddd6fe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#6d28d9;">
-        방향성 ② · <b>다면진단</b> — 응답자 구분에서 "본인 + 구성원/상사/동료" 중 1개 이상이 함께 선택된 진단의 결과 화면
+      <div style="background:#eef3ff;border:1px solid #bfdbfe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#1d4ed8;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <span>방향성 ② · <b>다면진단</b> — 본인 외 구성원·상사·동료가 함께 응답한 진단의 결과 화면</span>
+        <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <label for="respSet" style="font-weight:700;">응답자 구성</label>
+          <select id="respSet" onchange="setRespSet(this.value)" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
+            <option value="all" selected>본인 · 구성원 · 상사 · 동료</option>
+            <option value="sup">본인 · 상사</option>
+            <option value="subpeer">본인 · 구성원 · 동료</option>
+          </select>
+          <label for="grpCount" style="font-weight:700;">화면 구성 미리보기</label>
+          <select id="grpCount" onchange="setGroupCount(+this.value)" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
+            <option value="1">역량군 1개 (종합 슬라이더)</option>
+            <option value="2">역량군 2개 (종합 슬라이더)</option>
+            <option value="3">역량군 3개 (방사형)</option>
+            <option value="4">역량군 4개 (방사형)</option>
+            <option value="5" selected>역량군 5개 (방사형)</option>
+            <option value="6">역량군 6개 (방사형)</option>
+            <option value="7">역량군 7개 (방사형)</option>
+            <option value="8">역량군 8개 (방사형)</option>
+            <option value="9">역량군 9개 (종합 슬라이더)</option>
+            <option value="10">역량군 10개 (종합 슬라이더)</option>
+          </select>
+        </span>
       </div>
 
       <!-- Page Header -->
@@ -316,344 +641,132 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <div class="meta-label">대상자</div>
           <div class="meta-val">홍길동 (인사팀 · 팀장)</div>
         </div>
-        <div class="meta-divider"></div>
-        <div class="meta-item">
-          <div class="meta-label">문항 구성</div>
-          <div class="meta-val">척도형 18 · A/B강제선택 4 · 서술형 2</div>
-        </div>
-        <div class="meta-divider"></div>
-        <div class="meta-item">
-          <div class="meta-label">응답자 구분</div>
-          <div class="meta-val"><span class="type-badge multi">본인+구성원+상사+동료</span></div>
-        </div>
-        <div class="meta-divider"></div>
-        <div class="meta-item">
-          <div class="meta-label">응답 현황</div>
-          <div class="meta-val">본인 완료 · 구성원 4/4 · 상사 1/1 · 동료 3/3</div>
-        </div>
       </div>
 
-      <!-- 종합 평가 -->
+      <!-- 종합 평가 (종합 점수 + 역량군별 점수 통합) -->
       <div class="section-card">
         <div class="section-head">
           <h3>종합 평가</h3>
-          <span class="section-sub">5점 척도 · 역량군별 기준점 적용 · GAP = 본인 − 전사평균</span>
         </div>
         <div class="section-body">
-          <div class="sw-grid">
-            <div class="sw-card strength">
-              <div class="sw-card-title">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                강점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 전사평균 기준 강점 도달</span>
+          <!-- 방사형 불가 구간(역량군 1~2개 / 9개 이상): 종합 점수 + 슬라이더 -->
+          <div id="ovGauge" style="display:none;">
+            <div class="headline-main">
+              <div class="headline-score"><span class="num"><span id="gTotalNum">3.15</span><span class="denom">/5.0</span></span></div>
+              <div class="headline-gauge">
+                <div class="gauge-wrap">
+                  <div class="gauge-track">
+                    <div class="gauge-fill" id="gFill" style="width:62.8%;"></div>
+                    <div class="gauge-marker avg" id="gAvg" style="left:72%;">
+                      <span class="gauge-connector"></span>
+                      <span class="gauge-dot"></span>
+                      <span class="gauge-label">전체평균 <b id="gAvgVal">3.63</b></span>
+                    </div>
+                    <div id="gOthers"></div>
+                    <div class="gauge-marker self" id="gSelf" style="left:62.8%;">
+                      <span class="gauge-connector"></span>
+                      <span class="gauge-dot"></span>
+                      <span class="gauge-label">총점 <b id="gSelfVal">3.15</b></span>
+                    </div>
+                  </div>
+                  <div class="gauge-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
+                </div>
+                <div class="resp-list" id="respListG"></div>
               </div>
-              <div class="sw-item">
-                <span class="sw-dot s"></span>
-                <span>전략적 사고</span>
-                <span class="sw-score">3.98점</span>
-                <span class="sw-threshold s">기준 4.0↑</span>
-              </div>
-              <div class="sw-item">
-                <span class="sw-dot s"></span>
-                <span>협업/관계 역량</span>
-                <span class="sw-score">4.07점</span>
-                <span class="sw-threshold s">기준 3.8↑</span>
-              </div>
-              <div class="sw-item">
-                <span class="sw-dot s"></span>
-                <span>리더십 역량</span>
-                <span class="sw-score">4.13점</span>
-                <span class="sw-threshold s">기준 4.2↑ <span style="font-size:10px;color:var(--text-400);">(근접)</span></span>
+              <div class="headline-desc gauge-desc" id="gDesc"></div>
+            </div>
+          </div>
+
+          <div class="ov2" id="ovRadar">
+            <div class="ov2-chart">
+              <div class="rd-wrap">
+                <div id="radarBox"></div>
               </div>
             </div>
-            <div class="sw-card weakness">
-              <div class="sw-card-title">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                약점 역량 <span style="font-size:10.5px;font-weight:400;opacity:.7;">— 본인 자기평가 약점</span>
-              </div>
-              <div class="sw-item">
-                <span class="sw-dot w"></span>
-                <span>의사소통 역량</span>
-                <span class="sw-score">2.3점</span>
-                <span class="sw-threshold w">기준 2.5↓</span>
-              </div>
-              <div class="sw-item">
-                <span class="sw-dot w"></span>
-                <span>변화 대응 역량</span>
-                <span class="sw-score">2.4점</span>
-                <span class="sw-threshold w">기준 2.5↓</span>
-              </div>
-              <div class="sw-item" style="margin-top:8px;padding-top:8px;border-top:1px dashed #fecaca;">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span style="font-size:11.5px;color:var(--red);">타인 평가와 큰 인식 차이 존재</span>
-              </div>
-            </div>
-            <div class="sw-card avg-box">
-              <div class="sw-card-title">종합 평균</div>
-              <div class="big-score">
-                <div class="num" style="font-size:24px;">3.28</div>
-                <div class="denom">본인 / 5.0점</div>
-                <div style="height:8px;"></div>
-                <div style="font-size:11px;color:var(--text-500);">구성원 <b style="color:var(--text-700);">3.76</b></div>
-                <div style="font-size:11px;color:var(--text-500);">상사 <b style="color:var(--text-700);">3.62</b></div>
-                <div style="font-size:11px;color:var(--text-500);">동료 <b style="color:var(--text-700);">3.72</b></div>
-                <div style="font-size:11px;color:var(--text-500);">전사평균 <b style="color:var(--text-700);">3.60</b></div>
-              </div>
+            <div class="ov2-side">
+              <div class="ov2-label">총점</div>
+              <div class="headline-score"><span class="num"><span id="totalNum">3.15</span><span class="denom">/5.0</span></span></div>
+              <div class="resp-list" id="respList"></div>
+              <div class="headline-desc" id="headlineDesc" style="margin-top:14px;"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 역량군별 종합 지수 (다면) -->
-      <div class="section-card">
+      <!-- 역량군별 점수 카드 (역량군 9개 이상일 때만 노출) -->
+      <div class="section-card" id="groupCardsSec" style="display:none;">
         <div class="section-head">
-          <h3>역량군별 종합 지수 — 응답자 구분별 비교</h3>
-          <div class="chart-legend" style="margin:0;padding:0;border:none;">
-            <div class="leg-item"><div class="leg-dot" style="background:var(--primary);"></div>본인</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#16A34A;"></div>구성원</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#F97316;"></div>상사</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#7C3AED;"></div>동료</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#94A3B8;"></div>전사평균</div>
+          <h3>역량군별 점수</h3>
+          <div class="rc-nav" style="align-items:center;">
+            <span class="gc-page" id="gcPage"></span>
+            <button class="rc-nav-btn" id="gcPrev" onclick="pageGc(-1)" aria-label="이전">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="rc-nav-btn" id="gcNext" onclick="pageGc(1)" aria-label="다음">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
           </div>
         </div>
         <div class="section-body">
-          <div class="chart-section">
+          <div class="gc-grid" id="groupCards" onscroll="updateGcNav()"></div>
+        </div>
+      </div>
 
-            <div class="chart-row">
-              <div class="chart-label-wrap">
-                <div class="chart-label-name">Self역량군</div>
-                <div><span class="chart-badge s">강점 근접</span></div>
-              </div>
-              <div class="chart-track-area">
-                <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
-                <div class="chart-track" style="height:40px;">
-                  <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
-                  <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
-                  <div class="chart-bars">
-                    <div class="bar self" style="width:84%;"></div>
-                    <div class="bar sub"  style="width:78%;"></div>
-                    <div class="bar sup"  style="width:76%;"></div>
-                    <div class="bar peer" style="width:80%;"></div>
-                    <div class="bar comp" style="width:72%;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-score">4.2</div>
-            </div>
+      <!-- 강점 · 약점 역량 -->
+      <div class="section-card">
+        <div class="section-head">
+          <h3>강점 · 약점 역량 <span class="sw-note">(본인 점수 기준)</span></h3>
+        </div>
+        <div class="section-body">
+          <div class="sw-detail-grid" id="swGrid"></div>
+        </div>
+      </div>
 
-            <div class="chart-row">
-              <div class="chart-label-wrap">
-                <div class="chart-label-name">People역량군</div>
-              </div>
-              <div class="chart-track-area">
-                <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
-                <div class="chart-track" style="height:40px;">
-                  <div class="thr-line thr-s" style="left:84%;top:0;bottom:0;"></div>
-                  <div class="thr-line thr-w" style="left:56%;top:0;bottom:0;"></div>
-                  <div class="chart-bars">
-                    <div class="bar self" style="width:72%;"></div>
-                    <div class="bar sub"  style="width:84%;"></div>
-                    <div class="bar sup"  style="width:82%;"></div>
-                    <div class="bar peer" style="width:76%;"></div>
-                    <div class="bar comp" style="width:76%;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-score">3.6</div>
-            </div>
+      <!-- 인식 차이 (본인 vs 타인 평균) -->
+      <div class="section-card" id="percSec">
+        <div class="section-head">
+          <h3>인식 차이 <span class="sw-note" id="percNote"></span></h3>
+        </div>
+        <div class="section-body">
+          <div class="perc-grid" id="percGrid"></div>
+        </div>
+      </div>
 
-            <div class="chart-row">
-              <div class="chart-label-wrap">
-                <div class="chart-label-name">Team역량군</div>
-                <div><span class="chart-badge w">약점</span></div>
-              </div>
-              <div class="chart-track-area">
-                <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
-                <div class="chart-track" style="height:40px;">
-                  <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
-                  <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
-                  <div class="chart-bars">
-                    <div class="bar self" style="width:46%;background:#DC2626;"></div>
-                    <div class="bar sub"  style="width:68%;"></div>
-                    <div class="bar sup"  style="width:64%;"></div>
-                    <div class="bar peer" style="width:70%;"></div>
-                    <div class="bar comp" style="width:74%;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-score lo">2.3</div>
-            </div>
-
-            <div class="chart-row">
-              <div class="chart-label-wrap">
-                <div class="chart-label-name">소통협력역량군</div>
-                <div><span class="chart-badge s">강점</span></div>
-              </div>
-              <div class="chart-track-area">
-                <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
-                <div class="chart-track" style="height:40px;">
-                  <div class="thr-line thr-s" style="left:76%;top:0;bottom:0;"></div>
-                  <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
-                  <div class="chart-bars">
-                    <div class="bar self" style="width:78%;"></div>
-                    <div class="bar sub"  style="width:84%;"></div>
-                    <div class="bar sup"  style="width:80%;"></div>
-                    <div class="bar peer" style="width:82%;"></div>
-                    <div class="bar comp" style="width:70%;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-score">3.9</div>
-            </div>
-
-            <div class="chart-row">
-              <div class="chart-label-wrap">
-                <div class="chart-label-name">혁신성과역량군</div>
-                <div><span class="chart-badge w">약점</span></div>
-              </div>
-              <div class="chart-track-area">
-                <div class="chart-scale"><span>0</span><span>1.0</span><span>2.0</span><span>3.0</span><span>4.0</span><span>5.0</span></div>
-                <div class="chart-track" style="height:40px;">
-                  <div class="thr-line thr-s" style="left:80%;top:0;bottom:0;"></div>
-                  <div class="thr-line thr-w" style="left:50%;top:0;bottom:0;"></div>
-                  <div class="chart-bars">
-                    <div class="bar self" style="width:48%;background:#DC2626;"></div>
-                    <div class="bar sub"  style="width:62%;"></div>
-                    <div class="bar sup"  style="width:60%;"></div>
-                    <div class="bar peer" style="width:64%;"></div>
-                    <div class="bar comp" style="width:68%;"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="chart-score lo">2.4</div>
-            </div>
-
+      <!-- 추천 과정 TOP 5 (한 화면 3개씩 좌우 슬라이드) -->
+      <div class="section-card" id="topSec">
+        <div class="section-head">
+          <h3 id="topTitle">추천 과정 TOP 5</h3>
+          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">전체보기 ›</a>
+        </div>
+        <div class="section-body">
+          <div class="top-wrap">
+            <button class="top-arrow left" id="topPrev" onclick="topNav(-1)" aria-label="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <div class="top-track" id="topTrack" onscroll="updateTopNav()"></div>
+            <button class="top-arrow right" id="topNext" onclick="topNav(1)" aria-label="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
           </div>
         </div>
       </div>
 
-      <!-- 역량 상세 결과 (다면) -->
+      <!-- 역량별 지수 (슬라이더 + 점수 표 통합) -->
       <div class="section-card">
         <div class="section-head">
-          <h3>역량 상세 결과 — 응답자 구분별 비교</h3>
-          <span class="section-sub">GAP = 본인 − 전사평균 · A/B강제선택형(6단계) 문항은 5점 척도로 정규화되어 반영</span>
+          <h3>역량별 지수</h3>
+          <div class="idx-legend" id="idxLegend"></div>
         </div>
         <div style="overflow-x:auto;">
-          <table class="score-table">
-            <thead>
-              <tr>
-                <th class="ta-l" style="width:120px;">역량군</th>
-                <th class="ta-l" style="min-width:120px;">세부역량</th>
-                <th style="width:64px;" title="본인 자기평가">본인</th>
-                <th style="width:64px;" title="구성원 평가">구성원</th>
-                <th style="width:64px;" title="상사 평가">상사</th>
-                <th style="width:64px;" title="동료 평가">동료</th>
-                <th style="width:72px;" title="전사 평균">전사평균</th>
-                <th style="width:64px;" title="본인 − 전사평균">GAP</th>
-              </tr>
-            </thead>
-            <tbody>
-
-              <tr class="grp">
-                <td colspan="8">Self역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
-              </tr>
-              <tr><td></td><td class="ta-l">전략적 사고</td><td class="hi">4.5</td><td>4.1</td><td>4.0</td><td>4.2</td><td>3.8</td><td class="gap-p">+0.7</td></tr>
-              <tr><td></td><td class="ta-l">의사결정 능력</td><td class="hi">4.1</td><td>3.8</td><td>3.8</td><td>3.9</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-
-              <tr class="grp">
-                <td colspan="8">People역량군 <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.2 / 약점 기준 2.8</span></td>
-              </tr>
-              <tr><td></td><td class="ta-l">비전 및 목표 설정</td><td>3.8</td><td class="hi">4.4</td><td class="hi">4.3</td><td>3.9</td><td>4.0</td><td class="gap-n">-0.2</td></tr>
-              <tr><td></td><td class="ta-l">구성원 육성 및 동기부여</td><td>3.5</td><td>4.2</td><td>4.0</td><td>3.8</td><td>3.9</td><td class="gap-n">-0.4</td></tr>
-              <tr><td></td><td class="ta-l">인재 육성</td><td>3.7</td><td>4.1</td><td>4.0</td><td>3.7</td><td>3.8</td><td class="gap-n">-0.1</td></tr>
-              <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td>3.4</td><td>4.1</td><td>4.1</td><td>3.8</td><td>3.5</td><td class="gap-n">-0.1</td></tr>
-
-              <tr class="grp">
-                <td colspan="8">Team역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
-              </tr>
-              <tr><td></td><td class="ta-l">갈등 관리</td><td class="lo">2.5</td><td>3.5</td><td>3.4</td><td>3.6</td><td>3.9</td><td class="gap-n">-1.4</td></tr>
-              <tr><td></td><td class="ta-l">발표/표현</td><td class="lo">2.1</td><td>3.3</td><td>3.0</td><td>3.4</td><td>3.6</td><td class="gap-n">-1.5</td></tr>
-              <tr><td></td><td class="ta-l">성과 창출 및 관리</td><td class="lo">2.3</td><td>3.4</td><td>3.2</td><td>3.5</td><td>3.7</td><td class="gap-n">-1.4</td></tr>
-
-              <tr class="grp">
-                <td colspan="8">소통협력역량군 <span class="mini-badge s">강점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 3.8 / 약점 기준 2.5</span></td>
-              </tr>
-              <tr><td></td><td class="ta-l">소통 및 협력</td><td class="hi">4.1</td><td class="hi">4.4</td><td>4.2</td><td>4.3</td><td>3.7</td><td class="gap-p">+0.4</td></tr>
-              <tr><td></td><td class="ta-l">다양성 존중</td><td class="hi">3.8</td><td>4.1</td><td>3.9</td><td>4.0</td><td>3.4</td><td class="gap-p">+0.4</td></tr>
-
-              <tr class="grp">
-                <td colspan="8">혁신성과역량군 <span class="mini-badge w">약점</span> <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:6px;">강점 기준 4.0 / 약점 기준 2.5</span></td>
-              </tr>
-              <tr><td></td><td class="ta-l">윤리경영 및 책임의식</td><td class="lo">2.6</td><td>3.2</td><td>3.2</td><td>3.3</td><td>3.5</td><td class="gap-n">-0.9</td></tr>
-              <tr><td></td><td class="ta-l">변화관리 및 혁신</td><td class="lo">2.3</td><td>3.0</td><td>2.9</td><td>3.1</td><td>3.4</td><td class="gap-n">-1.1</td></tr>
-
-            </tbody>
+          <table class="idx-table">
+            <thead id="idxHead"></thead>
+            <tbody id="idxBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- 서술형 응답 (신규, 익명성 보호 적용) -->
+      <!-- 서술형 응답 (응답자 구분별, 익명성 보호) -->
       <div class="section-card">
         <div class="section-head">
           <h3>서술형 응답</h3>
-          <span class="section-sub">응답자 구분별 원문 노출 · 점수 산정에는 포함되지 않음</span>
         </div>
-        <div class="section-body">
-
-          <div class="text-answer-item">
-            <div class="text-q"><span class="text-q-num">1</span>이 대상자의 리더십에서 가장 인상 깊었던 강점은 무엇인가요?</div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag self">본인</span>
-              <div class="text-a">신규 프로젝트 착수 시 팀원 간 역할 분담 이견을 개별 면담으로 조율해 갈등 없이 완수한 경험이 있습니다.</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag sup">상사 (1명)</span>
-              <div class="text-a">위기 상황에서도 침착하게 우선순위를 재정렬하고 팀을 이끄는 모습이 인상적이었습니다.</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag peer">동료 (3명)</span>
-              <div class="text-a">"어려운 이해관계자 조율에서도 흔들리지 않는 태도를 보여줌"
-"동료의 의견을 먼저 경청한 뒤 결정하는 스타일이 신뢰감을 줌"
-"바쁜 와중에도 팀원 요청에 빠르게 반응함"</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag sub">구성원 (2명)</span>
-              <div class="masked-box">🔒 응답자 3명 미만으로 비공개 처리됩니다 (익명성 보호 기준)</div>
-            </div>
-          </div>
-
-          <div class="text-answer-item">
-            <div class="text-q"><span class="text-q-num">2</span>이 대상자에게 앞으로 더 필요하다고 생각하는 점을 서술해주세요.</div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag self">본인</span>
-              <div class="text-a">다양한 이해관계자와의 커뮤니케이션 상황에서 보다 명확하고 설득력 있게 의견을 전달하는 능력이 필요하다고 느낍니다.</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag sup">상사 (1명)</span>
-              <div class="text-a">전체 미팅 등 여러 인원 앞에서 발표할 때 조금 더 간결하고 확신 있게 전달하면 좋겠습니다.</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag peer">동료 (3명)</span>
-              <div class="masked-box">🔒 응답자 3명 미만으로 비공개 처리됩니다 (익명성 보호 기준)</div>
-            </div>
-
-            <div class="text-a-block">
-              <span class="text-a-tag sub">구성원 (2명)</span>
-              <div class="masked-box">🔒 응답자 3명 미만으로 비공개 처리됩니다 (익명성 보호 기준)</div>
-            </div>
-          </div>
-
-          <div class="privacy-note">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            구성원·동료 등 복수 응답자로 구성된 유형은 응답자 수가 적을수록 특정인의 답변으로 식별될 위험이 있어, 해당 유형의 응답자 수가 <b>3명 미만</b>이면 서술형 응답을 비공개 처리합니다. 상사는 통상 1인 배정되는 유형 특성상 별도 최소 인원 기준을 적용하지 않습니다. <span class="spec-tag" style="color:#92400e;">기준값 확정 필요</span>
-          </div>
-        </div>
+        <div class="section-body" id="essayBody"></div>
       </div>
 
       <!-- 기획 스펙 노트 -->
@@ -667,38 +780,60 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>1. 진입 조건</h4>
           <ul>
             <li>진단 대상자 본인만 접근 가능</li>
-            <li><b>본인 응답 완료</b> + <b>구분별 최소 응답자 수 충족</b> + <b>관리자 마감 처리</b> 완료 시 결과 열람 가능</li>
-            <li>최소 응답자 수 미충족 시 "응답자가 부족합니다" 안내, 마감 전에는 "집계 중" 안내 <span class="spec-tag">최소 인원 값은 진단 설정에서 관리자 지정</span></li>
+            <li><b>본인 응답 완료</b> + <b>관리자 마감 처리</b> 완료 시 결과 열람 가능</li>
           </ul>
 
-          <h4>2. 응답자 구분 표시 순서</h4>
+          <h4>2. 응답자 구분 표시 순서 · 숨김</h4>
           <ul>
-            <li>진단 만들기 STEP2 응답자 유형 선택 순서(<b>본인 → 구성원 → 상사 → 동료</b>)와 동일하게 차트·표·메타 영역에 일괄 적용</li>
-            <li>진단 설정에서 포함되지 않은 유형은 차트 막대·표 컬럼 모두 자동 숨김</li>
+            <li>진단 만들기 STEP2 응답자 유형 선택 순서(<b>본인 → 구성원 → 상사 → 동료</b>)와 동일하게 종합 점수 목록·차트·표 컬럼·서술형 블록에 일괄 적용</li>
+            <li>진단 설정에 포함되지 않은 유형은 차트 시리즈·표 컬럼·서술형 응답·인식 차이 계산에서 모두 제외</li>
           </ul>
 
-          <h4>3. 문항 유형별 반영 방식</h4>
+          <h4>3. 종합 평가</h4>
           <ul>
-            <li>척도형·A/B강제선택형(6단계→5점 정규화)은 역량군 점수에 반영, 서술형은 점수 미반영 · 하단 섹션에 별도 노출</li>
+            <li>좌측 방사형 차트에 본인 · 구성원 · 상사 · 동료 · 전체평균을 한 도형 위에 겹쳐 표시 (본인은 면 채움, 나머지는 선)</li>
+            <li>우측 응답자별 점수 칩은 범례를 겸하며, 클릭하면 해당 시리즈를 차트에서 숨김/표시 (본인은 항상 표시)</li>
+            <li>방사형은 역량군 <b>3~8개</b>일 때만 사용 — 1~2개 또는 9개 이상이면 종합 점수 슬라이더(본인·타인·전체평균 마커)로 대체, <b>9개 이상</b>이면 역량군별 점수 카드(한 화면 4개, 좌우 이동)를 추가 노출</li>
+            <li>종합 점수는 <b>총점</b> = 본인 + 설정된 응답자 유형(구성원·상사·동료) 점수의 평균(유형별 동일 가중)</li>
+            <li>응답자 점수 칩 순서: <b>총점 → 본인 → 구성원 → 상사 → 동료 → 전체평균</b> (총점·본인은 항상 표시, 총점 칩은 클릭 토글 대상 아님)</li>
+            <li>유형·역량군 점수 = 소속 세부역량 점수의 평균, 응답자 구분별 종합 = 역량군 점수의 평균 (전체평균 동일 산식)</li>
           </ul>
 
-          <h4>4. 강점 / 약점 판정 기준</h4>
+          <h4>4. 종합 평가 코멘트 노출 규칙</h4>
           <ul>
-            <li>강점: 전사평균 기준 도달 여부로 판정(예시) / 약점: 본인 자기평가 기준(예시)</li>
-            <li>다면진단에서 판정 기준을 <b>본인 점수 / 전사평균 / 타인평균</b> 중 무엇으로 통일할지 <span class="spec-tag">기획 결정 필요</span></li>
+            <li>고정 문장 + 실제 점수 치환 (AI 생성 아님)</li>
+            <li>① <b>총점</b>과 전체평균의 차이 — 항상 노출</li>
+            <li>② 타인(구성원·상사·동료 중 설정된 유형) 평가 평균과 본인 점수의 차이 — 항상 노출, 차이 0.1점 미만이면 "비슷해요"</li>
+            <li>③ 가장 강점인 / 가장 보완이 필요한 역량군 — <b>역량군이 2개 이상</b>일 때 노출 / <b>역량군이 1개일 때만</b> 가장 높은 / 낮은 세부역량 문장으로 대체 (동시 노출 금지)</li>
+            <li>④ 추천 과정 안내 — 보완이 필요한 세부역량이 1개 이상일 때 노출</li>
           </ul>
 
-          <h4>5. 서술형 응답 익명성 처리 (신규 정의 필요)</h4>
+          <h4>5. 강점 / 약점 판정 기준</h4>
           <ul>
-            <li>복수 응답자 유형(구성원·동료 등)은 <b>최소 응답자 수 미만</b>일 때 서술형 원문을 비공개 처리 — 숫자 점수는 이미 평균으로 집계되어 노출되지만, 서술형 원문은 문체·내용만으로 특정인이 식별될 수 있어 별도 기준 필요</li>
-            <li>상사처럼 통상 1인으로 배정되는 유형은 대상자가 이미 신원을 알고 있으므로 최소 인원 기준 예외로 처리(안)</li>
-            <li>비공개 임계값(예시 3명), 유형별 예외 여부 모두 <span class="spec-tag">기획 확인 필요</span></li>
+            <li>역량군별로 진단 생성 시 관리자가 설정한 <b>강점 도달 점수(이상) / 약점 점수(미만)</b>(1~5점)를 <b>본인 점수</b>에 적용 (자가진단과 동일) — 하나의 역량군이 강점·약점 양쪽에 나타날 수 있음</li>
+            <li>다면진단에서 판정 대상을 <b>본인 점수 / 전체평균 / 타인 평균</b> 중 무엇으로 통일할지 <span class="spec-tag">기획 결정 필요</span></li>
           </ul>
 
-          <h4>6. GAP 정의 및 PDF 저장</h4>
+          <h4>6. 인식 차이</h4>
           <ul>
-            <li>GAP = 본인(자기평가) − 전사평균, 양수 파란색 · 음수 빨간색</li>
-            <li>PDF 저장 시 서술형 응답 포함 여부, 비공개 처리된 항목의 PDF 표기 방식 <span class="spec-tag">별도 스펙 필요</span></li>
+            <li>세부역량별로 <b>본인 점수 − 타인 평균</b>을 계산 (타인 평균 = 설정된 타인 유형 점수의 단순 평균)</li>
+            <li>차이가 <b>+0.5점 이상</b>이면 "본인이 더 높게 평가한 역량", <b>−0.5점 이하</b>이면 "타인이 더 높게 평가한 역량"으로 각각 차이가 큰 순 최대 3개 노출, 해당 없으면 "차이가 큰 역량이 없어요" <span class="spec-tag">기준값 0.5 확정 필요</span></li>
+          </ul>
+
+          <h4>7. 추천 과정 TOP 5</h4>
+          <ul>
+            <li>자가진단과 동일 — 보완이 필요한(약점 기준 미만) 세부역량을 전체평균과 차이가 큰 순으로 최대 5개, 세부역량당 대표 과정 1개 / 한 화면 3개(좁으면 2.5개) 슬라이드 / [전체보기] 시 우측 패널</li>
+          </ul>
+
+          <h4>8. 서술형 응답</h4>
+          <ul>
+            <li>점수에 반영되지 않으며, 질문별로 <b>본인 → 본인 외 응답</b> 순서로 원문 노출</li>
+            <li>본인 외 응답은 구성원·상사·동료 구분 없이 <b>응답자1, 응답자2…</b>로만 표기하고, 이름·소속·유형 등 식별 정보는 노출하지 않음 / 노출 순서는 유형이 드러나지 않도록 제출 순서와 무관하게 섞음</li>
+          </ul>
+
+          <h4>9. GAP</h4>
+          <ul>
+            <li>GAP = 본인 − 전체평균, 양수 파란색 · 음수 빨간색</li>
           </ul>
 
         </div>
@@ -707,6 +842,430 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
     </main>
   </div>
 </div>
+
+<!-- 추천과정 드로어 (edms_진단결과_가변계층.html 패턴 참고) -->
+<div class="course-overlay" id="courseOverlay" onclick="closeCoursePanel()"></div>
+<div class="course-drawer" id="courseDrawer">
+  <div class="cd-head">
+    <div>
+      <div class="cd-title">추천 과정</div>
+      <div class="cd-subtitle">홍길동 님의 진단결과를 분석하여 제안하는 추천 교육과정 정보입니다.</div>
+    </div>
+    <button class="cd-close" onclick="closeCoursePanel()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cd-tabs">
+    <div class="cd-tab active" onclick="switchCourseTab(this,'all')">전체</div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'strong')">강점 역량 <span class="cd-tab-badge strong">강화</span></div>
+    <div class="cd-tab" onclick="switchCourseTab(this,'weak')">약점 역량 <span class="cd-tab-badge weak">보완</span></div>
+  </div>
+  <div class="cd-body" id="courseBody"></div>
+</div>
+
+<div class="tip" id="tip"></div>
+<script>
+
+/* ── 점수 데이터 (단일 출처) — 모든 수치는 여기서 계산 ── */
+const ALL_GROUPS = [
+  // 세부역량: [이름, 본인, 전체평균, 구성원, 상사, 동료]
+  { name: 'Self역량군',     s: 4.0, w: 2.5, items: [['전략적 사고',4.5,3.8,3.6,3.5,3.8],['의사결정 능력',4.1,3.7,3.4,3.5,3.6],['위기 대응력',2.0,3.4,3.2,3.0,3.3]] },
+  { name: 'People역량군',   s: 4.2, w: 2.8, items: [['비전 및 목표 설정',3.8,4.0,4.4,4.3,3.9],['구성원 육성 및 동기부여',3.5,3.9,4.2,4.0,3.8],['인재 육성',3.7,3.8,4.1,4.0,3.7],['성과 창출 및 관리',3.4,3.5,4.1,4.1,3.8]] },
+  { name: 'Team역량군',     s: 4.0, w: 2.5, items: [['갈등 관리',2.5,3.9,3.5,3.4,3.6],['발표/표현',2.1,3.6,3.3,3.0,3.4],['팀 성과 관리',2.3,3.7,3.4,3.2,3.5]] },
+  { name: '소통협력역량군',  s: 3.8, w: 2.5, items: [['소통 및 협력',4.0,3.7,4.4,4.2,4.3],['다양성 존중',3.8,3.4,4.1,3.9,4.0]] },
+  { name: '혁신성과역량군',  s: 4.0, w: 2.5, items: [['윤리경영 및 책임의식',2.6,3.5,3.2,3.2,3.3],['변화관리 및 혁신',2.2,3.4,3.0,2.9,3.1]] },
+  { name: '전략기획역량군',  s: 4.0, w: 2.5, items: [['환경 분석',4.4,3.9,4.0,3.9,4.1],['중장기 계획 수립',4.1,3.8,3.7,3.6,3.8]] },
+  { name: '고객지향역량군',  s: 4.0, w: 2.5, items: [['고객 이해',3.2,3.5,3.6,3.5,3.6],['고객 가치 창출',3.0,3.3,3.4,3.3,3.5]] },
+  { name: '글로벌역량군',    s: 4.0, w: 2.5, items: [['문화 이해',2.8,3.4,3.3,3.2,3.4],['글로벌 협업',2.6,3.2,3.1,3.0,3.3]] },
+  { name: '디지털전환역량군', s: 4.0, w: 2.5, items: [['데이터 활용',3.7,3.4,3.5,3.4,3.5],['디지털 도구 활용',3.6,3.6,3.6,3.5,3.7]] },
+  { name: '윤리경영역량군',  s: 4.0, w: 2.5, items: [['청렴성',4.5,4.0,4.2,4.1,4.3],['책임의식',4.3,3.9,4.0,4.0,4.1]] },
+];
+/* 응답자 유형 (표시 순서: 본인 → 구성원 → 상사 → 동료) */
+const RT = { sub:{label:'구성원',color:'#16A34A',ix:3}, sup:{label:'상사',color:'#F97316',ix:4}, peer:{label:'동료',color:'#7C3AED',ix:5} };
+const RESP_PRESETS = { all:['sub','sup','peer'], sup:['sup'], subpeer:['sub','peer'] };
+let ACTIVE = RESP_PRESETS.all;                      // 진단 설정에 포함된 타인 유형
+const SHOW = { sub:true, sup:true, peer:true, avg:true };   // 차트 시리즈 표시 여부(범례 칩 토글)
+const PERC_GAP = 0.5;                               // 인식 차이 기준(점)
+const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
+const r1 = v => Math.round(v*10)/10;
+const f1 = v => r1(v).toFixed(1);
+const gapStr = d => { const g=r1(d); return g>0?'+'+g.toFixed(1):g<0?g.toFixed(1):'0.0'; };
+const gapCls = d => r1(d)>0?'gap-p':r1(d)<0?'gap-n':'';
+ALL_GROUPS.forEach(g => {
+  g.self = mean(g.items.map(i=>i[1]));
+  g.avg  = mean(g.items.map(i=>i[2]));
+  Object.keys(RT).forEach(k => { g[k] = mean(g.items.map(i=>i[RT[k].ix])); });
+  g.tag  = g.self >= g.s ? 's' : g.self < g.w ? 'w' : '';
+});
+const GROUPS = [];               // 화면에 표시 중인 역량군 (드롭다운으로 개수 조절)
+let TOTAL = { self:0, avg:0, sub:0, sup:0, peer:0 };
+function setGroupCount(n) {
+  GROUPS.length = 0;
+  ALL_GROUPS.slice(0, n).forEach(g => GROUPS.push(g));
+  ['self','avg','sub','sup','peer'].forEach(k => { TOTAL[k] = mean(GROUPS.map(g=>g[k])); });
+  renderAll();
+}
+function setRespSet(key) { ACTIVE = RESP_PRESETS[key]; renderAll(); }
+function toggleSeries(k) { SHOW[k] = !SHOW[k]; renderOverview(); renderRadar(); renderIndex(); }
+function renderAll() { renderOverview(); renderRadar(); renderSW(); renderPerception(); renderIndex(); renderTop(); renderEssays(); }
+const itemOthers = i => mean(ACTIVE.map(k=>i[RT[k].ix]));
+const totalScore = () => mean([TOTAL.self].concat(ACTIVE.map(k=>TOTAL[k])));   // 총점: 본인 + 응답자 유형 점수의 평균
+const pos = v => ((v-1)/4*100).toFixed(1) + '%';
+const TAG_BADGE = { s:'<span class="mini-badge s">강점</span>', w:'<span class="mini-badge w">약점</span>', '':'' };
+
+function slider(self, avg, thr, ex) {
+  const cls = thr ? (self >= thr.s ? 'pos' : self <= thr.w ? 'neg' : 'mid')   // 역량별 지수: 강점/약점/보통
+                  : (r1(self) >= r1(avg) ? 'pos' : 'neg');                  // 카드: 전체평균 대비
+  const t = thr ? `<div class="sl-thr s" style="left:${pos(thr.s)}"></div><div class="sl-thr w" style="left:${pos(thr.w)}"></div>` : '';
+  const dots = (ex||[]).filter(e=>SHOW[e.k]).map(e=>`<div class="sl-ex" style="left:${pos(e.v)};background:${e.c}" data-tip="${e.l} ${f1(e.v)}"></div>`).join('');
+  const avgMark = SHOW.avg ? `<div class="sl-avg" data-tip="전체평균 ${f1(avg)}" style="left:${pos(avg)}"><span>전체 ${f1(avg)}</span></div>` : '';
+  const lv = thr ? ` (${cls==='pos'?'강점':cls==='neg'?'약점':'보통'})` : '';
+  return `<div class="sl"><div class="sl-track">${t}
+    <div class="sl-fill ${cls}" style="width:${pos(self)}"></div>
+    ${avgMark}${dots}
+    <div class="sl-dot ${cls}" data-tip="본인 ${f1(self)}${lv}" style="left:${pos(self)}"></div></div></div>`;
+}
+const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : src[k], c: RT[k].color, l: RT[k].label }));
+
+function chipsHTML() {
+  const chip = (k, label, color, val, toggle) =>
+    `<button class="rchip ${toggle ? (SHOW[k] ? '' : 'off') : 'static'}" ${toggle ? `onclick="toggleSeries('${k}')"` : ''}><i style="background:${color}"></i>${label}<b>${val.toFixed(2)}</b></button>`;
+  return chip('all','총점','#111827',totalScore(),false) +
+         chip('self','본인','#246CF9',TOTAL.self,false) +
+         ACTIVE.map(k => chip(k, RT[k].label, RT[k].color, TOTAL[k], true)).join('') +
+         chip('avg','전체평균','#9CA3AF',TOTAL.avg,true);
+}
+
+function renderOverview() {
+  const ts = totalScore();
+  document.getElementById('totalNum').textContent = ts.toFixed(2);
+  const chips = chipsHTML();
+  document.getElementById('respList').innerHTML = chips;
+  document.getElementById('respListG').innerHTML = chips;
+  const d = Math.round((ts-TOTAL.avg)*100)/100;
+  const cmp = d>0 ? `<b class="hi">${d.toFixed(2)}점 높습니다</b>` : d<0 ? `<b class="lo">${Math.abs(d).toFixed(2)}점 낮습니다</b>` : '<b>같습니다</b>';
+  const sorted = [...GROUPS].sort((a,b)=>b.self-a.self);
+  const best = sorted[0], worst = sorted[sorted.length-1];
+  const items = GROUPS.flatMap(g => g.items.map(i => ({ name:i[0], self:i[1], s:g.s, w:g.w })));
+  const topItem = items.reduce((a,b)=>b.self>a.self?b:a);
+  const lowItem = items.reduce((a,b)=>b.self<a.self?b:a);
+  const nW = items.filter(i=>i.self<i.w).length;
+  const lines = [`총점(${ts.toFixed(2)}점)은 전체평균(${TOTAL.avg.toFixed(2)}점)보다 ${cmp}.`];
+  // 타인 평가 평균과 본인 점수 비교
+  const oth = mean(ACTIVE.map(k=>TOTAL[k])), od = Math.round((oth-TOTAL.self)*100)/100;
+  const names = ACTIVE.map(k=>RT[k].label).join('·');
+  lines.push(Math.abs(od) < 0.1 ? `${names} 평가 평균(${oth.toFixed(2)}점)은 본인 점수와 비슷해요.`
+    : `${names} 평가 평균(${oth.toFixed(2)}점)은 본인보다 <b class="${od>0?'hi':'lo'}">${Math.abs(od).toFixed(2)}점 ${od>0?'높아요':'낮아요'}</b>.`);
+  // 역량군 2개 이상이면 역량군 기준 문장, 1개뿐이면 세부역량 기준 문장 (둘 중 하나만 노출)
+  if (best !== worst) lines.push(`본인 점수 기준으로 가장 강점인 역량군은 <b class="hi">${best.name}(${f1(best.self)}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${worst.name}(${f1(worst.self)}점)</b>이에요.`);
+  else if (topItem !== lowItem) lines.push(`본인 점수 기준으로 세부역량 중 가장 높은 항목은 <b class="hi">${topItem.name}(${f1(topItem.self)}점)</b>, 가장 낮은 항목은 <b class="lo">${lowItem.name}(${f1(lowItem.self)}점)</b>이에요.`);
+  if (nW > 0) lines.push('보완이 필요한 역량에 도움이 되는 추천 과정을 아래에서 확인해 보세요.');
+  const desc = lines.join('<br>');
+  document.getElementById('headlineDesc').innerHTML = desc;
+  document.getElementById('gDesc').innerHTML = desc;
+  document.getElementById('gTotalNum').textContent = ts.toFixed(2);
+  document.getElementById('gFill').style.width = (ts/5*100)+'%';
+  document.getElementById('gSelf').style.left = (ts/5*100)+'%';
+  document.getElementById('gAvg').style.left = (TOTAL.avg/5*100)+'%';
+  document.getElementById('gAvg').style.display = SHOW.avg ? '' : 'none';
+  document.getElementById('gSelfVal').textContent = ts.toFixed(2);
+  document.getElementById('gAvgVal').textContent = TOTAL.avg.toFixed(2);
+  document.getElementById('gSelf').setAttribute('data-tip', `총점 ${ts.toFixed(2)}`);
+  document.getElementById('gAvg').setAttribute('data-tip', `전체평균 ${TOTAL.avg.toFixed(2)}`);
+  document.getElementById('gOthers').innerHTML = `<span class="gauge-mini" style="left:${TOTAL.self/5*100}%;background:#246CF9" data-tip="본인 ${TOTAL.self.toFixed(2)}"></span>` + ACTIVE.filter(k=>SHOW[k]).map(k =>
+    `<span class="gauge-mini" style="left:${TOTAL[k]/5*100}%;background:${RT[k].color}" data-tip="${RT[k].label} ${TOTAL[k].toFixed(2)}"></span>`).join('');
+}
+
+function renderGroupCards() {
+  document.getElementById('groupCards').innerHTML = GROUPS.map(g => {
+    const d = g.self - g.avg;
+    return `<div class="gc-card">
+      <div class="gc-head"><div class="gc-name">${g.name}${TAG_BADGE[g.tag]}</div></div>
+      <div class="gc-score"><span class="lbl">본인</span><span class="num ${g.tag==='w'?'lo':''}">${f1(g.self)}</span></div>
+      ${slider(g.self, g.avg, null, exOf(g, false))}
+      <div class="gc-foot"><span>전체평균 ${f1(g.avg)}</span><span class="${gapCls(r1(g.self)-r1(g.avg))}">GAP ${gapStr(r1(g.self)-r1(g.avg))}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderSW() {
+  const build = (kind) => {
+    const other = kind==='s' ? 'w' : 's';
+    const blocks = GROUPS.map(g => {
+      const its = g.items.filter(i => kind==='s' ? i[1] >= g.s : i[1] < g.w);
+      if (!its.length) return '';
+      const thr = kind==='s' ? `기준 ${g.s.toFixed(1)} 이상` : `기준 ${g.w.toFixed(1)} 미만`;
+      return `<div class="sw-group-block">
+        <div class="sw-group-head"><span>${g.name}</span><span class="sw-threshold ${kind}">${thr}</span></div>
+        <div class="sw-item-list">${its.sort((a,b)=>kind==='s'?b[1]-a[1]:a[1]-b[1]).map(i=>`<div class="sw-item-row"><span>${i[0]}</span><span class="sw-item-score">${f1(i[1])}</span></div>`).join('')}</div>
+      </div>`;
+    }).join('');
+    return blocks || '<div class="sw-note">해당하는 세부역량이 없습니다.</div>';
+  };
+  const ico = (p) => `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">${p}</svg>`;
+  document.getElementById('swGrid').innerHTML =
+    `<div class="sw-detail-card strength"><div class="sw-detail-title">${ico('<polyline points="20 6 9 17 4 12"/>')}강점 역량</div>${build('s')}</div>` +
+    `<div class="sw-detail-card weakness"><div class="sw-detail-title">${ico('<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>')}약점 역량</div>${build('w')}</div>`;
+}
+
+function renderPerception() {
+  const rows = GROUPS.flatMap(g => g.items.map(i => {
+    const oth = itemOthers(i), d = Math.round((i[1]-oth)*100)/100;
+    return { grp:g.name, name:i[0], self:i[1], oth, d };
+  }));
+  const names = ACTIVE.map(k=>RT[k].label).join('·');
+  document.getElementById('percNote').textContent = `본인 점수와 ${names} 평가 평균 비교 · 차이 ${PERC_GAP.toFixed(1)}점 이상`;
+  const hi = rows.filter(r=>r.d >= PERC_GAP).sort((a,b)=>b.d-a.d).slice(0,3);
+  const lo = rows.filter(r=>-r.d >= PERC_GAP).sort((a,b)=>a.d-b.d).slice(0,3);
+  const col = (title, sub, list, cls) => `<div class="perc-col"><div class="perc-title">${title}</div><div class="perc-sub">${sub}</div>` +
+    (list.length ? list.map((r,i) => `<div class="perc-row ${i===0?'first':''}"><div><div class="perc-name">${r.name}</div><div class="perc-grp">${r.grp}</div></div>
+      <div class="perc-val">본인 <b>${f1(r.self)}</b> · ${names} <b>${f1(r.oth)}</b><span class="perc-diff ${cls}">${r.d>0?'+':'-'}${Math.abs(r.d).toFixed(1)}</span></div></div>`).join('')
+      : '<div class="perc-empty">차이가 큰 역량이 없어요.</div>') + '</div>';
+  document.getElementById('percGrid').innerHTML =
+    col('본인이 더 높게 평가한 역량', '스스로는 높게 보지만 다른 평가자는 낮게 본 역량', hi, 'gap-p') +
+    col('다른 평가자가 더 높게 평가한 역량', '스스로는 낮게 보지만 다른 평가자는 높게 본 역량', lo, 'gap-n');
+}
+
+function renderIndex() {
+  document.getElementById('idxLegend').innerHTML =
+    `<span><i class="lg-dot"></i>본인 (<span style="color:var(--blue)">파랑</span>=강점 / <span style="color:#111827">검정</span>=보통 / <span style="color:var(--red)">빨강</span>=약점)</span>` +
+    ACTIVE.map(k => `<span><i style="width:8px;height:8px;border-radius:50%;background:${RT[k].color};"></i>${RT[k].label}</span>`).join('') +
+    `<span><i class="lg-tick"></i>전체평균</span><span><i class="lg-dash" style="border-color:rgba(36,108,249,.6);"></i>강점 기준</span><span><i class="lg-dash" style="border-color:rgba(220,38,38,.55);"></i>약점 기준</span><span class="section-sub">GAP = 본인 − 전체평균</span>`;
+  document.getElementById('idxHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:170px;">세부역량</th>
+    <th style="min-width:280px;">역량 보유 수준 <span style="font-weight:400;color:var(--text-400);">(1.0 – 5.0)</span></th><th style="width:60px;">본인</th>
+    ${ACTIVE.map(k=>`<th style="width:60px;">${RT[k].label}</th>`).join('')}<th style="width:72px;">전체평균</th><th style="width:60px;">GAP</th></tr>`;
+  let html = '';
+  GROUPS.forEach(g => {
+    g.items.forEach((it, idx) => {
+      const [name, self, avg] = it;
+      const tag = self >= g.s ? 's' : self < g.w ? 'w' : '';
+      const last = idx === g.items.length-1 ? ' class="grp-last"' : '';
+      const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
+        <div class="grp-name">${g.name}</div></td>` : '';
+      html += `<tr${last}>${cell}
+        <td class="ta-l">${name}${TAG_BADGE[tag]}</td>
+        <td>${slider(self, avg, g, exOf(it, true))}</td>
+        <td class="idx-score ${tag==='s'?'hi':tag==='w'?'lo':''}">${f1(self)}</td>
+        ${ACTIVE.map(k=>`<td>${f1(it[RT[k].ix])}</td>`).join('')}
+        <td>${f1(avg)}</td>
+        <td class="${gapCls(r1(self)-r1(avg))}">${gapStr(r1(self)-r1(avg))}</td></tr>`;
+    });
+  });
+  document.getElementById('idxBody').innerHTML = html;
+}
+
+/* ── 서술형 응답 (응답자 구분별, 3명 미만 비공개 / 상사 예외) ── */
+const ESSAYS = [
+  { q:'이 대상자의 리더십에서 가장 인상 깊었던 강점은 무엇인가요?', ans:{
+    self:{ n:1, t:['신규 프로젝트 착수 시 팀원 간 역할 분담 이견을 개별 면담으로 조율해 갈등 없이 완수한 경험이 있습니다.'] },
+    sub: { n:2, t:['팀원의 의견을 끝까지 들어주십니다.','어려운 상황에서도 차분하십니다.'] },
+    sup: { n:1, t:['위기 상황에서도 침착하게 우선순위를 재정렬하고 팀을 이끄는 모습이 인상적이었습니다.'] },
+    peer:{ n:3, t:['어려운 이해관계자 조율에서도 흔들리지 않는 태도를 보여줌','동료의 의견을 먼저 경청한 뒤 결정하는 스타일이 신뢰감을 줌','바쁜 와중에도 팀원 요청에 빠르게 반응함'] } } },
+  { q:'이 대상자에게 앞으로 더 필요하다고 생각하는 점을 서술해주세요.', ans:{
+    self:{ n:1, t:['다양한 이해관계자와의 커뮤니케이션 상황에서 보다 명확하고 설득력 있게 의견을 전달하는 능력이 필요하다고 느낍니다.'] },
+    sub: { n:2, t:['회의에서 방향을 조금 더 분명히 알려주시면 좋겠습니다.','업무 우선순위를 자주 공유해 주세요.'] },
+    sup: { n:1, t:['전체 미팅 등 여러 인원 앞에서 발표할 때 조금 더 간결하고 확신 있게 전달하면 좋겠습니다.'] },
+    peer:{ n:2, t:['타 부서와의 협의 시 사전 자료를 더 준비하면 좋겠습니다.','결정 사항을 문서로 남기면 좋겠습니다.'] } } },
+];
+function renderEssays() {
+  const chev = '<svg class="qa-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+  document.getElementById('essayBody').innerHTML = ESSAYS.map((e, qi) => {
+    // 본인 외 응답: 유형 구분 없이 응답자1, 응답자2…로만 표기 (노출 순서는 유형이 드러나지 않도록 섞음)
+    const others = ACTIVE.flatMap(k => e.ans[k].t).sort((x, y) => (x.length * 7 % 11) - (y.length * 7 % 11) || x.length - y.length);
+    const selfBlk = `<div class="ans-blk"><span class="ans-tag" style="background:#246CF922;color:#246CF9;">본인</span><div class="text-a">${e.ans.self.t[0]}</div></div>`;
+    const othBlk = others.map((x, i) => `<div class="ans-blk"><span class="ans-tag ans-gray">응답자${i+1}</span><div class="text-a">${x}</div></div>`).join('');
+    return `<details class="qa" ${qi===0 ? 'open' : ''}><summary><div class="text-q" style="margin-bottom:0;"><span class="text-q-num">${qi+1}</span>${e.q}</div>${chev}</summary><div class="qa-body">${selfBlk}${othBlk}</div></details>`;
+  }).join('');
+}
+
+/* 역량군별 점수 카드 캐러셀 (한 화면 노출 개수는 CSS 변수 --per) */
+function gcPerView() { return +getComputedStyle(document.getElementById('groupCards')).getPropertyValue('--per') || 4; }
+function pageGc(dir) {
+  const t = document.getElementById('groupCards');
+  t.scrollBy({ left: dir * (t.clientWidth + 12), behavior: 'smooth' });
+}
+function updateGcNav() {
+  const t = document.getElementById('groupCards');
+  const cards = t.querySelectorAll('.gc-card');
+  if (!cards.length) return;
+  const per = gcPerView();
+  const w = cards[0].offsetWidth + 12;
+  const first = Math.min(Math.round(t.scrollLeft / w), cards.length - 1);
+  const last = Math.min(first + per, cards.length);
+  document.getElementById('gcPage').textContent = `${first+1}–${last} / ${cards.length}`;
+  document.getElementById('gcPrev').disabled = t.scrollLeft <= 1;
+  document.getElementById('gcNext').disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 1;
+}
+function renderRadar() {
+  const n = GROUPS.length;
+  const box = document.getElementById('radarBox');
+  const useRadar = n >= 3 && n <= 8;
+  document.getElementById('ovRadar').style.display = useRadar ? '' : 'none';
+  document.getElementById('ovGauge').style.display = useRadar ? 'none' : '';
+  const showCards = n > 8;   // 9개 이상: 방사형 대신 역량군별 점수 카드 추가 (1~2개는 미노출)
+  document.getElementById('groupCardsSec').style.display = showCards ? '' : 'none';
+  if (showCards) { renderGroupCards(); document.getElementById('groupCards').scrollLeft = 0; updateGcNav(); }
+  if (!useRadar) { box.innerHTML = ''; return; } // 방사형 부적합 구간: 종합 점수 슬라이더 레이아웃으로 대체
+  const W=600,H=400,cx=W/2,cy=H/2+4,R=120;
+  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n,r=(v-1)/4*R;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const poly=vals=>vals.map((v,i)=>pt(i,v).join(',')).join(' ');
+  let svg=`<svg class="rd-svg" viewBox="0 0 ${W} ${H}">`;
+  for(let v=1;v<=5;v++) svg+=`<polygon class="rd-ring" points="${poly(GROUPS.map(()=>v))}"/>`;
+  for(let v=2;v<=5;v++) svg+=`<text class="rd-tick" x="${cx+4}" y="${cy-(v-1)/4*R-2}">${v}</text>`;
+  GROUPS.forEach((g,i)=>{const [x,y]=pt(i,5);svg+=`<line class="rd-axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;});
+  if (SHOW.avg) svg+=`<polygon class="rd-avg" points="${poly(GROUPS.map(g=>g.avg))}"/>`;
+  ACTIVE.filter(k=>SHOW[k]).forEach(k => {
+    svg+=`<polygon class="rd-ser" style="stroke:${RT[k].color}" points="${poly(GROUPS.map(g=>g[k]))}"/>`;
+    GROUPS.forEach((g,i)=>{const [px,py]=pt(i,g[k]); svg+=`<circle cx="${px}" cy="${py}" r="3.5" fill="${RT[k].color}" stroke="#fff" stroke-width="1.5"/>`;});
+  });
+  svg+=`<polygon class="rd-self" points="${poly(GROUPS.map(g=>g.self))}"/>`;
+  GROUPS.forEach((g,i)=>{
+    const [px,py]=pt(i,g.self); svg+=`<circle class="rd-dot" cx="${px}" cy="${py}" r="5"/>`;
+    const a=-Math.PI/2+i*2*Math.PI/n;
+    const lx=cx+(R+26)*Math.cos(a), ly=cy+(R+26)*Math.sin(a);
+    const anchor=Math.abs(Math.cos(a))<0.2?'middle':Math.cos(a)>0?'start':'end';
+    svg+=`<text class="rd-lab ${g.tag}" x="${lx}" y="${ly}" text-anchor="${anchor}">${g.name}</text>`;
+    svg+=`<text class="rd-val" x="${lx}" y="${ly+14}" text-anchor="${anchor}">${f1(g.self)}</text>`;
+  });
+  GROUPS.forEach((g,i)=>{
+    const tip = `${g.name}\n본인 ${f1(g.self)}` + ACTIVE.map(k=>`\n${RT[k].label} ${f1(g[k])}`).join('') + `\n전체평균 ${f1(g.avg)}`;
+    const vals = [g.self, g.avg].concat(ACTIVE.filter(k=>SHOW[k]).map(k=>g[k]));
+    vals.forEach(v => { const [hx,hy]=pt(i,v); svg+=`<circle cx="${hx}" cy="${hy}" r="12" fill="rgba(0,0,0,0)" data-tip="${tip}"/>`; });
+  });
+  box.innerHTML=svg+'</svg>';
+}
+
+/* ── 추천 과정 TOP 5: 보완이 필요한 세부역량(전체평균과 차이가 큰 순)별 대표 과정 ── */
+const REC_COURSES = {
+  '위기 대응력':      { title:'위기 상황 리더십 대응 전략',      desc:'예기치 못한 위기 상황에서 우선순위를 정하고 팀을 이끄는 의사결정 방법을 사례 중심으로 학습하는 과정',     type:'마이크로러닝', target:'직무공통', time:'30분',      price:'무료', seed:'c1' },
+  '갈등 관리':        { title:'갈등 상황에서의 커뮤니케이션 스킬', desc:'구성원 간 갈등을 조기에 파악하고 대화로 해결하는 단계별 커뮤니케이션 스킬을 익히는 과정',           type:'온라인',       target:'직무공통', time:'45분',      price:'무료', seed:'c2' },
+  '발표/표현':        { title:'효과적인 발표와 프레젠테이션',     desc:'메시지 구조화부터 전달 기법까지, 청중을 설득하는 발표 역량을 실습으로 강화하는 과정',                  type:'온라인',       target:'직무공통', time:'1시간 20분', price:'무료', seed:'c3' },
+  '팀 성과 관리':     { title:'OKR로 만드는 팀 성과 관리',       desc:'팀 목표를 OKR로 설정하고 점검·피드백하며 성과를 관리하는 실무 방법을 학습하는 과정',                  type:'온라인',       target:'직무공통', time:'1시간',      price:'무료', seed:'c7' },
+  '변화관리 및 혁신': { title:'변화관리 리더십 실전',            desc:'조직 변화를 주도하는 리더의 역할과 저항 관리, 혁신 문화 조성 방법을 다루는 실전 과정',                  type:'온라인',       target:'직무공통', time:'2시간',      price:'무료', seed:'c4' },
+};
+const IC = {
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>',
+  type:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>',
+  tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
+};
+let TOP_LIST = [], topIdx = 0;
+function buildTopList() {
+  const weak = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:i[1], avg:i[2], w:g.w })))
+    .filter(i => i.self < i.w)
+    .sort((a,b) => (Math.round((a.self-a.avg)*10) - Math.round((b.self-b.avg)*10)) || a.self - b.self)
+    .slice(0, 5);
+  TOP_LIST = weak.map(i => ({ ...i, course: REC_COURSES[i.name] || { title:`${i.name} 핵심 역량 강화`, type:'온라인', time:'1시간', seed:'c9' } }));
+  topIdx = 0;
+}
+function renderTop() {
+  buildTopList();
+  const sec = document.getElementById('topSec');
+  sec.style.display = TOP_LIST.length ? '' : 'none';
+  if (!TOP_LIST.length) return;
+  document.getElementById('topTitle').textContent = `추천 과정 TOP ${TOP_LIST.length}`;
+  document.getElementById('topTrack').innerHTML = TOP_LIST.map((t, i) => {
+    const c = t.course;
+    return `<div class="tc">
+      <div class="tc-thumb-wrap"><img class="tc-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt=""><span class="tc-rank">${i+1}순위</span></div>
+      <div class="tc-info">
+        <div class="tc-tag">${IC.folder}<span>${t.grp}</span>${IC.chev}<span>${t.name}</span></div>
+        <div class="tc-title">${c.title}</div>
+        <div class="tc-desc">${c.desc}</div>
+        <div class="tc-meta"><span>${IC.type}${c.type}</span><span>${IC.user}${c.target}</span><span>${IC.clock}${c.time}</span><span>${IC.tag}${c.price}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('topTrack').scrollLeft = 0;
+  updateTopNav();
+}
+function topPer() { return +getComputedStyle(document.getElementById('topTrack')).getPropertyValue('--per') || 3; }
+function topNav(dir) {
+  const t = document.getElementById('topTrack'), c = t.querySelector('.tc');
+  if (c) t.scrollBy({ left: dir * (c.offsetWidth + 14), behavior: 'smooth' });
+}
+function updateTopNav() {
+  const t = document.getElementById('topTrack'), cards = t.querySelectorAll('.tc');
+  if (!cards.length) return;
+  const w = cards[0].offsetWidth + 14, per = topPer();
+  document.getElementById('topPrev').disabled = t.scrollLeft <= 1;
+  document.getElementById('topNext').disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 1;
+}
+
+/* ── 그래프 마우스오버 툴팁 ([data-tip] 위임) ── */
+(function () {
+  const tip = document.getElementById('tip');
+  const place = e => {
+    const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = e.clientX + pad, y = e.clientY + pad;
+    if (x + w > innerWidth - 8) x = e.clientX - w - pad;
+    if (y + h > innerHeight - 8) y = e.clientY - h - pad;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  };
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (!el) { tip.style.opacity = 0; return; }
+    tip.textContent = el.getAttribute('data-tip'); tip.style.opacity = 1; place(e);
+  });
+  document.addEventListener('mousemove', e => { if (tip.style.opacity === '1') place(e); });
+  document.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+})();
+window.addEventListener('resize', () => { updateTopNav(); updateGcNav(); });
+setGroupCount(5);
+
+const COURSE_DATA = [
+  { grp: 'Self역량군',     cmp: '위기 대응력',            tag: 'weak',   name: '위기 상황 리더십 대응 전략',        type: 'micro',   thumb: 'https://picsum.photos/seed/c1/80/60' },
+  { grp: 'Team역량군',     cmp: '갈등 관리',    tag: 'weak',   name: '갈등 상황에서의 커뮤니케이션 스킬',  type: 'online',  thumb: 'https://picsum.photos/seed/c2/80/60' },
+  { grp: 'Team역량군',     cmp: '발표/표현',               tag: 'weak',   name: '효과적인 발표와 프레젠테이션',       type: 'online',  thumb: 'https://picsum.photos/seed/c3/80/60' },
+  { grp: 'Team역량군',     cmp: '팀 성과 관리',             tag: 'weak',   name: 'OKR로 만드는 팀 성과 관리',        type: 'online',  thumb: 'https://picsum.photos/seed/c7/80/60' },
+  { grp: '혁신성과역량군',   cmp: '변화관리 및 혁신',        tag: 'weak',   name: '변화관리 리더십 실전',              type: 'online',  thumb: 'https://picsum.photos/seed/c4/80/60' },
+  { grp: 'Self역량군',     cmp: '전략적 사고 · 의사결정 능력', tag: 'strong', name: '전략적 의사결정 심화',              type: 'online',  thumb: 'https://picsum.photos/seed/c5/80/60' },
+  { grp: '소통협력역량군',   cmp: '소통 및 협력 · 다양성 존중', tag: 'strong', name: '고성과 팀의 협업 노하우',           type: 'hybrid',  thumb: 'https://picsum.photos/seed/c6/80/60' },
+];
+const CD_TYPE_LABEL = { online: '온라인', offline: '오프라인', hybrid: '하이브리드러닝', micro: '마이크로러닝' };
+const CD_TAG_LABEL = { weak: '보완', strong: '강화' };
+
+function renderCourseItem(c) {
+  return `<a class="cd-item" href="#" onclick="return false;">
+    <img class="cd-item-thumb" src="${c.thumb}" alt="${c.name}" loading="lazy">
+    <div class="cd-item-left">
+      <div class="cd-item-cmp">${c.cmp}</div>
+      <div class="cd-item-name">${c.name}</div>
+      <span class="cd-item-type ${c.type}">${CD_TYPE_LABEL[c.type]}</span>
+    </div>
+  </a>`;
+}
+
+function renderCourses(tab) {
+  const list = tab === 'all' ? COURSE_DATA : COURSE_DATA.filter(c => c.tag === tab);
+  const body = document.getElementById('courseBody');
+  if (!list.length) { body.innerHTML = '<div style="text-align:center;padding:48px 0;color:var(--text-400);font-size:13px">해당 과정이 없습니다.</div>'; return; }
+
+  const count = tab === 'all' ? '' : `<div class="cd-count">총 ${list.length}개 과정</div>`;
+  body.innerHTML = count + list.map(renderCourseItem).join('');
+}
+function switchCourseTab(el, tab) {
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCourses(tab);
+}
+function scrollCourses(dir){
+  document.getElementById('rcTrack').scrollBy({ left: dir * 162, behavior: 'smooth' });
+}
+function openCoursePanel(){
+  document.getElementById('courseDrawer').classList.add('open');
+  document.getElementById('courseOverlay').classList.add('open');
+  document.querySelectorAll('.cd-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.cd-tab').classList.add('active');
+  renderCourses('all');
+}
+function closeCoursePanel(){
+  document.getElementById('courseDrawer').classList.remove('open');
+  document.getElementById('courseOverlay').classList.remove('open');
+}
+</script>
 
 </body>
 </html>
