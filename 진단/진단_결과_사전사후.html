@@ -127,7 +127,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .ov-main{flex:1;min-width:260px;}
 .ov-side{flex:1;min-width:260px;padding-left:26px;border-left:1px solid var(--border-light);}
 .rc-head-right{display:flex;align-items:center;gap:14px;}
-.rc-head-more{font-size:12px;color:var(--text-400);text-decoration:none;}
+.rc-head-more{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue);border-radius:8px;padding:8px 16px;text-decoration:none;white-space:nowrap;}
+.rc-head-more:hover{background:var(--blue);color:#fff;}
 @media (max-width:900px){
   .ov-grid{flex-direction:column;}
   .ov-side{width:100%;border-left:none;border-top:1px solid var(--border-light);padding-left:0;padding-top:16px;margin-top:16px;}
@@ -857,7 +858,7 @@ tr.dt-item-last td{border-bottom:1px solid var(--border);}
       <div class="section-card" id="topSec">
         <div class="section-head">
           <h3 id="topTitle">과정 추천</h3>
-          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">전체보기 ›</a>
+          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">추천과정 전체보기 ›</a>
         </div>
         <div class="section-body">
           <div class="top-wrap">
@@ -959,7 +960,7 @@ tr.dt-item-last td{border-bottom:1px solid var(--border);}
 
           <h4>7. 과정 추천</h4>
           <ul>
-            <li>자가진단과 동일 — 보완이 필요한(약점 기준 미만) 세부역량을 전체평균과 차이가 큰 순으로 최대 5개, 세부역량당 대표 과정 1개 / 한 화면 3개(좁으면 2.5개) 슬라이드 / [전체보기] 시 우측 패널</li>
+            <li>자가진단과 동일 — 보완이 필요한(약점 기준 미만) 세부역량을 전체평균과 차이가 큰 순으로 최대 5개, 세부역량당 대표 과정 1개 / 한 화면 3개(좁으면 2.5개) 슬라이드 / [추천과정 전체보기] 시 우측 패널</li>
           </ul>
 
           <h4>8. 서술형 응답</h4>

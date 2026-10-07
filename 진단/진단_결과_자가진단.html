@@ -127,7 +127,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .ov-main{flex:1;min-width:260px;}
 .ov-side{flex:1;min-width:260px;padding-left:26px;border-left:1px solid var(--border-light);}
 .rc-head-right{display:flex;align-items:center;gap:14px;}
-.rc-head-more{font-size:12px;color:var(--text-400);text-decoration:none;}
+.rc-head-more{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue);border-radius:8px;padding:8px 16px;text-decoration:none;white-space:nowrap;}
+.rc-head-more:hover{background:var(--blue);color:#fff;}
 @media (max-width:900px){
   .ov-grid{flex-direction:column;}
   .ov-side{width:100%;border-left:none;border-top:1px solid var(--border-light);padding-left:0;padding-top:16px;margin-top:16px;}
@@ -684,7 +685,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       <div class="section-card" id="topSec">
         <div class="section-head">
           <h3 id="topTitle">과정 추천</h3>
-          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">전체보기 ›</a>
+          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">추천과정 전체보기 ›</a>
         </div>
         <div class="section-body">
           <div class="top-wrap">
@@ -810,8 +811,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>8. 과정 추천</h4>
           <ul>
             <li>보완이 필요한 세부역량(약점 기준 미만)을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 최대 5개 선정, 세부역량마다 대표 과정 1개 노출 — 약점 세부역량이 5개 미만이면 해당 개수만, 없으면 섹션 미노출</li>
-            <li>한 화면에 <b>3개</b>씩 노출, 카드 3개가 들어가지 않는 폭에서는 <b>2.5개</b>(다음 카드가 반쯤 보이게)로 노출해 옆에 더 있음을 알림 / 좌우 이동 버튼은 카드 영역 양 끝에 배치(처음·끝에서는 해당 방향 버튼 숨김), 우측 상단에는 [전체보기]만 노출 / 카드마다 순위(썸네일 좌상단)·역량군 › 세부역량·과정명·소개·유형/대상/학습시간/가격 표시 (AI리터러시 과정 카드와 동일 구성)</li>
-            <li>[전체보기] 클릭 시 우측 추천 과정 패널(강점 강화 / 약점 보완 탭) 노출</li>
+            <li>한 화면에 <b>3개</b>씩 노출, 카드 3개가 들어가지 않는 폭에서는 <b>2.5개</b>(다음 카드가 반쯤 보이게)로 노출해 옆에 더 있음을 알림 / 좌우 이동 버튼은 카드 영역 양 끝에 배치(처음·끝에서는 해당 방향 버튼 숨김), 우측 상단에는 [추천과정 전체보기]만 노출 / 카드마다 순위(썸네일 좌상단)·역량군 › 세부역량·과정명·소개·유형/대상/학습시간/가격 표시 (AI리터러시 과정 카드와 동일 구성)</li>
+            <li>[추천과정 전체보기] 클릭 시 우측 추천 과정 패널(강점 강화 / 약점 보완 탭) 노출</li>
           </ul>
 
         </div>
