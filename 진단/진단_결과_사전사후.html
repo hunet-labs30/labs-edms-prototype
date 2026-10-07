@@ -844,7 +844,6 @@ tr.dt-item-last td{border-bottom:1px solid var(--border);}
                 <div class="ov3-cols" id="ovCols"></div>
                 <div class="ov3-rows" id="ovRows"></div>
                 <div class="ov3-axis"><div></div><div class="ov3-axis-in" id="ovAxis"></div><div></div><div></div><div></div></div>
-                <div class="ov3-legend" id="ovLegend"></div>
               </div>
             </div>
           </div>
@@ -1142,13 +1141,12 @@ const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : 
 
 // 종합 평가 막대: 축은 0 ~ 5 고정
 function ovRange() { return { lo:0, hi:5 }; }
-function ovFrame(rowsHTML, range, avg, legend, cols) {
+function ovFrame(rowsHTML, range, avg, cols) {
   const p = v => Math.max(0, Math.min(100, (v - range.lo) / (range.hi - range.lo) * 100));
   const ticks = []; for (let v = range.lo; v <= range.hi + 1e-9; v += 1) ticks.push(v);
   document.getElementById('ovCols').innerHTML = `<div>구분</div><div></div>${cols.map(c => `<div>${c}</div>`).join('')}`;
   document.getElementById('ovRows').innerHTML = rowsHTML(p) + `<div class="ov3-avg" style="left:calc(88px + (100% - 76px - 54px - 54px - 70px - 48px) * ${p(avg) / 100});"><span>전체평균 ${avg.toFixed(2)}</span></div>`;
   document.getElementById('ovAxis').innerHTML = ticks.map(v => `<span style="left:${p(v)}%">${v.toFixed(1)}</span>`).join('');
-  document.getElementById('ovLegend').innerHTML = legend;
 }
 function renderOvRows() {
   const keys = ACTIVE.length ? ['all', 'self'].concat(ACTIVE) : ['all'];   // 본인만: 종합 점수 = 본인 점수
@@ -1157,7 +1155,7 @@ function renderOvRows() {
   ovFrame(p => S.map((s, i) => {
     const d = r2(s.post) - r2(s.pre);
     return `${i === 1 ? '<div class="ov3-sep"></div>' : ''}<div class="ov3-rw"><div class="ov3-name"><i style="background:${s.c}"></i>${s.n}</div><div class="ov3-track" style="height:16px" data-tip="${s.n}\n사전 ${s.pre.toFixed(2)} → 사후 ${s.post.toFixed(2)} (${chg2(d)})\n전체평균 ${avg.toFixed(2)}"><div class="ov3-pre" style="width:${p(s.pre)}%;background:${s.c}"></div><div class="ov3-post" style="width:${p(s.post)}%;background:${s.c}"></div></div><div class="ov3-val pre">${s.pre.toFixed(2)}</div><div class="ov3-val">${s.post.toFixed(2)}</div><div class="ov3-gap ${gapCls(d)}">${chg2(d)}</div></div>`;
-  }).join(''), range, avg, `<span><i style="background:#9CA3AF;opacity:.4;height:4px"></i>사전</span><span><i style="background:#9CA3AF"></i>사후</span><span>┆ 점선 = 전체평균(사후)</span><span>변화 = 사후 − 사전</span>`, ['사전', '사후', '변화']);
+  }).join(''), range, avg, ['사전', '사후', '변화']);
 }
 function renderOverview() {
   const ts = totalScore();

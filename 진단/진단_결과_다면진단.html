@@ -771,8 +771,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
               <div class="ov3-main">
                 <div class="ov3-cols" id="ovCols"></div>
                 <div class="ov3-rows" id="ovRows"></div>
-                <div class="ov3-axis"><div></div><div class="ov3-axis-in" id="ovAxis"></div><div></div><div></div></div>
-                <div class="ov3-legend" id="ovLegend"></div>
+                <div class="ov3-axis"><div></div><div class="ov3-axis-in" id="ovAxis"></div><div></div><div></div></div><div class="ov3-legend"><span>GAP = 점수 − 전체평균</span></div>
               </div>
             </div>
           </div>
@@ -1021,13 +1020,12 @@ const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : 
 
 // 종합 평가 막대: 축은 0 ~ 5 고정
 function ovRange() { return { lo:0, hi:5 }; }
-function ovFrame(rowsHTML, range, avg, legend, cols) {
+function ovFrame(rowsHTML, range, avg, cols) {
   const p = v => Math.max(0, Math.min(100, (v - range.lo) / (range.hi - range.lo) * 100));
   const ticks = []; for (let v = range.lo; v <= range.hi + 1e-9; v += 1) ticks.push(v);
   document.getElementById('ovCols').innerHTML = `<div>구분</div><div></div><div>${cols[0]}</div><div>${cols[1]}</div>`;
   document.getElementById('ovRows').innerHTML = rowsHTML(p) + `<div class="ov3-avg" style="left:calc(88px + (100% - 76px - 54px - 70px - 36px) * ${p(avg) / 100});"><span>전체평균 ${avg.toFixed(2)}</span></div>`;
   document.getElementById('ovAxis').innerHTML = ticks.map(v => `<span style="left:${p(v)}%">${v.toFixed(1)}</span>`).join('');
-  document.getElementById('ovLegend').innerHTML = legend;
 }
 function renderOvRows() {
   const S = [{ n:'종합 점수', c:'#111827', v:totalScore() }, { n:'본인', c:SELF_C, v:TOTAL.self }].concat(ACTIVE.map(k => ({ n:RT[k].label, c:RT[k].color, v:TOTAL[k] })));
@@ -1035,7 +1033,7 @@ function renderOvRows() {
   ovFrame(p => S.map((s, i) => {
     const d = r1(s.v) - r1(avg);
     return `${i === 1 ? '<div class="ov3-sep"></div>' : ''}<div class="ov3-rw"><div class="ov3-name"><i style="background:${s.c}"></i>${s.n}</div><div class="ov3-track" data-tip="${s.n} ${s.v.toFixed(2)}\n전체평균 ${avg.toFixed(2)}"><div class="ov3-bar" style="width:${p(s.v)}%;background:${s.c}"></div></div><div class="ov3-val">${s.v.toFixed(2)}</div><div class="ov3-gap ${gapCls(d)}">${gapStr(d)}</div></div>`;
-  }).join(''), range, avg, S.map(s => `<span><i style="background:${s.c}"></i>${s.n}</span>`).join('') + `<span>┆ 점선 = 전체평균</span><span>GAP = 점수 − 전체평균</span>`, ['점수', 'GAP']);
+  }).join(''), range, avg, ['점수', 'GAP']);
 }
 function renderOverview() {
   const ts = totalScore();
