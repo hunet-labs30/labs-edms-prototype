@@ -495,7 +495,7 @@
     </div>
 
     <!-- [프로토타입 시뮬레이션] 로그인 계정 소속 범위 — 실제로는 로그인 세션 기준으로 자동 결정됨 -->
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;margin-top:12px;">
+    <div id="diag-scope-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#eef2f7;border:1px dashed #9aa5b1;border-radius:6px;padding:7px 12px;font-size:11px;color:#455060;margin-top:12px;">
       <span style="font-weight:700;white-space:nowrap;">🔐 [시뮬레이션] 로그인 계정 소속</span>
       <select id="diag-scope-select" style="height:24px;font-size:11px;padding:0 6px;max-width:280px;border:1px solid #ccc;border-radius:3px;" onchange="diagSetScope(this.value)"></select>
       <span id="diag-scope-desc" style="color:#3a5a99;"></span>
@@ -1308,6 +1308,9 @@
     document.querySelectorAll('.tab-panel').forEach(p => {
       p.classList.toggle('active', p.id === 'tab-' + name);
     });
+    // 로그인 계정 소속 시뮬레이션은 진단 관리 탭에만 적용
+    const scopeBar = document.getElementById('diag-scope-bar');
+    if (scopeBar) scopeBar.style.display = name === 'manage' ? 'flex' : 'none';
     if (name === 'qset' && !_qsetInited) { initQsetTab(); _qsetInited = true; }
   }
 

@@ -369,6 +369,8 @@ body {
 .s3-radio-card.selected { border-color:var(--primary);background:#e8f0fe; }
 .s3-radio-dot { width:16px;height:16px;min-width:16px;border:2px solid var(--border);border-radius:50%;margin-top:2px;flex-shrink:0;transition:all .12s; }
 .s3-radio-card.selected .s3-radio-dot { border-color:var(--primary);background:var(--primary);box-shadow:inset 0 0 0 3px #fff; }
+.s3-hunet-box { border:1.5px dashed #c7d8f7;background:#f8faff;border-radius:8px;padding:14px;margin-bottom:0; }
+.s3-hunet-tag { font-size:10px;font-weight:700;color:#fff;background:var(--primary);padding:2px 7px;border-radius:8px;margin-left:6px; }
 .s3-summary-box { background:#f8faff;border:1.5px solid #c7d8f7;border-radius:8px;padding:16px;position:sticky;top:0; }
 .s3-summary-title { font-size:12px;font-weight:700;color:#0a1e4a;margin-bottom:10px;display:flex;align-items:center;gap:6px; }
 .s3-summary-row { display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #dde8f8;font-size:12px; }
@@ -989,6 +991,16 @@ body {
                     </div>
                   </div>
                 </div>
+
+                <!-- 휴넷 임직원 전용 설정 -->
+                <div class="form-row s3-hunet-box">
+                  <label>결과지 템플릿 <span class="s3-hunet-tag">휴넷 임직원 전용</span></label>
+                  <select class="form-input" id="s3ResultTpl" onchange="renderS3Summary()">
+                    <option value="">기본 템플릿</option>
+                    <option value="ailiteracy">AI리터러시 결과지</option>
+                  </select>
+                  <div class="form-hint">휴넷 임직원에게만 노출되는 설정입니다. 고객사 교육담당자에게는 노출되지 않습니다.</div>
+                </div>
               </div>
 
               <!-- 우측: 구성 요약 -->
@@ -1149,6 +1161,7 @@ function renderS3Summary() {
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
     </div>
     ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
+    ${(() => { const sel = document.getElementById('s3ResultTpl'); return sel && sel.value ? `<div class="s3-summary-section-title">결과지 템플릿</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">휴넷 전용</span><span class="s3-summary-val">${sel.options[sel.selectedIndex].text}</span></div>` : ''; })()}
     ${warnHtml}`;
 }
 
