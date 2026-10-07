@@ -880,7 +880,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <h4>3. 종합 평가</h4>
           <ul>
             <li>역량군별 종합 점수 = 해당 역량군의 본인 + 응답자 유형 점수의 평균 (역량군 종합 점수의 평균 = 종합 종합 점수)</li>
-            <li>종합 점수 · 본인 · 구성원 · 상사 · 동료를 줄마다 가로 막대로 표시(순서 고정, 점수와 GAP = 점수 − 전체평균 병기) / 전체평균은 모든 줄을 관통하는 점선 / 축은 표시되는 값의 최소~최대에 0.5점 여유를 둔 범위(0.5점 단위)로 확대 / 설정된 응답자 유형만 표시</li>
+            <li>종합 점수 · 본인 · 구성원 · 상사 · 동료를 줄마다 가로 막대로 표시(순서 고정, 점수와 GAP = 점수 − 전체평균 병기) / 전체평균은 모든 줄을 관통하는 점선 / 축은 0 ~ 5 고정 / 설정된 응답자 유형만 표시</li>
             <li>역량군이 <b>2개 이상</b>이면 역량군별 점수 세로막대(역량군마다 <b>종합 점수 · 본인 · 구성원 · 상사 · 동료</b> 막대를 묶어서 표시, 전체평균 가로선, GAP = 종합 점수 − 전체평균)를 추가 노출</li>
             <li>종합 점수는 <b>종합 점수</b> = 본인 + 설정된 응답자 유형(구성원·상사·동료) 점수의 평균(유형별 동일 가중)</li>
             <li>유형·역량군 점수 = 소속 세부역량 점수의 평균, 응답자 구분별 종합 = 역량군 점수의 평균 (전체평균 동일 산식)</li>
@@ -1019,23 +1019,19 @@ function slider(self, avg, thr, ex, label, col) {
 }
 const exOf = (src, isItem) => ACTIVE.map(k => ({ k, v: isItem ? src[RT[k].ix] : src[k], c: RT[k].color, l: RT[k].label }));
 
-// 종합 평가 막대: 값 범위에 맞춰 축을 확대 (0.5 단위)
-function ovRange(vals) {
-  let lo = Math.max(1, Math.floor((Math.min(...vals) - 0.3) * 2) / 2), hi = Math.min(5, Math.ceil((Math.max(...vals) + 0.3) * 2) / 2);
-  while (hi - lo < 1.5) { if (lo > 1) lo -= 0.5; if (hi - lo < 1.5 && hi < 5) hi += 0.5; if (lo <= 1 && hi >= 5) break; }
-  return { lo, hi };
-}
+// 종합 평가 막대: 축은 0 ~ 5 고정
+function ovRange() { return { lo:0, hi:5 }; }
 function ovFrame(rowsHTML, range, avg, legend, cols) {
   const p = v => Math.max(0, Math.min(100, (v - range.lo) / (range.hi - range.lo) * 100));
-  const ticks = []; for (let v = range.lo; v <= range.hi + 1e-9; v += 0.5) ticks.push(v);
+  const ticks = []; for (let v = range.lo; v <= range.hi + 1e-9; v += 1) ticks.push(v);
   document.getElementById('ovCols').innerHTML = `<div>구분</div><div></div><div>${cols[0]}</div><div>${cols[1]}</div>`;
   document.getElementById('ovRows').innerHTML = rowsHTML(p) + `<div class="ov3-avg" style="left:calc(88px + (100% - 76px - 54px - 70px - 36px) * ${p(avg) / 100});"><span>전체평균 ${avg.toFixed(2)}</span></div>`;
   document.getElementById('ovAxis').innerHTML = ticks.map(v => `<span style="left:${p(v)}%">${v.toFixed(1)}</span>`).join('');
-  document.getElementById('ovLegend').innerHTML = legend + `<span>축 ${range.lo.toFixed(1)} – ${range.hi.toFixed(1)} (확대)</span>`;
+  document.getElementById('ovLegend').innerHTML = legend;
 }
 function renderOvRows() {
   const S = [{ n:'종합 점수', c:'#111827', v:totalScore() }, { n:'본인', c:SELF_C, v:TOTAL.self }].concat(ACTIVE.map(k => ({ n:RT[k].label, c:RT[k].color, v:TOTAL[k] })));
-  const avg = TOTAL.avg, range = ovRange(S.map(s => s.v).concat(avg));
+  const avg = TOTAL.avg, range = ovRange();
   ovFrame(p => S.map((s, i) => {
     const d = r1(s.v) - r1(avg);
     return `${i === 1 ? '<div class="ov3-sep"></div>' : ''}<div class="ov3-rw"><div class="ov3-name"><i style="background:${s.c}"></i>${s.n}</div><div class="ov3-track" data-tip="${s.n} ${s.v.toFixed(2)}\n전체평균 ${avg.toFixed(2)}"><div class="ov3-bar" style="width:${p(s.v)}%;background:${s.c}"></div></div><div class="ov3-val">${s.v.toFixed(2)}</div><div class="ov3-gap ${gapCls(d)}">${gapStr(d)}</div></div>`;
