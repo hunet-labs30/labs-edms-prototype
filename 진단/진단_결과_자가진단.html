@@ -405,7 +405,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .rd-list tr:last-child td{border-bottom:none;}
 
 
-/* ── 추천 과정 TOP5 (AI리터러시 TOP2 카드 방식) ── */
+/* ── 과정 추천 (AI리터러시 TOP2 카드 방식) ── */
 .top-card{border:1px solid var(--border);border-radius:12px;padding:16px 18px 18px;background:var(--white);}
 .top-title-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .top-badge{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:10px;background:var(--primary-light);color:var(--primary);}
@@ -428,7 +428,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 @media (max-width:760px){.top-course{flex-direction:column;align-items:flex-start;}.top-thumb{width:100%;height:150px;}}
 
 
-/* ── 추천 과정 TOP 5: 3개씩 슬라이드 ── */
+/* ── 과정 추천: 3개씩 슬라이드 ── */
 .top-wrap{position:relative;}
 .top-arrow:disabled{opacity:0;pointer-events:none;}
 .top-arrow{z-index:2;}
@@ -680,10 +680,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         </div>
       </div>
 
-      <!-- 추천 과정 TOP 5 (한 화면 3개씩 좌우 슬라이드) -->
+      <!-- 과정 추천 (한 화면 3개씩 좌우 슬라이드) -->
       <div class="section-card" id="topSec">
         <div class="section-head">
-          <h3 id="topTitle">추천 과정 TOP 5</h3>
+          <h3 id="topTitle">과정 추천</h3>
           <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">전체보기 ›</a>
         </div>
         <div class="section-body">
@@ -807,7 +807,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li>강점/보완 세부역량 개수를 알려주는 문장은 사용하지 않음</li>
           </ul>
 
-          <h4>8. 추천 과정 TOP 5</h4>
+          <h4>8. 과정 추천</h4>
           <ul>
             <li>보완이 필요한 세부역량(약점 기준 미만)을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 최대 5개 선정, 세부역량마다 대표 과정 1개 노출 — 약점 세부역량이 5개 미만이면 해당 개수만, 없으면 섹션 미노출</li>
             <li>한 화면에 <b>3개</b>씩 노출, 카드 3개가 들어가지 않는 폭에서는 <b>2.5개</b>(다음 카드가 반쯤 보이게)로 노출해 옆에 더 있음을 알림 / 좌우 이동 버튼은 카드 영역 양 끝에 배치(처음·끝에서는 해당 방향 버튼 숨김), 우측 상단에는 [전체보기]만 노출 / 카드마다 순위(썸네일 좌상단)·역량군 › 세부역량·과정명·소개·유형/대상/학습시간/가격 표시 (AI리터러시 과정 카드와 동일 구성)</li>
@@ -1021,7 +1021,7 @@ function renderRadar() {
   box.innerHTML=svg+'</svg>';
 }
 
-/* ── 추천 과정 TOP 5: 보완이 필요한 세부역량(전체평균과 차이가 큰 순)별 대표 과정 ── */
+/* ── 과정 추천: 보완이 필요한 세부역량(전체평균과 차이가 큰 순)별 대표 과정 ── */
 const REC_COURSES = {
   '위기 대응력':      { title:'위기 상황 리더십 대응 전략',      desc:'예기치 못한 위기 상황에서 우선순위를 정하고 팀을 이끄는 의사결정 방법을 사례 중심으로 학습하는 과정',     type:'마이크로러닝', target:'직무공통', time:'30분',      price:'무료', seed:'c1' },
   '갈등 관리':        { title:'갈등 상황에서의 커뮤니케이션 스킬', desc:'구성원 간 갈등을 조기에 파악하고 대화로 해결하는 단계별 커뮤니케이션 스킬을 익히는 과정',           type:'온라인',       target:'직무공통', time:'45분',      price:'무료', seed:'c2' },
@@ -1051,7 +1051,7 @@ function renderTop() {
   const sec = document.getElementById('topSec');
   sec.style.display = TOP_LIST.length ? '' : 'none';
   if (!TOP_LIST.length) return;
-  document.getElementById('topTitle').textContent = `추천 과정 TOP ${TOP_LIST.length}`;
+  document.getElementById('topTitle').textContent = `과정 추천`;
   document.getElementById('topTrack').innerHTML = TOP_LIST.map((t, i) => {
     const c = t.course;
     return `<div class="tc">
