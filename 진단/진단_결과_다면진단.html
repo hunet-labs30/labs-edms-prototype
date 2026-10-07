@@ -1103,8 +1103,8 @@ function renderPerception() {
       <div class="perc-val">본인 <b>${f1(r.self)}</b> · ${names} <b>${f1(r.oth)}</b><span class="perc-diff ${cls}">${r.d>0?'+':'-'}${Math.abs(r.d).toFixed(1)}</span></div></div>`).join('')
       : '<div class="perc-empty">차이가 큰 역량이 없어요.</div>') + '</div>';
   document.getElementById('percGrid').innerHTML =
-    col('본인이 더 높게 평가한 역량', '스스로는 높게 보지만 다른 평가자는 낮게 본 역량', hi, 'gap-p') +
-    col('다른 평가자가 더 높게 평가한 역량', '스스로는 낮게 보지만 다른 평가자는 높게 본 역량', lo, 'gap-n');
+    col('다른 평가자가 더 높게 평가한 역량', '스스로는 낮게 보지만 다른 평가자는 높게 본 역량', lo, 'gap-n') +
+    col('본인이 더 높게 평가한 역량', '스스로는 높게 보지만 다른 평가자는 낮게 본 역량', hi, 'gap-p');
 }
 
 const IDX_K = 'all';   // 역량별 지수 그래프는 종합 점수(종합)만 표시
