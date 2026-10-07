@@ -316,6 +316,21 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 .gc-grid .gc-card{flex:0 0 calc((100% - (var(--per) - 1) * var(--gap)) / var(--per));scroll-snap-align:start;}
 @media (max-width:1100px){.gc-grid{--per:3;}}
 @media (max-width:760px){.gc-grid{--per:2;}}
+/* 역량군별 점수 세로막대 (역량군 9개 이상) */
+.gb-chart{overflow-x:auto;}
+.gb-row{display:flex;gap:10px;min-width:100%;}
+.gb-col{flex:1 0 64px;display:flex;flex-direction:column;align-items:stretch;min-width:0;}
+.gb-plot{position:relative;height:200px;border-bottom:1px solid var(--border);background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),var(--border) calc(25% - 1px),var(--border) 25%);}
+.gb-bar{position:absolute;left:22%;right:22%;bottom:0;background:#111827;border-radius:4px 4px 0 0;}
+.gb-bar.s{background:var(--blue);}
+.gb-bar.w{background:var(--red);}
+.gb-val{position:absolute;left:0;right:0;text-align:center;font-size:12px;font-weight:700;color:var(--text-900);transform:translateY(-100%);padding-bottom:3px;}
+.gb-avg{position:absolute;left:8%;right:8%;height:0;border-top:2px dashed var(--text-400);}
+.gb-name{font-size:12px;font-weight:600;color:var(--text-900);text-align:center;margin-top:8px;line-height:1.35;word-break:keep-all;}
+.gb-gap{font-size:11px;text-align:center;margin-top:3px;}
+.gb-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:11.5px;color:var(--text-500);margin-top:14px;}
+.gb-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+.gb-legend i.avg{width:14px;height:0;border-radius:0;border-top:2px dashed var(--text-400);}
 .gc-page{font-size:12px;color:var(--text-400);min-width:52px;text-align:center;}
 .rc-nav-btn:disabled{opacity:.35;cursor:default;border-color:var(--border);color:var(--text-500);}
 .gc-card{border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px 12px;}
@@ -429,7 +444,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 @media (max-width:760px){.top-course{flex-direction:column;align-items:flex-start;}.top-thumb{width:100%;height:150px;}}
 
 
-/* ── 과정 추천: 3개씩 슬라이드 ── */
+/* ── 과정 추천: 영역 카드 ── */
+.top-list{display:flex;flex-direction:column;gap:14px;}
+.top-grp{font-size:12px;color:var(--text-400);}
+.top-tag{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.top-tag svg,.top-meta svg{width:13px;height:13px;flex-shrink:0;}
+.top-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.top-desc{font-size:12.5px;color:var(--text-500);line-height:1.5;}
+.top-course-wrap .top-arrow.left{left:-8px;}
+.top-course-wrap .top-arrow.right{right:-8px;}
+.top-counter{top:-8px;}
 .top-wrap{position:relative;}
 .top-arrow:disabled{opacity:0;pointer-events:none;}
 .top-arrow{z-index:2;}
@@ -656,18 +680,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
       <div class="section-card" id="groupCardsSec" style="display:none;">
         <div class="section-head">
           <h3>역량군별 점수</h3>
-          <div class="rc-nav" style="align-items:center;">
-            <span class="gc-page" id="gcPage"></span>
-            <button class="rc-nav-btn" id="gcPrev" onclick="pageGc(-1)" aria-label="이전">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <button class="rc-nav-btn" id="gcNext" onclick="pageGc(1)" aria-label="다음">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
         </div>
         <div class="section-body">
-          <div class="gc-grid" id="groupCards" onscroll="updateGcNav()"></div>
+          <div class="gb-chart" id="groupCards"></div>
         </div>
       </div>
 
@@ -678,21 +693,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         </div>
         <div class="section-body">
           <div class="sw-detail-grid" id="swGrid"></div>
-        </div>
-      </div>
-
-      <!-- 과정 추천 (한 화면 3개씩 좌우 슬라이드) -->
-      <div class="section-card" id="topSec">
-        <div class="section-head">
-          <h3 id="topTitle">과정 추천</h3>
-          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">추천과정 전체보기 ›</a>
-        </div>
-        <div class="section-body">
-          <div class="top-wrap">
-            <button class="top-arrow left" id="topPrev" onclick="topNav(-1)" aria-label="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
-            <div class="top-track" id="topTrack" onscroll="updateTopNav()"></div>
-            <button class="top-arrow right" id="topNext" onclick="topNav(1)" aria-label="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
-          </div>
         </div>
       </div>
 
@@ -748,6 +748,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
         </div>
       </div>
 
+      <!-- 과정 추천 (우선 학습 추천 영역 카드) -->
+      <div class="section-card" id="topSec">
+        <div class="section-head">
+          <h3 id="topTitle">과정 추천</h3>
+          <a href="#" onclick="openCoursePanel();return false;" class="rc-head-more">추천과정 전체보기 ›</a>
+        </div>
+        <div class="section-body">
+          <div class="top-list" id="topList"></div>
+        </div>
+      </div>
+
       <!-- 기획 스펙 노트 -->
       <div class="spec-section">
         <div class="spec-title">
@@ -794,7 +805,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
           <ul>
             <li>방사형은 <b>역량군 단위</b>(축 3~8개)에만 사용 — 세부역량은 축이 많아 읽기 어려우므로 [역량별 지수] 표로 제공</li>
             <li>역량군이 2개 이하이거나 9개 이상이면 방사형 대신 <b>종합 점수 슬라이더 1개</b>(본인 vs 전체평균)로 대체</li>
-            <li>역량군이 <b>9개 이상</b>일 때만 종합 평가 아래에 <b>역량군별 점수 카드</b>(본인 점수·전체평균 슬라이더·GAP·강점/약점 배지)를 추가 노출 — 1~2개는 추가 노출 없음</li>
+            <li>역량군이 <b>9개 이상</b>일 때만 종합 평가 아래에 <b>역량군별 점수 세로막대</b>(본인 점수 막대·전체평균 가로선·GAP)를 추가 노출 — 1~2개는 추가 노출 없음</li>
             <li>카드는 <b>한 화면에 4개</b>씩 노출(화면 폭에 따라 3개/2개), 좌우 버튼으로 4개 단위 이동, 현재 위치(예: 1–4 / 9) 표시</li>
             <li>역량군별 슬라이더 단독 노출은 사용하지 않음 (카드 안에서만 표시)</li>
           </ul>
@@ -811,8 +822,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
           <h4>8. 과정 추천</h4>
           <ul>
-            <li>보완이 필요한 세부역량(약점 기준 미만)을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 최대 5개 선정, 세부역량마다 대표 과정 1개 노출 — 약점 세부역량이 5개 미만이면 해당 개수만, 없으면 섹션 미노출</li>
-            <li>한 화면에 <b>3개</b>씩 노출, 카드 3개가 들어가지 않는 폭에서는 <b>2.5개</b>(다음 카드가 반쯤 보이게)로 노출해 옆에 더 있음을 알림 / 좌우 이동 버튼은 카드 영역 양 끝에 배치(처음·끝에서는 해당 방향 버튼 숨김), 우측 상단에는 [추천과정 전체보기]만 노출 / 카드마다 순위(썸네일 좌상단)·역량군 › 세부역량·과정명·소개·유형/대상/학습시간/가격 표시 (AI리터러시 과정 카드와 동일 구성)</li>
+            <li>약점 기준 미만 세부역량을 <b>전체평균과의 차이가 큰 순</b>(동률이면 본인 점수가 낮은 순)으로 먼저 선정하고, 2개 미만이면 나머지 세부역량 중 전체평균 대비 점수가 낮은 순으로 채워 <b>항상 1순위 · 2순위</b>를 영역 카드로 노출</li>
+            <li>카드마다 순위 · 세부역량명 · 역량군 · 추천 사유 · 연계된 이러닝 과정(한 번에 1개, 좌우 이동 · n / m 표시)을 노출 / 과정은 썸네일 · 과정명 · 소개 · 유형/대상/학습시간/가격 표시 (AI리터러시 우선 학습 추천 영역과 동일 구성)</li>
+            <li>추천 사유: &quot;{세부역량} 점수가 {점수}점으로 약점 기준({기준}점) 미만이고 전체평균({평균}점)보다 {차이}점 낮아, 우선 학습 영역으로 추천하였습니다.&quot; + 연계된 이러닝 과정 개수 안내</li>
             <li>[추천과정 전체보기] 클릭 시 우측 추천 과정 패널(강점 강화 / 약점 보완 탭) 노출</li>
           </ul>
 
@@ -920,16 +932,16 @@ function renderOverview() {
   document.getElementById('gAvg').setAttribute('data-tip', `전체평균 ${TOTAL_AVG.toFixed(2)}`);
 }
 
+function gcBars(rows) {
+  const clamp = v => Math.max(0, Math.min(100, (v-1)/4*100));
+  return `<div class="gb-row">` + rows.map(r => {
+    const h = clamp(r.val), ah = clamp(r.avg), d = r1(r.val)-r1(r.avg);
+    return `<div class="gb-col"><div class="gb-plot" data-tip="${r.name}\n${r.lbl} ${f1(r.val)}\n전체평균 ${f1(r.avg)}"><div class="gb-bar ${r.cls}" style="height:${h}%"></div><span class="gb-val" style="bottom:${h}%">${f1(r.val)}</span><div class="gb-avg" style="bottom:${ah}%"></div></div><div class="gb-name">${r.name}</div><div class="gb-gap ${gapCls(d)}">GAP ${gapStr(d)}</div></div>`;
+  }).join('') + `</div><div class="gb-legend"><span><i style="background:var(--blue)"></i>강점 기준 이상</span><span><i style="background:#111827"></i>보통</span><span><i style="background:var(--red)"></i>약점 기준 미만</span><span><i class="avg"></i>전체평균</span></div>`;
+}
+
 function renderGroupCards() {
-  document.getElementById('groupCards').innerHTML = GROUPS.map(g => {
-    const d = g.self - g.avg;
-    return `<div class="gc-card">
-      <div class="gc-head"><div class="gc-name">${g.name}${TAG_BADGE[g.tag]}</div></div>
-      <div class="gc-score"><span class="lbl">본인</span><span class="num ${g.tag==='w'?'lo':''}">${f1(g.self)}</span></div>
-      ${slider(g.self, g.avg)}
-      <div class="gc-foot"><span>전체평균 ${f1(g.avg)}</span><span class="${gapCls(r1(g.self)-r1(g.avg))}">GAP ${gapStr(r1(g.self)-r1(g.avg))}</span></div>
-    </div>`;
-  }).join('');
+  document.getElementById('groupCards').innerHTML = gcBars(GROUPS.map(g => ({ name:g.name, val:g.self, avg:g.avg, cls:g.tag, lbl:'본인' })));
 }
 
 function renderSW() {
@@ -1039,49 +1051,58 @@ const IC = {
   clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>',
   tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>',
 };
-let TOP_LIST = [], topIdx = 0;
+let TOP_LIST = [], topIdx = [];
 function buildTopList() {
-  const weak = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:i[1], avg:i[2], w:g.w })))
-    .filter(i => i.self < i.w)
-    .sort((a,b) => (Math.round((a.self-a.avg)*10) - Math.round((b.self-b.avg)*10)) || a.self - b.self)
-    .slice(0, 5);
-  TOP_LIST = weak.map(i => ({ ...i, course: REC_COURSES[i.name] || { title:`${i.name} 핵심 역량 강화`, type:'온라인', time:'1시간', seed:'c9' } }));
-  topIdx = 0;
+  const cand = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:i[1], avg:i[2], w:g.w })));
+  const byGap = (a,b) => (Math.round((a.self-a.avg)*10) - Math.round((b.self-b.avg)*10)) || a.self - b.self;
+  const weak = cand.filter(i => i.self < i.w).sort(byGap), rest = cand.filter(i => i.self >= i.w).sort(byGap);   // 약점 우선, 부족하면 나머지 중 전체평균 대비 낮은 순으로 채움
+  const top = weak.concat(rest).slice(0, 2);
+  TOP_LIST = top.map(i => ({ ...i, course: REC_COURSES[i.name] || { title:`${i.name} 핵심 역량 강화`, type:'온라인', time:'1시간', seed:'c9' } }));
+  topIdx = TOP_LIST.map(() => 0);
+}
+// 우선 학습 추천 영역: 영역(세부역량)마다 추천 사유 + 연계된 이러닝 과정(좌우 이동)
+function areaCourses(t) {
+  const nm = t.name;
+  return [t.course,
+    { title:`${nm} 실전 사례 학습`, desc:`${nm} 관련 현업 사례를 통해 적용 방법을 익히는 과정`, type:'마이크로러닝', target:'직무공통', time:'40분', price:'무료', seed:'c5' },
+    { title:`${nm} 핵심 스킬업`, desc:`${nm} 역량의 핵심 개념과 실습을 단계별로 학습하는 과정`, type:'온라인', target:'직무공통', time:'1시간 30분', price:'무료', seed:'c6' }];
+}
+function topCourseHTML(c, t) {
+  return `<img class="top-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
+    <div class="top-info">
+      <div class="top-tag">${IC.folder}<span>${t.grp}</span>${IC.chev}<span>${t.name}</span></div>
+      <div class="top-ctitle">${c.title}</div>
+      <div class="top-desc">${c.desc || ''}</div>
+      <div class="top-meta"><span>${IC.type}${c.type}</span><span>${IC.user}${c.target || '직무공통'}</span><span>${IC.clock}${c.time}</span><span>${IC.tag}${c.price || '무료'}</span></div>
+    </div>`;
+}
+function renderTopCourse(i) {
+  const list = TOP_LIST[i].courses, k = topIdx[i];
+  document.getElementById('topCourse-' + i).innerHTML = topCourseHTML(list[k], TOP_LIST[i]);
+  document.getElementById('topCounter-' + i).textContent = (k + 1) + ' / ' + list.length;
 }
 function renderTop() {
   buildTopList();
   const sec = document.getElementById('topSec');
   sec.style.display = TOP_LIST.length ? '' : 'none';
   if (!TOP_LIST.length) return;
-  document.getElementById('topTitle').textContent = `과정 추천`;
-  document.getElementById('topTrack').innerHTML = TOP_LIST.map((t, i) => {
-    const c = t.course;
-    return `<div class="tc">
-      <div class="tc-thumb-wrap"><img class="tc-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt=""><span class="tc-rank">${i+1}순위</span></div>
-      <div class="tc-info">
-        <div class="tc-tag">${IC.folder}<span>${t.grp}</span>${IC.chev}<span>${t.name}</span></div>
-        <div class="tc-title">${c.title}</div>
-        <div class="tc-desc">${c.desc}</div>
-        <div class="tc-meta"><span>${IC.type}${c.type}</span><span>${IC.user}${c.target}</span><span>${IC.clock}${c.time}</span><span>${IC.tag}${c.price}</span></div>
-      </div>
+  const arrow = (i, dir) => `<button class="top-arrow ${dir < 0 ? 'left' : 'right'}" onclick="topNav(${i},${dir})" aria-label="${dir < 0 ? '이전' : '다음'} 과정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${dir < 0 ? '15 18 9 12 15 6' : '9 18 15 12 9 6'}"/></svg></button>`;
+  document.getElementById('topList').innerHTML = TOP_LIST.map((t, i) => {
+    t.courses = areaCourses(t);
+    const gap = r1(t.avg) - r1(t.self);
+    return `<div class="top-card">
+      <div class="top-title-row"><span class="top-badge">${i+1}순위</span><span class="top-factor">${t.name}</span><span class="top-grp">${t.grp}</span></div>
+      <div class="top-reason">${t.name} 점수가 <b>${f1(t.self)}점</b>으로 ${t.self < t.w ? `약점 기준(${t.w.toFixed(1)}점) 미만${gap > 0 ? `이고 전체평균(${f1(t.avg)}점)보다 <b>${gap.toFixed(1)}점</b> 낮아` : `이어서`}` : (gap > 0 ? `전체평균(${f1(t.avg)}점)보다 <b>${gap.toFixed(1)}점</b> 낮아` : `양호한 수준이지만`)}, ${t.self >= t.w && gap <= 0 ? '역량 강화를 위한' : '우선 학습'} 영역으로 추천하였습니다.<br>아래에 해당 영역과 연계된 이러닝 과정 ${t.courses.length}개를 선정하였습니다.</div>
+      <div class="top-course-wrap">${arrow(i,-1)}<div class="top-course" id="topCourse-${i}"></div>${arrow(i,1)}<span class="top-counter" id="topCounter-${i}"></span></div>
     </div>`;
   }).join('');
-  document.getElementById('topTrack').scrollLeft = 0;
-  updateTopNav();
+  TOP_LIST.forEach((t, i) => renderTopCourse(i));
 }
-function topPer() { return +getComputedStyle(document.getElementById('topTrack')).getPropertyValue('--per') || 3; }
-function topNav(dir) {
-  const t = document.getElementById('topTrack'), c = t.querySelector('.tc');
-  if (c) t.scrollBy({ left: dir * (c.offsetWidth + 14), behavior: 'smooth' });
+function topNav(i, dir) {
+  const len = TOP_LIST[i].courses.length;
+  topIdx[i] = (topIdx[i] + dir + len) % len;
+  renderTopCourse(i);
 }
-function updateTopNav() {
-  const t = document.getElementById('topTrack'), cards = t.querySelectorAll('.tc');
-  if (!cards.length) return;
-  const w = cards[0].offsetWidth + 14, per = topPer();
-  document.getElementById('topPrev').disabled = t.scrollLeft <= 1;
-  document.getElementById('topNext').disabled = t.scrollLeft + t.clientWidth >= t.scrollWidth - 1;
-}
-
 /* ── 그래프 마우스오버 툴팁 ([data-tip] 위임) ── */
 (function () {
   const tip = document.getElementById('tip');
@@ -1100,7 +1121,7 @@ function updateTopNav() {
   document.addEventListener('mousemove', e => { if (tip.style.opacity === '1') place(e); });
   document.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
 })();
-window.addEventListener('resize', () => { updateTopNav(); updateGcNav(); });
+window.addEventListener('resize', () => { updateGcNav(); });
 setGroupCount(5);
 
 const COURSE_DATA = [
