@@ -187,86 +187,6 @@ body {
 
 /* ── 뎁스 구조 시각 안내 ── */
 .depth-explainer { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
-.mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-/* 구조 선택 카드 */
-.struct-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px; }
-.struct-opt { border:1.5px solid var(--border); border-radius:9px; padding:16px 18px; cursor:pointer; background:#fff; transition:all .12s; }
-.struct-opt:hover { border-color:var(--primary); background:#f8faff; }
-.struct-opt.selected { border-color:var(--primary); background:#e8f0fe; }
-.struct-opt-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-.struct-opt-title { font-size:14px; font-weight:700; color:#1a1a2e; white-space:nowrap; }
-.struct-opt-tag { font-size:10px; font-weight:700; color:var(--primary); background:#fff; border:1px solid var(--primary); border-radius:8px; padding:1px 7px; }
-.struct-opt .s3-radio-dot { flex-shrink:0; }
-.struct-opt.selected .s3-radio-dot { border-color:var(--primary); background:var(--primary); box-shadow:inset 0 0 0 3px #fff; }
-.struct-opt-chips { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
-.struct-opt-ex { font-size:12px; color:#555; margin-bottom:4px; }
-.struct-opt-hint { font-size:11.5px; color:#888; line-height:1.5; }
-/* 구성 선택 + 우측 미리보기 2단 배치 */
-.struct-layout { display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.4fr); gap:18px; align-items:start; }
-.struct-layout .struct-grid { grid-template-columns:1fr; gap:10px; }
-.struct-layout .struct-opt { padding:14px 17px; }
-.struct-layout .struct-opt-title { font-size:14px; }
-.struct-layout .struct-opt-tag { font-size:10px; }
-.struct-layout .struct-opt-chips { gap:8px; }
-.struct-layout .struct-opt .depth-chip { font-size:12px; }
-.struct-layout .struct-opt-ex { font-size:12.5px; }
-.struct-layout .struct-opt-hint { font-size:11.5px; }
-.struct-layout .struct-opt-head { margin-bottom:9px; }
-.struct-layout .struct-opt-chips { margin-bottom:8px; }
-.struct-layout .struct-tools { margin-top:12px; padding-top:12px; }
-.struct-layout .struct-note { margin-left:0; flex-basis:100%; }
-@media (max-width: 1280px) { .struct-layout { grid-template-columns:1fr; } .pv-panel { position:static !important; } }
-
-/* 구성별 응답 화면 미리보기 — 진단지 템플릿(edms_진단지_미리보기) 디자인 */
-.pv-panel { position:sticky; top:12px; border:1px solid var(--border); border-radius:9px; overflow:hidden; background:#fff; }
-.pv-panel-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 16px; background:#fafbfc; border-bottom:1px solid var(--border); }
-.pv-panel-title { font-size:13px; font-weight:700; color:#1a1a2e; }
-.pv-panel-state { font-size:11px; font-weight:700; color:var(--primary); background:#e8f0fe; border-radius:8px; padding:2px 9px; white-space:nowrap; }
-.pv-panel-state.hover { color:#a16207; background:#fff8e1; }
-.pv-panel-body { padding:14px; background:#eef0f4; }
-.pv-panel-note { padding:11px 16px; font-size:11.5px; color:#777; line-height:1.65; border-bottom:1px solid var(--border); background:#fff; }
-.pv-panel-note b { color:#444; }
-.pv-key { display:inline-block; font-size:10px; font-weight:700; color:#fff; border-radius:10px; padding:0 8px; margin-right:5px; line-height:1.6; }
-.pv-key.d1 { background:var(--depth1); }
-.pv-key.d2 { background:var(--depth2); }
-.pv-key.d3 { background:var(--depth3); }
-
-.tp { background:#f5f6fa; border:1px solid #dfe2e8; border-radius:8px; overflow:hidden; font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif; color:#1a1a2e; }
-.tp-tabs { background:#fff; border-bottom:1px solid #e8eaf0; display:flex; justify-content:center; align-items:stretch; overflow-x:auto; }
-.tp-tab { display:flex; align-items:center; gap:6px; padding:11px 14px; font-size:11.5px; color:#6b7280; border-bottom:2px solid transparent; white-space:nowrap; }
-.tp-tab.on { color:#246CF9; border-bottom-color:#246CF9; font-weight:700; }
-.tp-tab-badge { font-size:9.5px; padding:1px 6px; border-radius:10px; font-weight:600; background:#f3f4f6; color:#9ca3af; }
-.tp-body { padding:14px 14px 16px; }
-.tp-sec-title { text-align:center; font-size:12.5px; font-weight:700; margin:2px 0 4px; }
-.tp-group { margin:16px 0 8px; padding:11px 14px; background:#3B4E6E; border-radius:8px; color:#fff; font-size:12px; font-weight:700; }
-.tp-q { background:#fff; border:1.5px solid #e5e7eb; border-radius:8px; padding:12px 14px; margin-top:8px; }
-.tp-q-num { display:inline-block; font-size:10.5px; font-weight:700; color:#246CF9; margin-bottom:6px; }
-.tp-q-text { font-size:12px; color:#1a1a2e; line-height:1.6; margin-bottom:10px; }
-.tp-likert { display:flex; gap:3px; border-top:1px solid #f0f2f5; padding-top:10px; }
-.tp-likert-opt { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
-.tp-likert-circle { width:20px; height:20px; border-radius:50%; border:2px solid #e5e7eb; background:#fff; }
-.tp-likert-lbl { font-size:9px; color:#6b7280; text-align:center; line-height:1.3; word-break:keep-all; }
-.tp-footer { background:#fff; border-top:1px solid #e8eaf0; padding:9px 14px; display:flex; justify-content:center; }
-.tp-btn { height:26px; padding:0 14px; border-radius:4px; font-size:11px; border:1px solid #dde1ea; background:#fff; color:#333; display:inline-flex; align-items:center; }
-.tp-btn.primary { background:#246CF9; color:#fff; border-color:#246CF9; }
-/* 단위 표시 태그 (실제 화면에는 없는 안내용, 각 영역 오른쪽 끝에 띄움) */
-.tp-tag { position:absolute; right:10px; z-index:2; font-size:9.5px; font-weight:700; color:#fff; border-radius:10px; padding:2px 10px; white-space:nowrap; line-height:1.5; box-shadow:0 2px 6px rgba(0,0,0,.22); }
-.tp-tag.d1 { background:var(--depth1); }
-.tp-tag.d2 { background:var(--depth2); }
-.tp-tag.d3 { background:var(--depth3); }
-.tp-tabs { position:relative; overflow:visible; }
-.tp-tabs > .tp-tag { bottom:-10px; }
-.tp-group { position:relative; }
-.tp-group > .tp-tag, .tp-sub > .tp-tag { top:-9px; }
-.tp-sub { position:relative; margin-top:16px; padding:5px 10px; border:1px dashed #b8c2d4; border-radius:6px; background:#f9fafc; font-size:11px; font-weight:700; color:#5a6578; }
-.add-link { background:none; border:none; padding:2px 0; font-size:12px; color:#7a8493; cursor:pointer; font-family:inherit; white-space:nowrap; flex-shrink:0; }
-.add-link { background:none; border:none; padding:2px 0; font-size:12px; color:#7a8493; cursor:pointer; font-family:inherit; white-space:nowrap; flex-shrink:0; }
-.tree-row.add-line { flex-wrap:wrap; row-gap:0; }
-.add-link:hover { color:var(--primary); text-decoration:underline; }
-.edit-hint { flex-basis:100%; font-size:11.5px; color:#8a6d00; margin:-2px 0 2px; }
-.struct-tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--border); }
-.struct-note { font-size:11.5px; color:#999; margin-left:6px; }
-
 .depth-chip {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 10px; background: #fff; border-radius: 14px;
@@ -280,7 +200,6 @@ body {
 
 /* ── 본문 2-pane ── */
 .workspace { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 16px; align-items: start; }
-@media (max-width: 1100px) { .workspace { grid-template-columns: minmax(0,1fr); } }
 
 /* ── 카드 ── */
 .card { background: #fff; border: 1px solid var(--border); border-radius: 8px; }
@@ -560,7 +479,6 @@ body {
 .s2-item:hover { background: #f0f4ff; }
 .s2-item.active { background: #e8f0fe; color: var(--primary); font-weight: 700; }
 .s2-item-name { flex: 1; }
-.s2-item-type-badge { background: var(--depth3); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 7px; flex-shrink: 0; }
 .s2-item-badge {
   font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px;
   background: #eee; color: #888;
@@ -690,8 +608,8 @@ body {
   <div class="subtitle">교육담당자 · 휴넷</div>
   <div class="spacer"></div>
   <select onchange="if(this.value) location.href=this.value" title="진단지 만들기 버전 선택" style="margin-right:8px;height:28px;padding:0 8px;border:1px solid #ccd3df;border-radius:4px;background:#fff;color:#333;font-size:12px;font-family:inherit;">
-    <option value="edms_진단지_만들기.html" selected>V2 · 구조 선택 (유형·세부역량 선택 사용)</option>
-    <option value="edms_진단지_만들기_v1_구버전.html">V1 · 구버전</option>
+    <option value="edms_진단지_만들기.html">V2 · 구조 선택 (유형·세부역량 선택 사용)</option>
+    <option value="edms_진단지_만들기_v1_구버전.html" selected>V1 · 구버전</option>
   </select>
   <span class="user-name">김 담당</span>
   <button class="btn-header">로그아웃</button>
@@ -828,7 +746,31 @@ body {
           <div class="wiz-aside-title">진단지 만들기</div>
           <div class="wiz-aside-sub">단계별로 진단지를 구성하세요</div>
         </div>
-        <div class="wiz-step-list" id="wizStepList"></div>
+        <div class="wiz-step-list">
+          <div class="wiz-step-item is-active" id="wiz-step-1" onclick="goToStep(1)">
+            <div class="wiz-step-badge">1</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단 유형·역량군 구성</div>
+              <div class="wiz-step-desc">유형 → 역량군 → 세부역량 구조 등록</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-2" onclick="goToStep(2)">
+            <div class="wiz-step-badge">2</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">질문 등록</div>
+              <div class="wiz-step-desc">각 세부역량에 질문 추가</div>
+            </div>
+          </div>
+          <div class="wiz-step-connector"></div>
+          <div class="wiz-step-item" id="wiz-step-3" onclick="goToStep(3)">
+            <div class="wiz-step-badge">3</div>
+            <div class="wiz-step-meta">
+              <div class="wiz-step-title">진단지 기본 정보</div>
+              <div class="wiz-step-desc">진단지명·설명·공개 여부</div>
+            </div>
+          </div>
+        </div>
         <div class="wiz-aside-foot">
           <a href="edms_역량진단_관리.html#qset"
              style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;"
@@ -842,75 +784,55 @@ body {
       <!-- ── 오른쪽 콘텐츠 ── -->
       <div class="wiz-content">
 
-        <!-- STEP: 구조 선택 -->
-        <div class="step-content active wiz-card" id="step-content-struct">
+        <!-- STEP 1: 진단 유형·역량군 구성 -->
+        <div class="step-content active wiz-card" id="step-content-1">
           <div class="wiz-card-head">
             <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
-            <span class="wiz-step-tag">STEP 1</span>
-            <h2>진단지 구조를 선택해주세요</h2>
-            <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 이름을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
-          </div>
-          <div class="wiz-card-body">
-            <div class="struct-layout">
-              <div class="struct-left">
-                <div class="struct-grid" id="structOptions"></div>
-                <div class="struct-tools">
-                  <span class="struct-note">구조를 바꿔도 등록한 역량군과 질문은 최대한 유지됩니다.</span>
-                </div>
-              </div>
-              <div class="pv-panel">
-                <div class="pv-panel-head">
-                  <span class="pv-panel-title">응답 화면 미리보기</span>
-                  
-                </div>
-                <div class="pv-panel-note" id="structPvNote"></div>
-                <div class="pv-panel-body" id="structPreview"></div>
-              </div>
-            </div>
-          </div>
-          <div class="wiz-card-foot">
-            <div class="foot-left"></div>
-            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
-          </div>
-        </div>
-
-        <!-- STEP: 구조 등록 -->
-        <div class="step-content wiz-card" id="step-content-tree">
-          <div class="wiz-card-head">
-            <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
-            <span class="wiz-step-tag">STEP 2</span>
-            <h2>구조를 등록해주세요</h2>
-            <p id="treeLead"></p>
+            <span class="wiz-step-tag">STEP 1 / 3</span>
+            <h2>진단 유형·역량군 구성</h2>
+            <p>진단지의 뼈대를 먼저 만듭니다.<br><strong>유형 → 역량군 → 세부역량</strong> 3단계 구조를 등록하면 다음 단계에서 각 세부역량에 질문을 붙이게 됩니다.</p>
           </div>
           <div class="wiz-card-body">
 
+            <!-- 안내 배너 -->
             <div class="guide-banner">
               <div class="guide-banner-icon">💡</div>
               <div class="guide-banner-text">
-                <strong>선택한 구조에 맞춰 이름을 등록합니다.</strong>
-                <div class="depth-explainer" id="depthExplainer"></div>
+                <strong>이 단계에서 진단의 뼈대를 만듭니다.</strong>
+                <div class="depth-explainer">
+                  <span class="depth-chip"><span class="dot d1"></span>1단계 · 유형</span>
+                  <span class="depth-arrow">→</span>
+                  <span class="depth-chip"><span class="dot d2"></span>2단계 · 역량군</span>
+                  <span class="depth-arrow">→</span>
+                  <span class="depth-chip"><span class="dot d3"></span>3단계 · 세부역량</span>
+                </div>
               </div>
             </div>
 
+            <!-- 본문 2-pane -->
             <div class="workspace">
 
               <!-- 좌측: 트리 -->
               <div class="card">
                 <div class="card-head">
                   <div class="card-head-title">구조 만들기</div>
-                  <span class="card-head-sub" id="treeMeta"></span>
+                  <span class="card-head-sub" id="treeMeta">유형 0 · 역량군 0 · 세부역량 0</span>
                   <button class="btn btn-xs btn-outline" onclick="openPresetModal()">📋 기존 구조 가져오기</button>
                   <button class="btn btn-xs btn-gray" onclick="resetAll()">🗑 초기화</button>
                 </div>
-                <div id="treeDragHint" style="padding:7px 18px;font-size:11px;color:#999;background:#fafbfc;border-bottom:1px solid var(--border);"></div>
+                <div style="padding:7px 18px;font-size:11px;color:#999;background:#fafbfc;border-bottom:1px solid var(--border);">
+                  ⠿ 드래그로 순서 변경 가능 · 같은 레벨(유형↔유형, 역량군↔역량군, 세부역량↔세부역량) 내에서만 이동됩니다.
+                </div>
 
                 <!-- 빈 상태 -->
                 <div class="empty-state" id="emptyState">
                   <div class="empty-icon">🌳</div>
-                  <div class="empty-title" id="emptyTitleText"></div>
-                  <div class="empty-desc"><span id="emptyDescText"></span></div>
+                  <div class="empty-title">등록된 진단 유형이 없습니다.</div>
+                  <div class="empty-desc">
+                    유형 생성 후 유형 안에 <b>역량군</b>을 만들고, 그 안에 <b>세부역량</b>을 등록한 뒤 다음 단계에서 각 항목에 질문을 붙이게 됩니다.
+                  </div>
                   <div class="empty-actions">
-                    <button class="btn btn-primary btn-lg" id="emptyAddBtn" onclick="addFirstNode()"></button>
+                    <button class="btn btn-primary btn-lg" onclick="addType()">＋ 첫 유형 추가하기</button>
                     <button class="btn btn-outline btn-lg" onclick="openPresetModal()">📋 기존 구조로 시작</button>
                   </div>
                 </div>
@@ -919,8 +841,8 @@ body {
                 <div class="tree" id="tree" style="display:none;"></div>
 
                 <!-- 하단 추가 버튼 -->
-                <div id="treeFoot" style="display:none; padding: 10px 14px; border-top: 1px solid var(--border); background:#fafbfc;">
-                  <button type="button" class="add-link" id="treeFootBtn"></button>
+                <div id="treeFoot" style="display:none; padding: 12px 14px; border-top: 1px solid var(--border); background:#fafbfc; text-align:center;">
+                  <button class="btn btn-outline btn-sm" onclick="addType()">＋ 유형 추가</button>
                 </div>
               </div>
 
@@ -931,7 +853,7 @@ body {
                     <div class="card-head-title">한눈에 보기</div>
                   </div>
                   <div class="card-body p0">
-                    <div class="summary-stat" id="statRow1">
+                    <div class="summary-stat">
                       <div class="stat-label"><span class="depth-chip"><span class="dot d1"></span>유형</span></div>
                       <div class="stat-num" id="statD1">0</div><span class="stat-suffix">개</span>
                     </div>
@@ -939,7 +861,7 @@ body {
                       <div class="stat-label"><span class="depth-chip"><span class="dot d2"></span>역량군</span></div>
                       <div class="stat-num d2" id="statD2">0</div><span class="stat-suffix">개</span>
                     </div>
-                    <div class="summary-stat" id="statRow3">
+                    <div class="summary-stat">
                       <div class="stat-label"><span class="depth-chip"><span class="dot d3"></span>세부역량</span></div>
                       <div class="stat-num d3" id="statD3">0</div><span class="stat-suffix">개</span>
                     </div>
@@ -951,7 +873,7 @@ body {
                     <div class="card-head-title" style="color:#0a1e4a;">📍 다음 단계 안내</div>
                   </div>
                   <div class="card-body">
-                    구조를 등록하면 다음 단계에서 질문을 등록할 수 있습니다.
+                    구조를 저장하면 STEP 2에서 질문을 등록할 수 있습니다.
                   </div>
                 </div>
               </div>
@@ -959,18 +881,20 @@ body {
 
           </div>
           <div class="wiz-card-foot">
-            <div class="foot-left"><button class="btn btn-gray" onclick="prevStep()">← 이전</button></div>
-            <div class="foot-right"><button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button></div>
+            <div class="foot-left"></div>
+            <div class="foot-right">
+              <button class="btn btn-primary btn-lg" onclick="nextStep()">다음 단계 →</button>
+            </div>
           </div>
         </div>
 
         <!-- STEP 2: 질문 등록 -->
-        <div class="step-content wiz-card" id="step-content-questions">
+        <div class="step-content wiz-card" id="step-content-2">
           <div class="wiz-card-head">
             <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
             <span class="wiz-step-tag">STEP 2 / 3</span>
             <h2>질문 등록</h2>
-            <p id="s2Lead">세부역량별 질문을 추가·편집할 수 있습니다.</p>
+            <p>세부역량별 질문을 추가·편집할 수 있습니다.</p>
           </div>
 
           <!-- 진행 현황 -->
@@ -984,7 +908,7 @@ body {
 
             <!-- 좌측: 구조 네비게이션 -->
             <div class="s2-nav" id="s2Nav">
-              <div class="s2-nav-head" id="s2NavHead">유형 · 역량군 · 세부역량</div>
+              <div class="s2-nav-head">유형 · 역량군 · 세부역량</div>
               <div id="s2NavTree"></div>
             </div>
 
@@ -993,15 +917,15 @@ body {
               <!-- STEP1 구조 없음 -->
               <div class="s2-empty-struct" id="s2EmptyStruct" style="display:none;">
                 <div class="s2-empty-struct-icon">🌳</div>
-                <div class="empty-title" style="font-size:14px;">구조를 먼저 등록해주세요.</div>
-                <div class="empty-desc" id="s2EmptyStructDesc">유형·역량군·세부역량을 등록해야<br>이 단계에서 질문을 등록할 수 있습니다.</div>
-                <button class="btn btn-outline" onclick="showStep('tree')">← 구조 등록으로 돌아가기</button>
+                <div class="empty-title" style="font-size:14px;">STEP 1에서 구조를 먼저 등록해주세요.</div>
+                <div class="empty-desc">유형·역량군·세부역량을 등록해야<br>이 단계에서 질문을 등록할 수 있습니다.</div>
+                <button class="btn btn-outline" onclick="goToStep(1)">← STEP 1로 돌아가기</button>
               </div>
               <!-- 세부역량 미선택 -->
               <div class="s2-no-select" id="s2NoSelect">
                 <div class="s2-no-select-icon">👈</div>
-                <div class="s2-no-select-title" id="s2NoSelectTitle">세부역량을 선택하세요</div>
-                <div class="s2-no-select-desc" id="s2NoSelectDesc">왼쪽 목록에서 세부역량을 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.</div>
+                <div class="s2-no-select-title">세부역량을 선택하세요</div>
+                <div class="s2-no-select-desc">왼쪽 목록에서 세부역량을 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.</div>
               </div>
               <!-- 질문 편집 패널 -->
               <div id="s2QPanel" style="display:none; flex-direction:column; flex:1;">
@@ -1030,7 +954,7 @@ body {
         </div>
 
         <!-- STEP 3: 진단지 기본 정보 (placeholder) -->
-        <div class="step-content wiz-card" id="step-content-info">
+        <div class="step-content wiz-card" id="step-content-3">
           <div class="wiz-card-head">
             <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
             <span class="wiz-step-tag">STEP 3 / 3</span>
@@ -1091,7 +1015,6 @@ body {
                     STEP 3에 진입하면 자동으로 집계됩니다.
                   </div>
                 </div>
-                <button type="button" class="btn btn-outline" style="width:100%;margin-top:14px;" onclick="openSheetPreview()">👁 진단지 미리보기</button>
               </div>
 
             </div>
@@ -1152,102 +1075,28 @@ function toggleNav(el) { el.parentElement.classList.toggle('open'); }
 function toggleSubNav(el) { el.parentElement.classList.toggle('open'); }
 
 // ── Wizard ──
-// 단계: 구조 선택 → 구조 등록 → 질문 등록 → 기본 정보
-const STEP_DEFS = {
-  struct:    { title: '구조 선택',        desc: () => '어떤 구조로 만들지 선택' },
-  tree:      { title: '구조 등록',        desc: () => `${levelNames().join(' → ')} 이름 등록` },
-  questions: { title: '질문 등록',        desc: () => `각 ${itemLabel()}에 질문 추가` },
-  info:      { title: '진단지 기본 정보', desc: () => '진단지명·설명·공개 여부' },
-};
-const STRUCT_STEPS = ['struct', 'tree'];
-let currentKey = 'struct';
-
-function visibleSteps() { return ['struct', 'tree', 'questions', 'info']; }
-
-function renderWizard() {
-  const steps = visibleSteps();
-  const cur = Math.max(0, steps.indexOf(currentKey));
-  document.getElementById('wizStepList').innerHTML = steps.map((k, i) => {
-    const cls = i === cur ? 'is-active' : i < cur ? 'is-done' : '';
-    return (i ? '<div class="wiz-step-connector"></div>' : '') +
-      `<div class="wiz-step-item ${cls}" onclick="goToKey('${k}')">
-        <div class="wiz-step-badge">${i < cur ? '✓' : i + 1}</div>
-        <div class="wiz-step-meta">
-          <div class="wiz-step-title">${STEP_DEFS[k].title}</div>
-          <div class="wiz-step-desc">${STEP_DEFS[k].desc()}</div>
-        </div>
-      </div>`;
-  }).join('');
-  Object.keys(STEP_DEFS).forEach(k => {
-    const tag = document.querySelector(`#step-content-${k} .wiz-step-tag`);
-    const idx = steps.indexOf(k);
-    if (tag && idx >= 0) tag.textContent = `STEP ${idx + 1} / ${steps.length}`;
-  });
-}
-
-// 구조 등록 단계 입력 검증 (통과하면 null, 아니면 안내 문구)
-function validateStructStep(key) {
-  if (key !== 'tree') return null;
-  const emptyName = arr => arr.some(x => !(x.name || '').trim());
-  if (state.useTypes) {
-    if (state.types.length === 0) return '유형을 1개 이상 등록해주세요.';
-    if (emptyName(state.types)) return '이름이 입력되지 않은 유형이 있습니다. 이름을 입력해주세요.';
-  }
-  if (!state.types.some(t => t.groups.length > 0)) return '역량군을 1개 이상 등록해주세요.';
-  if (state.useTypes) {
-    const t = state.types.find(t => t.groups.length === 0);
-    if (t) return `'${t.name}' 유형에 등록된 역량군이 없습니다. 역량군을 등록해주세요.`;
-  }
-  if (state.types.some(t => emptyName(t.groups))) return '이름이 입력되지 않은 역량군이 있습니다. 이름을 입력해주세요.';
-  if (state.useItems) {
-    for (const t of state.types) for (const g of t.groups) {
-      if (g.items.length === 0) return `'${g.name}' 역량군에 등록된 세부역량이 없습니다. 세부역량을 등록해주세요.`;
-      if (emptyName(g.items)) return `'${g.name}' 역량군에 이름이 입력되지 않은 세부역량이 있습니다.`;
-    }
-  }
-  return null;
-}
-// 앞 단계로는 자유롭게 이동, 뒤 단계로는 사이 단계 입력이 끝나야 이동
-function goToKey(key) {
-  commitPendingEdits();
-  const steps = visibleSteps();
-  if (!steps.includes(key)) return;
-  const from = Math.max(0, steps.indexOf(currentKey)), to = steps.indexOf(key);
-  for (let i = from; i < to; i++) {
-    const msg = validateStructStep(steps[i]);
-    if (msg) { if (i !== from) showStep(steps[i]); toast(msg); return; }
-  }
-  showStep(key);
-}
-
-function showStep(key) {
+let currentStep = 1;
+const TOTAL_STEPS = 3;
+function goToStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
   closeAddForm();
   closeModal('presetModal');
-  currentKey = key;
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-  document.getElementById('step-content-' + key).classList.add('active');
-  normalizeStructure();
-  renderWizard();
+  document.getElementById('step-content-' + n).classList.add('active');
+  document.querySelectorAll('.wiz-step-item').forEach((el, i) => {
+    el.classList.toggle('is-active', i + 1 === n);
+    el.classList.toggle('is-done', i + 1 < n);
+    const badge = el.querySelector('.wiz-step-badge');
+    if (i + 1 < n) badge.textContent = '✓';
+    else badge.textContent = String(i + 1);
+  });
+  currentStep = n;
   document.querySelector('.wiz-content').scrollTop = 0;
-  renderStepBody();
-  // 구조 등록 단계에 처음 진입했을 때 비어 있으면 안내 문구 대신 첫 항목 입력칸을 바로 연다.
-  if (key === 'tree' && isEmptyStruct()) addFirstNode();
+  if (n === 2) initStep2();
+  if (n === 3) initStep3();
 }
-function renderStepBody() {
-  if (currentKey === 'struct') renderStructOptions();
-  else if (currentKey === 'tree') renderStructTree();
-
-  else if (currentKey === 'questions') initStep2();
-  else if (currentKey === 'info') initStep3();
-}
-function nextStep() {
-  const steps = visibleSteps(), i = steps.indexOf(currentKey);
-  if (i >= 0 && i < steps.length - 1) goToKey(steps[i + 1]);
-}
-function prevStep() {
-  const steps = visibleSteps(), i = steps.indexOf(currentKey);
-  if (i > 0) showStep(steps[i - 1]);
-}
+function nextStep() { if (currentStep < TOTAL_STEPS) goToStep(currentStep + 1); }
+function prevStep() { if (currentStep > 1) goToStep(currentStep - 1); }
 // ─────────────────────────────────────────
 // STEP 3: 기본 정보
 // ─────────────────────────────────────────
@@ -1299,18 +1148,18 @@ function renderS3Summary() {
     : '';
 
   el.innerHTML = `
-    ${state.useTypes ? `<div class="s3-summary-row">
+    <div class="s3-summary-row">
       <span class="s3-summary-label">유형</span>
       <span class="s3-summary-val">${types}개</span>
-    </div>` : ''}
+    </div>
     <div class="s3-summary-row">
       <span class="s3-summary-label">역량군</span>
       <span class="s3-summary-val">${groups}개</span>
     </div>
-    ${state.useItems ? `<div class="s3-summary-row">
+    <div class="s3-summary-row">
       <span class="s3-summary-label">세부역량</span>
       <span class="s3-summary-val">${items}개</span>
-    </div>` : ''}
+    </div>
     <div class="s3-summary-row">
       <span class="s3-summary-label">총 질문</span>
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
@@ -1320,7 +1169,17 @@ function renderS3Summary() {
     ${warnHtml}`;
 }
 
-// 질문이 1개도 등록되지 않은 첫 번째 세부역량(세부역량 미사용 시 역량군)을 찾는다.
+// 유형에 역량군이 없거나, 역량군에 세부역량이 없는 첫 번째 빈 가지를 찾는다.
+function findEmptyBranch() {
+  for (const t of state.types) {
+    if (t.groups.length === 0) return { node: t, label: t.name || '유형', childLabel: '역량군', path: [t] };
+    for (const g of t.groups) {
+      if (g.items.length === 0) return { node: g, label: g.name || '역량군', childLabel: '세부역량', path: [t, g] };
+    }
+  }
+  return null;
+}
+// 질문이 1개도 등록되지 않은 첫 번째 세부역량을 찾는다.
 function findEmptyQuestionItem() {
   for (let ti = 0; ti < state.types.length; ti++) {
     const t = state.types[ti];
@@ -1328,47 +1187,14 @@ function findEmptyQuestionItem() {
       const g = t.groups[gi];
       for (let ii = 0; ii < g.items.length; ii++) {
         const it = g.items[ii];
-        if ((it.questions || []).length === 0) return { ti, gi, ii, name: it.name || itemLabel() };
+        if ((it.questions || []).length === 0) return { ti, gi, ii, name: it.name || '세부역량' };
       }
     }
   }
   return null;
 }
 
-// 진단지 미리보기: 등록한 구조·질문을 실제 응답 화면(진단_응답_화면.html)에 넘겨 새 탭으로 연다.
-function openSheetPreview() {
-  commitPendingEdits();
-  const sheetName = document.getElementById('s3Name')?.value?.trim() || '진단지 미리보기';
-  const tText = q => (q.type === 'essay' ? q.text : q.text) || '';
-  const subsOf = (it) => {
-    // 질문 종류가 바뀌는 지점마다 묶음을 나눈다. (AB 선택형은 A·B 문구를 연속한 두 줄로 전달)
-    const subs = [];
-    (it.questions || []).forEach(q => {
-      const isAB = q.type === 'ab';
-      const last = subs[subs.length - 1];
-      if (!last || last._ab !== isAB) subs.push({ name: it.name, scale: isAB ? '6점 AB선택형' : '5점 척도', questions: [], _ab: isAB });
-      const cur = subs[subs.length - 1];
-      if (isAB) cur.questions.push(q.a || '', q.b || '');
-      else cur.questions.push(tText(q));
-    });
-    return subs.map(({ _ab, ...rest }) => rest);
-  };
-  const groupsOf = (groups) => groups.map(g => ({
-    name: g.name,
-    subs: g.items.flatMap(subsOf)
-  }));
-  // 유형 미사용 시 모든 역량군을 하나의 화면으로 묶는다.
-  const typesSrc = state.useTypes ? state.types : [{ name: sheetName, groups: state.types.flatMap(t => t.groups) }];
-  const types = typesSrc.map(t => ({ name: t.name || '(이름 없음)', groups: groupsOf(t.groups) }));
-  const total = types.reduce((a, t) => a + t.groups.reduce((b, g) => b + g.subs.reduce((c, s) => c + s.questions.length, 0), 0), 0);
-  if (total === 0) { toast('등록된 질문이 없습니다. 질문을 먼저 등록해주세요.'); return; }
-  try {
-    sessionStorage.setItem('previewQuestionnaire', JSON.stringify({ name: sheetName, types }));
-  } catch (e) {}
-  window.open('진단_응답_화면.html', '_blank');
-}
 function saveAll() {
-  commitPendingEdits();
   const name = document.getElementById('s3Name')?.value?.trim();
   if (!name) {
     toast('진단지명을 입력해주세요');
@@ -1376,27 +1202,64 @@ function saveAll() {
     return;
   }
 
-  // 구조 단계 입력 재검사 (이름 누락, 비어 있는 가지)
-  {
-    const msg = validateStructStep('tree');
-    if (msg) { showStep('tree'); toast(msg); return; }
+  // 이름 없는 항목 검사
+  let emptyName = false;
+  state.types.forEach(t => {
+    if (!t.name?.trim()) emptyName = true;
+    t.groups.forEach(g => {
+      if (!g.name?.trim()) emptyName = true;
+      g.items.forEach(it => { if (!it.name?.trim()) emptyName = true; });
+    });
+  });
+  if (emptyName) { toast('이름이 비어 있는 항목이 있어요. 확인 후 다시 저장해주세요'); goToStep(1); return; }
+
+  if (state.types.length === 0) {
+    toast('유형을 1개 이상 등록해주세요');
+    goToStep(1); return;
   }
 
-  let totalQuestions = 0;
-  state.types.forEach(t => t.groups.forEach(g => g.items.forEach(i => { totalQuestions += (i.questions || []).length; })));
+  let totalGroups = 0, totalItems = 0, totalQuestions = 0;
+  state.types.forEach(t => {
+    totalGroups += t.groups.length;
+    t.groups.forEach(g => {
+      totalItems += g.items.length;
+      g.items.forEach(i => { totalQuestions += (i.questions || []).length; });
+    });
+  });
+
+  if (totalGroups === 0) {
+    toast('역량군을 1개 이상 등록해주세요');
+    goToStep(1); return;
+  }
+  if (totalItems === 0) {
+    toast('세부역량을 1개 이상 등록해주세요');
+    goToStep(1); return;
+  }
+
+  // 합계가 0이 아니어도 특정 유형/역량군에만 하위 항목이 없는 경우를 가지 단위로 재검사
+  const emptyBranch = findEmptyBranch();
+  if (emptyBranch) {
+    goToStep(1);
+    emptyBranch.path.forEach(n => { n._open = true; });
+    renderTree();
+    toast(`'${emptyBranch.label}' 아래에 ${emptyBranch.childLabel}이(가) 하나도 없어요. 등록 후 다시 저장해주세요.`);
+    setTimeout(() => {
+      document.querySelector(`.tree-row[data-node-id="${emptyBranch.node.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 30);
+    return;
+  }
 
   if (totalQuestions === 0) {
-    showStep('questions');
     toast('질문을 1개 이상 등록해주세요');
-    return;
+    goToStep(2); return;
   }
 
   // 합계가 0이 아니어도 특정 세부역량에만 질문이 없는 경우를 세부역량 단위로 재검사
   const emptyQItem = findEmptyQuestionItem();
   if (emptyQItem) {
-    showStep('questions');
+    goToStep(2);
     selectS2Item(emptyQItem.ti, emptyQItem.gi, emptyQItem.ii);
-    toast(`'${emptyQItem.name}'에 등록된 질문이 없습니다. 최소 1개 이상 등록해주세요.`);
+    toast(`'${emptyQItem.name}'에 등록된 질문이 없어요. 최소 1개 이상 등록해주세요.`);
     return;
   }
 
@@ -1480,7 +1343,7 @@ function renderS2Nav() {
       <span class="s2-type-badge">유형</span>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(t.name)}</span>`;
     th.onclick = () => typeDiv.classList.toggle('open');
-    if (state.useTypes) typeDiv.appendChild(th);
+    typeDiv.appendChild(th);
 
     const tbody = document.createElement('div');
     tbody.className = 's2-type-body';
@@ -1500,31 +1363,13 @@ function renderS2Nav() {
       const gbody = document.createElement('div');
       gbody.className = 's2-group-body';
 
-      // 2단계 구조: 역량군 행 자체가 질문 등록 대상
-      if (!state.useItems) {
-        const it = g.items[0], ii = 0;
-        const qCount = (it.questions || []).length;
-        gh.className = 's2-item';
-        gh.style.paddingLeft = state.useTypes ? '22px' : '14px';
-        gh.innerHTML = `<span class="s2-group-badge" style="margin-right:6px;">역량군</span>
-          <span class="s2-item-name">${escHtml(g.name)}</span>
-          <span class="s2-item-badge ${qCount > 0 ? 'has-q' : 'no-q'}" id="s2badge_${ti}_${gi}_${ii}">${qCount}개</span>`;
-        gh.id = `s2item_${ti}_${gi}_${ii}`;
-        gh.onclick = () => selectS2Item(ti, gi, ii);
-        if (s2Selected && s2Selected.ti===ti && s2Selected.gi===gi && s2Selected.ii===ii)
-          gh.classList.add('active');
-        tbody.appendChild(gh);
-        return;
-      }
-
       g.items.forEach((it, ii) => {
         const qCount = (it.questions || []).length;
         const itemEl = document.createElement('div');
         itemEl.className = 's2-item';
         itemEl.id = `s2item_${ti}_${gi}_${ii}`;
         const badgeCls = qCount > 0 ? 'has-q' : 'no-q';
-        itemEl.innerHTML = `<span class="s2-item-type-badge">세부역량</span>
-          <span class="s2-item-name">${escHtml(it.name)}</span>
+        itemEl.innerHTML = `<span class="s2-item-name">${escHtml(it.name)}</span>
           <span class="s2-item-badge ${badgeCls}" id="s2badge_${ti}_${gi}_${ii}">${qCount}개</span>`;
         itemEl.onclick = () => selectS2Item(ti, gi, ii);
         if (s2Selected && s2Selected.ti===ti && s2Selected.gi===gi && s2Selected.ii===ii)
@@ -1553,15 +1398,12 @@ function selectS2Item(ti, gi, ii) {
 
   const t = state.types[ti], g = t.groups[gi], it = g.items[ii];
 
-  const bcParts = [];
-  if (state.useTypes) bcParts.push(`<span class="bc-type">${escHtml(t.name)}</span>`);
-  if (state.useItems) {
-    bcParts.push(`<span class="bc-group">${escHtml(g.name)}</span>`);
-    bcParts.push(`<span class="bc-item">${escHtml(it.name)}</span>`);
-  } else {
-    bcParts.push(`<span class="bc-item">${escHtml(g.name)}</span>`);
-  }
-  document.getElementById('s2QBreadcrumb').innerHTML = bcParts.join(' <span class="bc-sep">›</span> ');
+  document.getElementById('s2QBreadcrumb').innerHTML =
+    `<span class="bc-type">${escHtml(t.name)}</span>
+     <span class="bc-sep">›</span>
+     <span class="bc-group">${escHtml(g.name)}</span>
+     <span class="bc-sep">›</span>
+     <span class="bc-item">${escHtml(it.name)}</span>`;
   document.getElementById('s2QTitle').textContent = it.name;
   document.getElementById('s2QCode').textContent  = it.code;
 
@@ -1900,7 +1742,7 @@ function resetScaleLabels() {
   s2ScaleLabels = [...(SCALE_DEFAULT_LABELS[s2ScaleSteps]||SCALE_DEFAULT_LABELS[5])];
   s2ScaleLabels.forEach((lbl,i) => { const el=document.getElementById(`sc_lbl_${i}`); if(el) el.value=lbl; });
   updateQPreview();
-  toast('기본 라벨로 초기화되었습니다');
+  toast('기본 라벨로 초기화됐어요');
 }
 
 function gatherCurrentFormData() {
@@ -1937,10 +1779,10 @@ function saveNewQuestion() {
   if (s2EditQId) {
     const q = it.questions.find(q=>q.id===s2EditQId);
     if (q) { Object.keys(q).forEach(k=>{if(k!=='id')delete q[k];}); Object.assign(q,{type:t,...data}); }
-    toast('질문이 수정되었습니다');
+    toast('질문이 수정됐어요');
   } else {
     it.questions.push({id:makeQId(), type:t, ...data});
-    toast('질문이 추가되었습니다');
+    toast('질문이 추가됐어요');
   }
   closeAddForm(); renderQuestions();
 }
@@ -2009,7 +1851,7 @@ function deleteQ(qId) {
   const it = state.types[ti].groups[gi].items[ii];
   it.questions = it.questions.filter(q => q.id !== qId);
   renderQuestions();
-  toast('질문이 삭제되었습니다');
+  toast('질문이 삭제됐어요');
 }
 
 function moveQ(qId, dir) {
@@ -2033,135 +1875,14 @@ function updateS2Progress() {
   const fillEl = document.getElementById('s2ProgressFill');
   const lblEl  = document.getElementById('s2ProgressLabel');
   if (fillEl) fillEl.style.width  = pct + '%';
-  if (lblEl)  lblEl.textContent   = `${itemLabel()} ${total}개 중 ${filled}개에 질문 등록됨 (${pct}%)`;
+  if (lblEl)  lblEl.textContent   = `세부역량 ${total}개 중 ${filled}개에 질문 등록됨 (${pct}%)`;
 }
 
 // ── STEP 1: 트리 상태 ──
 const autoCode = true;  // 코드는 항상 자동 생성, 수정 불가
 let selectedPreset = null;
-// useTypes / useItems: 유형·세부역량 사용 여부(진단지 전체 단위). 역량군은 항상 사용한다.
-const state = { types: [], useTypes: true, useItems: true };
+const state = { types: [] };
 let seq = 1;
-
-// 유형 미사용일 때는 모든 역량군을 담는 내부 유형(_implicit) 1개를 두고,
-// 세부역량 미사용일 때는 역량군마다 같은 이름의 내부 항목(_implicit) 1개를 두어 질문을 보관한다.
-// 구조 화면에서는 내부 단위를 숨기고, STEP 2 이후 로직은 3단계 구조와 동일하게 동작한다.
-function itemLabel() { return state.useItems ? '세부역량' : '역량군'; }
-function levelNames() {
-  return [state.useTypes ? '유형' : null, '역량군', state.useItems ? '세부역량' : null].filter(Boolean);
-}
-function isEmptyStruct() {
-  return state.useTypes ? state.types.length === 0 : !state.types.some(t => t.groups.length > 0);
-}
-function normalizeStructure() {
-  if (!state.useTypes) {
-    if (state.types.length === 0) {
-      state.types.push({ id: makeId(), code: 'TYPE_01', name: '전체', groups: [] });
-    }
-    const root = state.types[0];
-    state.types.slice(1).forEach(t => root.groups.push(...t.groups));
-    state.types.length = 1;
-    root._implicit = true; root._open = true; root._editing = false; root._isNew = false;
-    root.name = '전체'; root.code = 'TYPE_01'; root.description = '';
-  }
-  if (state.useItems) return;
-  state.types.forEach(t => t.groups.forEach(g => {
-    if (!g.items) g.items = [];
-    let leaf = g.items[0];
-    if (!leaf) {
-      leaf = { id: makeId(), code: '', name: g.name, questions: [] };
-      g.items.push(leaf);
-    }
-    if (g.items.length > 1) {
-      leaf.questions = g.items.flatMap(i => i.questions || []);
-      g.items.length = 1;
-    }
-    leaf._implicit = true;
-    leaf._editing = false; leaf._isNew = false;
-    leaf.name = g.name;
-    leaf.code = (g.code || 'GRP') + '_I01';
-    if (!leaf.questions) leaf.questions = [];
-  }));
-}
-
-// 선택한 구조에 맞춰 질문 등록(STEP 2) 화면의 문구를 갱신한다.
-function renderModeTexts() {
-  const names = levelNames();
-  document.getElementById('s2Lead').textContent = `${itemLabel()}별 질문을 추가·편집할 수 있습니다.`;
-  document.getElementById('s2NavHead').textContent = names.join(' · ');
-  document.getElementById('s2EmptyStructDesc').innerHTML = `${names.join('·')}을(를) 등록해야<br>이 단계에서 질문을 등록할 수 있습니다.`;
-  document.getElementById('s2NoSelectTitle').textContent = `${itemLabel()}을(를) 선택하세요`;
-  document.getElementById('s2NoSelectDesc').innerHTML = `왼쪽 목록에서 ${itemLabel()}을(를) 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.`;
-}
-
-// 유형 사용 여부 전환. 역량군과 질문은 그대로 유지한다. (취소하면 false)
-function setUseTypes(flag) {
-  if (state.useTypes === flag) return true;
-  if (!flag) {
-    const realTypes = state.types.filter(t => !t._implicit);
-    if (realTypes.length > 0 && realTypes.some(t => t.groups.length > 0 || t.name)) {
-      let msg = '유형을 사용하지 않으면 등록된 유형이 삭제되고, 모든 역량군이 하나로 합쳐집니다.';
-      if (realTypes.length > 1) msg += `\n(유형 ${realTypes.length}개 → 역량군만 남김)`;
-      msg += '\n역량군과 질문은 그대로 유지됩니다.\n\n계속할까요?';
-      if (!confirm(msg)) return false;
-    }
-    state.useTypes = false;
-    normalizeStructure();
-    // 합쳐진 역량군 코드를 다시 매긴다 (유형별로 같던 코드 충돌 방지)
-    const root = state.types[0];
-    root.groups.forEach((g, gi) => {
-      g.code = `TYPE_01_G${String(gi + 1).padStart(2, '0')}`;
-      (g.items || []).forEach((it, ii) => { it.code = `${g.code}_I${String(ii + 1).padStart(2, '0')}`; });
-    });
-  } else {
-    state.useTypes = true;
-    const root = state.types[0];
-    if (root && root._implicit) {
-      delete root._implicit;
-      if (root.groups.length === 0) {
-        state.types = [];
-      } else {
-        // 기존 역량군을 담을 유형 이름은 유형 등록 단계에서 직접 입력한다.
-        root.name = '';
-      }
-    }
-  }
-  s2Selected = null;
-  renderModeTexts();
-  renderTree();
-  return true;
-}
-
-// 세부역량 사용 여부 전환. 등록한 질문은 잃지 않도록 옮긴다. (취소하면 false)
-function setUseItems(flag) {
-  if (state.useItems === flag) return true;
-  let itemCnt = 0, qCnt = 0;
-  state.types.forEach(t => t.groups.forEach(g => g.items.forEach(i => {
-    if (!i._implicit) itemCnt++;
-    qCnt += (i.questions || []).length;
-  })));
-  if (!flag && (itemCnt > 0 || qCnt > 0)) {
-    let msg = '세부역량을 사용하지 않으면 등록된 세부역량이 삭제됩니다.';
-    if (qCnt > 0) msg += `\n등록된 질문 ${qCnt}개는 소속 역량군으로 합쳐집니다.`;
-    msg += '\n\n계속할까요?';
-    if (!confirm(msg)) return false;
-  }
-  if (flag && qCnt > 0 && !confirm('세부역량을 사용하면 각 역량군 아래에 같은 이름의 세부역량이 자동으로 만들어지고,\n등록된 질문은 그 세부역량으로 옮겨집니다. 계속할까요?')) return false;
-
-  state.useItems = flag;
-  if (flag) {
-    state.types.forEach(t => t.groups.forEach(g => {
-      g.items = g.items.filter(i => (i.questions || []).length > 0 || !i._implicit);
-      g.items.forEach(i => { delete i._implicit; });
-    }));
-  } else {
-    normalizeStructure();
-  }
-  s2Selected = null;
-  renderModeTexts();
-  renderTree();
-  return true;
-}
 
 function nextCode(prefix, existing) {
   let n = 1;
@@ -2170,163 +1891,31 @@ function nextCode(prefix, existing) {
 }
 function makeId() { return 'id_' + (seq++); }
 
-// 구조 단계가 바뀌었거나 데이터가 바뀐 뒤 화면을 다시 그린다.
 function renderTree() {
-  normalizeStructure();
-  renderWizard();
-  if (STRUCT_STEPS.includes(currentKey)) renderStepBody();
-}
-
-// ─────────────────────────────────────────
-// 구조 선택
-// ─────────────────────────────────────────
-const STRUCT_OPTS = [
-  { ut: true,  ui: true,  levels: ['유형', '역량군', '세부역량'], ex: '리더십 › 조직관리 › 방향설정',
-    hint: '세부역량 단위로 질문을 관리하고, 유형으로 역량군을 구분하는 구성입니다.' },
-  { ut: false, ui: true,  levels: ['역량군', '세부역량'],         ex: '조직관리 › 방향설정',
-    hint: '유형 구분 없이 역량군과 세부역량으로 구성합니다.' },
-  { ut: true,  ui: false, levels: ['유형', '역량군'],             ex: '리더십 › 조직관리',
-    hint: '세부역량 없이 역량군에 질문을 바로 등록하는 구성입니다.' },
-  { ut: false, ui: false, levels: ['역량군'],                     ex: '조직관리',
-    hint: '역량군만으로 구성하는 가장 단순한 구조입니다.' },
-];
-const LEVEL_DOT = { '유형': 'd1', '역량군': 'd2', '세부역량': 'd3' };
-
-function renderStructOptions() {
-  document.getElementById('structOptions').innerHTML = STRUCT_OPTS.map((o, i) => {
-    const sel = o.ut === state.useTypes && o.ui === state.useItems;
-    const chips = o.levels.map(l => `<span class="depth-chip"><span class="dot ${LEVEL_DOT[l]}"></span>${l}</span>`)
-      .join('<span class="depth-arrow">→</span>');
-    return `<div class="struct-opt ${sel ? 'selected' : ''}" onclick="setStructure(${o.ut}, ${o.ui})">
-      <div class="struct-opt-head">
-        <span class="s3-radio-dot"></span>
-        <span class="struct-opt-title">${o.levels.length}단계 구성</span>
-      </div>
-      <div class="struct-opt-chips">${chips}</div>
-      <div class="struct-opt-ex">예) ${o.ex}</div>
-      <div class="struct-opt-hint">${o.hint}</div>
-    </div>`;
-  }).join('');
-  renderStructPreview(state.useTypes, state.useItems, false);
-}
-
-// 구성별 응답 화면 미리보기 (실제 진단 응답 화면 구성: 유형=탭, 역량군=헤더 카드, 질문 카드 목록. 세부역량은 응답 화면에 표시되지 않음)
-const TP_LIKERT = ['매우 그렇다', '그렇다', '보통이다', '그렇지 않다', '전혀 그렇지 않다'];
-const TP_Q = ['팀원에게 명확한 목표와 방향을 제시한다.', '조직의 중장기 방향을 팀원이 이해하도록 설명한다.', '조직의 가치를 구성원과 자주 공유한다.', '업무 상황에서 조직의 가치를 직접 실천해 보인다.', '팀원의 의견을 끝까지 경청한다.', '어려운 상황에서도 팀원이 믿고 따른다.'];
-function tpQuestion(num, text) {
-  return `<div class="tp-q">
-    <span class="tp-q-num">질문 ${num}</span>
-    <div class="tp-q-text">${text}</div>
-    <div class="tp-likert">${TP_LIKERT.map(l => `<div class="tp-likert-opt"><div class="tp-likert-circle"></div><span class="tp-likert-lbl">${l}</span></div>`).join('')}</div>
-  </div>`;
-}
-function renderStructPreview(ut, ui) {
-  const el = document.getElementById('structPreview');
-  if (!el) return;
-
-  // 응답 화면의 질문 배치는 세부역량 사용 여부와 관계없이 동일하다. 세부역량은 안내용 표식으로만 덧붙인다.
-  const NOTE = { d1: '유형', d2: '역량군', d3: '세부역량' };
-  const tag = cls => `<span class="tp-tag ${cls}">${NOTE[cls]}</span>`;
-  const key = cls => `<span class="pv-key ${cls}">${NOTE[cls]}</span>`;
-  const groupCard = name => `<div class="tp-group"><span>${name}</span>${tag('d2', '역량군')}</div>`;
-  const subMark = name => ui ? `<div class="tp-sub"><span>${name}</span>${tag('d3', '세부역량')}</div>` : '';
-  const body = `${groupCard('조직관리')}${subMark('방향설정')}${[0, 1].map(i => tpQuestion(i + 1, TP_Q[i])).join('')}${subMark('가치전파')}${[2, 3].map(i => tpQuestion(i + 1, TP_Q[i])).join('')}
-      ${groupCard('사람관리')}${subMark('신뢰형성')}${[4, 5].map(i => tpQuestion(i + 1, TP_Q[i])).join('')}`;
-
-  const tabs = ut
-    ? `<div class="tp-tabs"><div class="tp-tab on">리더십 <span class="tp-tab-badge">대기</span></div><div class="tp-tab">팔로워십 <span class="tp-tab-badge">대기</span></div>${tag('d1', '유형')}</div>`
-    : '';
-  el.innerHTML = `<div class="tp">
-      ${tabs}
-      <div class="tp-body">
-        ${ut ? '<div class="tp-sec-title">리더십에 대한 질문입니다.</div>' : ''}
-        ${body}
-      </div>
-      <div class="tp-footer"><span class="tp-btn primary">다음 ›</span></div>
-    </div>`;
-
-  document.getElementById('structPvNote').innerHTML = [
-    key('d1') + '마다 탭이 생기고, 응답자는 탭 단위로 답변한 뒤 다음으로 넘어갑니다.',
-    key('d2') + '은 질문 목록 중간에 구분 카드로 표시되고, 그 아래에 질문이 이어집니다.',
-    key('d3') + '은 질문을 묶는 단위로, 질문 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.',
-    '<span style="color:#aaa;">※ 배치를 보여주는 예시이며, 실제 이름과 질문은 다음 단계에서 입력합니다.</span>'
-  ].filter(Boolean).join('<br>');
-}
-
-function setStructure(ut, ui) {
-  if (!setUseTypes(ut)) return;
-  if (!setUseItems(ui)) return;
-  renderTree();
-}
-
-// ─────────────────────────────────────────
-// 구조 등록 (트리: 이름 직접 편집, 드래그로 순서 변경·이동)
-// ─────────────────────────────────────────
-const NAME_MAX = 15, DESC_MAX = 300;
-const KIND_LABEL = { type: '유형', group: '역량군', item: '세부역량' };
-
-function treeKindOf(obj) { return obj.groups ? 'type' : obj.items ? 'group' : 'item'; }
-function locateNode(obj) {
-  if (state.types.includes(obj)) return { arr: state.types, parent: null };
-  for (const t of state.types) {
-    if (t.groups.includes(obj)) return { arr: t.groups, parent: t };
-    for (const g of t.groups) if (g.items.includes(obj)) return { arr: g.items, parent: g };
-  }
-  return null;
-}
-
-// 선택한 구조에 맞춰 구조 등록 화면의 문구를 갱신한다.
-function renderTreeTexts() {
-  const ut = state.useTypes, ui = state.useItems;
-  const names = levelNames();
-  const dotCls = { '유형': 'd1', '역량군': 'd2', '세부역량': 'd3' };
-  document.getElementById('treeLead').innerHTML =
-    `<strong>${names.join(' → ')}</strong> ${names.length}단계 구조의 이름을 등록합니다. 다음 단계에서 각 ${itemLabel()}에 질문을 붙이게 됩니다.`;
-  document.getElementById('depthExplainer').innerHTML = names.map((nm, i) =>
-    `<span class="depth-chip"><span class="dot ${dotCls[nm]}"></span>${i + 1}단계 · ${nm}</span>`
-  ).join('<span class="depth-arrow">→</span>');
-  document.getElementById('emptyTitleText').textContent = ut ? '등록된 유형이 없습니다.' : '등록된 역량군이 없습니다.';
-  document.getElementById('emptyDescText').innerHTML = (ut ? '유형을 만들고 그 안에 <b>역량군</b>을 등록합니다.' : '<b>역량군</b>을 등록합니다.')
-    + (ui ? ' 역량군 아래에는 <b>세부역량</b>을 등록합니다.' : '') + ' 이름은 최대 ' + NAME_MAX + '자까지 입력할 수 있습니다.';
-  document.getElementById('emptyAddBtn').textContent = ut ? '＋ 첫 유형 추가하기' : '＋ 첫 역량군 추가하기';
-  const foot = document.getElementById('treeFootBtn');
-  foot.textContent = ut ? '＋ 유형 추가' : '＋ 역량군 추가';
-  foot.onclick = ut ? () => addType() : () => addGroup(state.types[0]);
-  const tips = ['⠿ 아이콘을 끌어서 같은 단계 안에서 순서를 변경할 수 있습니다.'];
-  if (ut) tips.push('역량군을 다른 유형 행 위에 놓으면 그 유형으로 이동합니다.');
-  if (ui) tips.push('세부역량을 다른 역량군 행 위에 놓으면 그 역량군으로 이동합니다.');
-  document.getElementById('treeDragHint').textContent = tips.join(' ');
-  document.getElementById('statRow1').style.display = ut ? '' : 'none';
-  document.getElementById('statRow3').style.display = ui ? '' : 'none';
-}
-
-function addFirstNode() { state.useTypes ? addType() : addGroup(state.types[0]); }
-
-function renderStructTree() {
   const tree = document.getElementById('tree');
   const empty = document.getElementById('emptyState');
   const foot = document.getElementById('treeFoot');
-  renderTreeTexts();
 
-  if (isEmptyStruct()) {
+  if (state.types.length === 0) {
     empty.style.display = '';
     tree.style.display = 'none';
     foot.style.display = 'none';
   } else {
     empty.style.display = 'none';
     tree.style.display = '';
-    // 유형 미사용 시 역량군 추가 버튼이 트리 안에 있으므로 하단 버튼은 숨긴다.
-    foot.style.display = state.useTypes ? '' : 'none';
+    foot.style.display = '';
   }
 
   tree.innerHTML = '';
   state.types.forEach((t) => {
-    if (state.useTypes) tree.appendChild(rowEl(1, t));
-    if (t._open !== false || !state.useTypes) {
+    tree.appendChild(rowEl(1, t));
+    if (t._open !== false) {
       t.groups.forEach((g) => {
         tree.appendChild(rowEl(2, g, t));
-        if (state.useItems && g._open !== false) {
-          g.items.forEach((it) => tree.appendChild(rowEl(3, it, g, t)));
+        if (g._open !== false) {
+          g.items.forEach((it) => {
+            tree.appendChild(rowEl(3, it, g, t));
+          });
           tree.appendChild(addRow(3, () => addItem(t, g)));
         }
       });
@@ -2341,11 +1930,10 @@ function rowEl(depth, obj, parent, grand) {
   const row = document.createElement('div');
   row.className = 'tree-row d' + depth;
   row.dataset.nodeId = obj.id;
-  if (!state.useTypes) row.style.paddingLeft = depth === 2 ? '14px' : '40px';
 
   const toggle = document.createElement('span');
   toggle.className = 'toggle-btn ' + (obj._open !== false ? 'open' : '');
-  if (depth === 3 || (depth === 2 && !state.useItems)) toggle.classList.add('invisible');
+  if (depth === 3) toggle.classList.add('invisible');
   toggle.textContent = '▶';
   toggle.onclick = () => { obj._open = obj._open === false ? true : false; renderTree(); };
   row.appendChild(toggle);
@@ -2362,22 +1950,12 @@ function rowEl(depth, obj, parent, grand) {
     const nameInput = document.createElement('input');
     nameInput.className = 'inline-input';
     nameInput.value = obj.name || '';
-    // 새 항목은 쉼표(,)로 구분해 여러 개를 한 번에 입력할 수 있다. (저장 시 15자 제한 적용)
-    nameInput.maxLength = obj._isNew ? 300 : NAME_MAX;
-    const ex = depth === 1 ? '리더십' : depth === 2 ? '조직관리' : '방향설정';
-    nameInput.placeholder = obj._isNew ? `예: ${ex} (여러 개는 쉼표로 구분)` : `예: ${ex}`;
-    nameInput.addEventListener('paste', e => {
-      const t = (e.clipboardData || window.clipboardData).getData('text');
-      if (!obj._isNew || !/[\r\n]/.test(t)) return;
-      e.preventDefault();                       // 여러 줄을 붙여넣으면 쉼표로 이어서 입력한다.
-      const joined = t.split(/\r?\n/).map(x => x.trim()).filter(Boolean).join(', ');
-      const s0 = nameInput.selectionStart, e0 = nameInput.selectionEnd;
-      nameInput.value = nameInput.value.slice(0, s0) + joined + nameInput.value.slice(e0);
-      nameInput.dispatchEvent(new Event('input'));
-    });
-    // 입력 즉시 값에 반영해 [저장]을 누르지 않고 다음 단계로 가도 입력 내용이 유지되도록 한다.
-    nameInput.oninput = () => { obj.name = nameInput.value; };
+    nameInput.placeholder = depth === 1 ? '예: 리더십 역량 진단' : depth === 2 ? '예: Self' : '예: 자기인식';
     topRow.appendChild(nameInput);
+
+    nameInput.oninput = () => {
+      obj.code = generateCode(depth, nameInput.value, parent, grand);
+    };
 
     const saveBtn = document.createElement('button');
     saveBtn.className = 'btn btn-xs btn-primary';
@@ -2392,23 +1970,13 @@ function rowEl(depth, obj, parent, grand) {
 
     row.appendChild(topRow);
 
-    if (obj._isNew) {
-      const hint = document.createElement('div');
-      hint.className = 'edit-hint';
-      hint.textContent = `여러 개를 한 번에 추가하려면 쉼표(,)로 구분해 입력하세요. 예: ${depth === 1 ? '리더십, 팔로워십' : depth === 2 ? '조직관리, 사람관리, 성과관리' : '방향설정, 가치전파, 변화관리'}`;
-      row.appendChild(hint);
-    }
-
-    // 설명 입력칸은 새로 추가할 때는 숨기고, 기존 항목의 수정(✎) 버튼을 눌렀을 때만 표시한다.
     let descInput = null;
-    if (depth < 3 && !obj._isNew) {
+    if (depth < 3) {
       descInput = document.createElement('textarea');
       descInput.className = 'desc-textarea';
       descInput.value = obj.description || '';
-      descInput.maxLength = DESC_MAX;
       descInput.placeholder = depth === 1 ? '유형 설명 (선택사항)' : '역량군 설명 (선택사항)';
       descInput.rows = 2;
-      descInput.oninput = () => { obj.description = descInput.value; };
       row.appendChild(descInput);
     }
 
@@ -2432,11 +2000,12 @@ function rowEl(depth, obj, parent, grand) {
     }
     row.appendChild(nameWrap);
 
+
     if (depth < 3) {
       const meta = document.createElement('span');
       meta.className = 'row-meta';
       if (depth === 1) meta.textContent = `${obj.groups.length} 역량군`;
-      if (depth === 2 && state.useItems) meta.textContent = `${obj.items.length} 세부역량`;
+      if (depth === 2) meta.textContent = `${obj.items.length} 세부역량`;
       row.appendChild(meta);
     }
 
@@ -2453,34 +2022,39 @@ function rowEl(depth, obj, parent, grand) {
     const handle = document.createElement('span');
     handle.className = 'drag-handle';
     handle.textContent = '⠿';
-    handle.title = '드래그하여 순서 변경 또는 이동';
+    handle.title = '드래그하여 순서 변경';
     row.insertBefore(handle, row.firstChild);
 
     row.setAttribute('draggable', 'true');
     row.addEventListener('dragstart', e => {
       treeDragSrc = obj;
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', obj.id);
       setTimeout(() => row.style.opacity = '0.4', 0);
     });
     row.addEventListener('dragend', () => {
-      treeDragSrc = null;
       row.style.opacity = '';
       document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over'));
     });
     row.addEventListener('dragover', e => {
-      if (!treeDragSrc || treeDragSrc === obj || !canDropOn(treeDragSrc, obj)) return;
       e.preventDefault();
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      if (peersOf(treeDragSrc) !== peersOf(obj)) return;
       document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('drag-over'));
       row.classList.add('drag-over');
     });
     row.addEventListener('drop', e => {
       e.preventDefault();
       row.classList.remove('drag-over');
-      if (!treeDragSrc || treeDragSrc === obj || !canDropOn(treeDragSrc, obj)) return;
-      const src = treeDragSrc;
+      if (!treeDragSrc || treeDragSrc === obj) return;
+      const arr = peersOf(treeDragSrc);
+      if (arr !== peersOf(obj)) return;
+      const fromIdx = arr.indexOf(treeDragSrc);
+      const toIdx   = arr.indexOf(obj);
+      if (fromIdx < 0 || toIdx < 0) return;
+      const [moved] = arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, moved);
       treeDragSrc = null;
-      dropTreeNode(src, obj);
+      renderTree();
     });
   }
 
@@ -2489,185 +2063,112 @@ function rowEl(depth, obj, parent, grand) {
 
 function addRow(depth, onAdd) {
   const div = document.createElement('div');
-  div.className = 'tree-row d' + depth + ' add-line';
+  div.className = 'tree-row d' + depth;
   div.style.background = 'transparent';
   div.style.borderBottom = 'none';
-  div.style.padding = state.useTypes
-    ? (depth === 2 ? '2px 14px 8px 38px' : '2px 14px 8px 64px')
-    : (depth === 2 ? '2px 14px 8px 14px' : '2px 14px 8px 40px');
+  div.style.padding = depth === 2 ? '6px 14px 10px 38px' : '6px 14px 10px 64px';
 
-  const link = document.createElement('button');
-  link.type = 'button';
-  link.className = 'add-link';
-  link.textContent = depth === 2 ? '＋ 역량군 추가' : '＋ 세부역량 추가';
-  link.onclick = onAdd;
-  div.appendChild(link);
-
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-xs btn-outline';
+  btn.textContent = depth === 2 ? '＋ 역량군 추가' : '＋ 세부역량 추가';
+  btn.onclick = onAdd;
+  div.appendChild(btn);
 
   return div;
 }
-// 드래그 허용 여부: 같은 단계끼리 순서 변경, 역량군→유형, 세부역량→역량군 이동
-function canDropOn(src, target) {
-  const ks = treeKindOf(src), kt = treeKindOf(target);
-  if (ks === kt) return true;
-  if (ks === 'group' && kt === 'type') return state.useTypes;
-  if (ks === 'item' && kt === 'group') return state.useItems;
-  return false;
+
+function generateCode(depth, name, parent, grand) {
+  if (!name) return '';
+  if (depth === 1) {
+    const used = state.types.map(t => t.code);
+    return nextCode('TYPE', used);
+  }
+  if (depth === 2) {
+    const prefix = (parent ? parent.code : 'TYPE') + '_G';
+    const used = parent.groups.map(g => g.code);
+    return nextCode(prefix, used);
+  }
+  if (depth === 3) {
+    const prefix = (parent ? parent.code : 'GRP') + '_I';
+    const used = parent.items.map(i => i.code);
+    return nextCode(prefix, used);
+  }
+  return '';
 }
 
-// 같은 목록이면 대상 행의 위치로 순서 변경, 다른 목록이면 이동(하위 항목과 질문도 함께).
-function dropTreeNode(src, target) {
-  const ks = treeKindOf(src), kt = treeKindOf(target);
-  const from = locateNode(src);
-  if (!from) return;
-  let toArr, toParent, toIndex;
-  if (ks === kt) {
-    const to = locateNode(target);
-    toArr = to.arr; toParent = to.parent; toIndex = toArr.indexOf(target);
-  } else {
-    toParent = target;
-    toArr = kt === 'type' ? target.groups : target.items;
-    toIndex = toArr.length;
-  }
-  const fromIdx = from.arr.indexOf(src);
-
-  if (from.arr === toArr) {
-    const [m] = toArr.splice(fromIdx, 1);
-    toArr.splice(toIndex, 0, m);
-    renderTree();
-    return;
-  }
-
-  const label = KIND_LABEL[ks];
-  const nm = (src.name || '').trim();
-  if (nm && toArr.some(x => (x.name || '').trim() === nm)) {
-    toast(`'${toParent.name || '이름 없음'}'에 같은 이름의 ${label}이(가) 있습니다.`);
-    return;
-  }
-  from.arr.splice(fromIdx, 1);
-  if (ks === 'group') {
-    src.code = nextCode((toParent.code || 'TYPE') + '_G', toArr.map(x => x.code));
-    (src.items || []).forEach((it, ii) => { it.code = `${src.code}_I${String(ii + 1).padStart(2, '0')}`; });
-  } else if (ks === 'item') {
-    src.code = nextCode((toParent.code || 'GRP') + '_I', toArr.map(x => x.code));
-  }
-  toArr.splice(toIndex, 0, src);
-  toParent._open = true;
-  renderTree();
-  toast(`'${src.name || '이름 없음'}' ${label}을(를) '${toParent.name || '이름 없음'}'(으)로 이동했습니다.`);
-}
-
-// ── 여러 개 한 번에 추가: 새 항목 입력칸에 쉼표(,)로 구분해 입력하면 형제 항목이 함께 만들어진다 ──
-const NAME_SPLIT = /[,，、\r\n]+/;
-function newSibling(kind, parent, arr, name) {
-  const base = { id: makeId(), name };
-  if (kind === 'type') return { ...base, code: nextCode('TYPE', arr.map(x => x.code)), description: '', groups: [], _open: true };
-  if (kind === 'group') return { ...base, code: nextCode((parent.code || 'TYPE') + '_G', arr.map(x => x.code)), description: '', items: [], _open: true };
-  return { ...base, code: nextCode((parent.code || 'GRP') + '_I', arr.map(x => x.code)), questions: [] };
-}
-// obj(새로 입력 중인 항목)의 이름에 쉼표가 있으면 나누어 obj 바로 뒤에 형제 항목으로 추가한다. 추가로 만든 개수를 반환.
-function splitNewNames(obj) {
-  const raw = obj.name || '';
-  let cut = 0;
-  const parts = raw.split(NAME_SPLIT).map(x => x.trim()).filter(Boolean).map(x => {
-    if (x.length > NAME_MAX) { cut++; return x.slice(0, NAME_MAX); }
-    return x;
-  });
-  const loc = locateNode(obj);
-  if (!loc) return 0;
-  const others = loc.arr.filter(x => x !== obj);
-  const seen = new Set(others.map(x => (x.name || '').trim()));
-  const uniq = parts.filter(x => {
-    if (seen.has(x)) return false;
-    seen.add(x);
-    return true;
-  });
-  const dup = parts.length - uniq.length;
-  if (!uniq.length) {
-    obj.name = '';
-    if (parts.length) toast('이미 같은 이름이 등록되어 있습니다.');
-    return 0;
-  }
-  obj.name = uniq[0];
-  const kind = treeKindOf(obj);
-  let at = loc.arr.indexOf(obj);
-  uniq.slice(1).forEach(nm => {
-    loc.arr.splice(++at, 0, newSibling(kind, loc.parent, loc.arr, nm));
-  });
-  const extra = uniq.length - 1;
-  if (extra > 0 || dup || cut) {
-    const notes = [dup ? `이미 있는 이름 ${dup}개 제외` : '', cut ? `${NAME_MAX}자 초과 ${cut}개는 ${NAME_MAX}자까지만 등록` : ''].filter(Boolean);
-    toast(`${KIND_LABEL[kind]} ${uniq.length}개를 추가했습니다.` + (notes.length ? ` (${notes.join(', ')})` : ''));
-  }
-  return extra;
-}
-// 입력 중인 새 항목에 쉼표가 남아 있으면 단계 이동·저장 전에 먼저 나눈다.
-function commitPendingEdits() {
-  const pending = [];
-  state.types.forEach(t => { pending.push(t); t.groups.forEach(g => { pending.push(g); g.items.forEach(i => pending.push(i)); }); });
-  let changed = false;
-  pending.forEach(o => {
-    if (o._editing && o._isNew && NAME_SPLIT.test(o.name || '')) { splitNewNames(o); changed = true; }
-  });
-  if (changed) renderTree();
-}
 function saveEdit(obj, nameInput, descInput) {
   const name = nameInput.value.trim();
   if (!name) { toast('이름을 입력해주세요'); return; }
   obj.name = name;
-  if (obj._isNew) splitNewNames(obj);
-  if (!(obj.name || '').trim()) { renderTree(); return; }
   if (descInput != null) obj.description = descInput.value.trim();
   obj._editing = false;
   obj._isNew = false;
   renderTree();
 }
 function cancelEdit(obj) {
-  if (obj._isNew && !(obj.name || '').trim()) {
+  if (obj._isNew) {
     deleteItem(obj, true);
   } else {
     obj._editing = false;
-    obj._isNew = false;
     renderTree();
   }
 }
 
+function peersOf(obj) {
+  for (const t of state.types) {
+    if (t === obj) return state.types;
+    for (const g of t.groups) {
+      if (g === obj) return t.groups;
+      for (const i of g.items) if (i === obj) return g.items;
+    }
+  }
+  return [];
+}
+
+function moveItem(obj, dir) {
+  const arr = peersOf(obj);
+  const idx = arr.indexOf(obj);
+  const ni = idx + dir;
+  if (ni < 0 || ni >= arr.length) return;
+  [arr[idx], arr[ni]] = [arr[ni], arr[idx]];
+  renderTree();
+}
 function deleteItem(obj, silent) {
-  const kind = treeKindOf(obj);
   if (!silent) {
-    const label = KIND_LABEL[kind];
-    const childCount = kind === 'type' ? obj.groups.length : (kind === 'group' && state.useItems) ? obj.items.length : 0;
+    const label = obj.groups ? '유형' : obj.items ? '역량군' : '세부역량';
+    const childCount = obj.groups ? obj.groups.length : obj.items ? obj.items.length : 0;
     // 연결된 질문 수 계산
     let totalQ = 0;
-    if (kind === 'item') totalQ = (obj.questions || []).length;
-    else if (kind === 'group') obj.items.forEach(i => { totalQ += (i.questions || []).length; });
-    else obj.groups.forEach(g => g.items.forEach(i => { totalQ += (i.questions || []).length; }));
+    if (obj.questions) totalQ = obj.questions.length;
+    else if (obj.items) obj.items.forEach(i => { totalQ += (i.questions||[]).length; });
+    else if (obj.groups) obj.groups.forEach(g => g.items.forEach(i => { totalQ += (i.questions||[]).length; }));
     let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠어요?`;
     if (childCount > 0) msg += `\n\n하위 항목 ${childCount}개도 함께 삭제됩니다.`;
     if (totalQ > 0) msg += `\n연결된 질문 ${totalQ}개도 함께 삭제됩니다.`;
     if (!confirm(msg)) return;
   }
-  const loc = locateNode(obj);
-  if (loc) {
-    const idx = loc.arr.indexOf(obj);
-    if (idx >= 0) loc.arr.splice(idx, 1);
-  }
+  const arr = peersOf(obj);
+  const idx = arr.indexOf(obj);
+  if (idx >= 0) arr.splice(idx, 1);
   renderTree();
 }
 
 function addType() {
-  const newT = { id: makeId(), code: nextCode('TYPE', state.types.map(t => t.code)), name: '', description: '', groups: [], _open: true, _editing: true, _isNew: true };
+  const newT = { id: makeId(), code: '', name: '', groups: [], _open: true, _editing: true, _isNew: true };
+  newT.code = generateCode(1, '신규', null, null);
   state.types.push(newT);
   renderTree();
 }
 function addGroup(t) {
-  const newG = { id: makeId(), code: nextCode((t.code || 'TYPE') + '_G', t.groups.map(g => g.code)), name: '', description: '', items: [], _open: true, _editing: true, _isNew: true };
+  const newG = { id: makeId(), code: '', name: '', items: [], _open: true, _editing: true, _isNew: true };
+  newG.code = generateCode(2, '신규', t, null);
   t.groups.push(newG);
   t._open = true;
   renderTree();
 }
 function addItem(t, g) {
-  const newI = { id: makeId(), code: nextCode((g.code || 'GRP') + '_I', g.items.map(i => i.code)), name: '', questions: [], _editing: true, _isNew: true };
+  const newI = { id: makeId(), code: '', name: '', _editing: true, _isNew: true };
+  newI.code = generateCode(3, '신규', g, t);
   g.items.push(newI);
   g._open = true;
   renderTree();
@@ -2680,8 +2181,7 @@ function refreshStats() {
   document.getElementById('statD1').textContent = d1;
   document.getElementById('statD2').textContent = d2;
   document.getElementById('statD3').textContent = d3;
-  document.getElementById('treeMeta').textContent =
-    [state.useTypes ? `유형 ${d1}` : null, `역량군 ${d2}`, state.useItems ? `세부역량 ${d3}` : null].filter(Boolean).join(' · ');
+  document.getElementById('treeMeta').textContent = `유형 ${d1} · 역량군 ${d2} · 세부역량 ${d3}`;
 }
 
 // ── 예시 모달 ──
@@ -2722,7 +2222,7 @@ const PRESETS = {
 
 function applyPreset() {
   if (!selectedPreset) { toast('예시를 선택해주세요'); return; }
-  if (!isEmptyStruct() && !confirm('현재 등록한 내용이 모두 지워지고 예시로 교체됩니다. 계속할까요?')) return;
+  if (state.types.length > 0 && !confirm('현재 등록한 내용이 모두 지워지고 예시로 교체됩니다. 계속할까요?')) return;
 
   state.types = JSON.parse(JSON.stringify(PRESETS[selectedPreset].types));
   state.types.forEach(t => {
@@ -2735,13 +2235,12 @@ function applyPreset() {
 
   closeModal('presetModal');
   renderTree();
-  const skipped = [state.useTypes ? null : '유형', state.useItems ? null : '세부역량'].filter(Boolean);
-  toast(skipped.length ? `예시가 적용되었습니다. ${skipped.join('·')}은(는) 현재 구조에서 제외됩니다.` : '예시가 적용되었습니다. 필요에 따라 수정하세요.');
+  toast('예시가 적용됐어요. 자유롭게 수정하세요.');
 }
 
 function resetAll() {
-  if (isEmptyStruct()) return;
-  if (!confirm('등록한 구조를 모두 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
+  if (state.types.length === 0) return;
+  if (!confirm('STEP 1의 모든 구조를 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
   state.types = [];
   renderTree();
 }
@@ -2757,8 +2256,7 @@ function toast(msg) {
 }
 
 // 초기 렌더
-renderModeTexts();
-showStep('struct');
+renderTree();
 
 // 모달 overlay 클릭 시 닫기, ESC 키 지원
 document.getElementById('qAddModal').addEventListener('click', function(e) {
