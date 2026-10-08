@@ -137,6 +137,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .course-meta span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);white-space:nowrap;}
 .course-meta svg{width:13px;height:13px;flex-shrink:0;}
 
+.btn-learn{align-self:flex-end;flex-shrink:0;white-space:nowrap;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-learn:hover{opacity:.9;}
+
 /* TOP2 과정 카드 — 썸네일 확대 */
 .top2-course .course-thumb{width:190px;height:120px;}
 
@@ -508,6 +511,7 @@ function top2ItemHTML(c, factorLabel) {
         <span>${ICON_PRICE}${c.price}</span>
       </div>
     </div>
+    <button type="button" class="btn-learn">학습하기</button>
   </div>`;
 }
 
