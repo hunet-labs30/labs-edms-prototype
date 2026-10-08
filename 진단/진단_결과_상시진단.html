@@ -406,8 +406,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
   <div class="main-wrap">
     <main class="main">
 
-      <div style="background:#eef3ff;border:1px solid #bfdbfe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#1d4ed8;">
-        방향성 ② · <b>상시진단</b> — 회차 이력 관리 + 콘텐츠 템플릿 선택 프로토타입
+      <div style="background:#eef3ff;border:1px solid #bfdbfe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#1d4ed8;display:flex;align-items:center;gap:12px;">
+        <span>방향성 ② · <b>상시진단</b> — 회차 이력 관리 + 콘텐츠 템플릿 선택 프로토타입</span>
+        <select id="subMode" onchange="setSubMode(this.value === '1')" style="height:24px;border:1px solid #93c5fd;border-radius:4px;padding:0 6px;font-size:11px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;margin-left:auto;flex-shrink:0;">
+          <option value="1" selected>세부역량 있음</option>
+          <option value="0">세부역량 없음 (역량군 단위)</option>
+        </select>
       </div>
 
       <!-- Page Header -->
@@ -898,6 +902,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li>각 회차마다 응답 일자, 점수, 세부 점수 이력 보유</li>
             <li>회차 선택 시 해당 회차의 모든 점수·차트가 업데이트되는 방식 구현</li>
           </ul>
+
+          <h4>세부역량을 사용하지 않는 진단지</h4>
+          <ul>
+            <li><b>적용 대상:</b> 세부역량이 없이 역량군만으로 구성된 진단 상품 (예: 간편형 진단)</li>
+            <li><b>강점·약점 카드:</b> 역량군 점수를 역량군 기준(강점/약점)과 비교하여 역량군 단위로 표시. 세부역량 리스트 대신 역량군 평균점수 1줄로 표시</li>
+            <li><b>역량 상세 결과 표:</b> 세부역량 열 및 행 제거. 역량군 행만 표시하고, 역량군 칸에 "역량군명 + 판정뱃지(강점/약점)" 형태로 표시</li>
+            <li><b>종합 평가 헤드라인:</b> "가장 강점인 역량군/가장 보완이 필요한 역량군" 문장은 항상 표시. "세부역량 중 가장 높은/낮은 항목" 문장은 미노출</li>
+            <li><b>추천 과정:</b> 추천 과정 카드·드로어의 "세부역량명(cmp)" 필드를 "역량군명(grp)"으로 치환하여 표시</li>
+            <li><b>토글 UI:</b> 상단 시뮬레이션 배너에 #subMode select로 "세부역량 있음" / "세부역량 없음 (역량군 단위)" 선택 가능 (프로토타입 용)</li>
+          </ul>
         </div>
       </div>
 
@@ -926,6 +940,69 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 </div>
 
 <script>
+// 역량군 데이터 구조 (표에서 추출)
+const ALL_GROUPS = [
+  {
+    name: 'Self역량군',
+    self: 3.5,
+    avg: 3.63,
+    s: 4.0,
+    w: 2.5,
+    subs: [
+      { name: '전략적 사고',   self: 4.5, avg: 3.8 },
+      { name: '의사결정 능력', self: 4.1, avg: 3.7 },
+      { name: '위기 대응력',   self: 2.0, avg: 3.4 }
+    ]
+  },
+  {
+    name: 'People역량군',
+    self: 3.6,
+    avg: 3.8,
+    s: 4.2,
+    w: 2.8,
+    subs: [
+      { name: '비전 및 목표 설정',       self: 3.8, avg: 4.0 },
+      { name: '구성원 육성 및 동기부여', self: 3.5, avg: 3.9 },
+      { name: '인재 육성',               self: 3.7, avg: 3.8 },
+      { name: '성과 창출 및 관리',       self: 3.4, avg: 3.5 }
+    ]
+  },
+  {
+    name: 'Team역량군',
+    self: 2.3,
+    avg: 3.73,
+    s: 4.0,
+    w: 2.5,
+    subs: [
+      { name: '갈등 관리',       self: 2.5, avg: 3.9 },
+      { name: '발표/표현',       self: 2.1, avg: 3.6 },
+      { name: '성과 창출 및 관리', self: 2.3, avg: 3.7 }
+    ]
+  },
+  {
+    name: '소통협력역량군',
+    self: 3.9,
+    avg: 3.55,
+    s: 3.8,
+    w: 2.5,
+    subs: [
+      { name: '소통 및 협력', self: 4.1, avg: 3.7 },
+      { name: '다양성 존중',   self: 3.8, avg: 3.4 }
+    ]
+  },
+  {
+    name: '혁신성과역량군',
+    self: 2.4,
+    avg: 3.45,
+    s: 4.0,
+    w: 2.5,
+    subs: [
+      { name: '윤리경영 및 책임의식', self: 2.6, avg: 3.5 },
+      { name: '변화관리 및 혁신',     self: 2.3, avg: 3.4 }
+    ]
+  }
+];
+
 // 회차 데이터
 const RESULT_ROUNDS = [
   { roundNum: 1, submittedDate: '2026-03-02', score: 3.2 },
@@ -935,6 +1012,87 @@ const RESULT_ROUNDS = [
 
 let selectedRoundIndex = RESULT_ROUNDS.length - 1; // 기본: 최신 회차
 let currentTemplate = 'standard';
+let USE_SUBS = true;  // 세부역량 사용 여부 (false: 역량군 단위로 강점·약점 판정)
+
+function f1(v) { return v.toFixed(1); }  // 소수 1자리 포맷
+function r1(v) { return Math.round(v * 10) / 10; }
+function mean(arr) { return arr.length > 0 ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+
+const TAG_BADGE = { s: '<span class="mini-badge s">강점</span>', w: '<span class="mini-badge w">약점</span>', '': '' };
+
+// 세부역량 열 표시/숨김
+function updateTableColumns() {
+  const thSub = document.querySelector('.score-table thead th:nth-child(2)');  // 세부역량 열
+  if (thSub) thSub.style.display = USE_SUBS ? '' : 'none';
+
+  // 역량군 행: 세부역량 없음이면 헤더 행(colspan 5)을 역량군 점수 행(역량군 · 본인 · 전체평균 · GAP)으로 바꾼다.
+  document.querySelectorAll('.score-table tbody tr.grp').forEach((tr, i) => {
+    if (tr.dataset.orig === undefined) tr.dataset.orig = tr.innerHTML;
+    const g = ALL_GROUPS[i];
+    if (USE_SUBS || !g) { tr.innerHTML = tr.dataset.orig; return; }
+    const tag = g.self >= g.s ? 's' : g.self < g.w ? 'w' : '';
+    const gap = r1(g.self) - r1(g.avg);
+    const gapTxt = gap > 0 ? '+' + gap.toFixed(1) : gap < 0 ? gap.toFixed(1) : '0.0';
+    tr.innerHTML = `<td class="ta-l">${g.name} ${TAG_BADGE[tag]}
+        <span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">강점 기준 ${g.s.toFixed(1)} / 약점 기준 ${g.w.toFixed(1)}</span></td>
+      <td class="${tag === 's' ? 'hi' : tag === 'w' ? 'lo' : ''}">${f1(g.self)}</td><td>${f1(g.avg)}</td><td class="${gap > 0 ? 'gap-p' : gap < 0 ? 'gap-n' : ''}">${gapTxt}</td>`;
+  });
+
+  // 세부역량 데이터 행 표시/숨김 (역량군 행 제외)
+  document.querySelectorAll('.score-table tbody tr').forEach(tr => {
+    const isSub = tr.classList.contains('grp') === false && tr.querySelector('td:nth-child(1)').textContent.trim() === '';
+    if (isSub) {
+      tr.style.display = USE_SUBS ? '' : 'none';
+    }
+  });
+}
+
+// 강점·약점 카드 재구성 (!USE_SUBS 상태)
+function rebuildSwCards() {
+  const strengthCard = document.querySelector('.sw-detail-card.strength .sw-detail-title').parentElement;
+  const weaknessCard = document.querySelector('.sw-detail-card.weakness .sw-detail-title').parentElement;
+  // 세부역량 있음으로 돌아올 때 복원할 수 있도록 최초 마크업을 보관
+  [strengthCard, weaknessCard].forEach(c => { if (c.dataset.orig === undefined) c.dataset.orig = c.innerHTML; });
+  if (USE_SUBS) {   // 세부역량 있음: 기존 HTML 복원 후 현재 회차 점수 보정을 다시 적용
+    strengthCard.innerHTML = strengthCard.dataset.orig; weaknessCard.innerHTML = weaknessCard.dataset.orig;
+    const mul = [1.0, 1.1, 1.2][selectedRoundIndex];
+    document.querySelectorAll('.competency-score').forEach(el => { const b = parseFloat(el.dataset.baseScore); if (b) el.textContent = (b * mul).toFixed(1); });
+    return;
+  }
+
+  // 강점 역량군 필터링
+  const strengthGroups = ALL_GROUPS.filter(g => g.self >= g.s);
+  const strengthHTML = strengthGroups.length > 0
+    ? strengthGroups.map(g => `<div class="sw-group-block">
+        <div class="sw-group-head"><span>${g.name}</span><span class="sw-threshold s">기준 ${g.s.toFixed(1)} 이상</span></div>
+        <div class="sw-item-row" style="padding:3px 0 3px 13px;font-size:12.5px;color:var(--text-700);position:relative;">
+          <span>역량군 점수</span><span class="sw-item-score" style="font-weight:600;color:var(--text-700);">${f1(g.self)}</span>
+        </div>
+      </div>`).join('')
+    : '<div style="font-size:12.5px;color:var(--text-500);padding:8px 0;">해당하는 역량군이 없습니다.</div>';
+
+  strengthCard.innerHTML = '<div class="sw-detail-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>강점 역량 <span class="sw-detail-hint">— 역량군 기준 이상인 항목만 표시</span></div>' + strengthHTML;
+
+  // 약점 역량군 필터링
+  const weaknessGroups = ALL_GROUPS.filter(g => g.self < g.w);
+  const weaknessHTML = weaknessGroups.length > 0
+    ? weaknessGroups.map(g => `<div class="sw-group-block">
+        <div class="sw-group-head"><span>${g.name}</span><span class="sw-threshold w">기준 ${g.w.toFixed(1)} 미만</span></div>
+        <div class="sw-item-row" style="padding:3px 0 3px 13px;font-size:12.5px;color:var(--text-700);position:relative;">
+          <span>역량군 점수</span><span class="sw-item-score" style="font-weight:600;color:var(--text-700);">${f1(g.self)}</span>
+        </div>
+      </div>`).join('')
+    : '<div style="font-size:12.5px;color:var(--text-500);padding:8px 0;">해당하는 역량군이 없습니다.</div>';
+
+  weaknessCard.innerHTML = '<div class="sw-detail-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>약점 역량 <span class="sw-detail-hint">— 역량군 기준 이하인 항목만 표시</span></div>' + weaknessHTML;
+}
+
+// 세부역량 모드 토글
+function setSubMode(v) {
+  USE_SUBS = v;
+  rebuildSwCards();
+  updateTableColumns();
+}
 
 // 회차 탭 렌더링
 function renderRoundTabs() {
@@ -978,6 +1136,9 @@ function updateResultContent(round) {
       el.textContent = newScore;
     }
   });
+
+  // !USE_SUBS 상태에서 카드 재구성 필요 (라운드 변경 시에도)
+  if (!USE_SUBS) rebuildSwCards();
 }
 
 // 토스트 메시지
@@ -1018,7 +1179,7 @@ function renderCourseItem(c) {
   return `<a class="cd-item" href="#" onclick="return false;">
     <img class="cd-item-thumb" src="${c.thumb}" alt="${c.name}" loading="lazy">
     <div class="cd-item-left">
-      <div class="cd-item-cmp">${c.cmp}</div>
+      <div class="cd-item-cmp">${USE_SUBS ? c.cmp : c.grp}</div>
       <div class="cd-item-name">${c.name}</div>
       <span class="cd-item-type ${c.type}">${CD_TYPE_LABEL[c.type]}</span>
     </div>

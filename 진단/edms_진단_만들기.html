@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1258,7 +1258,7 @@ body {
           <div class="wiz-card-head">
             <span class="wiz-step-tag" id="stepTag-5">STEP 5 / 8 · 선택사항</span>
             <h2>추천 과정을 설정해주세요.</h2>
-            <p>세부역량별로 강점·약점 결과에 따라 학습자에게 자동 추천할 과정을 설정합니다.</p>
+            <p>강점·약점 결과에 따라 학습자에게 자동 추천할 과정을 설정합니다.</p>
           </div>
           <div class="wiz-card-body padded">
             <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
@@ -1588,9 +1588,9 @@ body {
       <!-- 안내 박스 -->
       <div style="background:#f0f4ff;border:1px solid #c5d8f7;border-radius:8px;padding:14px 18px;font-size:12.5px;line-height:1.9;color:#2a3a6a;">
         <div style="font-size:13px;font-weight:700;color:#0a1e4a;margin-bottom:6px;">일괄 업로드 안내</div>
-        엑셀 파일(.xlsx)로 세부유형별 추천과정을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        시트 구성: <strong>세부유형코드 · 세부유형명 · 과정명 · 과정아이디</strong> (A~D열)<br>
-        시트2 코드표를 참고하여 세부유형코드를 입력하고, 동일 세부유형에 과정이 여러 개면 행을 추가하세요.<br>
+        엑셀 파일(.xlsx)로 역량별 추천과정을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
+        시트 구성: <strong>역량코드 · 역량명 · 과정명 · 과정아이디</strong> (A~D열)<br>
+        시트2 코드표를 참고하여 역량코드를 입력하고, 동일 역량에 과정이 여러 개면 행을 추가하세요.<br>
         미리보기로 오류 확인 후 등록 버튼을 눌러주세요.
       </div>
 
@@ -1627,12 +1627,12 @@ body {
               <td style="padding:10px 14px;border:1px solid #f0f2f5;">엑셀 파일에 등록된 데이터가 없는 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 누락</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">세부유형코드(A열)가 입력되지 않은 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">역량코드 누락</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">역량코드(A열)가 입력되지 않은 경우</td>
             </tr>
             <tr>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">세부유형코드 불일치</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트2 코드표에 없는 세부유형코드가 입력된 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">역량코드 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">시트2 코드표에 없는 역량코드가 입력된 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">과정아이디 누락</td>
@@ -1640,7 +1640,7 @@ body {
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">중복 오류</td>
-              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 세부유형코드와 과정아이디 조합이 이미 등록되어 있는 경우</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">동일한 역량코드와 과정아이디 조합이 이미 등록되어 있는 경우</td>
             </tr>
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">파일 용량 초과</td>
@@ -2155,8 +2155,132 @@ const QUESTIONNAIRES = [
         ]
       }
     ]
+  },
+  {
+    // 유형 미사용: 유형 노드는 진단지명으로 하나만 존재(implicit)하며 화면에는 표시하지 않는다.
+    id: 5,
+    name: '조직문화 진단 (유형 없음)',
+    tags: ['OC'],
+    typeCount: 1,
+    subCount: 4,
+    qCount: 8,
+    date: '2026-09-20',
+    compatTypes: ['범용', '사전사후'],
+    locked: false,
+    resultTemplate: 'standard',
+    useTypes: false,
+    types: [
+      {
+        id: 'ORG',
+        name: '조직문화 진단 (유형 없음)',
+        implicit: true,
+        qCount: 8,
+        groups: [
+          {
+            name: '소통역량군',
+            qCount: 4,
+            avg: 3.6,
+            subs: [
+              { name: '상호 존중', qCount: 2, scale: '5점 척도',
+                questions: ['우리 조직에서는 직급과 관계없이 서로의 의견을 존중한다.','나는 의견이 달라도 안심하고 말할 수 있다.'] },
+              { name: '정보 공유', qCount: 2, scale: '5점 척도',
+                questions: ['업무에 필요한 정보가 팀 내에서 투명하게 공유된다.','중요한 변경 사항은 관련 구성원에게 신속하게 전달된다.'] }
+            ]
+          },
+          {
+            name: '협업역량군',
+            qCount: 4,
+            avg: 3.1,
+            subs: [
+              { name: '팀워크', qCount: 2, scale: '5점 척도',
+                questions: ['우리 팀은 공동의 목표를 위해 역할을 분담하고 협력한다.','팀원 간 도움이 필요할 때 적극적으로 지원한다.'] },
+              { name: '부서 간 협력', qCount: 2, scale: '5점 척도',
+                questions: ['다른 부서에 협조를 요청하면 원활하게 처리된다.','부서 간 이해관계가 충돌해도 협의를 통해 해결한다.'] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    // 유형·세부역량 미사용: 역량군마다 세부역량 1개(implicit, 이름=역량군명)를 두고 질문을 담는다.
+    id: 6,
+    name: '리더십 간이진단 (역량군만)',
+    tags: ['LC'],
+    typeCount: 1,
+    subCount: 3,
+    qCount: 9,
+    date: '2026-09-25',
+    compatTypes: ['범용', '사전사후'],
+    locked: false,
+    resultTemplate: 'standard',
+    useTypes: false,
+    useSubs: false,
+    types: [
+      {
+        id: 'LDR',
+        name: '리더십 간이진단 (역량군만)',
+        implicit: true,
+        qCount: 9,
+        groups: [
+          {
+            name: '조직관리역량군',
+            qCount: 3,
+            avg: 3.7,
+            subs: [
+              { name: '조직관리역량군', implicit: true, qCount: 3, scale: '5점 척도',
+                questions: ['나는 팀의 방향과 목표를 명확하게 제시한다.','나는 업무 우선순위를 정해 팀원에게 공유한다.','나는 조직의 가치를 직접 실천해 보인다.'] }
+            ]
+          },
+          {
+            name: '사람관리역량군',
+            qCount: 3,
+            avg: 3.3,
+            subs: [
+              { name: '사람관리역량군', implicit: true, qCount: 3, scale: '5점 척도',
+                questions: ['나는 팀원의 의견을 끝까지 경청한다.','나는 팀원의 성장을 위해 피드백을 제공한다.','나는 팀원이 어려울 때 신뢰할 수 있는 지원자가 된다.'] }
+            ]
+          },
+          {
+            name: '성과관리역량군',
+            qCount: 3,
+            avg: 2.9,
+            subs: [
+              { name: '성과관리역량군', implicit: true, qCount: 3, scale: '5점 척도',
+                questions: ['나는 성과 기준을 사전에 명확히 합의한다.','나는 성과 결과를 팀원과 함께 점검한다.','나는 목표 달성을 가로막는 장애물을 신속히 해결한다.'] }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
+
+// 구조 옵션: useTypes=false → 유형 노드는 하나뿐(implicit)이라 화면에 표시하지 않음,
+//            useSubs=false → 역량군마다 세부역량 1개(implicit, 이름=역량군명)이며 역량군 단위로 처리
+QUESTIONNAIRES.forEach(q => { q.useTypes = q.useTypes !== false; q.useSubs = q.useSubs !== false; });
+
+function structMeta(q) {
+  const groupCount = q.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
+  const subCount = q.types.reduce((s, t) => s + (t.groups ? t.groups.reduce((gs, g) => gs + g.subs.length, 0) : 0), 0);
+  return [q.useTypes ? `유형 ${q.types.length}개` : '', `역량군 ${groupCount}개`, q.useSubs ? `세부역량 ${subCount}개` : '', `${q.qCount}문항`].filter(Boolean);
+}
+
+// 추천과정 연결 단위: 세부역량 사용 시 세부역량, 미사용 시 역량군
+function courseUnits(q) {
+  const out = [];
+  q.types.forEach(type => type.groups.forEach((group, gidx) => group.subs.forEach((sub, sidx) => {
+    const g2 = String(gidx + 1).padStart(2, '0');
+    out.push({
+      type, group, sub, gidx, sidx,
+      key: `${type.id}-g${gidx}-s${sidx}`,
+      code: q.useSubs ? `${type.id}_G${g2}_${String(sidx + 1).padStart(2, '0')}` : `${type.id}_G${g2}`,
+      title: q.useSubs ? sub.name : group.name,
+      label: q.useSubs ? `[${group.name}] ${sub.name}` : group.name
+    });
+  })));
+  return out;
+}
 
 // 호환성을 위한 DIAGNOSTIC_DATA (새로운 QUESTIONNAIRES 기반)
 const DIAGNOSTIC_DATA = {};
@@ -2413,7 +2537,7 @@ function renderStep1() {
         ${q.locked ? '<span style="font-size:14px;">🔒</span>' : ''}
         ${overrideBadge}
       </div>
-      <div class="diag-card-meta">유형 ${q.typeCount}개 · 역량군 ${q.types.reduce((s,t)=>s+(t.groups?t.groups.length:0),0)}개 · 세부역량 ${q.subCount}개 · ${q.qCount}문항</div>
+      <div class="diag-card-meta">${structMeta(q).join(' · ')}</div>
       <div class="diag-card-date">등록일 ${q.date}</div>
     `;
 
@@ -2614,15 +2738,8 @@ function renderPreview(questionnaire) {
   document.getElementById('previewQuestionnaireName').innerHTML = questionnaire.name + overrideBadge;
 
   // 통계 칩 (유형 > 역량군 > 세부역량 동적 계산)
-  const groupCount = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.length : 0), 0);
-  const subCount   = questionnaire.types.reduce((s, t) => s + (t.groups ? t.groups.reduce((gs, g) => gs + g.subs.length, 0) : 0), 0);
-  const statsHtml = `
-    <span class="stat-chip">유형 ${questionnaire.typeCount}개</span>
-    <span class="stat-chip">역량군 ${groupCount}개</span>
-    <span class="stat-chip">세부역량 ${subCount}개</span>
-    <span class="stat-chip">${questionnaire.qCount}문항</span>
-  `;
-  document.getElementById('previewStats').innerHTML = statsHtml;
+  // 유형·세부역량 미사용 진단지는 해당 칩을 표시하지 않는다.
+  document.getElementById('previewStats').innerHTML = structMeta(questionnaire).map(s => `<span class="stat-chip">${s}</span>`).join('');
 
   // 트리 구조 (유형 > 역량군 > 세부역량)
   const treeHtml = questionnaire.types.map((type, typeIdx) => {
@@ -2647,6 +2764,10 @@ function renderPreview(questionnaire) {
               </div>
             </div>`;
         }).join('');
+        // 세부역량 미사용: 세부역량 헤더 없이 역량군 아래에 질문을 바로 표시
+        if (!questionnaire.useSubs) {
+          return `<div class="preview-sub-block open" id="${blockId}"><div class="preview-q-list">${qCardsHtml}</div></div>`;
+        }
         return `
           <div class="preview-sub-block open" id="${blockId}">
             <div class="preview-sub-header" onclick="togglePreviewSub('${blockId}')">
@@ -2670,6 +2791,8 @@ function renderPreview(questionnaire) {
       `;
     }).join('');
 
+    // 유형 미사용: 유형 헤더 없이 역량군부터 바로 표시
+    if (!questionnaire.useTypes) return groupsHtml;
     return `
       <div class="tree-type open">
         <div class="tree-type-header" onclick="toggleTreeTypeNode(this)">
@@ -2863,8 +2986,8 @@ function generateScoreSettings() {
       div.className = 'score-type-card';
       div.innerHTML = `
         <div class="score-type-head">
-          <span class="score-type-name" style="font-size:14px;">${type.name}</span>
-          <span style="font-size:12px;color:#888;margin:0 6px;">—</span>
+          ${selectedQuestionnaire.useTypes ? `<span class="score-type-name" style="font-size:14px;">${type.name}</span>
+          <span style="font-size:12px;color:#888;margin:0 6px;">—</span>` : ''}
           <span class="score-type-name">${group.name}</span>
           <span class="score-type-qcnt">${scoredQCount}문항</span>
         </div>
@@ -2952,23 +3075,29 @@ function generateCourseTree() {
   container.innerHTML = '';
   courseSettings = {};
 
-  selectedQuestionnaire.types.forEach(type => {
+  // 추천과정은 세부역량 단위로 연결하고, 세부역량을 쓰지 않는 진단지는 역량군 단위로 연결한다.
+  const q = selectedQuestionnaire;
+
+  q.types.forEach(type => {
     const typeNode = document.createElement('div');
     typeNode.className = 'tree-node open';
 
     const groupsHtml = type.groups.map((group, gidx) => {
       const subsHtml = group.subs.map((sub, sidx) => {
         const key = `${type.id}-g${gidx}-s${sidx}`;
+        const title = q.useSubs ? sub.name : group.name;
         courseSettings[key] = [];
+        // 세부역량 미사용: 역량군 헤더 행 자체가 과정 설정 대상이다.
         return `
-          <div class="tree-sub-header" onclick="openCourseModal('${sub.name}', '${key}')">
-            <span class="tree-sub-label">${sub.name}</span>
-            <button class="tree-sub-btn" onclick="event.stopPropagation(); openCourseModal('${sub.name}', '${key}')">과정 설정</button>
+          <div class="tree-sub-header" onclick="openCourseModal('${title}', '${key}')">
+            <span class="tree-sub-label">${title}</span>
+            <button class="tree-sub-btn" onclick="event.stopPropagation(); openCourseModal('${title}', '${key}')">과정 설정</button>
             <div class="tree-sub-courses" id="courses-${key}"></div>
           </div>
         `;
       }).join('');
 
+      if (!q.useSubs) return `<div style="margin-bottom:4px;">${subsHtml}</div>`;
       return `
         <div style="margin-bottom:8px;">
           <div style="padding:7px 16px;background:#f8f9fb;font-size:12px;font-weight:700;color:#444;border-top:1px solid #f0f2f5;">
@@ -2979,13 +3108,18 @@ function generateCourseTree() {
       `;
     }).join('');
 
-    typeNode.innerHTML = `
+    // 유형 미사용: 유형 헤더 없이 역량군(또는 세부역량)부터 바로 표시
+    if (!q.useTypes) {
+      typeNode.innerHTML = `<div class="tree-body" style="display:block;">${groupsHtml}</div>`;
+    } else {
+      typeNode.innerHTML = `
       <div class="tree-header" onclick="toggleTreeNode(this)">
         <span class="tree-toggle">▶</span>
         <span class="tree-label">${type.name}</span>
       </div>
       <div class="tree-body">${groupsHtml}</div>
     `;
+    }
     container.appendChild(typeNode);
   });
   updateCourseDownloadBtn();
@@ -3277,29 +3411,21 @@ function downloadTemplate() {
   const wb = XLSX.utils.book_new();
 
   /* ── Sheet 1: 업로드 템플릿 ── */
-  const s1 = [
-    ['세부유형코드', '세부유형명', '과정명', '과정아이디'],
-    ['LC_G01_01', '[Self역량군] 전략적 사고', 'VUCA 시대 빛나는 코칭 리더십', 'C001'],
-    ['LC_G01_02', '[Self역량군] 의사결정 능력', '사람을 움직이는 사람관리의 기술', 'C002'],
-    ['LC_G02_01', '[People역량군] 비전 및 목표 설정', '성과를 만드는 목표관리(OKR)', 'C003'],
-  ];
+  // 세부역량 사용 진단지는 세부역량 단위, 미사용 진단지는 역량군 단위 코드로 구성
+  const q = selectedQuestionnaire || QUESTIONNAIRES[0];
+  const units = courseUnits(q);
+  const codeHead = '역량코드';
+  const nameHead = '역량명';
+  const sampleCourses = [['VUCA 시대 빛나는 코칭 리더십', 'C001'], ['사람을 움직이는 사람관리의 기술', 'C002'], ['성과를 만드는 목표관리(OKR)', 'C003']];
+  const s1 = [[codeHead, nameHead, '과정명', '과정아이디']];
+  units.slice(0, 3).forEach((u, i) => s1.push([u.code, u.label, sampleCourses[i][0], sampleCourses[i][1]]));
   const ws1 = XLSX.utils.aoa_to_sheet(s1);
   ws1['!cols'] = [{wch:14},{wch:22},{wch:36},{wch:10}];
   XLSX.utils.book_append_sheet(wb, ws1, '업로드_템플릿');
 
   /* ── Sheet 2: 코드표 ── */
-  const q = selectedQuestionnaire || QUESTIONNAIRES[0];
-  const s2 = [['세부유형코드', '세부유형명']];
-  q.types.forEach(type => {
-    type.groups.forEach((group, gidx) => {
-      group.subs.forEach((sub, sidx) => {
-        s2.push([
-          `${type.id}_G${String(gidx+1).padStart(2,'0')}_${String(sidx+1).padStart(2,'0')}`,
-          `[${group.name}] ${sub.name}`,
-        ]);
-      });
-    });
-  });
+  const s2 = [[codeHead, nameHead]];
+  units.forEach(u => s2.push([u.code, u.label]));
   const ws2 = XLSX.utils.aoa_to_sheet(s2);
   ws2['!cols'] = [{wch:14},{wch:26}];
   XLSX.utils.book_append_sheet(wb, ws2, '코드표');
@@ -3311,20 +3437,14 @@ function downloadTemplate() {
 function downloadRecommendedCourses() {
   if (!selectedQuestionnaire) { showToast('진단지를 먼저 선택해주세요.'); return; }
 
-  const rows = [['세부유형코드', '세부유형명', '과정명']];
-  selectedQuestionnaire.types.forEach(type => {
-    type.groups.forEach((group, gidx) => {
-      group.subs.forEach((sub, sidx) => {
-        const code  = `${type.id}_G${String(gidx+1).padStart(2,'0')}_${String(sidx+1).padStart(2,'0')}`;
-        const label = `[${group.name}] ${sub.name}`;
-        const courses = courseData[`${type.id}-g${gidx}-s${sidx}`] || [];
-        if (courses.length === 0) {
-          rows.push([code, label, '']);
-        } else {
-          courses.forEach(c => rows.push([code, label, c]));
-        }
-      });
-    });
+  const rows = [['역량코드', '역량명', '과정명']];
+  courseUnits(selectedQuestionnaire).forEach(u => {
+    const courses = courseData[u.key] || [];
+    if (courses.length === 0) {
+      rows.push([u.code, u.label, '']);
+    } else {
+      courses.forEach(c => rows.push([u.code, u.label, c]));
+    }
   });
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -3924,6 +4044,7 @@ function openDiagnosisPreview() {
   // 미리보기에 필요한 형태로 데이터 가공
   const payload = {
     name: q.name,
+    useTypes: q.useTypes,
     types: q.types.map(t => ({
       name: t.name,
       qCount: t.groups.reduce((s, g) => s + g.subs.reduce((ss, sub) => ss + (sub.questions?.length || 0), 0), 0),

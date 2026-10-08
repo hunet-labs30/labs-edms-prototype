@@ -709,6 +709,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <option value="9">역량군 9개</option>
             <option value="10">역량군 10개</option>
           </select>
+          <select id="subMode" onchange="setSubMode(this.value === '1')" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
+            <option value="1" selected>세부역량 있음</option>
+            <option value="0">세부역량 없음 (역량군 단위)</option>
+          </select>
         </span>
       </div>
 
@@ -923,6 +927,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li>GAP = <b>종합 점수 − 해당 점수</b> (본인 · 구성원 · 상사 · 동료 · 전체평균 각각, 종합 점수에는 없음), 양수 파란색 · 음수 빨간색 (인식 차이는 별도로 본인 − 타인 평균)</li>
           </ul>
 
+          <h4>10. 세부역량을 사용하지 않는 진단지</h4>
+          <ul>
+            <li>진단지 구성에서 세부역량을 사용하지 않으면 <b>역량군 단위</b>로 강점·약점 판정과 추천과정 연결을 처리 (역량군마다 세부역량 1개가 내부에 존재하며 이름은 역량군명과 같음)</li>
+            <li>[강점·약점 역량 카드] 역량군의 종합 점수(본인 + 응답자 유형 평균)을 역량군 기준(강점 도달 점수 / 약점 점수)과 비교해 역량군을 노출 — 한 역량군이 강점·약점 카드에 동시에 나타나지 않음 / 해당 없음 문구는 &quot;해당하는 역량군이 없습니다.&quot;</li>
+            <li>[역량별 지수] 세부역량 열을 생략하고 역량군 칸에 이름과 강점·약점 뱃지를 함께 표시</li>
+            <li>종합 평가 코멘트 ③(가장 높은/낮은 세부역량)은 노출하지 않음 — 역량군이 1개이면 ①·④만 노출</li>
+            <li>[과정 추천] 우선 학습 영역 카드는 역량군 단위로 선정(약점 기준 미만 역량군을 전체평균과의 차이가 큰 순, 부족하면 나머지 역량군 중 전체평균 대비 낮은 순)하며, 카드에는 세부역량 경로 없이 역량군만 표시 / 추천과정 전체보기 패널도 역량군명 기준으로 표시</li>
+          </ul>
+
         </div>
       </div>
 
@@ -979,15 +992,34 @@ const f1 = v => r1(v).toFixed(1);
 const gapStr = d => { const g=r1(d); return g>0?'+'+g.toFixed(1):g<0?g.toFixed(1):'0.0'; };
 const gapCls = d => r1(d)>0?'gap-p':r1(d)<0?'gap-n':'';
 ALL_GROUPS.forEach(g => {
+  g.subs = g.items;   // 세부역량 원본 (세부역량 없음 구성에서는 역량군 1개 항목으로 대체)
   g.self = mean(g.items.map(i=>i[1]));
   g.avg  = mean(g.items.map(i=>i[2]));
   Object.keys(RT).forEach(k => { g[k] = mean(g.items.map(i=>i[RT[k].ix])); });
   g.tag  = g.self >= g.s ? 's' : g.self < g.w ? 'w' : '';
 });
 const GROUPS = [];               // 화면에 표시 중인 역량군 (드롭다운으로 개수 조절)
+let USE_SUBS = true;             // 세부역량 사용 여부 (false: 역량군 단위로 강점·약점 판정, 추천과정 연결)
+function applyStruct(g) {
+  if (USE_SUBS) {
+    g.items = g.subs;
+  } else {
+    // 역량군 단위: 모든 열(이름, self, avg, sub, sup, peer)의 평균을 계산
+    const cols = [g.name, ...Object.keys(RT).length > 0 ? [1, 2, 3, 4, 5] : [1, 2]];
+    g.items = [[g.name, g.self, g.avg, g.sub, g.sup, g.peer]];
+  }
+}
 let TOTAL = { self:0, avg:0, sub:0, sup:0, peer:0 };
+function setSubMode(v) { USE_SUBS = v; setGroupCount(GROUPS.length); }
 function setGroupCount(n) {
   GROUPS.length = 0;
+  ALL_GROUPS.forEach(applyStruct);
+  document.getElementById('idxHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l th-sub" style="width:190px;">세부역량</th>
+    <th style="min-width:320px;">역량 보유 수준 <span style="font-weight:400;color:var(--text-400);">(1.0 – 5.0)</span></th><th style="width:92px;">종합 점수</th><th style="width:72px;">전체평균</th><th style="width:64px;">GAP</th></tr>`;
+  document.getElementById('dtHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l th-sub" style="width:190px;">세부역량</th>
+    <th style="width:92px;">종합 점수</th><th style="width:96px;">본인 (GAP)</th>
+    ${ACTIVE.map(k=>`<th style="width:96px;">${RT[k].label} (GAP)</th>`).join('')}<th style="width:110px;">전체평균 (GAP)</th></tr>`;
+  document.querySelectorAll('.th-sub').forEach(th => { th.style.display = USE_SUBS ? '' : 'none'; });   // 역량별 지수·상세 비교 두 표의 세부역량 열
   ALL_GROUPS.slice(0, n).forEach(g => GROUPS.push(g));
   ['self','avg','sub','sup','peer'].forEach(k => { TOTAL[k] = mean(GROUPS.map(g=>g[k])); });
   renderAll();
@@ -1053,7 +1085,7 @@ function renderOverview() {
     : `${names} 평가 평균(${oth.toFixed(2)}점)은 본인보다 <b class="${od>0?'hi':'lo'}">${Math.abs(od).toFixed(2)}점 ${od>0?'높아요':'낮아요'}</b>.`);
   // 역량군 2개 이상이면 역량군 기준 문장, 1개뿐이면 세부역량 기준 문장 (둘 중 하나만 노출)
   if (best !== worst) lines.push(`종합 점수 기준으로 가장 강점인 역량군은 <b class="hi">${best.name}(${f1(groupTotal(best))}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${worst.name}(${f1(groupTotal(worst))}점)</b>이에요.`);
-  else if (topItem !== lowItem) lines.push(`종합 점수 기준으로 세부역량 중 가장 높은 항목은 <b class="hi">${topItem.name}(${f1(topItem.self)}점)</b>, 가장 낮은 항목은 <b class="lo">${lowItem.name}(${f1(lowItem.self)}점)</b>이에요.`);
+  else if (USE_SUBS && topItem !== lowItem) lines.push(`종합 점수 기준으로 세부역량 중 가장 높은 항목은 <b class="hi">${topItem.name}(${f1(topItem.self)}점)</b>, 가장 낮은 항목은 <b class="lo">${lowItem.name}(${f1(lowItem.self)}점)</b>이에요.`);
   if (nW > 0) lines.push('보완이 필요한 역량에 도움이 되는 추천 과정을 아래에서 확인해 보세요.');
   const desc = lines.join('<br>');
   document.getElementById('gDesc').innerHTML = desc;
@@ -1079,6 +1111,14 @@ function renderGroupCards() {
 function renderSW() {
   const build = (kind) => {
     const other = kind==='s' ? 'w' : 's';
+    // 세부역량 없음: 역량군 평균 점수 자체를 기준과 비교해 역량군 단위로 노출
+    if (!USE_SUBS) {
+      const gs = GROUPS.filter(g => kind==='s' ? g.self >= g.s : g.self < g.w).sort((a,b) => kind==='s' ? b.self-a.self : a.self-b.self);
+      return gs.map(g => `<div class="sw-group-block">
+        <div class="sw-group-head"><span>${g.name}</span><span class="sw-threshold ${kind}">${kind==='s' ? `기준 ${g.s.toFixed(1)} 이상` : `기준 ${g.w.toFixed(1)} 미만`}</span></div>
+        <div class="sw-item-list"><div class="sw-item-row"><span>역량군 점수</span><span class="sw-item-score">${f1(g.self)}</span></div></div>
+      </div>`).join('') || '<div class="sw-note">해당하는 역량군이 없습니다.</div>';
+    }
     const blocks = GROUPS.map(g => {
       const its = g.items.filter(i => kind==='s' ? itemTotal(i) >= g.s : itemTotal(i) < g.w);
       if (!its.length) return '';
@@ -1121,17 +1161,17 @@ function renderIndex() {
   document.getElementById('idxLegend').innerHTML = k === 'all'
     ? `<span><i class="lg-dot"></i>종합 점수 (<span style="color:var(--blue)">파랑</span>=강점 / <span style="color:#111827">검정</span>=보통 / <span style="color:var(--red)">빨강</span>=약점)</span><span><i class="lg-tick"></i>전체평균</span><span><i class="lg-dash" style="border-color:rgba(36,108,249,.6);"></i>강점 기준</span><span><i class="lg-dash" style="border-color:rgba(220,38,38,.55);"></i>약점 기준</span><span class="section-sub">GAP = 종합 점수 − 전체평균</span>`
     : `<span><i style="width:8px;height:8px;border-radius:50%;background:${colOf};"></i>${nameOf}</span><span><i class="lg-tick"></i>전체평균</span>`;
-  document.getElementById('idxHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:190px;">세부역량</th>
-    <th style="min-width:320px;">역량 보유 수준 <span style="font-weight:400;color:var(--text-400);">(1.0 – 5.0)</span></th><th style="width:92px;">종합 점수</th><th style="width:72px;">전체평균</th><th style="width:64px;">GAP</th></tr>`;
   let html = '';
   GROUPS.forEach(g => {
     g.items.forEach((it, idx) => {
       const [name, , avg] = it;
       const last = idx === g.items.length-1 ? ' class="grp-last"' : '';
+      const tag = USE_SUBS ? '' : (g.self >= g.s ? 's' : g.self < g.w ? 'w' : '');
       const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
-        <div class="grp-name">${g.name}</div></td>` : '';
+        <div class="grp-name">${g.name}${USE_SUBS ? '' : TAG_BADGE[tag]}</div></td>` : '';
+      // 세부역량 없음: 역량군 칸에 이름과 판정 뱃지를 함께 표시하고 세부역량 칸은 생략
       html += `<tr${last}>${cell}
-        <td class="ta-l">${name}</td>
+        ${USE_SUBS ? `<td class="ta-l">${name}${TAG_BADGE[g.self >= g.s ? 's' : g.self < g.w ? 'w' : '']}</td>` : ''}
         <td>${slider(idxVal(it, k), avg, g, [], '종합 점수')}</td>
         <td class="idx-score">${f1(idxVal(it, k))}</td><td>${f1(avg)}</td>
         <td class="${gapCls(r1(idxVal(it, k))-r1(avg))}">${gapStr(r1(idxVal(it, k))-r1(avg))}</td></tr>`;
@@ -1142,21 +1182,21 @@ function renderIndex() {
 
 // 역량 상세 결과: 세부역량별 점수 숫자만 
 function renderDetail() {
-  document.getElementById('dtHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l" style="width:190px;">세부역량</th>
+  document.getElementById('dtHead').innerHTML = `<tr><th class="ta-l" style="width:150px;">역량군</th><th class="ta-l th-sub" style="width:190px;${USE_SUBS ? '' : 'display:none;'}">세부역량</th>
     <th style="width:92px;">종합 점수</th><th style="width:96px;">본인 (GAP)</th>
     ${ACTIVE.map(k=>`<th style="width:96px;">${RT[k].label} (GAP)</th>`).join('')}<th style="width:110px;">전체평균 (GAP)</th></tr>`;
   const sc = (v, gap) => `<div class="dt-v">${f1(v)}</div><div class="dt-gap ${gapCls(gap)}">${gapStr(gap)}</div>`;   // 점수 + 하위 GAP
   let html = '';
   GROUPS.forEach(g => {
     g.items.forEach((it, idx) => {
-      const [name, self, avg] = it;
+      const [name, self, avg, sub, sup, peer] = it;
       const tot = itemTotal(it);
       const tag = tot >= g.s ? 's' : tot < g.w ? 'w' : '';
       const last = idx === g.items.length-1 ? ' grp-last' : '';
       const cell = idx===0 ? `<td class="grp-cell" rowspan="${g.items.length}">
-        <div class="grp-name">${g.name}</div></td>` : '';
+        <div class="grp-name">${g.name}${USE_SUBS ? '' : TAG_BADGE[tag]}</div></td>` : '';
       html += `<tr class="${tag?'row-'+tag:''}${last}">${cell}
-        <td class="ta-l">${name}${TAG_BADGE[tag]}</td>
+        ${USE_SUBS ? `<td class="ta-l">${name}${TAG_BADGE[tag]}</td>` : ''}
         <td class="idx-score dt-cell ${tag==='s'?'hi':tag==='w'?'lo':''}"><div class="dt-v">${f1(tot)}</div></td>
         <td class="dt-cell">${sc(self, r1(tot)-r1(self))}</td>
         ${ACTIVE.map(k=>`<td class="dt-cell">${sc(it[RT[k].ix], r1(tot)-r1(it[RT[k].ix]))}</td>`).join('')}
@@ -1197,6 +1237,10 @@ function renderGroupScores() {
 
 /* ── 과정 추천: 보완이 필요한 세부역량(전체평균과 차이가 큰 순)별 대표 과정 ── */
 const REC_COURSES = {
+  // 세부역량 없음 구성: 역량군 단위로 연결된 대표 과정
+  'Self역량군':       { title:'셀프 리더십 핵심 역량 강화',       desc:'전략적 사고와 의사결정, 위기 대응 등 리더 스스로의 역량을 강화하는 과정',                           type:'마이크로러닝', target:'직무공통', time:'40분',      price:'무료', seed:'c1' },
+  'Team역량군':       { title:'팀워크와 성과를 높이는 팀 리더십',  desc:'갈등 관리, 소통, 성과 관리 등 팀 역량 전반을 사례와 실습으로 학습하는 과정',                         type:'온라인',       target:'직무공통', time:'1시간 30분', price:'무료', seed:'c2' },
+  '혁신성과역량군':   { title:'혁신과 성과를 이끄는 리더십',      desc:'변화관리와 책임의식을 바탕으로 조직의 혁신 성과를 만드는 방법을 다루는 과정',                       type:'온라인',       target:'직무공통', time:'2시간',      price:'무료', seed:'c4' },
   '위기 대응력':      { title:'위기 상황 리더십 대응 전략',      desc:'예기치 못한 위기 상황에서 우선순위를 정하고 팀을 이끄는 의사결정 방법을 사례 중심으로 학습하는 과정',     type:'마이크로러닝', target:'직무공통', time:'30분',      price:'무료', seed:'c1' },
   '갈등 관리':        { title:'갈등 상황에서의 커뮤니케이션 스킬', desc:'구성원 간 갈등을 조기에 파악하고 대화로 해결하는 단계별 커뮤니케이션 스킬을 익히는 과정',           type:'온라인',       target:'직무공통', time:'45분',      price:'무료', seed:'c2' },
   '발표/표현':        { title:'효과적인 발표와 프레젠테이션',     desc:'메시지 구조화부터 전달 기법까지, 청중을 설득하는 발표 역량을 실습으로 강화하는 과정',                  type:'온라인',       target:'직무공통', time:'1시간 20분', price:'무료', seed:'c3' },
@@ -1213,7 +1257,12 @@ const IC = {
 };
 let TOP_LIST = [], topIdx = [];
 function buildTopList() {
-  const cand = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:itemTotal(i), avg:i[2], w:g.w })));
+  let cand;
+  if (USE_SUBS) {
+    cand = GROUPS.flatMap(g => g.items.map(i => ({ grp:g.name, name:i[0], self:itemTotal(i), avg:i[2], w:g.w })));
+  } else {
+    cand = GROUPS.map(g => ({ grp:g.name, name:g.name, self:g.self, avg:g.avg, w:g.w }));
+  }
   const byGap = (a,b) => (Math.round((a.self-a.avg)*10) - Math.round((b.self-b.avg)*10)) || a.self - b.self;
   const weak = cand.filter(i => i.self < i.w).sort(byGap), rest = cand.filter(i => i.self >= i.w).sort(byGap);   // 약점 우선, 부족하면 나머지 중 전체평균 대비 낮은 순으로 채움
   const top = weak.concat(rest).slice(0, 2);
@@ -1230,7 +1279,7 @@ function areaCourses(t) {
 function topCourseHTML(c, t) {
   return `<img class="top-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
     <div class="top-info">
-      <div class="top-tag">${IC.folder}<span>${t.grp}</span>${IC.chev}<span>${t.name}</span></div>
+      <div class="top-tag">${IC.folder}<span>${t.grp}</span>${USE_SUBS ? `${IC.chev}<span>${t.name}</span>` : ''}</div>
       <div class="top-ctitle">${c.title}</div>
       <div class="top-desc">${c.desc || ''}</div>
       <div class="top-meta"><span>${IC.type}${c.type}</span><span>${IC.user}${c.target || '직무공통'}</span><span>${IC.clock}${c.time}</span><span>${IC.tag}${c.price || '무료'}</span></div>
@@ -1251,7 +1300,7 @@ function renderTop() {
     t.courses = areaCourses(t);
     const gap = r1(t.avg) - r1(t.self);
     return `<div class="top-card">
-      <div class="top-title-row"><span class="top-badge">${i+1}순위</span><span class="top-factor">${t.name}</span><span class="top-grp">${t.grp}</span></div>
+      <div class="top-title-row"><span class="top-badge">${i+1}순위</span><span class="top-factor">${t.name}</span>${USE_SUBS ? `<span class="top-grp">${t.grp}</span>` : ''}</div>
       <div class="top-reason">${t.name} 종합 점수가 <b>${f1(t.self)}점</b>으로 ${t.self < t.w ? `약점 기준(${t.w.toFixed(1)}점) 미만${gap > 0 ? `이고 전체평균(${f1(t.avg)}점)보다 <b>${gap.toFixed(1)}점</b> 낮아` : `이어서`}` : (gap > 0 ? `전체평균(${f1(t.avg)}점)보다 <b>${gap.toFixed(1)}점</b> 낮아` : `양호한 수준이지만`)}, ${t.self >= t.w && gap <= 0 ? '역량 강화를 위한' : '우선 학습'} 영역으로 추천하였습니다.<br>아래에 해당 영역과 연계된 이러닝 과정 ${t.courses.length}개를 선정하였습니다.</div>
       <div class="top-course-wrap">${arrow(i,-1)}<div class="top-course" id="topCourse-${i}"></div>${arrow(i,1)}<span class="top-counter" id="topCounter-${i}"></span></div>
     </div>`;
@@ -1299,7 +1348,7 @@ function renderCourseItem(c) {
   return `<a class="cd-item" href="#" onclick="return false;">
     <img class="cd-item-thumb" src="${c.thumb}" alt="${c.name}" loading="lazy">
     <div class="cd-item-left">
-      <div class="cd-item-cmp">${c.cmp}</div>
+      <div class="cd-item-cmp">${USE_SUBS ? c.cmp : c.grp}</div>
       <div class="cd-item-name">${c.name}</div>
       <span class="cd-item-type ${c.type}">${CD_TYPE_LABEL[c.type]}</span>
     </div>

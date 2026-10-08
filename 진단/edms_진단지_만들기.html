@@ -1363,7 +1363,7 @@ function openSheetPreview() {
   const total = types.reduce((a, t) => a + t.groups.reduce((b, g) => b + g.subs.reduce((c, s) => c + s.questions.length, 0), 0), 0);
   if (total === 0) { toast('등록된 질문이 없습니다. 질문을 먼저 등록해주세요.'); return; }
   try {
-    sessionStorage.setItem('previewQuestionnaire', JSON.stringify({ name: sheetName, types }));
+    sessionStorage.setItem('previewQuestionnaire', JSON.stringify({ name: sheetName, useTypes: state.useTypes, types }));
   } catch (e) {}
   window.open('진단_응답_화면.html', '_blank');
 }

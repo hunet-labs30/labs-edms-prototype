@@ -289,7 +289,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 
       <!-- ⚙️ 프로토타입 전환 (실제 서비스 미노출) -->
       <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r-md);padding:10px 14px;margin-bottom:16px;">
-        <div style="font-size:12px;color:#92400e;margin-bottom:8px;">⚙️ 기획 프로토타입 뷰 전환 — 실제 서비스에서는 이 영역 미노출 (URL 파라미터 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px;">modelType</code> 및 사후진단 여부로 자동 결정)</div>
+        <div style="font-size:12px;color:#92400e;margin-bottom:8px;">⚙️ 기획 프로토타입 뷰 전환 — 실제 서비스에서는 이 영역 미노출 (URL 파라미터 <code style="background:#fef3c7;padding:1px 5px;border-radius:3px;">modelType</code> 및 사후진단 여부로 자동 결정)
+        <span style="margin-left:20px;display:inline-flex;align-items:center;gap:8px;">
+          <label style="font-size:11px;color:#92400e;font-weight:600;">세부역량:</label>
+          <select id="subMode" onchange="setSubMode(this.value === '1')" style="height:30px;border:1px solid #93c5fd;border-radius:6px;padding:0 8px;font-size:12px;font-family:inherit;background:#fff;color:#1d4ed8;font-weight:600;">
+            <option value="1" selected>세부역량 있음</option>
+            <option value="0">세부역량 없음 (역량군 단위)</option>
+          </select>
+        </span>
+        </div>
         <div class="toggle-bar">
           <button class="toggle-btn active" onclick="switchView('self',this)">① 본인진단 (사전, modelType=1)</button>
           <button class="toggle-btn" onclick="switchView('multi',this)">② 다면평가 (modelType=2)</button>
@@ -1182,6 +1190,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
             <li><b>모바일</b> 화면 대응 방식 (테이블 가로 스크롤 vs 카드형 전환)</li>
           </ul>
 
+          <h4>8. 세부역량을 사용하지 않는 진단지</h4>
+          <ul>
+            <li>진단지 구성에서 세부역량을 사용하지 않으면 <b>역량군 단위</b>로 강점·약점 판정과 추천과정 연결을 처리 (역량군마다 세부역량 1개가 내부에 존재하며 이름은 역량군명과 같음)</li>
+            <li>[강점·약점 카드] 역량군 점수를 역량군 기준(강점 도달 점수 / 약점 점수)과 비교해 역량군을 노출 — 한 역량군이 강점·약점 카드에 동시에 나타나지 않음 / 해당 없음 문구는 "해당하는 역량군이 없습니다."</li>
+            <li>[역량군별 종합 지수 차트] 역량군명과 강점/약점 뱃지만 표시, 세부역량 점수 항목 미노출</li>
+            <li>[역량 상세 결과 표] 세부역량 행을 숨기고 역량군 행만 노출 (본인 평균: 세부역량 평균 / 전체평균: 세부역량 평균)</li>
+            <li>종합 평가 코멘트: 세부역량 참조 문구("가장 높은/낮은 세부역량") 미노출 — 역량군이 1개이면 종합 점수·전체평균 비교·추천과정 안내만 노출</li>
+          </ul>
+
         </div>
       </div>
 
@@ -1190,6 +1207,100 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-900);font-siz
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════════════ */
+/* 세부역량 사용 여부 토글: 세부역량 없음 → 역량군 단위로 표시   */
+/* ═══════════════════════════════════════════════════════════ */
+let USE_SUBS = true;
+
+const f1 = v => v.toFixed(1);
+const r1 = v => Math.round(v * 10) / 10;
+const mean = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+const num = el => parseFloat(el.textContent.replace('+', '')) || 0;
+
+/* 역량군 행(grp) 아래 세부역량 행들 (다음 grp / type-header 전까지) */
+function subRowsOf(grpRow) {
+  const rows = [];
+  let n = grpRow.nextElementSibling;
+  while (n && !n.classList.contains('grp') && !n.classList.contains('type-header')) { rows.push(n); n = n.nextElementSibling; }
+  return rows;
+}
+
+/* 표 한 개에서 역량군별 집계: 이름 · 기준 · 열별 평균 (원본 마크업 기준) */
+function readGroups(table) {
+  const ths = [...table.querySelectorAll('thead th')].slice(2).map(th => th.textContent.trim());   // 숫자 열 머리글
+  const tagCol = Math.max(0, ths.indexOf('사후'));                                                    // 판정 기준 열: 사후진단은 '사후', 그 외 '본인'
+  return [...table.querySelectorAll('tbody tr.grp')].map(grpRow => {
+    if (grpRow.dataset.orig === undefined) grpRow.dataset.orig = grpRow.innerHTML;
+    const tmp = document.createElement('table');
+    tmp.innerHTML = '<tbody><tr>' + grpRow.dataset.orig + '</tr></tbody>';
+    const td = tmp.querySelector('td');
+    const name = td.childNodes[0].textContent.trim();
+    const sM = td.textContent.match(/강점 기준 ([\d.]+)/), wM = td.textContent.match(/약점 기준 ([\d.]+)/);
+    const origTag = td.querySelector('.mini-badge.s') ? 's' : td.querySelector('.mini-badge.w') ? 'w' : '';
+    const cols = ths.map((_, i) => mean(subRowsOf(grpRow).map(r => num(r.children[i + 2]))));
+    const s = sM ? parseFloat(sM[1]) : null, w = wM ? parseFloat(wM[1]) : null;
+    const avgM = td.textContent.match(/본인 평균 ([\d.]+)/);   // 역량군 헤더에 표기된 본인 평균이 있으면 그 값을 사용 (역량군별 종합 지수 차트와 동일)
+    if (avgM) cols[tagCol] = parseFloat(avgM[1]);
+    const score = r1(cols[tagCol]);
+    const tag = (s !== null && w !== null) ? (score >= s ? 's' : score < w ? 'w' : '') : origTag;
+    const note = (s !== null && w !== null) ? `강점 기준 ${f1(s)} / 약점 기준 ${f1(w)}` : '';
+    return { row: grpRow, name, s, w, ths, tagCol, cols, score, tag, note };
+  });
+}
+
+/* 표: 세부역량 열·행 숨김 + 역량군 행을 점수 행으로 변환 / 복귀 시 원본 복원 */
+function updateTable(table) {
+  const head = table.querySelectorAll('thead th')[1];
+  if (head) head.style.display = USE_SUBS ? '' : 'none';
+  const groups = readGroups(table);
+  table.querySelectorAll('tbody tr.type-header td').forEach(td => {
+    if (td.dataset.cs === undefined) td.dataset.cs = td.colSpan;
+    td.colSpan = USE_SUBS ? +td.dataset.cs : +td.dataset.cs - 1;
+  });
+  groups.forEach(g => {
+    subRowsOf(g.row).forEach(r => { r.style.display = USE_SUBS ? '' : 'none'; });
+    if (USE_SUBS) { g.row.innerHTML = g.row.dataset.orig; return; }
+    const badge = g.tag === 's' ? '<span class="mini-badge s">강점</span>' : g.tag === 'w' ? '<span class="mini-badge w">약점</span>' : '';
+    const cells = g.cols.map((v, i) => {
+      const th = g.ths[i], rv = r1(v);
+      if (th === 'GAP' || th === '변화') return `<td class="${rv > 0 ? 'gap-p' : rv < 0 ? 'gap-n' : ''}">${rv > 0 ? '+' : ''}${f1(rv)}</td>`;
+      const cls = (i === g.tagCol && g.tag) ? (g.tag === 's' ? 'hi' : 'lo') : '';
+      return `<td class="${cls}">${f1(rv)}</td>`;
+    }).join('');
+    g.row.innerHTML = `<td class="ta-l">${g.name} ${badge}${g.note ? `<span style="font-size:11px;font-weight:400;color:var(--text-500);margin-left:8px;">${g.note}</span>` : ''}</td>${cells}`;
+  });
+}
+
+/* 강점·약점 카드: 세부역량 없음이면 역량군 점수를 기준과 비교해 역량군 단위로 재구성 / 복귀 시 원본 복원 */
+function updateCards(view, table) {
+  const groups = readGroups(table);
+  [['strength', 's'], ['weakness', 'w']].forEach(([cls, kind]) => {
+    const card = view.querySelector('.sw-card.' + cls);
+    if (!card) return;
+    if (card.dataset.orig === undefined) card.dataset.orig = card.innerHTML;
+    card.innerHTML = card.dataset.orig;
+    if (USE_SUBS) return;
+    card.querySelectorAll('.sw-item').forEach(el => el.remove());
+    const list = groups.filter(g => g.tag === kind);
+    card.insertAdjacentHTML('beforeend', list.length
+      ? list.map(g => `<div class="sw-item"><span class="sw-dot ${kind}"></span><span>${g.name}</span><span class="sw-score">${f1(g.score)}점</span>${(kind === 's' ? g.s : g.w) !== null ? `<span class="sw-threshold ${kind}">기준 ${f1(kind === 's' ? g.s : g.w)}${kind === 's' ? '↑' : '↓'}</span>` : ''}</div>`).join('')
+      : '<div style="font-size:12.5px;color:var(--text-500);padding:8px 0;">해당하는 역량군이 없습니다.</div>');
+  });
+}
+
+function applySubMode() {
+  ['view-self', 'view-multi', 'view-post'].forEach(id => {
+    const view = document.getElementById(id);
+    const table = view && view.querySelector('.score-table');
+    if (!table) return;
+    updateCards(view, table);   // 카드는 원본 표 기준으로 먼저 계산
+    updateTable(table);
+  });
+}
+function setSubMode(v) { USE_SUBS = v; applySubMode(); }
+/* ═══════════════════════════════════════════════════════════ */
+/* 기존 switchView 함수                                         */
+/* ═══════════════════════════════════════════════════════════ */
 function switchView(view, btn) {
   document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1218,6 +1329,8 @@ function switchView(view, btn) {
     respondent.innerHTML = '<div class="meta-label">사전 진단</div><div class="meta-val">2024.03 완료</div>';
     desc.textContent = '2024 하반기 리더십 역량진단 (사후) · 홍길동';
   }
+
+  applySubMode();
 }
 </script>
 </body>
