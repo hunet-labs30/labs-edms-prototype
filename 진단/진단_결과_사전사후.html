@@ -1279,7 +1279,7 @@ function renderPerception() {
   const hi = rows.filter(r=>r.d >= PERC_GAP).sort((a,b)=>b.d-a.d).slice(0,3);
   const lo = rows.filter(r=>-r.d >= PERC_GAP).sort((a,b)=>a.d-b.d).slice(0,3);
   const col = (title, sub, list, cls) => `<div class="perc-col"><div class="perc-title">${title}</div><div class="perc-sub">${sub}</div>` +
-    (list.length ? list.map((r,i) => `<div class="perc-row ${i===0?'first':''}"><div><div class="perc-name">${r.name}</div><div class="perc-grp">${r.grp}</div></div>
+    (list.length ? list.map((r,i) => `<div class="perc-row ${i===0?'first':''}"><div><div class="perc-name">${r.name}</div>${USE_SUBS ? `<div class="perc-grp">${r.grp}</div>` : ''}</div>
       <div class="perc-val">본인 <b>${f1(r.self)}</b> · ${names} <b>${f1(r.oth)}</b><span class="perc-diff ${cls}">${r.d>0?'+':'-'}${Math.abs(r.d).toFixed(1)}</span></div></div>`).join('')
       : '<div class="perc-empty">차이가 큰 역량이 없어요.</div>') + '</div>';
   document.getElementById('percGrid').innerHTML =

@@ -1090,6 +1090,8 @@ function rebuildSwCards() {
 // 세부역량 모드 토글
 function setSubMode(v) {
   USE_SUBS = v;
+  // 상단 추천과정 카드의 '역량(세부역량)' 표기: 세부역량 없음이면 역량군명만 표시
+  document.querySelectorAll('.rc-meta').forEach(el => { if (el.dataset.orig === undefined) el.dataset.orig = el.textContent; el.textContent = v ? el.dataset.orig : el.dataset.orig.replace(/\(.*?\)/, '').replace(/^(\S+?)역량(?=\s|·|$)/, '$1역량군'); });
   rebuildSwCards();
   updateTableColumns();
 }

@@ -899,7 +899,12 @@ const GROUPS = [];               // 화면에 표시 중인 역량군 (드롭다
 let USE_SUBS = true;             // 세부역량 사용 여부 (false: 역량군 단위로 강점·약점 판정, 추천과정 연결)
 function applyStruct(g) { g.items = USE_SUBS ? g.subs : [[g.name, g.self, g.avg]]; }
 let TOTAL_SELF = 0, TOTAL_AVG = 0;
-function setSubMode(v) { USE_SUBS = v; setGroupCount(GROUPS.length); }
+function setSubMode(v) {
+  USE_SUBS = v;
+  // 서술형 응답의 '역량군 > 세부역량' 경로: 세부역량 없음이면 역량군만 표시
+  document.querySelectorAll('.qa-tag').forEach(el => { if (el.dataset.orig === undefined) el.dataset.orig = el.textContent; el.textContent = v ? el.dataset.orig : el.dataset.orig.split(' > ')[0]; });
+  setGroupCount(GROUPS.length);
+}
 function setGroupCount(n) {
   GROUPS.length = 0;
   ALL_GROUPS.forEach(applyStruct);

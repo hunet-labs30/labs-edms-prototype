@@ -920,7 +920,7 @@ function renderLikertCard(tab, q, idx) {
   const answered = answers[key];
   return `
   <div class="q-card ${answered !== undefined ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="q-text">${q}</div>
     <div class="likert-options">
       ${LIKERT_LABELS.map((label, vi) => {
@@ -943,7 +943,7 @@ function renderABCard(tab, q, idx) {
   const answered = answers[key];
   return `
   <div class="q-card ${answered !== undefined ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="ab-boxes">
       <div class="ab-box"><span class="ab-box-tag">A</span><div>${q.a}</div></div>
       <div class="ab-box"><span class="ab-box-tag">B</span><div>${q.b}</div></div>
@@ -965,7 +965,7 @@ function renderRadioCard(tab, q, idx) {
   const answered = answers[key];
   return `
   <div class="q-card ${answered !== undefined ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="q-text">${q.text}</div>
     <div class="radio-options">
       ${q.options.map((opt, vi) => {
@@ -986,7 +986,7 @@ function renderDropdownCard(tab, q, idx) {
   const answered = answers[key];
   return `
   <div class="q-card ${answered !== undefined ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="q-text">${q.text}</div>
     <div class="dropdown-wrap">
       <select class="dropdown-select ${answered !== undefined ? 'answered' : ''}"
@@ -1007,7 +1007,7 @@ function renderShortTextCard(tab, q, idx) {
   const val = answers[key] || '';
   return `
   <div class="q-card ${val.length > 0 ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="q-text">${q.text}</div>
     <div class="shorttext-wrap">
       <div class="shorttext-row">
@@ -1027,7 +1027,7 @@ function renderTextCard(tab, q, idx) {
   const val = answers[key] || '';
   return `
   <div class="q-card ${val.length > 0 ? 'answered' : ''}" id="qcard_${key}">
-    <span class="q-label">질문 ${idx + 1}</span>
+    <span class="q-label">질문 ${idx}</span>
     <div class="q-text"><b>${q.prefix}</b> ${q.text}</div>
     <div class="text-area-wrap">
       <textarea class="text-area-input" id="textarea_${key}" maxlength="${q.maxLen}"
