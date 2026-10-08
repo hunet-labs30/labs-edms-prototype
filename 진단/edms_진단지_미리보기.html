@@ -98,25 +98,6 @@ body {
   padding: 32px 24px 80px;
 }
 
-/* 유형 안내 */
-.type-intro {
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-bottom: 20px;
-  border: 1px solid #e8eaf0;
-}
-.type-intro-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 4px;
-}
-.type-intro-meta {
-  font-size: 13px;
-  color: #888;
-}
-
 /* 역량군 섹션 */
 .group-section { margin-bottom: 28px; }
 .group-header {
@@ -394,10 +375,6 @@ function renderAll() {
   const body = document.getElementById('previewBody');
   body.innerHTML = types.map((type, ti) => `
     <div class="type-panel" id="panel-${ti}">
-      <div class="type-intro">
-        <div class="type-intro-name">${type.name}</div>
-        <div class="type-intro-meta">${type.qCount}문항 · ${type.groups.length}개 역량군</div>
-      </div>
       ${renderGroups(type.groups, ti)}
     </div>
   `).join('');

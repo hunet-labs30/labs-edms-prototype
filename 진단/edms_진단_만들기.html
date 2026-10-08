@@ -858,7 +858,7 @@ body {
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
   <select class="lang-select" onchange="if(this.value) location.href=this.value" title="진단 만들기 버전 선택" style="margin-right:6px;">
-    <option value="edms_진단_만들기.html" selected>V2 · 범용/상시/사전사후 3유형</option>
+    <option value="edms_진단_만들기.html" selected>V2 · 범용/사전사후 + 대상·결과 노출 설정</option>
     <option value="edms_진단_만들기_v1_구버전.html">V1 · 구버전</option>
   </select>
   <span class="user-name">김이름 님</span>
@@ -1104,11 +1104,6 @@ body {
                 <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">범용진단</div>
                 <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자·응답자를 지정해 진행하고, 기간 종료 후 결과를 확인합니다.</div>
               </div>
-              <div class="diagtype-choice-card" data-type="상시" onclick="chooseDiagType('상시')">
-                <div style="font-size:26px;margin-bottom:10px;">🔁</div>
-                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">상시진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자 선정 없이 전체 임직원이 응시하고, 응시 직후 결과를 확인합니다.</div>
-              </div>
               <div class="diagtype-choice-card" data-type="사전사후" onclick="chooseDiagType('사전사후')">
                 <div style="font-size:26px;margin-bottom:10px;">📈</div>
                 <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">사전사후진단</div>
@@ -1299,6 +1294,16 @@ body {
                     <input class="form-input w-lg" id="diagNameInput" placeholder="진단명을 입력하세요">
                   </td>
                 </tr>
+                <tr id="step6-runmode-row" style="display:none;">
+                  <th class="form-th">대상 지정 및 결과 노출 <span class="req">*</span></th>
+                  <td class="form-td">
+                    <div class="radio-group" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                      <label><input type="radio" name="runMode" value="period" checked style="cursor:pointer;" onchange="setRunMode('period')"> 대상 지정 및 기간 종료 후 결과 노출</label>
+                      <label><input type="radio" name="runMode" value="ontime" style="cursor:pointer;" onchange="setRunMode('ontime')"> 전 임직원 대상 및 응답 즉시 결과 노출</label>
+                    </div>
+                    <div id="runModeHint" style="margin-top:6px;font-size:11.5px;color:#8a94a6;line-height:1.6;"></div>
+                  </td>
+                </tr>
                 <tr id="step6-period-row">
                   <th class="form-th" id="diagPeriodLabel">진단 기간 <span class="req">*</span></th>
                   <td class="form-td">
@@ -1321,9 +1326,7 @@ body {
                       <input class="form-input" id="postStartTime" type="time" style="width:100px;" value="00:00">
                       <span style="font-size:12px;color:#888;">~</span>
                       <input class="form-input w-date" id="postEndDate" type="date">
-                      <input class="form-input" id="postEndTime" type="time" style="width:100px;" value="23:59">
-                      <span style="font-size:11px;color:#8a94a6;">사전진단 종료 이후로 설정해주세요.</span>
-                    </div>
+                      <input class="form-input" id="postEndTime" type="time" style="width:100px;" value="23:59">                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -1340,21 +1343,6 @@ body {
 [제출하기] 버튼을 눌러 설문을 완료한 후에는 응답 내용을 수정하실 수 없으니 주의 바랍니다.
 
 감사합니다.</textarea>
-                  </td>
-                </tr>
-                <tr id="step5-response-count-row" style="display:none;">
-                  <th class="form-th">응답 허용 횟수 <span class="req">*</span></th>
-                  <td class="form-td">
-                    <div class="radio-group">
-                      <label>
-                        <input type="radio" name="responseCount" value="1" checked style="cursor:pointer;">
-                        1회만 (제출 후 응시 불가)
-                      </label>
-                      <label style="margin-left:16px;">
-                        <input type="radio" name="responseCount" value="n" style="cursor:pointer;">
-                        <input type="number" id="responseCountN" min="2" max="10" value="2" disabled style="width:56px;height:26px;border:1px solid #ccc;border-radius:3px;padding:0 6px;font-size:12px;font-family:inherit;text-align:center;"> 회 (2~10회까지 설정 가능)
-                      </label>
-                    </div>
                   </td>
                 </tr>
               </table>
@@ -1896,7 +1884,7 @@ const QUESTIONNAIRES = [
     subCount: 11,
     qCount: 50,
     date: '2025-03-15',
-    compatTypes: ['범용', '상시'],
+    compatTypes: ['범용', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -1981,7 +1969,7 @@ const QUESTIONNAIRES = [
     subCount: 9,
     qCount: 72,
     date: '2025-01-20',
-    compatTypes: ['범용', '상시'],
+    compatTypes: ['범용', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2076,7 +2064,7 @@ const QUESTIONNAIRES = [
     subCount: 5,
     qCount: 26,
     date: '2025-11-01',
-    compatTypes: ['범용', '상시'],
+    compatTypes: ['범용', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2128,7 +2116,7 @@ const QUESTIONNAIRES = [
     subCount: 3,
     qCount: 15,
     date: '2026-01-15',
-    compatTypes: ['범용', '상시'],
+    compatTypes: ['범용', '사전사후'],
     locked: true,
     resultTemplate: 'ai_literacy',
     types: [
@@ -2192,12 +2180,14 @@ let respondentSettings = {};
 let courseSettings = {};
 let currentCourseSettingKey = null;
 let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부 — 대상자 등록(일괄/개별)은 이 값이 true여야 사용 가능
-let selectedDiagnosticType = '범용'; // 진단유형: 범용 | 상시 | 사전사후 (기본값: 범용진단)
+let selectedDiagnosticType = '범용'; // 진단유형: 범용 | 사전사후 (기본값: 범용진단)
+let selectedRunMode = 'period';      // 진행 방식: period(지정 기간) | ontime(상시) — 응답자 유형이 본인만일 때만 상시 선택 가능
 
 // 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 범용진단" (프로토타입 샘플)
 // respondents = 대상자 1인당 응답자 수 (본인은 0 = 별도 지정 없음)
 let selectedPreDiag = null;
 const PRE_DIAGNOSES = [
+  { id: 'D-2026-0505', name: '2026 AI 리터러시 진단(상시)',             qid: 3, start: '2026-09-01', end: '2026-09-30', respondents: { '본인': 0 }, runMode: 'ontime' },
   { id: 'D-2026-0492', name: '2026 조직문화 진단(생산본부)',            qid: 3, start: '2026-08-03', end: '2026-08-21', respondents: { '본인': 0 } },
   { id: 'D-2026-0477', name: '2026 하반기 리더십 역량진단 1차',          qid: 1, start: '2026-07-06', end: '2026-07-24', respondents: { '본인': 0, '상사': 1, '동료': 3 } },
   { id: 'D-2026-0463', name: '2026 상반기 비즈니스 역량진단(R&D본부)',   qid: 2, start: '2026-06-15', end: '2026-07-03', respondents: { '본인': 0, '구성원': 5 } },
@@ -2307,17 +2297,31 @@ function confirmDiagTypeChange() {
   _pendingDiagType = null;
 }
 
-// 내부 스텝(1~8) ↔ 화면표시 스텝 매핑. STEP1은 진단유형 선택, 상시진단은 STEP3(응답자 유형)·STEP7(응답자 등록)을 건너뜀
+// 응답자 유형이 본인만 선택된 경우 (상시 진행 방식 선택 조건)
+function isSelfOnlyRespondent() {
+  return !['구성원', '상사', '동료'].some(k => respondentSettings[k]);
+}
+
+// 상시 진행 방식 적용 여부: 본인만 응답하는 진단에서만 유효
+function isOntimeMode() {
+  return selectedRunMode === 'ontime' && isSelfOnlyRespondent();
+}
+
+// 내부 스텝(1~8) ↔ 화면표시 스텝 매핑. STEP1은 진단유형 선택, 상시 진행 방식은 STEP7(대상자·응답자 등록)을 건너뜀
 function stepDisplayMeta() {
-  if (selectedDiagnosticType === '상시') {
-    // STEP3(응답자 유형)·STEP7(응답자 등록)은 상시진단에서 자동 처리되어 노출하지 않음
-    return { total: 6, map: { 1: 1, 2: 2, 4: 3, 5: 4, 6: 5, 8: 6 }, hidden: [3, 7] };
-  }
+  const ontime = isOntimeMode();
   if (selectedDiagnosticType === '사전사후') {
     // STEP3(응답자 유형)·STEP4(역량 점수)는 선택한 사전진단의 설정이 자동 적용되어 노출하지 않음
+    if (ontime) return { total: 5, map: { 1: 1, 2: 2, 5: 3, 6: 4, 8: 5 }, hidden: [3, 4, 7] };
     return { total: 6, map: { 1: 1, 2: 2, 5: 3, 6: 4, 7: 5, 8: 6 }, hidden: [3, 4] };
   }
+  if (ontime) return { total: 7, map: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 8: 7 }, hidden: [7] };
   return { total: 8, map: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8 }, hidden: [] };
+}
+
+function setRunMode(mode) {
+  selectedRunMode = mode;
+  applyStepVisibility();
 }
 
 const STEP_TAG_SUFFIX = { 5: ' · 선택사항', 8: ' · 마지막 단계' };
@@ -2334,10 +2338,18 @@ function applyStepVisibility() {
     if (tag) tag.textContent = 'STEP ' + meta.map[i] + ' / ' + meta.total + (STEP_TAG_SUFFIX[i] || '');
   }
 
-  // 상시진단만 응답 허용 횟수(1회/2~10회) 설정 노출
-  const responseCountRow = document.getElementById('step5-response-count-row');
-  if (responseCountRow) responseCountRow.style.display = selectedDiagnosticType === '상시' ? '' : 'none';
-
+  // STEP6 진행 방식: 응답자 유형이 본인만일 때만 노출, 그 외에는 지정 기간으로 되돌림
+  const selfOnly = isSelfOnlyRespondent();
+  if (!selfOnly) selectedRunMode = 'period';
+  const runRow = document.getElementById('step6-runmode-row');
+  if (runRow) runRow.style.display = selfOnly ? '' : 'none';
+  document.querySelectorAll('input[name="runMode"]').forEach(r => { r.checked = r.value === selectedRunMode; });
+  const runHint = document.getElementById('runModeHint');
+  if (runHint) runHint.innerHTML = selectedRunMode === 'ontime'
+    ? (selectedDiagnosticType === '사전사후'
+        ? '대상자·응답자 등록 없이 진행합니다. 사전진단 응시자는 전후 비교 결과 리포트, 미응시자는 범용진단 결과 리포트가 제공됩니다.'
+        : '대상자·응답자 등록 없이 진행합니다.')
+    : '';
 
   // 사전사후진단: 진단 기간 입력 대신 사후진단 기간만 입력
   const isPrePost = selectedDiagnosticType === '사전사후';
@@ -2482,7 +2494,7 @@ function renderPreDiagList(keepPage) {
     card.dataset.pid = p.id;
     card.innerHTML = `
       <div class="diag-card-title"><span>${p.name}</span></div>
-      <div class="diag-card-meta">${q ? q.name : '-'}</div>
+      <div class="diag-card-meta">${q ? q.name : '-'}${p.runMode === 'ontime' ? ' · 상시' : ''}</div>
       <div class="diag-card-date">${p.start} ~ ${p.end}</div>
     `;
     card.onclick = () => selectPreDiagnosis(p.id);
@@ -2506,6 +2518,7 @@ function selectPreDiagnosis(id) {
   selectedQuestionnaire = QUESTIONNAIRES.find(q => q.id === p.qid);
   respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
   Object.keys(p.respondents).forEach(k => { respondentSettings[k] = true; });
+  if (!isSelfOnlyRespondent()) selectedRunMode = 'period';
 
   // 사전진단의 응답자를 대상자별로 미리 채움 (이후 STEP7에서 추가·삭제 가능)
   Object.keys(MK_RESPONDENTS).forEach(k => delete MK_RESPONDENTS[k]);
@@ -2547,6 +2560,7 @@ function renderPreDiagPreview(p) {
     <div class="preview-title">${p.name}</div>
     <table style="width:100%;border-collapse:collapse;margin-top:12px;">
       ${row('진단 기간', `${p.start} ~ ${p.end}`)}
+      ${row('대상·결과 노출', p.runMode === 'ontime' ? '전 임직원 대상 및 응답 즉시 결과 노출' : '대상 지정 및 기간 종료 후 결과 노출')}
       ${row('진단지', `${q ? q.name + ' (' + q.qCount + '문항)' : '-'}`)}
       ${row('응답자 유형', roleText)}
       ${row('대상자', `${targetCount}명`)}
@@ -2715,27 +2729,6 @@ function generateRespondentCards() {
   const container = document.getElementById('respondentCardsContainer');
   container.innerHTML = '';
 
-  // 상시진단이면 고정 메시지 표시
-  if (selectedDiagnosticType === '상시') {
-    container.innerHTML = `
-      <div style="padding:24px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;">
-        <div style="font-size:14px;font-weight:600;color:#2a3a6a;margin-bottom:8px;">상시진단은 본인 자기진단만 가능합니다</div>
-        <div style="font-size:12px;color:#4a5a8a;">다면평가(상사, 동료 등)는 범용진단·사전사후진단 유형에서만 사용할 수 있습니다.</div>
-      </div>
-      <div style="display:flex;gap:12px;margin-top:16px;">
-        <div class="resp-role-card" style="opacity:1;cursor:default;">
-          <div style="font-size:18px;margin-bottom:8px;">👤</div>
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">본인</div>
-          <div style="font-size:11px;color:#666;">자기진단</div>
-          <input type="checkbox" checked disabled style="margin-top:12px;cursor:default;">
-        </div>
-      </div>
-    `;
-    respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false }; // 자동으로 본인만 선택
-    return;
-  }
-
-  // 범용진단·사전사후진단: 기존 로직
   respondentSettings = { '본인': true, '구성원': false, '상사': false, '동료': false };
 
   const section = document.createElement('div');
@@ -2779,6 +2772,11 @@ function toggleRespRole(el, roleKey) {
 function _applyRespToggle(el, roleKey) {
   el.classList.toggle('selected');
   respondentSettings[roleKey] = el.classList.contains('selected');
+  if (selectedRunMode === 'ontime' && !isSelfOnlyRespondent()) {
+    selectedRunMode = 'period';
+    showToast('본인 외 응답자 유형이 선택되어 「대상 지정 및 기간 종료 후 결과 노출」로 변경되었습니다.');
+  }
+  applyStepVisibility();
 }
 
 function confirmRespTypeChange() {
@@ -3189,21 +3187,6 @@ function generateStep4Tabs() {
   const tabPanesContainer = document.getElementById('step4TabPanes');
   tabGroup.innerHTML = '';
   tabPanesContainer.innerHTML = '';
-
-  // 상시진단이면 안내 카드만 표시
-  if (selectedDiagnosticType === '상시') {
-    tabGroup.innerHTML = '';
-    tabPanesContainer.innerHTML = `
-      <div style="padding:32px;background:#f0f4ff;border-radius:6px;border:1px solid #c5d8f7;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-size:16px;font-weight:700;color:#2a3a6a;margin-bottom:12px;">전체 임직원이 실시간으로 자동 대상입니다</div>
-        <div style="font-size:13px;color:#4a5a8a;line-height:1.6;">
-          신규 입사자도 자동으로 진단 대상에 포함되며, 별도 대상자 등록이 필요하지 않습니다.<br>
-          진단기간 내에 모든 임직원이 자유롭게 응시할 수 있습니다.
-        </div>
-      </div>
-    `;
-    return;
-  }
 
   const tabs = [];
   RESP_ROLES.forEach(role => {
@@ -3992,8 +3975,6 @@ function generateStep7Review() {
 
   const totalCourses = Object.values(courseData).reduce((s, arr) => s + arr.length, 0);
 
-  const responseCountChecked = document.querySelector('input[name="responseCount"]:checked');
-  const responseCountText = responseCountChecked ? (responseCountChecked.value === '1' ? '1회만' : `${document.getElementById('responseCountN')?.value || 2}회까지`) : '';
 
   const meta = stepDisplayMeta();
   const allRows = [
@@ -4005,9 +3986,9 @@ function generateStep7Review() {
     { step: 3, label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)' },
     { step: 4, label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨' },
     { step: 5, label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정` },
-    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${selectedDiagnosticType === '사전사후' ? `사전 ${selectedPreDiag ? selectedPreDiag.start + ' ~ ' + selectedPreDiag.end : '(미선택)'} / 사후 ${postPeriod}` : period}` + (selectedDiagnosticType === '상시' ? ` / 응답 허용 횟수: ${responseCountText}` : '') },
-    { step: 7, label: selectedDiagnosticType === '상시' ? '대상자 범위' : '응답자 등록',
-      value: selectedDiagnosticType === '상시' ? '전체 임직원(신규입사자 포함)' : selectedDiagnosticType === '사전사후' ? '사전진단의 대상자·응답자 자동 적용 (추가·삭제 가능)' : '유형별 응답자 등록됨' },
+    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${selectedDiagnosticType === '사전사후' ? `사전 ${selectedPreDiag ? selectedPreDiag.start + ' ~ ' + selectedPreDiag.end : '(미선택)'} / 사후 ${postPeriod}` : period}` + (isOntimeMode() ? ' / 전 임직원 대상 및 응답 즉시 결과 노출' : '') },
+    { step: 7, label: '응답자 등록',
+      value: selectedDiagnosticType === '사전사후' ? '사전진단의 대상자·응답자 자동 적용 (추가·삭제 가능)' : '유형별 응답자 등록됨' },
   ];
   // 완전히 잠긴 STEP만 "보기"로 표시, 그 외(부분수정 포함)는 "수정"으로 표시
   const currentLocked = (STEP_LOCK_MAP[_diagStatus]?.[selectedDiagnosticType] || []);
@@ -4040,9 +4021,8 @@ function createDiagnosis() {
   const diagName = document.getElementById('diagNameInput')?.value?.trim();
   if (!diagName) { showToast('진단명을 입력해주세요.'); return; }
   if (!validateDates()) return;
-  if (!validateResponseCount()) return;
   if (!validateScores()) return;
-  showToast(selectedDiagnosticType === '상시'
+  showToast(isOntimeMode()
     ? '진단이 생성되었습니다. 진단 시작일이 되면 자동으로 오픈됩니다.'
     : '진단이 생성되었습니다. 대기 상태로 저장됩니다.');
   setTimeout(() => { location.href = 'edms_역량진단_관리.html'; }, 1400);
@@ -4116,20 +4096,6 @@ function validatePostDates() {
   return true;
 }
 
-// 상시진단 응답 허용 횟수: 기본 1회, 2회 이상 선택 시 2~10회 정수만 허용
-function validateResponseCount() {
-  if (selectedDiagnosticType !== '상시') return true;
-  const checked = document.querySelector('input[name="responseCount"]:checked');
-  if (checked && checked.value === 'n') {
-    const n = Number(document.getElementById('responseCountN').value);
-    if (!Number.isInteger(n) || n < 2 || n > 10) {
-      showToast('응답 허용 횟수는 2~10회 사이의 정수로 입력해주세요.');
-      return false;
-    }
-  }
-  return true;
-}
-
 function nextStep() {
   if (currentStep === 2 && (selectedDiagnosticType === '사전사후' ? !selectedPreDiag : !selectedDiagnosticId)) {
     showToast(selectedDiagnosticType === '사전사후' ? '사전진단을 선택해주세요.' : '진단지를 선택해주세요.');
@@ -4143,7 +4109,7 @@ function nextStep() {
     if (!anySelected) { showToast('응답자 유형을 1개 이상 선택해주세요.'); return; }
   }
   if (currentStep === 4 && !validateScores()) return;
-  if (currentStep === 6 && (!validateDates() || !validateResponseCount())) return;
+  if (currentStep === 6 && !validateDates()) return;
   if (currentStep === 7) {
     const allTabs = document.querySelectorAll('#step4TabGroup .tab');
     let valid = true;
@@ -4234,17 +4200,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// 상시진단 응답 허용 횟수 N회 입력 활성화 / 사전사후진단 사후 기간 min 동기화
+// 사전사후진단 사후 기간 min 동기화
 document.addEventListener('DOMContentLoaded', () => {
   const diagNameEl = document.getElementById('diagNameInput');
   if (diagNameEl) diagNameEl.addEventListener('input', () => { diagNameEl.dataset.auto = ''; });
-  document.querySelectorAll('input[name="responseCount"]').forEach(r => {
-    r.addEventListener('change', () => {
-      const nEl = document.getElementById('responseCountN');
-      const nRadio = document.querySelector('input[name="responseCount"][value="n"]');
-      if (nEl) nEl.disabled = !(nRadio && nRadio.checked);
-    });
-  });
   const today = new Date().toISOString().split('T')[0];
   const preEnd = document.getElementById('diagEndDate');
   const postStart = document.getElementById('postStartDate');
@@ -4316,10 +4275,10 @@ let _diagStatus = 'before';
 // STEP 1(진단유형 선택)은 진단이 생성된 이후(진행 중/마감 전/완료)에는 항상 잠금 — STEP2와 동일하게 변경 불가
 // completed: 전체 잠금 (STEP6도 이때만 완전 잠금이라 이 목록에 포함)
 const STEP_LOCK_MAP = {
-  before:    { 범용: [],         상시: [],         사전사후: [] },
-  after:     { 범용: [1, 2, 3],     상시: [1, 2],     사전사후: [1, 2] },
-  expired:   { 범용: [1, 2, 3, 7],  상시: [1, 2],     사전사후: [1, 2, 7] },
-  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 상시: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
+  before:    { 범용: [],         사전사후: [] },
+  after:     { 범용: [1, 2, 3],     사전사후: [1, 2] },
+  expired:   { 범용: [1, 2, 3, 7],  사전사후: [1, 2, 7] },
+  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
 };
 
 // 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)
