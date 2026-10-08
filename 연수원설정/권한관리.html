@@ -689,9 +689,9 @@
             <tr>
               <th style="width:70px;">이름</th>
               <th>아이디(이메일)</th>
-              <th style="width:110px;">기업</th>
+              <th style="width:110px;">회사</th>
               <th style="width:80px;">부서</th>
-              <th style="width:80px;"></th>
+              <th style="width:80px;">관리</th>
             </tr>
           </thead>
           <tbody id="reg-search-tbody"></tbody>
@@ -1103,16 +1103,12 @@ function searchByName() {
     return;
   }
   tbody.innerHTML = results.map((u, idx) => {
-    const alreadyReg = ALL_DATA.some(r => r.email === u.email);
     return `<tr>
       <td>${maskName(u.name)}</td>
       <td style="text-align:left;padding-left:10px;">${maskEmail(u.email)}</td>
       <td>${u.company}</td>
       <td>${u.dept}</td>
-      <td>${alreadyReg
-        ? '<span style="font-size:11px;color:#e53935;">이미 등록된 계정입니다.</span>'
-        : `<button class="btn-sm btn-sm-outline" onclick="selectUser(${idx})">선택</button>`
-      }</td>
+      <td><button class="btn-sm btn-sm-outline" onclick="selectUser(${idx})">선택</button></td>
     </tr>`;
   }).join('');
   resultDiv.style.display = 'block';
@@ -1125,6 +1121,7 @@ function searchByName() {
 function selectUser(idx) {
   const user = _regSearchResults[idx];
   if (!user) return;
+  if (ALL_DATA.some(r => r.email === user.email)) { lmShowToast('이미 등록된 계정입니다.'); return; }
   selectedUser = user;
   document.getElementById('reg-selected-name').textContent    = maskName(user.name);
   document.getElementById('reg-selected-email').textContent   = maskEmail(user.email);
