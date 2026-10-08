@@ -165,6 +165,34 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .rec-close{border:none;background:none;font-size:26px;line-height:1;color:var(--text-2);cursor:pointer;padding:0 4px;}
 .rec-drawer-body{padding:16px 20px 28px;overflow-y:auto;flex:1;}
 .rec-item{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;}
+
+/* 과정 상세보기 우측 패널 */
+.cd-overlay{position:fixed;inset:0;background:rgba(17,24,39,.35);opacity:0;pointer-events:none;transition:opacity .2s;z-index:110;}
+.cd-overlay.open{opacity:1;pointer-events:auto;}
+.cd-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--white);box-shadow:-8px 0 24px rgba(17,24,39,.12);transform:translateX(100%);transition:transform .25s;z-index:120;display:flex;flex-direction:column;}
+.cd-drawer.open{transform:translateX(0);}
+.cd-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;}
+.cd-head-l{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;}
+.cd-back{border:none;background:none;cursor:pointer;color:var(--text);padding:2px;display:inline-flex;}
+.cd-body{flex:1;overflow-y:auto;}
+.cd-visual{position:relative;height:260px;background:#111;}
+.cd-visual img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;}
+.cd-notice{position:absolute;top:16px;left:16px;display:inline-flex;align-items:center;gap:8px;background:#e6efff;color:#1f2937;font-size:12.5px;padding:8px 12px;border-radius:8px;}
+.cd-notice i{width:14px;height:14px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-style:normal;display:inline-flex;align-items:center;justify-content:center;font-weight:700;}
+.cd-info{padding:22px 20px 0;}
+.cd-title{font-size:18px;font-weight:800;line-height:1.4;margin-bottom:10px;}
+.cd-sub{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text-2);}
+.cd-sub span{display:inline-flex;align-items:center;gap:6px;}
+.cd-sub svg{width:14px;height:14px;}
+.cd-tabs{display:flex;gap:22px;padding:0 20px;margin-top:24px;border-bottom:1px solid var(--border);}
+.cd-tab{border:none;background:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:10px 0;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.cd-tab.active{color:var(--text);border-bottom-color:var(--text);}
+.cd-pane{padding:18px 20px 24px;font-size:13.5px;line-height:1.7;color:var(--text-2);}
+.cd-pane ul{margin:0;padding-left:18px;}
+.cd-foot{display:flex;gap:10px;padding:14px 20px;border-top:1px solid var(--border);}
+.cd-fav{height:48px;padding:0 18px;border:1px solid var(--border);background:var(--white);border-radius:10px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--text);}
+.cd-go{flex:1;height:48px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.cd-go:hover{opacity:.92;}
 </style>
 </head>
 <body>
@@ -453,6 +481,46 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
   </div>
 </aside>
 
+<!-- 과정 상세보기 우측 패널 (학습하기 클릭) -->
+<div class="cd-overlay" id="cdOverlay" onclick="closeCourseDetail()"></div>
+<aside class="cd-drawer" id="cdDrawer" aria-hidden="true">
+  <div class="cd-head">
+    <div class="cd-head-l">
+      <button type="button" class="cd-back" onclick="closeCourseDetail()" aria-label="뒤로"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+      상세 정보
+    </div>
+    <button type="button" class="rec-close" onclick="closeCourseDetail()" aria-label="닫기">×</button>
+  </div>
+  <div class="cd-body">
+    <div class="cd-visual">
+      <img id="cdThumb" src="" alt="">
+      <div class="cd-notice"><i>i</i>미리보기 재생중이며, 학습 진도에 반영되지 않습니다.</div>
+    </div>
+    <div class="cd-info">
+      <div class="cd-title" id="cdTitle"></div>
+      <div class="cd-sub">
+        <span id="cdTime"></span>
+        <span id="cdPrice" style="font-weight:700;color:var(--text);"></span>
+      </div>
+    </div>
+    <div class="cd-tabs">
+      <button type="button" class="cd-tab active" data-tab="intro" onclick="switchCdTab('intro')">소개</button>
+      <button type="button" class="cd-tab" data-tab="complete" onclick="switchCdTab('complete')">수료 기준</button>
+    </div>
+    <div class="cd-pane" id="cdPaneIntro"></div>
+    <div class="cd-pane" id="cdPaneComplete" style="display:none;">
+      <ul>
+        <li>진도율 80% 이상</li>
+        <li>학습 기간 내 학습 완료</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cd-foot">
+    <button type="button" class="cd-fav" onclick="this.classList.toggle('on');this.querySelector('b').textContent=this.classList.contains('on')?'♥':'♡'"><b style="font-size:16px;font-weight:400;">♡</b>관심과정</button>
+    <button type="button" class="cd-go">바로 학습하기</button>
+  </div>
+</aside>
+
 <script>
 const WEAK_COURSES = [
   { title: '[AIder College] 생성형 AI를 제대로 다루는 핵심 원리 강의', type: '온라인', time: '1시간 10분', price: '무료', seed: 'rec1' },
@@ -497,7 +565,7 @@ const TOP2_COURSES = {
 };
 const top2Index = { r1: 0, r2: 0 };
 
-function top2ItemHTML(c, factorLabel) {
+function top2ItemHTML(c, factorLabel, rank) {
   return `<div class="course-flex">
     <img class="course-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
     <div class="course-info">
@@ -511,7 +579,7 @@ function top2ItemHTML(c, factorLabel) {
         <span>${ICON_PRICE}${c.price}</span>
       </div>
     </div>
-    <button type="button" class="btn-learn">학습하기</button>
+    <button type="button" class="btn-learn" onclick="openCourseDetail('${rank}')">학습하기</button>
   </div>`;
 }
 
@@ -519,7 +587,7 @@ function renderTop2(rank) {
   const group = TOP2_COURSES[rank];
   const idx = top2Index[rank];
   const c = group.items[idx];
-  document.getElementById('top2Course-' + rank).innerHTML = top2ItemHTML(c, group.factor);
+  document.getElementById('top2Course-' + rank).innerHTML = top2ItemHTML(c, group.factor, rank);
   document.getElementById('top2Counter-' + rank).textContent = (idx + 1) + ' / ' + group.items.length;
 }
 
@@ -565,7 +633,29 @@ function closeRecPanel() {
   document.getElementById('recOverlay').classList.remove('open');
   document.getElementById('recDrawer').setAttribute('aria-hidden', 'true');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRecPanel(); });
+function openCourseDetail(rank) {
+  const c = TOP2_COURSES[rank].items[top2Index[rank]];
+  document.getElementById('cdThumb').src = 'https://picsum.photos/seed/' + c.seed + '/800/500';
+  document.getElementById('cdTitle').textContent = c.title;
+  document.getElementById('cdTime').innerHTML = ICON_CLOCK + c.time;
+  document.getElementById('cdPrice').textContent = c.price;
+  document.getElementById('cdPaneIntro').textContent = c.desc;
+  switchCdTab('intro');
+  document.getElementById('cdDrawer').classList.add('open');
+  document.getElementById('cdOverlay').classList.add('open');
+  document.getElementById('cdDrawer').setAttribute('aria-hidden', 'false');
+}
+function closeCourseDetail() {
+  document.getElementById('cdDrawer').classList.remove('open');
+  document.getElementById('cdOverlay').classList.remove('open');
+  document.getElementById('cdDrawer').setAttribute('aria-hidden', 'true');
+}
+function switchCdTab(tab) {
+  document.querySelectorAll('.cd-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('cdPaneIntro').style.display = tab === 'intro' ? '' : 'none';
+  document.getElementById('cdPaneComplete').style.display = tab === 'complete' ? '' : 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCourseDetail(); closeRecPanel(); } });
 
 function switchRecTab(tab) {
   document.querySelectorAll('.rec-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
