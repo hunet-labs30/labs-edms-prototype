@@ -900,7 +900,7 @@ body {
             <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
             <span class="wiz-step-tag">STEP 1</span>
             <h2>진단지 구조를 선택해주세요</h2>
-            <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 이름을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
+            <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 항목을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
             <div class="wiz-head-actions">
               <button class="btn btn-outline" type="button" onclick="openPresetModal()">📋 기존 진단지 구조 가져오기</button>
               <button class="btn btn-outline" type="button" onclick="openBulkModal()">📥 진단지 일괄등록</button>
@@ -943,7 +943,7 @@ body {
             <div class="guide-banner">
               <div class="guide-banner-icon">💡</div>
               <div class="guide-banner-text">
-                <strong>선택한 구조에 맞춰 이름을 등록합니다.</strong>
+                <strong>선택한 구조에 맞춰 항목을 등록합니다.</strong>
                 <div class="depth-explainer" id="depthExplainer"></div>
               </div>
             </div>
@@ -1296,7 +1296,7 @@ function toggleSubNav(el) { el.parentElement.classList.toggle('open'); }
 // 단계: 구조 선택 → 구조 등록 → 문항 등록 → 기본 정보
 const STEP_DEFS = {
   struct:    { title: '구조 선택',        desc: () => '어떤 구조로 만들지 선택' },
-  tree:      { title: '구조 등록',        desc: () => `${levelNames().join(' → ')} 이름 등록` },
+  tree:      { title: '구조 등록',        desc: () => `${levelNames().join(' → ')} 항목 등록` },
   questions: { title: '문항 등록',        desc: () => `각 ${itemLabel()}에 문항 추가` },
   info:      { title: '진단지 기본 정보', desc: () => '진단지명·설명·공개 여부' },
 };
@@ -2382,7 +2382,7 @@ function renderStructPreview(ut, ui) {
     row('d1', '유형마다 탭이 생기고, 응답자는 탭 단위로 답변한 뒤 다음으로 넘어갑니다.'),
     row('d2', '문항 목록 중간에 구분 카드로 표시되고, 그 아래에 문항이 이어집니다.'),
     row('d3', '문항을 묶는 단위로, 문항 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.'),
-    '<div style="color:#aaa;margin-top:4px;">※ 배치를 보여주는 예시이며, 실제 이름과 문항은 다음 단계에서 입력합니다.</div>'
+    '<div style="color:#aaa;margin-top:4px;">※ 배치를 보여주는 예시이며, 실제 항목과 문항은 다음 단계에서 입력합니다.</div>'
   ].join('');
 }
 
@@ -2414,13 +2414,13 @@ function renderTreeTexts() {
   const names = levelNames();
   const dotCls = { '유형': 'd1', '역량군': 'd2', '세부역량': 'd3' };
   document.getElementById('treeLead').innerHTML =
-    `<strong>${names.join(' → ')}</strong> ${names.length}단계 구조의 이름을 등록합니다. 다음 단계에서 각 ${itemLabel()}에 문항을 붙이게 됩니다.`;
+    `<strong>${names.join(' → ')}</strong> ${names.length}단계 구조로 항목을 등록합니다. 다음 단계에서 각 ${itemLabel()}에 문항을 붙이게 됩니다.`;
   document.getElementById('depthExplainer').innerHTML = names.map((nm, i) =>
     `<span class="depth-chip"><span class="dot ${dotCls[nm]}"></span>${i + 1}단계 · ${nm}</span>`
   ).join('<span class="depth-arrow">→</span>');
   document.getElementById('emptyTitleText').textContent = ut ? '등록된 유형이 없습니다.' : '등록된 역량군이 없습니다.';
   document.getElementById('emptyDescText').innerHTML = (ut ? '유형을 만들고 그 안에 <b>역량군</b>을 등록합니다.' : '<b>역량군</b>을 등록합니다.')
-    + (ui ? ' 역량군 아래에는 <b>세부역량</b>을 등록합니다.' : '') + ' 이름은 최대 ' + NAME_MAX + '자까지 입력할 수 있습니다.';
+    + (ui ? ' 역량군 아래에는 <b>세부역량</b>을 등록합니다.' : '') + ' 항목명은 최대 ' + NAME_MAX + '자까지 입력할 수 있습니다.';
   document.getElementById('emptyAddBtn').textContent = ut ? '＋ 첫 유형 추가하기' : '＋ 첫 역량군 추가하기';
   const foot = document.getElementById('treeFootBtn');
   foot.textContent = ut ? '＋ 유형 추가' : '＋ 역량군 추가';
