@@ -129,6 +129,8 @@ body {
   padding: 22px 28px 18px; background: #fafbfc;
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
+.wiz-card-head { position: relative; }
+.wiz-head-action { position: absolute; right: 28px; bottom: 18px; height: 38px; padding: 0 18px; font-size: 13px; background: #fff; }
 .wiz-step-tag {
   display: inline-flex; align-items: center;
   font-size: 11px; font-weight: 700; color: var(--primary);
@@ -700,6 +702,25 @@ body {
 .s2-progress-bar { height: 4px; background: #e0e3e8; border-radius: 2px; margin: 0 20px 0; overflow: hidden; flex-shrink: 0; }
 .s2-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #6f42c1); border-radius: 2px; transition: width .3s; }
 .s2-progress-label { padding: 6px 20px 10px; font-size: 11px; color: #999; flex-shrink: 0; }
+/* ── 일괄등록 팝업 (규격화 레이아웃) ── */
+.bulk-modal-box { width:940px; max-width:94vw; height:min(90vh, 840px); max-height:none; display:flex; flex-direction:column; border-radius:12px; position:relative; }
+.bulk-modal-box .modal-header { padding:24px 28px 12px; border-bottom:none; }
+.bulk-modal-box .modal-header h3 { font-size:18px; font-weight:700; }
+.bulk-modal-box .modal-close { font-size:26px; color:#222; }
+.bulk-modal-body { flex:1; overflow-y:auto; padding:0 28px 12px; }
+.bulk-sec-title { font-size:15px; font-weight:700; color:#111; margin:24px 0 12px; padding:0; border:none; }
+.bulk-modal-body > .bulk-sec-title:first-child { margin-top:8px; }
+.bulk-info-box { background:#f5f5f6; border:none; border-radius:8px; padding:18px 22px; margin:0; font-size:13px; line-height:1.9; color:#555; }
+.bulk-btn { height:40px; padding:0 20px; border-radius:8px; background:#fff; color:#222; border:1px solid #d9dce1; font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit; }
+.bulk-btn:hover { background:#f7f8fa; }
+.bulk-drop-zone { background:#e9eaec; border:none; border-radius:10px; padding:44px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+.bulk-drop-zone:hover, .bulk-drop-zone.drag-active { background:#dfe1e4; border:none; }
+.bulk-drop-text { font-size:13.5px; color:#666; margin-bottom:16px; }
+.bulk-drop-zone .btn { height:38px; padding:0 22px; border-radius:8px; background:#fff; border:1px solid #d9dce1; color:#222; font-size:13.5px; font-weight:600; }
+.bulk-modal-foot { display:flex; justify-content:flex-end; gap:10px; padding:16px 28px 24px; background:#fff; border-radius:0 0 12px 12px; }
+.bulk-modal-foot .btn { height:44px; padding:0 26px; border-radius:8px; font-size:14px; font-weight:600; }
+.bulk-modal-foot .btn:disabled { background:#ececee !important; color:#a9abb0 !important; border:1px solid #ececee !important; opacity:1 !important; cursor:not-allowed !important; }
+.bulk-modal-foot #bulkPreviewBtn:disabled { background:#fff !important; border-color:#e3e4e8 !important; }
 </style>
 </head>
 <body>
@@ -869,13 +890,13 @@ body {
             <span class="wiz-step-tag">STEP 1</span>
             <h2>진단지 구조를 선택해주세요</h2>
             <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 이름을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
+            <button class="btn btn-outline wiz-head-action" type="button" onclick="openBulkModal()">📥 엑셀 일괄등록</button>
           </div>
           <div class="wiz-card-body">
             <div class="struct-layout">
               <div class="struct-left">
                 <div class="struct-grid" id="structOptions"></div>
                 <div class="struct-tools">
-                  <button class="btn btn-outline btn-sm" type="button" onclick="openBulkModal()">📥 엑셀 일괄등록</button>
                   <span class="struct-note">구조를 바꿔도 등록한 역량군과 질문은 최대한 유지됩니다.</span>
                 </div>
               </div>
@@ -1151,60 +1172,40 @@ body {
     </div>
     <div class="bulk-modal-body">
 
-      <!-- 안내 박스 -->
+      <div class="bulk-sec-title">일괄등록 안내</div>
       <div class="bulk-info-box">
-        <div class="bulk-info-title">일괄등록 안내</div>
-        엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·문항을 한 번에 등록할 수 있습니다. <strong>최대 10MB</strong><br>
-        시트 구성: <strong>한 행 = 한 문항.</strong> 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다. (<strong>역량군명은 필수</strong>, 유형명·세부역량명은 선택)<br>
-        문항유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 경우 등록 버튼이 비활성화됩니다. 문항유형에 해당하지 않는 영역(회색)에 입력된 값은 무시하고 등록됩니다.
+          엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·문항을 한 번에 등록할 수 있습니다. 최대 10MB<br>
+          시트 구성: 한 행 = 한 문항. 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
+          문항유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 경우 등록 버튼이 비활성화됩니다. 문항유형에 해당하지 않는 영역(회색)에 입력된 값은 무시하고 등록됩니다.
       </div>
 
-      <!-- Step 1 -->
-      <div class="bulk-section">
-        <div class="bulk-step-title">Step 1. 업로드 양식 다운로드</div>
-        <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
-          <a href="진단지_일괄등록_템플릿.xlsx" download="진단지_일괄등록_템플릿.xlsx" style="color:var(--primary); text-decoration:none; font-size:13px; font-weight:600; cursor:pointer;">📥 샘플파일 다운로드 (한국어)</a>
-          <a href="assessment_template_en.xlsx" download="assessment_template_en.xlsx" style="color:var(--primary); text-decoration:none; font-size:13px; font-weight:600; cursor:pointer;">📥 Sample file (English)</a>
-        </div>
-        <div class="bulk-struct-note">역량군명(B열)은 필수이며, 유형명(A열)과 세부역량명(C열)은 선택입니다. 사용하지 않는 열은 전체 행을 비워 두세요.</div>
-      </div>
+      <div class="bulk-sec-title">Step 1. 업로드 양식 다운로드</div>
+      <button class="bulk-btn" type="button" onclick="bulkDownloadTemplate()">업로드 양식 다운로드</button>
 
-      <!-- Step 2 -->
-      <div class="bulk-section">
-        <div class="bulk-step-title">Step 2. 파일 첨부</div>
+      <div class="bulk-sec-title">Step 2. 파일 첨부</div>
+      <div id="bulkAttachSection">
         <div class="bulk-drop-zone" id="bulkDropZone"
           ondragover="bulkDragOver(event)" ondragleave="bulkDragLeave(event)" ondrop="bulkDrop(event)"
           onclick="document.getElementById('bulkFileInput').click()">
           <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
-          <button class="btn btn-gray" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput').click()">파일 선택</button>
+          <button class="btn" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput').click()">파일 선택</button>
           <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleBulkFile(this.files[0])">
         </div>
-        <div id="bulkFileSelected" style="display:none; margin-top:10px; padding:8px 12px; background:#f4f6ff; border:1px solid #c7d8f7; border-radius:6px; font-size:12px; color:#2a3a6a; display:none; align-items:center; gap:8px;">
+        <div id="bulkFileSelected" style="display:none; margin-top:12px; padding:10px 14px; background:#f4f6ff; border:1px solid #c7d8f7; border-radius:8px; font-size:12.5px; color:#2a3a6a; align-items:center; gap:8px;">
           <span id="bulkFileNameText" style="flex:1; font-weight:600;"></span>
-          <button type="button" onclick="bulkClearFile()" style="background:none; border:none; cursor:pointer; color:#888; font-size:15px; line-height:1;">×</button>
+          <button type="button" onclick="bulkClearFile()" style="background:none; border:none; cursor:pointer; color:#888; font-size:16px; line-height:1;">×</button>
         </div>
       </div>
 
-      <!-- Step 3 -->
-      <div class="bulk-section">
-        <div class="bulk-step-title">Step 3. 미리보기 및 등록</div>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button class="btn btn-outline" id="bulkPreviewBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview()">미리보기</button>
-          <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
-          <button class="btn btn-gray" onclick="closeBulkModal()">닫기</button>
-        </div>
-        <div id="bulkPreviewResult" style="display:none; margin-top:16px;">
-          <div style="font-size:13px; font-weight:700; margin-bottom:8px;">미리보기 결과</div>
-          <div id="bulkPreviewMessage" style="font-size:12px; margin-bottom:8px;"></div>
-          <div id="bulkPreviewTable"></div>
-          <button id="bulkErrorDownloadBtn" style="display:none; margin-top:8px;" class="btn btn-gray btn-sm" onclick="downloadErrorList()">오류 목록 다운로드</button>
-        </div>
+      <div id="bulkPreviewResult" style="display:none;">
+        <div class="bulk-sec-title">미리보기 결과</div>
+        <div id="bulkPreviewMessage" style="font-size:12.5px; margin-bottom:8px;"></div>
+        <div id="bulkPreviewTable"></div>
+        <button id="bulkErrorDownloadBtn" style="display:none; margin-top:8px;" class="btn btn-gray btn-sm" onclick="downloadErrorList()">오류 목록 다운로드</button>
       </div>
 
-      <!-- 오류 케이스 -->
-      <div class="bulk-section">
-        <div class="bulk-step-title">오류 케이스 정리</div>
-        <table class="bulk-case-tbl">
+      <div class="bulk-sec-title">오류 케이스 정리</div>
+      <table class="bulk-case-tbl">
           <thead><tr><th style="width:200px;">오류 케이스</th><th>설명</th></tr></thead>
           <tbody>
             <tr><td>데이터 없음</td><td>엑셀 파일에 등록된 데이터가 없는 경우 (헤더 행 이후 데이터 없음)</td></tr>
@@ -1221,8 +1222,11 @@ body {
             <tr><td>문항 중복 오류</td><td>동일 세부역량 내에 동일한 문항 내용이 중복으로 입력된 경우 (세부역량을 사용하지 않으면 동일 역량군 내)</td></tr>
           </tbody>
         </table>
-      </div>
 
+    </div>
+    <div class="bulk-modal-foot">
+      <button class="btn btn-outline" id="bulkPreviewBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview()">미리보기</button>
+      <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
     </div>
   </div>
 </div>
@@ -2853,7 +2857,17 @@ function resetAll() {
 }
 
 // ── 일괄등록 (엑셀) ──
-  // ── 일괄등록 모달 ──
+  // 업로드 양식 다운로드: 한글 양식이 기본이며, 로케일이 English로 변경된 경우 영문 양식이 내려받아진다.
+function bulkDownloadTemplate() {
+  const sel = Array.from(document.querySelectorAll('select')).find(s => Array.from(s.options).some(o => /english/i.test(o.text)));
+  const en = !!sel && /english/i.test(sel.options[sel.selectedIndex].text);
+  const f = en ? 'assessment_template_en.xlsx' : '진단지_일괄등록_템플릿.xlsx';
+  const a = document.createElement('a');
+  a.href = f; a.download = f;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ── 일괄등록 모달 ──
 let bulkCurrentFile = null;
   function openBulkModal() {
     document.getElementById('bulkModal').classList.add('open');
