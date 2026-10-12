@@ -130,7 +130,9 @@ body {
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
 .wiz-card-head { position: relative; }
-.wiz-head-action { position: absolute; right: 28px; bottom: 18px; height: 38px; padding: 0 18px; font-size: 13px; background: #fff; }
+.wiz-head-actions { position: absolute; right: 28px; bottom: 18px; display: flex; flex-direction: column; gap: 8px; width: 214px; }
+.wiz-head-actions .btn { height: 36px; padding: 0 14px; font-size: 13px; background: #fff; white-space: nowrap; justify-content: center; }
+#step-content-struct .wiz-card-head p { max-width: calc(100% - 250px); }
 .wiz-step-tag {
   display: inline-flex; align-items: center;
   font-size: 11px; font-weight: 700; color: var(--primary);
@@ -229,6 +231,9 @@ body {
 .pv-panel-note { padding:11px 16px; font-size:11.5px; color:#777; line-height:1.65; border-bottom:1px solid var(--border); background:#fff; }
 .pv-panel-note b { color:#444; }
 .pv-key { display:inline-block; font-size:10px; font-weight:700; color:#fff; border-radius:10px; padding:0 8px; margin-right:5px; line-height:1.6; }
+.pv-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:4px; }
+.pv-row .pv-key { flex:0 0 58px; text-align:center; margin:2px 0 0; padding:0; }
+.pv-row-text { flex:1; }
 .pv-key.d1 { background:var(--depth1); }
 .pv-key.d2 { background:var(--depth2); }
 .pv-key.d3 { background:var(--depth3); }
@@ -890,7 +895,10 @@ body {
             <span class="wiz-step-tag">STEP 1</span>
             <h2>진단지 구조를 선택해주세요</h2>
             <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 이름을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
-            <button class="btn btn-outline wiz-head-action" type="button" onclick="openBulkModal()">📥 엑셀 일괄등록</button>
+            <div class="wiz-head-actions">
+              <button class="btn btn-outline" type="button" onclick="openPresetModal()">📋 기존 진단지 구조 가져오기</button>
+              <button class="btn btn-outline" type="button" onclick="openBulkModal()">📥 진단지 일괄등록</button>
+            </div>
           </div>
           <div class="wiz-card-body">
             <div class="struct-layout">
@@ -941,7 +949,7 @@ body {
                 <div class="card-head">
                   <div class="card-head-title" style="white-space:nowrap;">구조 만들기</div>
                   <span class="card-head-sub" id="treeMeta"></span>
-                  <button class="btn btn-xs btn-outline" style="white-space:nowrap;" onclick="openPresetModal()">📋 기존 구조 가져오기</button>
+                  
                   <button class="btn btn-xs btn-gray" style="white-space:nowrap;" onclick="resetAll()">🗑 초기화</button>
                 </div>
                 <div id="treeDragHint" style="padding:7px 18px;font-size:11px;color:#999;background:#fafbfc;border-bottom:1px solid var(--border);"></div>
@@ -953,7 +961,7 @@ body {
                   <div class="empty-desc"><span id="emptyDescText"></span></div>
                   <div class="empty-actions">
                     <button class="btn btn-primary btn-lg" id="emptyAddBtn" onclick="addFirstNode()"></button>
-                    <button class="btn btn-outline btn-lg" onclick="openPresetModal()">📋 기존 구조로 시작</button>
+                    
                   </div>
                 </div>
 
@@ -1240,7 +1248,7 @@ body {
     </div>
     <div class="modal-body">
       <div style="font-size:12px;color:#666;margin-bottom:12px;">
-        완료된 진단지의 유형·역량군·세부역량 구조를 그대로 가져옵니다. 가져온 뒤 자유롭게 수정할 수 있습니다.
+        완료된 진단지의 유형·역량군·세부역량 구조를 그대로 가져오고, 구조 선택도 해당 구조로 적용됩니다. 가져온 뒤 구조 등록 단계에서 자유롭게 수정할 수 있습니다.
       </div>
       <div class="preset-card" onclick="selectPreset('qset001')" data-preset="qset001">
         <div class="preset-title">팀장 리더십 역량 진단</div>
@@ -2355,12 +2363,13 @@ function renderStructPreview(ut, ui) {
       <div class="tp-footer"><span class="tp-btn primary">다음 ›</span></div>
     </div>`;
 
+  const row = (cls, text) => '<div class="pv-row">' + key(cls) + '<span class="pv-row-text">' + text + '</span></div>';
   document.getElementById('structPvNote').innerHTML = [
-    key('d1') + '마다 탭이 생기고, 응답자는 탭 단위로 답변한 뒤 다음으로 넘어갑니다.',
-    key('d2') + '은 질문 목록 중간에 구분 카드로 표시되고, 그 아래에 질문이 이어집니다.',
-    key('d3') + '은 질문을 묶는 단위로, 질문 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.',
-    '<span style="color:#aaa;">※ 배치를 보여주는 예시이며, 실제 이름과 질문은 다음 단계에서 입력합니다.</span>'
-  ].filter(Boolean).join('<br>');
+    row('d1', '유형마다 탭이 생기고, 응답자는 탭 단위로 답변한 뒤 다음으로 넘어갑니다.'),
+    row('d2', '질문 목록 중간에 구분 카드로 표시되고, 그 아래에 질문이 이어집니다.'),
+    row('d3', '질문을 묶는 단위로, 질문 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.'),
+    '<div style="color:#aaa;margin-top:4px;">※ 배치를 보여주는 예시이며, 실제 이름과 질문은 다음 단계에서 입력합니다.</div>'
+  ].join('');
 }
 
 function setStructure(ut, ui) {
@@ -2831,24 +2840,26 @@ const PRESETS = {
 };
 
 function applyPreset() {
-  if (!selectedPreset) { toast('예시를 선택해주세요'); return; }
-  if (!isEmptyStruct() && !confirm('현재 등록한 내용이 모두 지워지고 예시로 교체됩니다. 계속할까요?')) return;
+  if (!selectedPreset) { toast('진단지를 선택해주세요'); return; }
+  if (!isEmptyStruct() && !confirm('현재 등록한 구조와 질문이 모두 지워지고 선택한 진단지의 구조로 교체됩니다.\n\n계속할까요?')) return;
 
+  // 가져온 진단지는 유형·역량군·세부역량 3단계 구조이므로 구조 선택도 함께 맞춘다.
+  state.useTypes = true; state.useItems = true;
   state.types = JSON.parse(JSON.stringify(PRESETS[selectedPreset].types));
   state.types.forEach(t => {
     t.id = makeId(); t._open = true;
     t.groups.forEach(g => {
       g.id = makeId(); g._open = true;
-      g.items.forEach(i => i.id = makeId());
+      g.items.forEach(i => { i.id = makeId(); i.questions = []; });
     });
   });
 
   closeModal('presetModal');
-  renderTree();
-  const skipped = [state.useTypes ? null : '유형', state.useItems ? null : '세부역량'].filter(Boolean);
-  toast(skipped.length ? `예시가 적용되었습니다. ${skipped.join('·')}은(는) 현재 구조에서 제외됩니다.` : '예시가 적용되었습니다. 필요에 따라 수정하세요.');
+  s2Selected = null;
+  renderModeTexts();
+  showStep('tree');
+  toast('기존 진단지 구조를 가져왔습니다. 구조 등록 단계에서 필요에 따라 수정하세요.');
 }
-
 function resetAll() {
   if (isEmptyStruct()) return;
   if (!confirm('등록한 구조를 모두 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
