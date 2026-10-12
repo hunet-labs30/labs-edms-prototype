@@ -338,7 +338,7 @@ body {
 .row-meta { font-size: 11px; color: #999; flex-shrink: 0; }
 .row-actions { display: flex; gap: 4px; }
 
-/* ── 질문 행 미리보기 (응답 화면 스타일) ── */
+/* ── 문항 행 미리보기 (응답 화면 스타일) ── */
 .qrow-q-text { font-size: 13px; color: #1a1a2e; line-height: 1.65; margin-bottom: 12px; font-weight: 500; }
 .qrow-likert-wrap { display: flex; gap: 4px; border-top: 1px solid #f0f2f5; padding-top: 12px; }
 .qrow-likert-opt { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -496,7 +496,7 @@ body {
 .step-placeholder .ph-title { font-size: 16px; font-weight: 700; color: #555; }
 .step-placeholder .ph-desc { font-size: 13px; color: #888; line-height: 1.7; max-width: 480px; }
 
-/* ── STEP 2: 질문 유형 카드 ── */
+/* ── STEP 2: 문항 유형 카드 ── */
 .qtype-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
 .qtype-card {
   border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 8px;
@@ -530,7 +530,7 @@ body {
 .maxlen-row { display:flex;align-items:center;gap:8px; }
 .maxlen-unit { font-size:12px;color:#888; }
 
-/* 질문 행 타입 뱃지 */
+/* 문항 행 타입 뱃지 */
 .q-type-badge { font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;flex-shrink:0;white-space:nowrap; }
 .q-type-badge.scale,
 .q-type-badge.likert    { background:#e8f0fe;color:#1a73e8; }
@@ -539,7 +539,7 @@ body {
 .q-type-badge.shorttext,
 .q-type-badge.text      { background:#f0fdf4;color:#16a34a; }
 
-/* ── STEP 2: 질문 등록 ── */
+/* ── STEP 2: 문항 등록 ── */
 .s2-layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 /* 좌측 네비 */
@@ -596,7 +596,7 @@ body {
 .s2-item-badge.has-q { background: #d4edda; color: #1a7a4a; }
 .s2-item-badge.no-q { background: #fde8e8; color: #c0392b; }
 
-/* 우측 질문 영역 */
+/* 우측 문항 영역 */
 .s2-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .s2-main::-webkit-scrollbar { width: 5px; }
 .s2-main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -614,7 +614,7 @@ body {
 .s2-empty-struct { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px; text-align: center; }
 .s2-empty-struct-icon { font-size: 44px; opacity: 0.5; }
 
-/* 질문 패널 헤더 */
+/* 문항 패널 헤더 */
 .s2-q-header {
   padding: 14px 20px; border-bottom: 1px solid var(--border);
   background: #fff; flex-shrink: 0;
@@ -628,7 +628,7 @@ body {
 .s2-q-code { font-family: 'Consolas', monospace; font-size: 11px; color: #888; background: #f0f2f5; padding: 2px 7px; border-radius: 3px; font-weight: 400; }
 .s2-q-count { font-size: 11px; color: #888; font-weight: 400; margin-left: 4px; }
 
-/* 질문 리스트 */
+/* 문항 리스트 */
 .s2-q-list { flex: 1; padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
 
 .s2-q-row {
@@ -655,7 +655,7 @@ body {
 }
 .s2-q-edit-foot { display: flex; justify-content: flex-end; gap: 6px; margin-top: 7px; }
 
-/* 새 질문 추가 폼 */
+/* 새 문항 추가 폼 */
 .s2-add-form {
   border: 1.5px dashed #b3c8f0; border-radius: 7px; padding: 12px 14px;
   background: #f8faff; display: none; flex-direction: column; gap: 8px;
@@ -672,7 +672,7 @@ body {
 .s2-add-hint { font-size: 11px; color: #aaa; }
 .s2-q-footer { padding: 12px 20px; border-top: 1px solid var(--border); background: #fafbfc; flex-shrink: 0; }
 
-/* 질문 추가 버튼 */
+/* 문항 추가 버튼 */
 #s2AddBtn {
   width:100%; height:48px;
   border: 2px dashed var(--primary);
@@ -684,7 +684,7 @@ body {
 }
 #s2AddBtn:hover { background: #e8f0fe; border-style: solid; box-shadow: 0 2px 8px rgba(26,115,232,.12); }
 
-/* 질문 행 인라인 미리보기 */
+/* 문항 행 인라인 미리보기 */
 .qrow-preview { flex: 1; min-width: 0; }
 .qrow-text { font-size: 13px; color: #1a1a2e; line-height: 1.65; margin-bottom: 8px; font-weight: 500; }
 .qrow-prefix { font-weight: 700; }
@@ -726,6 +726,12 @@ body {
 .bulk-modal-foot .btn { height:44px; padding:0 26px; border-radius:8px; font-size:14px; font-weight:600; }
 .bulk-modal-foot .btn:disabled { background:#ececee !important; color:#a9abb0 !important; border:1px solid #ececee !important; opacity:1 !important; cursor:not-allowed !important; }
 .bulk-modal-foot #bulkPreviewBtn:disabled { background:#fff !important; border-color:#e3e4e8 !important; }
+.ui-confirm { z-index:9600; }
+.ui-confirm .modal-box { width:400px; max-width:90vw; border-radius:12px; }
+.ui-confirm-title { font-size:16px; font-weight:700; color:#111; padding:24px 24px 0; }
+.ui-confirm-msg { padding:12px 24px 24px; font-size:14px; line-height:1.7; color:#444; white-space:pre-line; }
+.ui-confirm-foot { display:flex; justify-content:flex-end; gap:8px; padding:0 24px 20px; }
+.char-cnt { display:block; text-align:right; font-size:11px; color:#aaa; margin-top:3px; }
 </style>
 </head>
 <body>
@@ -880,7 +886,7 @@ body {
              style="display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%;height:32px;background:#fff;border:1px solid #ccc;border-radius:4px;font-size:13px;color:#555;text-decoration:none;cursor:pointer;"
              onmouseover="this.style.borderColor='#c00';this.style.color='#c00';"
              onmouseout="this.style.borderColor='#ccc';this.style.color='#555';">
-            ← 진단지 목록
+            목록으로
           </a>
         </div>
       </aside>
@@ -905,7 +911,7 @@ body {
               <div class="struct-left">
                 <div class="struct-grid" id="structOptions"></div>
                 <div class="struct-tools">
-                  <span class="struct-note">구조를 바꿔도 등록한 역량군과 질문은 최대한 유지됩니다.</span>
+                  <span class="struct-note">구조를 바꿔도 등록한 역량군과 문항은 최대한 유지됩니다.</span>
                 </div>
               </div>
               <div class="pv-panel">
@@ -1001,7 +1007,7 @@ body {
                     <div class="card-head-title" style="color:#0a1e4a;">📍 다음 단계 안내</div>
                   </div>
                   <div class="card-body">
-                    구조를 등록하면 다음 단계에서 질문을 등록할 수 있습니다.
+                    구조를 등록하면 다음 단계에서 문항을 등록할 수 있습니다.
                   </div>
                 </div>
               </div>
@@ -1014,20 +1020,20 @@ body {
           </div>
         </div>
 
-        <!-- STEP 2: 질문 등록 -->
+        <!-- STEP 2: 문항 등록 -->
         <div class="step-content wiz-card" id="step-content-questions">
           <div class="wiz-card-head">
             <div class="wiz-breadcrumb">부가서비스 › 진단 관리 › 진단지 관리 › 진단지 만들기</div>
             <span class="wiz-step-tag">STEP 2 / 3</span>
-            <h2>질문 등록</h2>
-            <p id="s2Lead">세부역량별 질문을 추가·편집할 수 있습니다.</p>
+            <h2>문항 등록</h2>
+            <p id="s2Lead">세부역량별 문항을 추가·편집할 수 있습니다.</p>
           </div>
 
           <!-- 진행 현황 -->
           <div class="s2-progress-bar" id="s2ProgressBar" style="margin-top:12px;">
             <div class="s2-progress-fill" id="s2ProgressFill" style="width:0%"></div>
           </div>
-          <div class="s2-progress-label" id="s2ProgressLabel">세부역량 0개 중 0개에 질문 등록됨</div>
+          <div class="s2-progress-label" id="s2ProgressLabel">세부역량 0개 중 0개에 문항 등록됨</div>
 
           <!-- 2패널 -->
           <div class="s2-layout">
@@ -1038,22 +1044,22 @@ body {
               <div id="s2NavTree"></div>
             </div>
 
-            <!-- 우측: 질문 영역 -->
+            <!-- 우측: 문항 영역 -->
             <div class="s2-main" id="s2Main">
               <!-- STEP1 구조 없음 -->
               <div class="s2-empty-struct" id="s2EmptyStruct" style="display:none;">
                 <div class="s2-empty-struct-icon">🌳</div>
                 <div class="empty-title" style="font-size:14px;">구조를 먼저 등록해주세요.</div>
-                <div class="empty-desc" id="s2EmptyStructDesc">유형·역량군·세부역량을 등록해야<br>이 단계에서 질문을 등록할 수 있습니다.</div>
+                <div class="empty-desc" id="s2EmptyStructDesc">유형·역량군·세부역량을 등록해야<br>이 단계에서 문항을 등록할 수 있습니다.</div>
                 <button class="btn btn-outline" onclick="showStep('tree')">← 구조 등록으로 돌아가기</button>
               </div>
               <!-- 세부역량 미선택 -->
               <div class="s2-no-select" id="s2NoSelect">
                 <div class="s2-no-select-icon">👈</div>
                 <div class="s2-no-select-title" id="s2NoSelectTitle">세부역량을 선택하세요</div>
-                <div class="s2-no-select-desc" id="s2NoSelectDesc">왼쪽 목록에서 세부역량을 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.</div>
+                <div class="s2-no-select-desc" id="s2NoSelectDesc">왼쪽 목록에서 세부역량을 클릭하면<br>이 영역에서 문항을 추가·편집할 수 있습니다.</div>
               </div>
-              <!-- 질문 편집 패널 -->
+              <!-- 문항 편집 패널 -->
               <div id="s2QPanel" style="display:none; flex-direction:column; flex:1;">
                 <div class="s2-q-header">
                   <div class="s2-q-breadcrumb" id="s2QBreadcrumb"></div>
@@ -1064,9 +1070,9 @@ body {
                   </div>
                 </div>
                 <div class="s2-q-list" id="s2QList"></div>
-                <!-- 새 질문 추가 폼 (JS가 동적으로 채움) -->
+                <!-- 새 문항 추가 폼 (JS가 동적으로 채움) -->
                 <div class="s2-q-footer">
-                  <button id="s2AddBtn" onclick="openAddForm()">＋ 질문 추가</button>
+                  <button id="s2AddBtn" onclick="openAddForm()">＋ 문항 추가</button>
                 </div>
               </div>
             </div>
@@ -1095,12 +1101,13 @@ body {
                 <div class="form-row">
                   <label>진단지명 <span style="color:#c00;">*</span></label>
                   <input type="text" class="form-input" id="s3Name"
-                    placeholder="예: 팀장 리더십 역량 진단 (2025)" maxlength="1000" style="font-size:14px;">
+                    placeholder="예 : 팀장 리더십 역량 진단 (2025)" maxlength="200" style="font-size:14px;">
                 </div>
                 <div class="form-row">
                   <label>설명 <span style="font-size:10px;color:#aaa;font-weight:400;">(선택사항)</span></label>
-                  <textarea class="form-input" id="s3Desc" rows="3"
-                    placeholder="이 진단지에 대한 간단한 설명을 입력하세요."></textarea>
+                  <textarea class="form-input" id="s3Desc" rows="3" maxlength="300"
+                    placeholder="예: 팀원들에게 명확한 목표와 방향을 제시한다."></textarea>
+                  <span class="char-cnt" data-cnt-for="s3Desc" data-max="300">0/300</span>
                 </div>
                 <div class="form-row">
                   <label>공개 여부</label>
@@ -1135,7 +1142,7 @@ body {
 
               <!-- 우측: 구성 요약 -->
               <div class="s3-summary-box">
-                <div class="s3-summary-title">📋 구성 요약</div>
+                <div class="s3-summary-title">구성요약</div>
                 <div id="s3SummaryContent">
                   <div style="color:#bbb;font-size:12px;text-align:center;padding:12px 0;">
                     STEP 3에 진입하면 자동으로 집계됩니다.
@@ -1160,11 +1167,11 @@ body {
 
 </div>
 
-<!-- 질문 추가/편집 모달 -->
+<!-- 문항 추가/편집 모달 -->
 <div class="modal-overlay" id="qAddModal">
   <div class="modal-box" style="width:700px;max-height:88vh;display:flex;flex-direction:column;">
     <div class="modal-header">
-      <h3 id="qModalTitle" style="display:flex;align-items:center;gap:8px;">📝 질문 추가</h3>
+      <h3 id="qModalTitle" style="display:flex;align-items:center;gap:8px;">📝 문항 추가</h3>
       <button class="modal-close" onclick="closeAddForm()">×</button>
     </div>
     <div id="s2AddForm" style="flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:8px;min-height:0;"></div>
@@ -1251,13 +1258,29 @@ body {
         완료된 진단지의 유형·역량군·세부역량 구조를 그대로 가져오고, 구조 선택도 해당 구조로 적용됩니다. 가져온 뒤 구조 등록 단계에서 자유롭게 수정할 수 있습니다.
       </div>
       <div class="preset-card" onclick="selectPreset('qset001')" data-preset="qset001">
-        <div class="preset-title">팀장 리더십 역량 진단</div>
-        <div class="preset-stats">유형 1개 · 역량군 3개 · 세부역량 10개 <span style="color:#bbb;margin-left:6px;">2025.12.01</span></div>
+        <div class="preset-title">리더십 역량진단</div>
+        <div class="preset-stats">유형 1개 · 역량군 3개 · 세부역량 6개 <span style="color:#bbb;margin-left:6px;">2026.09.17</span></div>
+      </div>
+      <div class="preset-card" onclick="selectPreset('qset002')" data-preset="qset002">
+        <div class="preset-title">AI 리터러시 진단</div>
+        <div class="preset-stats">유형 1개 · 역량군 9개 · 세부역량 9개 <span style="color:#bbb;margin-left:6px;">2026.08.18</span></div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-gray" onclick="closeModal('presetModal')">취소</button>
       <button class="btn btn-primary" onclick="applyPreset()">선택한 구조 가져오기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 확인 팝업 -->
+<div class="modal-overlay ui-confirm" id="uiConfirm">
+  <div class="modal-box">
+    <div class="ui-confirm-title">안내</div>
+    <div class="ui-confirm-msg" id="uiConfirmMsg"></div>
+    <div class="ui-confirm-foot">
+      <button class="btn btn-gray" id="uiConfirmCancel" type="button">취소</button>
+      <button class="btn btn-primary" id="uiConfirmOk" type="button">확인</button>
     </div>
   </div>
 </div>
@@ -1270,11 +1293,11 @@ function toggleNav(el) { el.parentElement.classList.toggle('open'); }
 function toggleSubNav(el) { el.parentElement.classList.toggle('open'); }
 
 // ── Wizard ──
-// 단계: 구조 선택 → 구조 등록 → 질문 등록 → 기본 정보
+// 단계: 구조 선택 → 구조 등록 → 문항 등록 → 기본 정보
 const STEP_DEFS = {
   struct:    { title: '구조 선택',        desc: () => '어떤 구조로 만들지 선택' },
   tree:      { title: '구조 등록',        desc: () => `${levelNames().join(' → ')} 이름 등록` },
-  questions: { title: '질문 등록',        desc: () => `각 ${itemLabel()}에 질문 추가` },
+  questions: { title: '문항 등록',        desc: () => `각 ${itemLabel()}에 문항 추가` },
   info:      { title: '진단지 기본 정보', desc: () => '진단지명·설명·공개 여부' },
 };
 const STRUCT_STEPS = ['struct', 'tree'];
@@ -1314,12 +1337,12 @@ function validateStructStep(key) {
   if (!state.types.some(t => t.groups.length > 0)) return '역량군을 1개 이상 등록해주세요.';
   if (state.useTypes) {
     const t = state.types.find(t => t.groups.length === 0);
-    if (t) return `'${t.name}' 유형에 등록된 역량군이 없습니다. 역량군을 등록해주세요.`;
+    if (t) return `'${t.name}' 아래에 역량군을 1개 이상 등록해주세요.`;
   }
   if (state.types.some(t => emptyName(t.groups))) return '이름이 입력되지 않은 역량군이 있습니다. 이름을 입력해주세요.';
   if (state.useItems) {
     for (const t of state.types) for (const g of t.groups) {
-      if (g.items.length === 0) return `'${g.name}' 역량군에 등록된 세부역량이 없습니다. 세부역량을 등록해주세요.`;
+      if (g.items.length === 0) return `'${g.name}' 아래에 세부역량을 1개 이상 등록해주세요.`;
       if (emptyName(g.items)) return `'${g.name}' 역량군에 이름이 입력되지 않은 세부역량이 있습니다.`;
     }
   }
@@ -1398,12 +1421,12 @@ function renderS3Summary() {
     });
   });
 
-  // 유형별 질문 수
+  // 유형별 문항 수
   const qByType = {};
   state.types.forEach(t => t.groups.forEach(g => g.items.forEach(it => {
     (it.questions||[]).forEach(q => {
       const cfg = QTYPE_CONFIG[q.type] || QTYPE_CONFIG.scale;
-      const key = `${cfg.emoji} ${cfg.name}`;
+      const key = cfg.name;
       qByType[key] = (qByType[key]||0) + 1;
     });
   })));
@@ -1413,7 +1436,7 @@ function renderS3Summary() {
   ).join('');
 
   const warnHtml = items > 0 && questions === 0
-    ? `<div style="margin-top:10px;padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;font-size:11px;color:#a16207;">⚠️ 등록된 질문이 없습니다. STEP 2로 돌아가 질문을 추가하세요.</div>`
+    ? `<div style="margin-top:10px;padding:8px 10px;background:#fff8e1;border:1px solid #ffe082;border-radius:5px;font-size:11px;color:#a16207;">⚠️ 등록된 문항이 없습니다. 문항 등록 단계로 돌아가 문항을 추가하세요.</div>`
     : '';
 
   el.innerHTML = `
@@ -1430,7 +1453,7 @@ function renderS3Summary() {
       <span class="s3-summary-val">${items}개</span>
     </div>` : ''}
     <div class="s3-summary-row">
-      <span class="s3-summary-label">총 질문</span>
+      <span class="s3-summary-label">총 문항</span>
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
     </div>
     ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
@@ -1438,7 +1461,7 @@ function renderS3Summary() {
     ${warnHtml}`;
 }
 
-// 질문이 1개도 등록되지 않은 첫 번째 세부역량(세부역량 미사용 시 역량군)을 찾는다.
+// 문항이 1개도 등록되지 않은 첫 번째 세부역량(세부역량 미사용 시 역량군)을 찾는다.
 function findEmptyQuestionItem() {
   for (let ti = 0; ti < state.types.length; ti++) {
     const t = state.types[ti];
@@ -1453,13 +1476,13 @@ function findEmptyQuestionItem() {
   return null;
 }
 
-// 진단지 미리보기: 등록한 구조·질문을 실제 응답 화면(진단_응답_화면.html)에 넘겨 새 탭으로 연다.
+// 진단지 미리보기: 등록한 구조·문항을 실제 응답 화면(진단_응답_화면.html)에 넘겨 새 탭으로 연다.
 function openSheetPreview() {
   commitPendingEdits();
   const sheetName = document.getElementById('s3Name')?.value?.trim() || '진단지 미리보기';
   const tText = q => (q.type === 'essay' ? q.text : q.text) || '';
   const subsOf = (it) => {
-    // 질문 종류가 바뀌는 지점마다 묶음을 나눈다. (AB 선택형은 A·B 문구를 연속한 두 줄로 전달)
+    // 문항 종류가 바뀌는 지점마다 묶음을 나눈다. (AB 선택형은 A·B 문구를 연속한 두 줄로 전달)
     const subs = [];
     (it.questions || []).forEach(q => {
       const isAB = q.type === 'ab';
@@ -1479,7 +1502,7 @@ function openSheetPreview() {
   const typesSrc = state.useTypes ? state.types : [{ name: sheetName, groups: state.types.flatMap(t => t.groups) }];
   const types = typesSrc.map(t => ({ name: t.name || '(이름 없음)', groups: groupsOf(t.groups) }));
   const total = types.reduce((a, t) => a + t.groups.reduce((b, g) => b + g.subs.reduce((c, s) => c + s.questions.length, 0), 0), 0);
-  if (total === 0) { toast('등록된 질문이 없습니다. 질문을 먼저 등록해주세요.'); return; }
+  if (total === 0) { toast('등록된 문항이 없습니다. 문항을 먼저 등록해주세요.'); return; }
   try {
     sessionStorage.setItem('previewQuestionnaire', JSON.stringify({ name: sheetName, useTypes: state.useTypes, types }));
   } catch (e) {}
@@ -1489,7 +1512,7 @@ function saveAll() {
   commitPendingEdits();
   const name = document.getElementById('s3Name')?.value?.trim();
   if (!name) {
-    toast('진단지명을 입력해주세요');
+    toast('진단지명을 입력해주세요.');
     document.getElementById('s3Name')?.focus();
     return;
   }
@@ -1505,28 +1528,28 @@ function saveAll() {
 
   if (totalQuestions === 0) {
     showStep('questions');
-    toast('질문을 1개 이상 등록해주세요');
+    toast('문항을 1개 이상 등록해주세요.');
     return;
   }
 
-  // 합계가 0이 아니어도 특정 세부역량에만 질문이 없는 경우를 세부역량 단위로 재검사
+  // 합계가 0이 아니어도 특정 세부역량에만 문항이 없는 경우를 세부역량 단위로 재검사
   const emptyQItem = findEmptyQuestionItem();
   if (emptyQItem) {
     showStep('questions');
     selectS2Item(emptyQItem.ti, emptyQItem.gi, emptyQItem.ii);
-    toast(`'${emptyQItem.name}'에 등록된 질문이 없습니다. 최소 1개 이상 등록해주세요.`);
+    toast(`'${emptyQItem.name}'에 문항을 1개 이상 등록해주세요.`);
     return;
   }
 
-  toast(`'${name}' 진단지가 저장됐습니다!`);
+  toast(`'${name}' 진단지가 저장되었습니다.`);
   setTimeout(() => { window.location.href = 'edms_역량진단_관리.html#qset'; }, 1200);
 }
 
 // ─────────────────────────────────────────
-// STEP 2: 질문 등록
+// STEP 2: 문항 등록
 // ─────────────────────────────────────────
 
-/* 질문 유형 정의 */
+/* 문항 유형 정의 */
 const QTYPE_CONFIG = {
   scale: { emoji:'⭐', name:'척도형',       desc:'단계·라벨 조정 / 기본 5점',    preview:'① ② ③ ④ ⑤ 척도' },
   ab:    { emoji:'🔀', name:'A/B 강제선택', desc:'A·B 사이 6단계 척도로 선택',  preview:'A ①②③④⑤⑥ B' },
@@ -1618,7 +1641,7 @@ function renderS2Nav() {
       const gbody = document.createElement('div');
       gbody.className = 's2-group-body';
 
-      // 2단계 구조: 역량군 행 자체가 질문 등록 대상
+      // 2단계 구조: 역량군 행 자체가 문항 등록 대상
       if (!state.useItems) {
         const it = g.items[0], ii = 0;
         const qCount = (it.questions || []).length;
@@ -1693,7 +1716,7 @@ function renderQuestions() {
   const it = state.types[ti].groups[gi].items[ii];
   const qs = it.questions || [];
 
-  document.getElementById('s2QCount').textContent = `(질문 ${qs.length}개)`;
+  document.getElementById('s2QCount').textContent = `(문항 ${qs.length}개)`;
 
   const badge = document.getElementById(`s2badge_${ti}_${gi}_${ii}`);
   if (badge) {
@@ -1707,7 +1730,7 @@ function renderQuestions() {
 
   if (qs.length === 0) {
     list.innerHTML = `<div style="padding:28px 0;text-align:center;color:#bbb;font-size:12px;line-height:2;">
-      등록된 질문이 없습니다.<br>아래 <b>＋ 질문 추가</b> 버튼을 눌러 질문을 추가하세요.
+      등록된 문항이 없습니다.<br>아래 <b>＋ 문항 추가</b> 버튼을 눌러 문항을 추가하세요.
     </div>`;
     return;
   }
@@ -1772,7 +1795,7 @@ function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* 질문 행 인라인 미리보기 */
+/* 문항 행 인라인 미리보기 */
 function buildQRowPreviewHTML(q) {
   const t = q.type==='likert' ? 'scale' : (q.type==='shorttext'||q.type==='text') ? 'essay' : (q.type||'scale');
 
@@ -1814,7 +1837,7 @@ function buildQRowPreviewHTML(q) {
 /* ── 추가/편집 모달 ── */
 function openAddForm() {
   s2AddQType = null; s2EditQId = null;
-  document.getElementById('qModalTitle').innerHTML = '📝 질문 추가';
+  document.getElementById('qModalTitle').innerHTML = '📝 문항 추가';
   document.getElementById('qAddModal').classList.add('open');
   renderAddFormTypeSelect();
 }
@@ -1842,7 +1865,7 @@ function startEditQ(qId) {
   }
   const tcfg = QTYPE_CONFIG[s2AddQType] || QTYPE_CONFIG.scale;
   document.getElementById('qModalTitle').innerHTML =
-    `✎ 질문 수정 <span style="font-size:12px;font-weight:400;color:#aaa;">— ${tcfg.emoji} ${tcfg.name}</span>`;
+    `✎ 문항 수정 <span style="font-size:12px;font-weight:400;color:#aaa;">— ${tcfg.emoji} ${tcfg.name}</span>`;
   document.getElementById('qAddModal').classList.add('open');
   renderDetailForm(q);
 }
@@ -1851,7 +1874,7 @@ function startEditQ(qId) {
 function renderAddFormTypeSelect() {
   document.getElementById('s2AddForm').innerHTML = `
     <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;">
-      📌 질문의 유형을 선택해주세요.
+      📌 문항의 유형을 선택해주세요.
     </div>
     <div class="qtype-grid">
       ${Object.entries(QTYPE_CONFIG).map(([key,cfg]) => `
@@ -1925,16 +1948,17 @@ function buildDetailFormHTML(d) {
       return `<div class="scale-label-row">
         <div class="scale-label-num">${i+1}</div>
         <input class="scale-label-input" id="sc_lbl_${i}" type="text"
-          value="${escHtml(lbl)}" placeholder="보기 ${i+1} 라벨" oninput="saveScaleLabels();updateQPreview()">
+          value="${escHtml(lbl)}" maxlength="30" placeholder=" " oninput="saveScaleLabels();updateQPreview()">
         <span class="scale-label-score">${score}점</span>
       </div>`;
     }).join('');
     return `
       <div class="form-row">
-        <label>질문 내용 <span style="color:#c00;">*</span></label>
-        <textarea class="form-input" id="df_text" rows="3"
+        <label>문항 내용 <span style="color:#c00;">*</span></label>
+        <textarea class="form-input" id="df_text" rows="3" maxlength="300"
           placeholder="예: 팀원들에게 명확한 목표와 방향을 제시한다."
           oninput="updateQPreview()">${escHtml(d.text||'')}</textarea>
+        <span class="char-cnt" data-cnt-for="df_text" data-max="300">${(d.text||'').length}/300</span>
       </div>
       <div class="form-row">
         <label>보기 라벨
@@ -1944,8 +1968,6 @@ function buildDetailFormHTML(d) {
         <div style="display:flex;gap:6px;margin-top:5px;">
           <button type="button" class="btn btn-gray btn-xs"
             onclick="toggleScaleReverse()">${reversed?'↺ 정방향으로 변경':'↺ 역방향 점수 적용'}</button>
-          <button type="button" class="btn btn-gray btn-xs"
-            onclick="resetScaleLabels()">⟳ 기본값으로 리셋</button>
         </div>
       </div>`;
   }
@@ -1953,16 +1975,18 @@ function buildDetailFormHTML(d) {
   /* ── A/B 강제선택 ── */
   if (t === 'ab') return `
     <div class="form-row">
-      <label>🅰️ A 문구 <span style="color:#c00;">*</span></label>
-      <textarea class="form-input" id="df_a" rows="2"
+      <label>A 문항 내용 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_a" rows="2" maxlength="150"
         placeholder="예: 자율성을 최대한 부여하여 스스로 결정하게 한다."
         oninput="updateQPreview()">${escHtml(d.a||'')}</textarea>
+      <span class="char-cnt" data-cnt-for="df_a" data-max="150">${(d.a||'').length}/150</span>
     </div>
     <div class="form-row">
-      <label>🅱️ B 문구 <span style="color:#c00;">*</span></label>
-      <textarea class="form-input" id="df_b" rows="2"
-        placeholder="예: 구체적인 방향을 제시하고 함께 실행을 지원한다."
+      <label>B 문항 내용 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_b" rows="2" maxlength="150"
+        placeholder="예 : 구체적인 방향을 제시하고 함께 실행을 지원한다."
         oninput="updateQPreview()">${escHtml(d.b||'')}</textarea>
+      <span class="char-cnt" data-cnt-for="df_b" data-max="150">${(d.b||'').length}/150</span>
     </div>
     <div class="form-row">
       <label>점수 방향</label>
@@ -1982,10 +2006,11 @@ function buildDetailFormHTML(d) {
   /* ── 서술형 ── */
   if (t === 'essay') return `
     <div class="form-row">
-      <label>질문 내용 <span style="color:#c00;">*</span></label>
-      <textarea class="form-input" id="df_text" rows="3"
-        placeholder="예: 진단대상자의 리더십 강점에 대해 자유롭게 서술해 주세요."
+      <label>문항 내용 <span style="color:#c00;">*</span></label>
+      <textarea class="form-input" id="df_text" rows="3" maxlength="300"
+        placeholder="예: 최근 업무에서 가장 어려웠던 점과 극복 방법을 서술해 주세요."
         oninput="updateQPreview()">${escHtml(d.text||'')}</textarea>
+        <span class="char-cnt" data-cnt-for="df_text" data-max="300">${(d.text||'').length}/300</span>
       <span class="form-hint">응답자가 단답·장문 형태로 자유롭게 서술합니다. 별도 점수 없음.</span>
     </div>`;
 
@@ -2041,13 +2066,13 @@ function gatherCurrentFormData() {
 
 /* 저장 */
 function saveNewQuestion() {
-  if (!s2Selected||!s2AddQType) { toast('질문 유형을 먼저 선택해주세요'); return; }
+  if (!s2Selected||!s2AddQType) { toast('문항 유형을 먼저 선택해주세요'); return; }
   if (s2AddQType === 'scale') saveScaleLabels();
   const data = gatherCurrentFormData(), t = s2AddQType;
   if (t === 'scale' || t === 'essay') {
-    if (!data.text?.trim()) { toast('질문 내용을 입력해주세요'); return; }
+    if (!data.text?.trim()) { toast('문항 내용을 입력해주세요.'); return; }
   } else if (t === 'ab') {
-    if (!data.a?.trim()||!data.b?.trim()) { toast('A·B 문구를 모두 입력해주세요'); return; }
+    if (!data.a?.trim()||!data.b?.trim()) { toast('A·B 문구를 모두 입력해주세요.'); return; }
   }
   const {ti,gi,ii} = s2Selected;
   const it = state.types[ti].groups[gi].items[ii];
@@ -2055,10 +2080,8 @@ function saveNewQuestion() {
   if (s2EditQId) {
     const q = it.questions.find(q=>q.id===s2EditQId);
     if (q) { Object.keys(q).forEach(k=>{if(k!=='id')delete q[k];}); Object.assign(q,{type:t,...data}); }
-    toast('질문이 수정되었습니다');
   } else {
     it.questions.push({id:makeQId(), type:t, ...data});
-    toast('질문이 추가되었습니다');
   }
   closeAddForm(); renderQuestions();
 }
@@ -2087,7 +2110,7 @@ function buildQPreviewHTML(d) {
     const steps    = d.steps || s2ScaleSteps || 5;
     const labels   = d.labels || SCALE_DEFAULT_LABELS[steps] || SCALE_DEFAULT_LABELS[5];
     const reversed = d.reversed || false;
-    const text     = d.text?.trim()||'(질문 내용을 입력해주세요)';
+    const text     = d.text?.trim()||'(문항 내용을 입력해주세요)';
     const cols = labels.map((lbl,i) => {
       const score = reversed ? i+1 : steps-i;
       return `<div class="qpv-likert-opt">
@@ -2114,20 +2137,20 @@ function buildQPreviewHTML(d) {
     <div class="qpv-ab-scale">${btns}</div>`;
   }
   else if (t === 'essay') {
-    body = `<div class="qpv-text">${escHtml(d.text?.trim()||'(질문 내용을 입력해주세요)')}</div>
+    body = `<div class="qpv-text">${escHtml(d.text?.trim()||'(문항 내용을 입력해주세요)')}</div>
       <div class="qpv-textarea-mock">자유롭게 서술해 주세요.</div>`;
   }
   return `<div class="qpv-card"><div class="qpv-num">💡 실제 질문지 미리보기</div>${body}</div>`;
 }
 
-function deleteQ(qId) {
+async function deleteQ(qId) {
   if (!s2Selected) return;
-  if (!confirm('이 질문을 삭제할까요?')) return;
+  if (!(await uiConfirm('이 문항을 삭제하시겠습니까?', '삭제'))) return;
   const { ti, gi, ii } = s2Selected;
   const it = state.types[ti].groups[gi].items[ii];
   it.questions = it.questions.filter(q => q.id !== qId);
   renderQuestions();
-  toast('질문이 삭제되었습니다');
+  toast('문항이 삭제되었습니다.');
 }
 
 function moveQ(qId, dir) {
@@ -2151,7 +2174,7 @@ function updateS2Progress() {
   const fillEl = document.getElementById('s2ProgressFill');
   const lblEl  = document.getElementById('s2ProgressLabel');
   if (fillEl) fillEl.style.width  = pct + '%';
-  if (lblEl)  lblEl.textContent   = `${itemLabel()} ${total}개 중 ${filled}개에 질문 등록됨 (${pct}%)`;
+  if (lblEl)  lblEl.textContent   = `${itemLabel()} ${total}개 중 ${filled}개에 문항 등록됨`;
 }
 
 // ── STEP 1: 트리 상태 ──
@@ -2162,7 +2185,7 @@ const state = { types: [], useTypes: true, useItems: true };
 let seq = 1;
 
 // 유형 미사용일 때는 모든 역량군을 담는 내부 유형(_implicit) 1개를 두고,
-// 세부역량 미사용일 때는 역량군마다 같은 이름의 내부 항목(_implicit) 1개를 두어 질문을 보관한다.
+// 세부역량 미사용일 때는 역량군마다 같은 이름의 내부 항목(_implicit) 1개를 두어 문항을 보관한다.
 // 구조 화면에서는 내부 단위를 숨기고, STEP 2 이후 로직은 3단계 구조와 동일하게 동작한다.
 function itemLabel() { return state.useItems ? '세부역량' : '역량군'; }
 function levelNames() {
@@ -2202,26 +2225,26 @@ function normalizeStructure() {
   }));
 }
 
-// 선택한 구조에 맞춰 질문 등록(STEP 2) 화면의 문구를 갱신한다.
+// 선택한 구조에 맞춰 문항 등록(STEP 2) 화면의 문구를 갱신한다.
 function renderModeTexts() {
   const names = levelNames();
-  document.getElementById('s2Lead').textContent = `${itemLabel()}별 질문을 추가·편집할 수 있습니다.`;
+  document.getElementById('s2Lead').textContent = `${itemLabel()}별 문항을 추가·편집할 수 있습니다.`;
   document.getElementById('s2NavHead').textContent = names.join(' · ');
-  document.getElementById('s2EmptyStructDesc').innerHTML = `${names.join('·')}을(를) 등록해야<br>이 단계에서 질문을 등록할 수 있습니다.`;
+  document.getElementById('s2EmptyStructDesc').innerHTML = `${names.join('·')}을(를) 등록해야<br>이 단계에서 문항을 등록할 수 있습니다.`;
   document.getElementById('s2NoSelectTitle').textContent = `${itemLabel()}을(를) 선택하세요`;
-  document.getElementById('s2NoSelectDesc').innerHTML = `왼쪽 목록에서 ${itemLabel()}을(를) 클릭하면<br>이 영역에서 질문을 추가·편집할 수 있습니다.`;
+  document.getElementById('s2NoSelectDesc').innerHTML = `왼쪽 목록에서 ${itemLabel()}을(를) 클릭하면<br>이 영역에서 문항을 추가·편집할 수 있습니다.`;
 }
 
-// 유형 사용 여부 전환. 역량군과 질문은 그대로 유지한다. (취소하면 false)
-function setUseTypes(flag) {
+// 유형 사용 여부 전환. 역량군과 문항은 그대로 유지한다. (취소하면 false)
+async function setUseTypes(flag) {
   if (state.useTypes === flag) return true;
   if (!flag) {
     const realTypes = state.types.filter(t => !t._implicit);
     if (realTypes.length > 0 && realTypes.some(t => t.groups.length > 0 || t.name)) {
       let msg = '유형을 사용하지 않으면 등록된 유형이 삭제되고, 모든 역량군이 하나로 합쳐집니다.';
       if (realTypes.length > 1) msg += `\n(유형 ${realTypes.length}개 → 역량군만 남김)`;
-      msg += '\n역량군과 질문은 그대로 유지됩니다.\n\n계속할까요?';
-      if (!confirm(msg)) return false;
+      msg += '\n역량군과 문항은 그대로 유지됩니다.\n\n계속할까요?';
+      if (!(await uiConfirm(msg))) return false;
     }
     state.useTypes = false;
     normalizeStructure();
@@ -2250,8 +2273,8 @@ function setUseTypes(flag) {
   return true;
 }
 
-// 세부역량 사용 여부 전환. 등록한 질문은 잃지 않도록 옮긴다. (취소하면 false)
-function setUseItems(flag) {
+// 세부역량 사용 여부 전환. 등록한 문항은 잃지 않도록 옮긴다. (취소하면 false)
+async function setUseItems(flag) {
   if (state.useItems === flag) return true;
   let itemCnt = 0, qCnt = 0;
   state.types.forEach(t => t.groups.forEach(g => g.items.forEach(i => {
@@ -2260,11 +2283,11 @@ function setUseItems(flag) {
   })));
   if (!flag && (itemCnt > 0 || qCnt > 0)) {
     let msg = '세부역량을 사용하지 않으면 등록된 세부역량이 삭제됩니다.';
-    if (qCnt > 0) msg += `\n등록된 질문 ${qCnt}개는 소속 역량군으로 합쳐집니다.`;
+    if (qCnt > 0) msg += `\n등록된 문항 ${qCnt}개는 소속 역량군으로 합쳐집니다.`;
     msg += '\n\n계속할까요?';
-    if (!confirm(msg)) return false;
+    if (!(await uiConfirm(msg))) return false;
   }
-  if (flag && qCnt > 0 && !confirm('세부역량을 사용하면 각 역량군 아래에 같은 이름의 세부역량이 자동으로 만들어지고,\n등록된 질문은 그 세부역량으로 옮겨집니다. 계속할까요?')) return false;
+  if (flag && qCnt > 0 && !(await uiConfirm('세부역량을 사용하면 각 역량군 아래에 같은 이름의 세부역량이 자동으로 만들어지고,\n등록된 문항은 그 세부역량으로 옮겨집니다. 계속할까요?'))) return false;
 
   state.useItems = flag;
   if (flag) {
@@ -2300,11 +2323,11 @@ function renderTree() {
 // ─────────────────────────────────────────
 const STRUCT_OPTS = [
   { ut: true,  ui: true,  levels: ['유형', '역량군', '세부역량'], ex: '리더십 › 조직관리 › 방향설정',
-    hint: '세부역량 단위로 질문을 관리하고, 유형으로 역량군을 구분하는 구성입니다.' },
+    hint: '세부역량 단위로 문항을 관리하고, 유형으로 역량군을 구분하는 구성입니다.' },
   { ut: false, ui: true,  levels: ['역량군', '세부역량'],         ex: '조직관리 › 방향설정',
     hint: '유형 구분 없이 역량군과 세부역량으로 구성합니다.' },
   { ut: true,  ui: false, levels: ['유형', '역량군'],             ex: '리더십 › 조직관리',
-    hint: '세부역량 없이 역량군에 질문을 바로 등록하는 구성입니다.' },
+    hint: '세부역량 없이 역량군에 문항을 바로 등록하는 구성입니다.' },
   { ut: false, ui: false, levels: ['역량군'],                     ex: '조직관리',
     hint: '역량군만으로 구성하는 가장 단순한 구조입니다.' },
 ];
@@ -2328,7 +2351,7 @@ function renderStructOptions() {
   renderStructPreview(state.useTypes, state.useItems, false);
 }
 
-// 구성별 응답 화면 미리보기 (실제 진단 응답 화면 구성: 유형=탭, 역량군=헤더 카드, 질문 카드 목록. 세부역량은 응답 화면에 표시되지 않음)
+// 구성별 응답 화면 미리보기 (실제 진단 응답 화면 구성: 유형=탭, 역량군=헤더 카드, 문항 카드 목록. 세부역량은 응답 화면에 표시되지 않음)
 const TP_LIKERT = ['매우 그렇다', '그렇다', '보통이다', '그렇지 않다', '전혀 그렇지 않다'];
 const TP_Q = ['팀원에게 명확한 목표와 방향을 제시한다.', '조직의 중장기 방향을 팀원이 이해하도록 설명한다.', '조직의 가치를 구성원과 자주 공유한다.', '업무 상황에서 조직의 가치를 직접 실천해 보인다.', '팀원의 의견을 끝까지 경청한다.', '어려운 상황에서도 팀원이 믿고 따른다.'];
 function tpQuestion(num, text) {
@@ -2342,7 +2365,7 @@ function renderStructPreview(ut, ui) {
   const el = document.getElementById('structPreview');
   if (!el) return;
 
-  // 응답 화면의 질문 배치는 세부역량 사용 여부와 관계없이 동일하다. 세부역량은 안내용 표식으로만 덧붙인다.
+  // 응답 화면의 문항 배치는 세부역량 사용 여부와 관계없이 동일하다. 세부역량은 안내용 표식으로만 덧붙인다.
   const NOTE = { d1: '유형', d2: '역량군', d3: '세부역량' };
   const tag = cls => `<span class="tp-tag ${cls}">${NOTE[cls]}</span>`;
   const key = cls => `<span class="pv-key ${cls}">${NOTE[cls]}</span>`;
@@ -2366,15 +2389,15 @@ function renderStructPreview(ut, ui) {
   const row = (cls, text) => '<div class="pv-row">' + key(cls) + '<span class="pv-row-text">' + text + '</span></div>';
   document.getElementById('structPvNote').innerHTML = [
     row('d1', '유형마다 탭이 생기고, 응답자는 탭 단위로 답변한 뒤 다음으로 넘어갑니다.'),
-    row('d2', '질문 목록 중간에 구분 카드로 표시되고, 그 아래에 질문이 이어집니다.'),
-    row('d3', '질문을 묶는 단위로, 질문 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.'),
-    '<div style="color:#aaa;margin-top:4px;">※ 배치를 보여주는 예시이며, 실제 이름과 질문은 다음 단계에서 입력합니다.</div>'
+    row('d2', '문항 목록 중간에 구분 카드로 표시되고, 그 아래에 문항이 이어집니다.'),
+    row('d3', '문항을 묶는 단위로, 문항 등록과 결과 분석에 사용되며 응답 화면에는 표시되지 않습니다.'),
+    '<div style="color:#aaa;margin-top:4px;">※ 배치를 보여주는 예시이며, 실제 이름과 문항은 다음 단계에서 입력합니다.</div>'
   ].join('');
 }
 
-function setStructure(ut, ui) {
-  if (!setUseTypes(ut)) return;
-  if (!setUseItems(ui)) return;
+async function setStructure(ut, ui) {
+  if (!(await setUseTypes(ut))) return;
+  if (!(await setUseItems(ui))) return;
   renderTree();
 }
 
@@ -2400,7 +2423,7 @@ function renderTreeTexts() {
   const names = levelNames();
   const dotCls = { '유형': 'd1', '역량군': 'd2', '세부역량': 'd3' };
   document.getElementById('treeLead').innerHTML =
-    `<strong>${names.join(' → ')}</strong> ${names.length}단계 구조의 이름을 등록합니다. 다음 단계에서 각 ${itemLabel()}에 질문을 붙이게 됩니다.`;
+    `<strong>${names.join(' → ')}</strong> ${names.length}단계 구조의 이름을 등록합니다. 다음 단계에서 각 ${itemLabel()}에 문항을 붙이게 됩니다.`;
   document.getElementById('depthExplainer').innerHTML = names.map((nm, i) =>
     `<span class="depth-chip"><span class="dot ${dotCls[nm]}"></span>${i + 1}단계 · ${nm}</span>`
   ).join('<span class="depth-arrow">→</span>');
@@ -2483,7 +2506,7 @@ function rowEl(depth, obj, parent, grand) {
     nameInput.value = obj.name || '';
     // 새 항목은 쉼표(,)로 구분해 여러 개를 한 번에 입력할 수 있다. (저장 시 15자 제한 적용)
     nameInput.maxLength = obj._isNew ? 300 : NAME_MAX;
-    const ex = depth === 1 ? '리더십' : depth === 2 ? '조직관리' : '방향설정';
+    const ex = depth === 1 ? '리더십 역량 진단' : depth === 2 ? 'Self' : '자기인식';
     nameInput.placeholder = obj._isNew ? `예: ${ex} (여러 개는 쉼표로 구분)` : `예: ${ex}`;
     nameInput.addEventListener('paste', e => {
       const t = (e.clipboardData || window.clipboardData).getData('text');
@@ -2634,7 +2657,7 @@ function canDropOn(src, target) {
   return false;
 }
 
-// 같은 목록이면 대상 행의 위치로 순서 변경, 다른 목록이면 이동(하위 항목과 질문도 함께).
+// 같은 목록이면 대상 행의 위치로 순서 변경, 다른 목록이면 이동(하위 항목과 문항도 함께).
 function dropTreeNode(src, target) {
   const ks = treeKindOf(src), kt = treeKindOf(target);
   const from = locateNode(src);
@@ -2732,7 +2755,7 @@ function commitPendingEdits() {
 }
 function saveEdit(obj, nameInput, descInput) {
   const name = nameInput.value.trim();
-  if (!name) { toast('이름을 입력해주세요'); return; }
+  if (!name) { toast({ type: '유형명을', group: '역량군을', item: '세부역량을' }[treeKindOf(obj)] + ' 입력해주세요.'); return; }
   obj.name = name;
   if (obj._isNew) splitNewNames(obj);
   if (!(obj.name || '').trim()) { renderTree(); return; }
@@ -2751,20 +2774,20 @@ function cancelEdit(obj) {
   }
 }
 
-function deleteItem(obj, silent) {
+async function deleteItem(obj, silent) {
   const kind = treeKindOf(obj);
   if (!silent) {
     const label = KIND_LABEL[kind];
     const childCount = kind === 'type' ? obj.groups.length : (kind === 'group' && state.useItems) ? obj.items.length : 0;
-    // 연결된 질문 수 계산
+    // 연결된 문항 수 계산
     let totalQ = 0;
     if (kind === 'item') totalQ = (obj.questions || []).length;
     else if (kind === 'group') obj.items.forEach(i => { totalQ += (i.questions || []).length; });
     else obj.groups.forEach(g => g.items.forEach(i => { totalQ += (i.questions || []).length; }));
-    let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠어요?`;
+    let msg = `'${obj.name || '미입력'}' ${label}을(를) 삭제하시겠습니까?`;
     if (childCount > 0) msg += `\n\n하위 항목 ${childCount}개도 함께 삭제됩니다.`;
-    if (totalQ > 0) msg += `\n연결된 질문 ${totalQ}개도 함께 삭제됩니다.`;
-    if (!confirm(msg)) return;
+    if (totalQ > 0) msg += `\n연결된 문항 ${totalQ}개도 함께 삭제됩니다.`;
+    if (!(await uiConfirm(msg, '삭제'))) return;
   }
   const loc = locateNode(obj);
   if (loc) {
@@ -2814,34 +2837,27 @@ function selectPreset(key) {
   });
 }
 
-const PRESETS = {
-  qset001: {
-    types: [
-      { name: '리더십', code: 'TYPE_01', groups: [
-        { name: '조직관리', code: 'TYPE_01_G01', items: [
-          {name:'방향설정',code:'TYPE_01_G01_I01'},
-          {name:'가치전파',code:'TYPE_01_G01_I02'},
-          {name:'변화관리',code:'TYPE_01_G01_I03'},
-          {name:'혁신활동',code:'TYPE_01_G01_I04'}
-        ]},
-        { name: '사람관리', code: 'TYPE_01_G02', items: [
-          {name:'신뢰형성',code:'TYPE_01_G02_I01'},
-          {name:'의사소통',code:'TYPE_01_G02_I02'},
-          {name:'팀원육성',code:'TYPE_01_G02_I03'},
-          {name:'코칭',code:'TYPE_01_G02_I04'}
-        ]},
-        { name: '성과관리', code: 'TYPE_01_G03', items: [
-          {name:'문제해결',code:'TYPE_01_G03_I01'},
-          {name:'전략적 의사결정',code:'TYPE_01_G03_I02'}
-        ]}
-      ]}
-    ]
-  }
-};
+const PRESETS = (() => {
+  const build = (typeName, groups) => ({
+    types: [{ name: typeName, code: 'TYPE_01', groups: groups.map(([gName, items], gi) => {
+      const gCode = `TYPE_01_G${String(gi + 1).padStart(2, '0')}`;
+      return { name: gName, code: gCode, items: items.map((n, ii) => ({ name: n, code: `${gCode}_I${String(ii + 1).padStart(2, '0')}` })) };
+    }) }]
+  });
+  return {
+    qset001: build('리더십 진단', [
+      ['방향 제시', ['비전 수립', '목표 설정']],
+      ['실행 관리', ['계획 및 자원 배분', '성과 관리']],
+      ['소통과 신뢰', ['경청과 피드백', '신뢰 구축']]
+    ]),
+    qset002: build('AI 리터러시 진단',
+      ['AI 개념 이해', 'AI 툴 활용', '프롬프트 설계', '데이터 사고력', 'AI 보안·윤리', '직무별 AI 활용', '업무 효율화', 'AI 전략 이해', 'AI 혁신·자동화'].map(n => [n, [n]]))
+  };
+})();
 
-function applyPreset() {
-  if (!selectedPreset) { toast('진단지를 선택해주세요'); return; }
-  if (!isEmptyStruct() && !confirm('현재 등록한 구조와 질문이 모두 지워지고 선택한 진단지의 구조로 교체됩니다.\n\n계속할까요?')) return;
+async function applyPreset() {
+  if (!selectedPreset) { toast('진단지를 선택해주세요.'); return; }
+  if (!isEmptyStruct() && !(await uiConfirm('현재 등록한 구조와 문항이 모두 지워지고 선택한 진단지의 구조로 교체됩니다.\n\n계속할까요?'))) return;
 
   // 가져온 진단지는 유형·역량군·세부역량 3단계 구조이므로 구조 선택도 함께 맞춘다.
   state.useTypes = true; state.useItems = true;
@@ -2860,9 +2876,9 @@ function applyPreset() {
   showStep('tree');
   toast('기존 진단지 구조를 가져왔습니다. 구조 등록 단계에서 필요에 따라 수정하세요.');
 }
-function resetAll() {
+async function resetAll() {
   if (isEmptyStruct()) return;
-  if (!confirm('등록한 구조를 모두 초기화할까요? 질문도 함께 초기화 됩니다.')) return;
+  if (!(await uiConfirm('STEP 2의 모든 구조를 초기화하시겠습니까? 문항도 함께 초기화됩니다.', '초기화'))) return;
   state.types = [];
   renderTree();
 }
@@ -2951,14 +2967,14 @@ let bulkCurrentFile = null;
   function downloadErrorList() {
     toast('오류 목록을 다운로드합니다.');
   }
-  function bulkSubmit() {
-    if (!bulkApply(bulkCurrentFile ? bulkCurrentFile.name : '')) return;
+  async function bulkSubmit() {
+    if (!(await bulkApply(bulkCurrentFile ? bulkCurrentFile.name : ''))) return;
     closeBulkModal();
   }
 
   // 일괄등록 결과를 위저드 상태에 반영한다. (프로토타입: 양식 샘플과 같은 내용으로 채움)
-  function bulkApply(fname) {
-    if (!isEmptyStruct() && !confirm('현재 등록한 구조와 질문이 모두 지워지고 일괄등록 내용으로 교체됩니다.\n\n계속할까요?')) return false;
+  async function bulkApply(fname) {
+    if (!isEmptyStruct() && !(await uiConfirm('현재 등록한 구조와 문항이 모두 지워지고 일괄등록 내용으로 교체됩니다.\n\n계속할까요?'))) return false;
     const r = bulkRecognize(fname);
     const scaleQ = text => ({ id: makeQId(), type: 'scale', text, steps: 5, labels: [...SCALE_DEFAULT_LABELS[5]], reversed: false });
     state.useTypes = r.ut; state.useItems = r.ui;
@@ -2978,9 +2994,40 @@ let bulkCurrentFile = null;
     s2Selected = null;
     renderModeTexts();
     showStep('questions');
-    toast('일괄등록이 완료됐습니다. 질문 등록 단계에서 내용을 확인·수정하세요.');
+    toast('일괄등록이 완료됐습니다. 문항 등록 단계에서 내용을 확인·수정하세요.');
     return true;
   }
+
+// ── 확인 팝업 ──
+function uiConfirm(msg, okLabel) {
+  return new Promise(resolve => {
+    const ov = document.getElementById('uiConfirm');
+    const ok = document.getElementById('uiConfirmOk'), cancel = document.getElementById('uiConfirmCancel');
+    document.getElementById('uiConfirmMsg').textContent = msg;
+    ok.textContent = okLabel || '확인';
+    const done = v => {
+      ov.classList.remove('open');
+      ok.onclick = cancel.onclick = ov.onclick = null;
+      document.removeEventListener('keydown', onKey, true);
+      resolve(v);
+    };
+    const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    ok.onclick = () => done(true);
+    cancel.onclick = () => done(false);
+    ov.onclick = e => { if (e.target === ov) done(false); };
+    document.addEventListener('keydown', onKey, true);
+    ov.classList.add('open');
+    ok.focus();
+  });
+}
+
+// ── 글자수 카운터 ──
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (!t.id) return;
+  const c = document.querySelector('.char-cnt[data-cnt-for="' + t.id + '"]');
+  if (c) c.textContent = t.value.length + '/' + c.dataset.max;
+});
 
 // ── 토스트 ──
 let toastTimer;
