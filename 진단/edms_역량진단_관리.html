@@ -530,7 +530,7 @@
     <div class="tab-bar" style="margin-top:16px;">
       <button class="tab-btn active" onclick="switchTab('manage')">진단 관리</button>
       <button class="tab-btn" onclick="switchTab('qset')">진단지 관리</button>
-      <button class="tab-btn" onclick="switchTab('setting')">역량진단 설정</button>
+      <button class="tab-btn" onclick="switchTab('setting')">진단 설정</button>
     </div>
 
     <!-- 탭: 진단 관리 -->
@@ -648,12 +648,13 @@
         <!-- 필터 바 -->
         <div class="filter-bar">
           <input type="text" class="filter-input search" id="searchInput"
-            placeholder="🔍 진단지명 검색" oninput="filterTable()">
-          <select class="filter-select" id="filterPublic" onchange="filterTable()">
-            <option value="">공개 여부 전체</option>
+            placeholder="진단지명을 검색해주세요." onkeydown="if(event.key==='Enter')filterTable()">
+          <select class="filter-select" id="filterPublic">
+            <option value="">전체</option>
             <option value="공개">공개</option>
             <option value="비공개">비공개</option>
           </select>
+          <button class="btn btn-primary btn-sm" onclick="filterTable()">검색</button>
           <button class="btn btn-gray btn-sm" onclick="resetFilter()">초기화</button>
           <span class="filter-count" id="filterCount"></span>
           <div style="display:flex; gap:8px;">
@@ -668,11 +669,11 @@
               <tr>
                 <th style="width:48px;">No.</th>
                 <th>진단지명</th>
-                <th class="center">문항 수</th>
+                <th class="center">문항수</th>
                 <th>최종 수정일</th>
                 <th class="center">공개 여부</th>
                 <th id="colResultTemplate" style="display:none;">결과지 템플릿</th>
-                <th style="width:180px;"></th>
+                <th style="width:180px;">관리</th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -1579,7 +1580,6 @@
         </td>
         <td>
           <div class="row-actions">
-            <button class="btn btn-sm btn-outline" onclick="openEdit('${q.id}')">편집</button>
             <button class="btn btn-sm btn-gray" onclick="copyItem('${q.id}')">복사</button>
             <button class="btn btn-sm btn-danger" onclick="openDelete('${q.id}')">삭제</button>
           </div>
