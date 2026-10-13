@@ -256,7 +256,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
       <span class="slider-dot" style="left:80%;"></span>
       <span class="slider-self-label" style="left:80%;">본인 80</span>
     </div>
-    <div class="hero-comment">
+    <div style="margin-top:34px;font-size:12px;color:var(--muted);">※ 조직평균은 진단 응답률에 따라 변경될 수 있습니다.</div>
+    <div class="hero-comment" style="margin-top:12px;">
       <b>홍길동</b>님의 AI Literacy 총점은 <b>80점</b>으로 <b>높은</b> 수준이며, 조직 평균 <b>77점</b>보다 <b>3점 높습니다</b>.<br>
       아래 세부 역량별 점수를 통해 자신의 강약점 역량을 확인하세요.<br>
       Hunet이 준비한 이러닝 콘텐츠로 학습하면 AI Literacy 점수가 더욱 상승할 것입니다.
@@ -337,13 +338,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
         <div class="factor-name">직무별 AI 활용</div>
         <div class="factor-slider-wrap">
           <div class="slider">
-            <div class="slider-fill neg" style="width:69%;"></div>
+            <div class="slider-fill" style="width:69%;"></div>
             <div class="slider-tick" style="left:74%;"></div>
             <span class="slider-tick-label" style="left:74%;">조직평균 7.4</span>
-            <span class="slider-dot neg" style="left:69%;"></span>
+            <span class="slider-dot" style="left:69%;"></span>
           </div>
         </div>
-        <div class="factor-score"><span class="self">본인 <b style="color:var(--red);">6.9</b></span></div>
+        <div class="factor-score"><span class="self">본인 <b>6.9</b></span></div>
       </div>
 
       <div class="factor-row">
@@ -418,7 +419,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
         <h4>약점 역량</h4>
         <div class="sw-row">
           <span class="sw-chip">AI 툴 활용</span>
-          <span class="sw-chip">직무별 AI 활용</span>
         </div>
       </div>
     </div>
@@ -527,7 +527,6 @@ const WEAK_COURSES = [
   { title: '[AIder College] 생성형 AI 시대, 윤리는 선택이 아니라 생존입니다', type: '마이크로러닝', time: '40분', price: '무료', seed: 'rec2' },
   { title: '프롬프트 엔지니어링 기초와 실전 활용법', type: '마이크로러닝', time: '45분', price: '무료', seed: 'rec5' },
   { title: '생성형 AI 결과물 팩트체크와 검증 실무', type: '마이크로러닝', time: '50분', price: '무료', seed: 'rec6' },
-  { title: '직무별 AI 활용 가이드: 나에게 맞는 툴 찾기', type: '온라인', time: '1시간', price: '15,000원', seed: 'rec7' },
 ];
 const STRONG_COURSES = [
   { title: 'AI 기초 크리에이티브 & 생산성 도구 완전정복', type: '온라인', time: '2시간 30분', price: '49,000원', seed: 'rec3' },
