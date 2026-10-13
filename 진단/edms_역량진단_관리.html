@@ -671,13 +671,13 @@
                 <th class="center">문항 수</th>
                 <th>최종 수정일</th>
                 <th class="center">공개 여부</th>
-                <th id="colResultTemplate" style="display:none;">결과 템플릿</th>
+                <th id="colResultTemplate" style="display:none;">결과지 템플릿</th>
                 <th style="width:180px;"></th>
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
-          <div class="tbl-empty" id="emptyMsg" style="display:none;">검색 결과가 없습니다.</div>
+          <div class="tbl-empty" id="emptyMsg" style="display:none;">현재 조회된 데이터가 없습니다.</div>
         </div>
         <!-- 페이지당 건수 -->
         <div style="display:flex; align-items:center; justify-content:flex-end; padding:8px 18px 0; gap:6px;">
@@ -1573,8 +1573,8 @@
         </td>
         <td style="${isHunetViewer ? '' : 'display:none;'}">
           <select style="padding:4px 6px;font-size:11px;border:1px solid #dde1e7;border-radius:3px;">
-            <option value="standard" ${q.resultTemplate === 'standard' ? 'selected' : ''}>표준형</option>
-            <option value="ai_literacy" ${q.resultTemplate === 'ai_literacy' ? 'selected' : ''}>AI리터러시 전용</option>
+            <option value="standard" ${q.resultTemplate === 'standard' ? 'selected' : ''}>기본 템플릿</option>
+            <option value="ai_literacy" ${q.resultTemplate === 'ai_literacy' ? 'selected' : ''}>AI리터러시 결과지</option>
           </select>
         </td>
         <td>
@@ -1660,10 +1660,10 @@
     const orig = QSET_DATA.find(q => q.id === id);
     if (!orig) return;
     const newId = 'QSET_' + String(QSET_DATA.length + 1).padStart(3, '0');
-    const copy  = { ...orig, id: newId, name: orig.name + ' (복사본)', updatedAt: '2025.12.08', updatedBy: '김담당' };
+    const copy  = { ...orig, id: newId, name: orig.name + ' (Copy)', updatedAt: '2025.12.08', updatedBy: '김담당' };
     QSET_DATA.unshift(copy);
     refreshQsetTable();
-    showToast('\''+orig.name+'\' 복사본이 생성됐습니다.');
+    showToast('\''+orig.name+'\' 복사본이 생성되었습니다.');
     document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1673,7 +1673,7 @@
     if (!q) return;
     q.isPublic = !q.isPublic;
     refreshQsetTable();
-    showToast('\''+q.name+'\'이(가) '+(q.isPublic?'공개':'비공개')+'로 변경됐습니다.');
+    showToast('\''+q.name+'\'이(가) '+(q.isPublic?'공개':'비공개')+'로 변경되었습니다.');
   }
 
   // ── 삭제 ──
@@ -1698,7 +1698,7 @@
     QSET_DATA = QSET_DATA.filter(q => q.id !== qsetDeleteTargetId);
     closeModal();
     refreshQsetTable();
-    showToast('\''+q?.name+'\' 진단지가 삭제됐습니다.');
+    showToast('\''+q?.name+'\' 진단지가 삭제되었습니다.');
   }
 
   // overlay 클릭 닫기
@@ -1786,7 +1786,7 @@ let bulkCurrentFile = null;
     showToast('오류 목록을 다운로드합니다.');
   }
   function bulkSubmit() {
-    showToast('진단지 일괄등록이 완료됐습니다.');
+    showToast('진단지 일괄등록이 완료되었습니다.');
     closeBulkModal();
   }
   document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
