@@ -370,6 +370,27 @@
 .bulk-modal-foot .btn { height:44px; padding:0 26px; border-radius:8px; font-size:14px; font-weight:600; }
 .bulk-modal-foot .btn:disabled { background:#ececee !important; color:#a9abb0 !important; border:1px solid #ececee !important; opacity:1 !important; cursor:not-allowed !important; }
 .bulk-modal-foot #bulkPreviewBtn:disabled { background:#fff !important; border-color:#e3e4e8 !important; }
+.bulk-file-card-err { display:flex; align-items:center; gap:10px; background:#fff; border:1px solid #f5a9a9; border-radius:6px; padding:10px 14px; margin-top:14px; }
+.bulk-file-card-err .ico { width:28px; height:28px; border-radius:50%; background:#e74c3c; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; }
+.bulk-file-card-err .info { flex:1; }
+.bulk-file-card-err .fname { font-size:13px; font-weight:600; color:#1a1a2e; }
+.bulk-file-card-err .ftype { font-size:11px; color:#999; margin-top:2px; }
+.bulk-file-card-err .close-x { width:20px; height:20px; border-radius:50%; background:#eee; border:none; color:#888; font-size:11px; cursor:pointer; flex-shrink:0; }
+.bulk-file-err-msg { color:#c0392b; font-size:12px; margin-top:6px; }
+.bulk-loading-overlay { display:none; position:absolute; inset:0; background:rgba(255,255,255,.9); border-radius:12px; align-items:center; justify-content:center; z-index:10; }
+.bulk-loading-overlay.show { display:flex; }
+.bulk-spinner { width:34px; height:34px; border:3px solid #e0e0e0; border-top-color:var(--primary); border-radius:50%; animation:bulkspin .75s linear infinite; margin:0 auto 12px; }
+@keyframes bulkspin { to { transform:rotate(360deg); } }
+.bulk-loading-text { font-size:13px; font-weight:600; color:#222; text-align:center; }
+.bulk-loading-sub { font-size:11.5px; color:#888; margin-top:4px; text-align:center; }
+.confirm-modal .modal-box { width:400px; max-width:90vw; border-radius:12px; text-align:center; }
+.confirm-modal-title { font-size:16px; font-weight:700; color:#111; padding:28px 24px 0; }
+.confirm-modal-msg { padding:28px 24px 32px; font-size:13.5px; line-height:1.7; color:#333; }
+.confirm-modal-foot { display:flex; gap:8px; padding:0 20px 20px; }
+.confirm-modal-foot button { height:46px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+.confirm-modal-foot .cm-cancel { width:72px; background:#fff; border:1px solid #e3e4e8; color:#333; }
+.confirm-modal-foot .cm-ok { flex:1; background:#2a2b30; border:none; color:#fff; }
+.result-grid { padding:20px 28px 8px; font-size:14px; color:#222; }
 </style>
 </head>
 <body>
@@ -921,7 +942,7 @@
       <div class="bulk-info-box">
           엑셀 파일(.xlsx, .xls)로 진단지의 유형·역량군·세부역량·문항을 한 번에 등록할 수 있습니다. 최대 10MB<br>
           시트 구성: 한 행 = 한 문항. 유형명·역량군명·세부역량명이 같으면 시스템이 자동으로 계층 구조를 생성합니다.<br>
-          문항유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 경우 등록 버튼이 비활성화됩니다. 문항유형에 해당하지 않는 영역(회색)에 입력된 값은 무시하고 등록됩니다.
+          문항유형 3종: 척도형 / A/B 강제선택 / 서술형 — 미리보기로 오류 확인 후 등록 버튼을 눌러주세요. 오류가 있는 경우 등록 버튼이 비활성화됩니다. 문항유형에 해당하지 않는 영역에 입력된 값은 무시하고 등록됩니다.
       </div>
 
       <div class="bulk-sec-title">Step 1. 업로드 양식 다운로드</div>
@@ -934,19 +955,38 @@
           onclick="document.getElementById('bulkFileInput').click()">
           <div class="bulk-drop-text">파일을 이곳에 끌어다 놓거나 파일 선택 버튼을 클릭하세요.</div>
           <button class="btn" type="button" onclick="event.stopPropagation(); document.getElementById('bulkFileInput').click()">파일 선택</button>
-          <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleBulkFile(this.files[0])">
+          <input type="file" id="bulkFileInput" accept=".xlsx,.xls" style="display:none" onchange="if(this.files[0]) handleBulkFile(this.files[0])">
         </div>
-        <div id="bulkFileSelected" style="display:none; margin-top:12px; padding:10px 14px; background:#f4f6ff; border:1px solid #c7d8f7; border-radius:8px; font-size:12.5px; color:#2a3a6a; align-items:center; gap:8px;">
-          <span id="bulkFileNameText" style="flex:1; font-weight:600;"></span>
-          <button type="button" onclick="bulkClearFile()" style="background:none; border:none; cursor:pointer; color:#888; font-size:16px; line-height:1;">×</button>
+        <div id="bulkFileSelected" style="display:none; margin-top:14px; border:1px solid #dde1e7; border-radius:8px; padding:12px 14px; background:#f9fafb; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">📎</span>
+            <div>
+              <div id="bulkFileNameText" style="font-size:13px; font-weight:600; color:#1a1a2e;"></div>
+              <div id="bulkFileSizeText" style="font-size:11px; color:#888; margin-top:2px;"></div>
+            </div>
+          </div>
+          <button class="btn btn-sm" type="button" style="background:#fff; color:#c0392b; border:1px solid #e8c4bf;" onclick="bulkClearFile()">× 삭제</button>
+        </div>
+        <div id="bulkFileErrCard" style="display:none;">
+          <div class="bulk-file-card-err">
+            <div class="ico">!</div>
+            <div class="info"><div class="fname" id="bulkErrFileName"></div><div class="ftype">ETC</div></div>
+            <button class="close-x" type="button" onclick="bulkClearFileErr()">✕</button>
+          </div>
+          <div class="bulk-file-err-msg" id="bulkErrFileMsg"></div>
         </div>
       </div>
 
       <div id="bulkPreviewResult" style="display:none;">
-        <div class="bulk-sec-title">미리보기 결과</div>
-        <div id="bulkPreviewMessage" style="font-size:12.5px; margin-bottom:8px;"></div>
-        <div id="bulkPreviewTable"></div>
-        <button id="bulkErrorDownloadBtn" style="display:none; margin-top:8px;" class="btn btn-gray btn-sm" onclick="downloadErrorList()">오류 목록 다운로드</button>
+        <div class="bulk-sec-title" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>미리보기 결과</span>
+          <button class="btn btn-sm btn-gray" type="button" id="bulkErrorDownloadBtn" style="display:none;" onclick="downloadErrorList()">↓ 오류내용 다운로드</button>
+        </div>
+        <div id="bulkPreviewMessage" style="padding:12px 14px; border-radius:6px; font-size:13px; margin-bottom:14px;"></div>
+        <table id="bulkPreviewTable" class="bulk-error-tbl" style="display:none;">
+          <thead><tr><th style="width:100px;">행 번호</th><th style="width:120px;">식별값</th><th>오류 내용</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
 
       <div class="bulk-sec-title">오류 케이스 정리</div>
@@ -973,20 +1013,37 @@
       <button class="btn btn-outline" id="bulkPreviewBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkPreview()">미리보기</button>
       <button class="btn btn-primary" id="bulkSubmitBtn" disabled style="opacity:.45;cursor:not-allowed;" onclick="bulkSubmit()">등록</button>
     </div>
+    <div class="bulk-loading-overlay" id="bulkLoadingOverlay">
+      <div>
+        <div class="bulk-spinner"></div>
+        <div class="bulk-loading-text" id="bulkLoadingText">파일을 검증하고 있습니다.</div>
+        <div class="bulk-loading-sub">잠시 기다려 주세요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 등록 결과 팝업 -->
+<div class="modal-overlay" id="bulkResultModal" style="z-index:2600;">
+  <div class="modal-box" style="width:480px; max-width:94vw; border-radius:12px;">
+    <div class="modal-header"><h3>등록 결과</h3></div>
+    <div class="result-grid">
+      <div id="bulkResultSummary" style="font-weight:600;"></div>
+      <div id="bulkResultFailMsg" style="display:none; margin-top:12px; font-size:12.5px; color:#c0392b; line-height:1.6;">시스템 오류로 인해 일부 건이 등록되지 않았습니다. 잠시 후 다시 시도해 주세요.</div>
+      <button class="btn btn-gray btn-sm" id="bulkResultFailDown" type="button" style="display:none; margin-top:10px;" onclick="showToast('실패내용을 다운로드합니다.')">실패내용 다운(.xlsx)</button>
+    </div>
+    <div class="modal-footer"><button class="btn btn-primary" onclick="closeBulkResult()">닫기</button></div>
   </div>
 </div>
 
 <!-- 삭제 확인 모달 (진단지 관리) -->
-<div class="modal-overlay" id="deleteModal">
+<div class="modal-overlay confirm-modal" id="deleteModal">
   <div class="modal-box">
-    <div class="modal-header">
-      <h3>🗑 진단지 삭제</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body" id="deleteModalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal()">취소</button>
-      <button class="btn btn-danger" onclick="confirmDelete()">삭제</button>
+    <div class="confirm-modal-title">안내</div>
+    <div class="confirm-modal-msg" id="deleteModalBody"></div>
+    <div class="confirm-modal-foot">
+      <button class="cm-cancel" onclick="closeModal()">취소</button>
+      <button class="cm-ok" onclick="confirmDelete()">삭제</button>
     </div>
   </div>
 </div>
@@ -1619,7 +1676,7 @@
     const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
     const pub     = document.getElementById('filterPublic').value;
     return QSET_DATA.filter(q => {
-      const matchName = !keyword || q.name.toLowerCase().includes(keyword) || q.id.toLowerCase().includes(keyword);
+      const matchName = !keyword || q.name.toLowerCase().includes(keyword);
       const matchPub  = !pub || (pub==='공개'?q.isPublic:!q.isPublic);
       const matchRole = isHunetViewer || !q.locked;
       return matchName && matchPub && matchRole;
@@ -1681,9 +1738,7 @@
     const q = QSET_DATA.find(q => q.id === id);
     if (!q) return;
     qsetDeleteTargetId = id;
-    document.getElementById('deleteModalBody').innerHTML = `
-      <strong>'${escHtml(q.name)}'</strong> 진단지를 삭제하시겠습니까?<br>
-      연결된 진단이 있을 수 있습니다.`;
+    document.getElementById('deleteModalBody').innerHTML = `'${escHtml(q.name)}' 진단지를 삭제하시겠습니까?<br>연결된 진단이 있을 수 있습니다.`;
     document.getElementById('deleteModal').classList.add('open');
   }
 
@@ -1726,19 +1781,35 @@ let bulkCurrentFile = null;
   function openBulkModal() {
     document.getElementById('bulkModal').classList.add('open');
   }
+  function bulkBtnState(btn, on) { btn.disabled = !on; btn.style.opacity = on ? '1' : '.45'; btn.style.cursor = on ? 'pointer' : 'not-allowed'; }
   function closeBulkModal() {
     document.getElementById('bulkModal').classList.remove('open');
+    bulkCurrentFile = null;
     document.getElementById('bulkFileInput').value = '';
-    const sel = document.getElementById('bulkFileSelected');
-    sel.style.display = 'none';
+    document.getElementById('bulkFileSelected').style.display = 'none';
     document.getElementById('bulkFileNameText').textContent = '';
-    const previewResult = document.getElementById('bulkPreviewResult');
-    previewResult.style.display = 'none';
-    const previewBtn = document.getElementById('bulkPreviewBtn');
-    previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
-    const submitBtn = document.getElementById('bulkSubmitBtn');
-    submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
+    document.getElementById('bulkDropZone').style.display = '';
+    document.getElementById('bulkPreviewResult').style.display = 'none';
+    hideBulkFileErr();
+    hideBulkLoading();
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), false);
+    bulkBtnState(document.getElementById('bulkSubmitBtn'), false);
   }
+  function showBulkFileErr(name, msg) {
+    document.getElementById('bulkFileErrCard').style.display = '';
+    document.getElementById('bulkErrFileName').textContent = name;
+    document.getElementById('bulkErrFileMsg').textContent = msg;
+    document.getElementById('bulkFileSelected').style.display = 'none';
+    document.getElementById('bulkDropZone').style.display = '';
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), false);
+  }
+  function hideBulkFileErr() { document.getElementById('bulkFileErrCard').style.display = 'none'; }
+  function bulkClearFileErr() { hideBulkFileErr(); document.getElementById('bulkFileInput').value = ''; }
+  function showBulkLoading(text) {
+    document.getElementById('bulkLoadingText').textContent = text;
+    document.getElementById('bulkLoadingOverlay').classList.add('show');
+  }
+  function hideBulkLoading() { document.getElementById('bulkLoadingOverlay').classList.remove('show'); }
   function bulkDragOver(e) { e.preventDefault(); document.getElementById('bulkDropZone').classList.add('drag-active'); }
   function bulkDragLeave() { document.getElementById('bulkDropZone').classList.remove('drag-active'); }
   function bulkDrop(e) {
@@ -1747,46 +1818,81 @@ let bulkCurrentFile = null;
     const file = e.dataTransfer.files[0];
     if (file) handleBulkFile(file);
   }
+  // 형식 오류를 용량 초과보다 먼저 판단하고, 둘 다 파일 카드 인라인 오류로 표시한다.
   function handleBulkFile(file) {
-    if (!file || !file.name.match(/\.(xlsx|xls)$/i)) { showToast('❌ .xlsx 또는 .xls 파일만 업로드 가능합니다.'); return; }
+    hideBulkFileErr();
+    if (!file.name.match(/\.(xlsx|xls)$/i)) {
+      const ext = (file.name.match(/\.([^.]+)$/) || [,'?'])[1];
+      showBulkFileErr(file.name, `허용되지 않은 파일 형식입니다: ${ext}`);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) { showBulkFileErr(file.name, '파일 용량이 10MB를 초과합니다.'); return; }
     bulkCurrentFile = file;
-    if (file.size > 10 * 1024 * 1024) { showToast('❌ 파일 용량이 10MB를 초과합니다.'); return; }
-    document.getElementById('bulkFileNameText').textContent = file.name + '  (' + (file.size/1024).toFixed(1) + ' KB)';
-    const sel = document.getElementById('bulkFileSelected');
-    sel.style.display = 'flex';
-    const previewBtn = document.getElementById('bulkPreviewBtn');
-    previewBtn.disabled = false; previewBtn.style.opacity = '1'; previewBtn.style.cursor = 'pointer';
+    document.getElementById('bulkDropZone').style.display = 'none';
+    document.getElementById('bulkFileSelected').style.display = 'flex';
+    document.getElementById('bulkFileNameText').textContent = file.name;
+    document.getElementById('bulkFileSizeText').textContent = `(${(file.size/1024).toFixed(1)}KB)`;
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), true);
   }
   function bulkClearFile() {
     bulkCurrentFile = null;
     document.getElementById('bulkFileInput').value = '';
     document.getElementById('bulkFileSelected').style.display = 'none';
     document.getElementById('bulkFileNameText').textContent = '';
+    document.getElementById('bulkDropZone').style.display = '';
     document.getElementById('bulkPreviewResult').style.display = 'none';
-    const previewBtn = document.getElementById('bulkPreviewBtn');
-    previewBtn.disabled = true; previewBtn.style.opacity = '.45'; previewBtn.style.cursor = 'not-allowed';
-    const submitBtn = document.getElementById('bulkSubmitBtn');
-    submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
+    hideBulkFileErr();
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), false);
+    bulkBtnState(document.getElementById('bulkSubmitBtn'), false);
   }
   function bulkPreview() {
-    const fname = bulkCurrentFile ? bulkCurrentFile.name : '';
-    const submitBtn = document.getElementById('bulkSubmitBtn');
-    document.getElementById('bulkPreviewResult').style.display = 'block';
-    document.getElementById('bulkErrorDownloadBtn').style.display = 'none';
-    document.getElementById('bulkPreviewTable').innerHTML = '';
+    if (!bulkCurrentFile) return;
+    showBulkLoading('파일을 검증하고 있습니다.');
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), false);
+    bulkBtnState(document.getElementById('bulkSubmitBtn'), false);
+    setTimeout(() => { hideBulkLoading(); renderBulkPreviewResult(); }, 900);
+  }
+  function renderBulkPreviewResult() {
+    const fname = bulkCurrentFile.name;
+    const msgEl = document.getElementById('bulkPreviewMessage');
+    const tableEl = document.getElementById('bulkPreviewTable');
+    const downloadBtn = document.getElementById('bulkErrorDownloadBtn');
+    document.getElementById('bulkPreviewResult').style.display = '';
+    bulkBtnState(document.getElementById('bulkPreviewBtn'), true);
     if (fname.includes('혼용')) {   // 프로토타입 시뮬레이션: 파일명에 '혼용' 포함 시 계층 입력 불일치 오류
-      document.getElementById('bulkPreviewMessage').innerHTML = '<span style="color:#c0392b;">✖ 계층 입력 불일치 — 세부역량명이 일부 행에만 입력되었습니다. 전체 행에 입력하거나 전체 행을 비워 주세요. (5행)</span>';
-      submitBtn.disabled = true; submitBtn.style.opacity = '.45'; submitBtn.style.cursor = 'not-allowed';
+      msgEl.style.background = '#fef2f2'; msgEl.style.color = '#c0392b';
+      msgEl.textContent = '✖ 일부 행에서 오류가 발견되었습니다. 오류 내용을 확인하고 수정 후 다시 시도해 주세요.';
+      tableEl.style.display = '';
+      downloadBtn.style.display = '';
+      tableEl.querySelector('tbody').innerHTML = '<tr><td style="text-align:center;">5</td><td style="text-align:center;">—</td><td>계층 입력 불일치 — 세부역량명이 일부 행에만 입력되었습니다. 전체 행에 입력하거나 전체 행을 비워 주세요.</td></tr>';
+      bulkBtnState(document.getElementById('bulkSubmitBtn'), false);
       return;
     }
-    document.getElementById('bulkPreviewMessage').innerHTML = '<span style="color:#2a3a6a;">✓ 총 3건 데이터가 확인됐습니다. (인식된 구조: 유형 · 역량군 · 세부역량) 오류가 없습니다.</span>';
-    submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer';
+    msgEl.style.background = '#dcfce7'; msgEl.style.color = '#16a34a';
+    msgEl.textContent = '✔ 미리보기가 완료되었습니다. 총 3건이 정상 확인되었습니다. (인식된 구조: 유형 · 역량군 · 세부역량) 등록 버튼을 클릭해 주세요.';
+    tableEl.style.display = 'none';
+    downloadBtn.style.display = 'none';
+    bulkBtnState(document.getElementById('bulkSubmitBtn'), true);
   }
   function downloadErrorList() {
-    showToast('오류 목록을 다운로드합니다.');
+    showToast('오류내용을 다운로드합니다.');
   }
+  // 프로토타입: 파일명에 '실패' 포함 시 일부 실패 결과를 시뮬레이션한다.
   function bulkSubmit() {
-    showToast('진단지 일괄등록이 완료되었습니다.');
+    const fname = bulkCurrentFile ? bulkCurrentFile.name : '';
+    showBulkLoading('등록하고 있습니다.');
+    bulkBtnState(document.getElementById('bulkSubmitBtn'), false);
+    setTimeout(() => {
+      hideBulkLoading();
+      const fail = fname.includes('실패') ? 1 : 0;
+      document.getElementById('bulkResultSummary').textContent = `총 건수 3 · 등록 완료 ${3 - fail} · 실패 ${fail}`;
+      document.getElementById('bulkResultFailMsg').style.display = fail ? '' : 'none';
+      document.getElementById('bulkResultFailDown').style.display = fail ? '' : 'none';
+      document.getElementById('bulkResultModal').classList.add('open');
+    }, 1200);
+  }
+  function closeBulkResult() {
+    document.getElementById('bulkResultModal').classList.remove('open');
     closeBulkModal();
   }
   document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
