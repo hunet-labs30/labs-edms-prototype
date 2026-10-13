@@ -147,6 +147,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .rec-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;}
 .rec-tab{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--muted);padding:10px 4px;margin-right:24px;cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:6px;}
 .rec-tab.active{color:var(--text);}
+.rec-tab[data-tab="all"].active{border-bottom-color:var(--text);}
+.rec-badge{display:inline-block;font-size:11px;font-weight:700;line-height:1;padding:3px 7px;border-radius:900px;margin-right:6px;vertical-align:1px;}
+.rec-badge.weak{color:var(--red);background:var(--red-tint);}
+.rec-badge.strong{color:var(--blue);background:var(--blue-tint);}
 .rec-tab[data-tab="weak"].active{color:var(--red);border-bottom-color:var(--red);}
 .rec-tab[data-tab="strong"].active{color:var(--blue);border-bottom-color:var(--blue);}
 .rec-tab-count{font-size:12px;font-weight:600;color:var(--muted);}
@@ -338,13 +342,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
         <div class="factor-name">직무별 AI 활용</div>
         <div class="factor-slider-wrap">
           <div class="slider">
-            <div class="slider-fill" style="width:69%;"></div>
+            <div class="slider-fill neg" style="width:69%;"></div>
             <div class="slider-tick" style="left:74%;"></div>
             <span class="slider-tick-label" style="left:74%;">조직평균 7.4</span>
-            <span class="slider-dot" style="left:69%;"></span>
+            <span class="slider-dot neg" style="left:69%;"></span>
           </div>
         </div>
-        <div class="factor-score"><span class="self">본인 <b>6.9</b></span></div>
+        <div class="factor-score"><span class="self">본인 <b style="color:var(--red);">6.9</b></span></div>
       </div>
 
       <div class="factor-row">
@@ -419,6 +423,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
         <h4>약점 역량</h4>
         <div class="sw-row">
           <span class="sw-chip">AI 툴 활용</span>
+          <span class="sw-chip">직무별 AI 활용</span>
         </div>
       </div>
     </div>
@@ -468,15 +473,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 <div class="rec-overlay" id="recOverlay" onclick="closeRecPanel()"></div>
 <aside class="rec-drawer" id="recDrawer" aria-hidden="true">
   <div class="rec-drawer-head">
-    <div class="hero-name">약점 보완 · 역량 확장 추천과정</div>
+    <div class="hero-name">추천과정 전체보기</div>
     <button type="button" class="rec-close" onclick="closeRecPanel()" aria-label="닫기">×</button>
   </div>
   <div class="rec-drawer-body">
     <div class="rec-tabs">
-      <button class="rec-tab active" data-tab="weak" onclick="switchRecTab('weak')">약점 보완<span class="rec-tab-count" id="weakCount"></span></button>
+      <button class="rec-tab active" data-tab="all" onclick="switchRecTab('all')">전체<span class="rec-tab-count" id="allCount"></span></button>
+      <button class="rec-tab" data-tab="weak" onclick="switchRecTab('weak')">약점 보완<span class="rec-tab-count" id="weakCount"></span></button>
       <button class="rec-tab" data-tab="strong" onclick="switchRecTab('strong')">역량 확장<span class="rec-tab-count" id="strongCount"></span></button>
     </div>
-    <div class="rec-list" id="weakScroll"></div>
+    <div class="rec-list" id="allScroll"></div>
+    <div class="rec-list" id="weakScroll" style="display:none;"></div>
     <div class="rec-list" id="strongScroll" style="display:none;"></div>
   </div>
 </aside>
@@ -527,6 +534,7 @@ const WEAK_COURSES = [
   { title: '[AIder College] 생성형 AI 시대, 윤리는 선택이 아니라 생존입니다', type: '마이크로러닝', time: '40분', price: '무료', seed: 'rec2' },
   { title: '프롬프트 엔지니어링 기초와 실전 활용법', type: '마이크로러닝', time: '45분', price: '무료', seed: 'rec5' },
   { title: '생성형 AI 결과물 팩트체크와 검증 실무', type: '마이크로러닝', time: '50분', price: '무료', seed: 'rec6' },
+  { title: '직무별 AI 활용 가이드: 나에게 맞는 툴 찾기', type: '온라인', time: '1시간', price: '15,000원', seed: 'rec7' },
 ];
 const STRONG_COURSES = [
   { title: 'AI 기초 크리에이티브 & 생산성 도구 완전정복', type: '온라인', time: '2시간 30분', price: '49,000원', seed: 'rec3' },
@@ -568,7 +576,6 @@ function top2ItemHTML(c, factorLabel, rank) {
   return `<div class="course-flex">
     <img class="course-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
     <div class="course-info">
-      <div class="course-tag">${ICON_FOLDER}<span>AI활용실무역량군</span>${ICON_CHEVRON}<span>${factorLabel}</span></div>
       <div class="course-title">${c.title}</div>
       <div class="course-desc">${c.desc}</div>
       <div class="course-meta">
@@ -599,13 +606,13 @@ function top2Nav(rank, dir) {
 renderTop2('r1');
 renderTop2('r2');
 
-function itemHTML(c, focusLabel) {
+function itemHTML(c, kind) {
+  const badge = kind === 'weak' ? '<span class="rec-badge weak">약점</span>' : '<span class="rec-badge strong">강점</span>';
   return `<div class="rec-item">
     <div class="course-flex">
       <img class="course-thumb" src="https://picsum.photos/seed/${c.seed}/400/250" alt="">
       <div class="course-info">
-        <div class="course-tag">${ICON_FOLDER}<span>${focusLabel}</span>${ICON_CHEVRON}<span>AI·디지털</span></div>
-        <div class="course-title">${c.title}</div>
+        <div class="course-title">${badge}${c.title}</div>
         <div class="course-meta">
           <span>${ICON_TYPE}${c.type}</span>
           <span>${ICON_TARGET}직무공통</span>
@@ -617,9 +624,14 @@ function itemHTML(c, focusLabel) {
   </div>`;
 }
 
-function renderCourseList(scrollId, countId, data, focusLabel) {
+function renderCourseList(scrollId, countId, data, kind) {
   document.getElementById(countId).textContent = data.length + '개';
-  document.getElementById(scrollId).innerHTML = data.map(c => itemHTML(c, focusLabel)).join('');
+  document.getElementById(scrollId).innerHTML = data.map(c => itemHTML(c, kind)).join('');
+}
+function renderAllList() {
+  const all = WEAK_COURSES.map(c => itemHTML(c, 'weak')).concat(STRONG_COURSES.map(c => itemHTML(c, 'strong')));
+  document.getElementById('allCount').textContent = all.length + '개';
+  document.getElementById('allScroll').innerHTML = all.join('');
 }
 
 function openRecPanel() {
@@ -658,12 +670,14 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCours
 
 function switchRecTab(tab) {
   document.querySelectorAll('.rec-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('allScroll').style.display = tab === 'all' ? 'flex' : 'none';
   document.getElementById('weakScroll').style.display = tab === 'weak' ? 'flex' : 'none';
   document.getElementById('strongScroll').style.display = tab === 'strong' ? 'flex' : 'none';
 }
 
-renderCourseList('weakScroll', 'weakCount', WEAK_COURSES, '약점 보완');
-renderCourseList('strongScroll', 'strongCount', STRONG_COURSES, '역량 확장');
+renderAllList();
+renderCourseList('weakScroll', 'weakCount', WEAK_COURSES, 'weak');
+renderCourseList('strongScroll', 'strongCount', STRONG_COURSES, 'strong');
 </script>
 
 </body>
