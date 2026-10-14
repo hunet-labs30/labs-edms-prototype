@@ -1149,7 +1149,7 @@
         <!-- 시나리오A: 오류 있음 -->
         <div id="bulkPreviewErr">
           <div style="background:#fff8f0;border:1px solid #ffb347;border-radius:6px;padding:10px 16px;font-size:12px;color:#7a3800;font-weight:600;margin-bottom:10px;">
-            ⚠️ 총 5건 중 2건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
+            ⚠️ 총 7건 중 3건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
           </div>
           <table class="main-table" style="font-size:12px;">
             <thead>
@@ -1158,6 +1158,7 @@
             <tbody>
               <tr><td style="text-align:center;">3행</td><td style="color:#c00000;">존재하지 않는 응답자 아이디</td></tr>
               <tr><td style="text-align:center;">5행</td><td style="color:#c00000;">응답자 아이디 미입력</td></tr>
+              <tr><td style="text-align:center;">7행</td><td style="color:#c00000;">대상자·응답자 조직 불일치</td></tr>
             </tbody>
           </table>
         </div>
@@ -1191,6 +1192,7 @@
             <tr><td>응답범위 코드 불일치</td><td>C열 값이 코드표의 응답범위 목록에 없는 경우</td></tr>
             <tr><td>본인 응답범위 불일치</td><td>C열 응답범위가 '본인'인데 B열 응답자 아이디가 A열 대상자 아이디와 다른 경우</td></tr>
             <tr><td>응답자 본인 지정 오류</td><td>C열 응답범위가 '본인' 외 유형인데 B열 응답자 아이디가 A열 대상자 아이디와 같은 경우</td></tr>
+            <tr><td>대상자·응답자 조직 불일치</td><td>대상자와 응답자의 소속 회사가 다른 경우</td></tr>
           </tbody>
         </table>
       </div>
@@ -1980,7 +1982,7 @@
     // 선택된 대상자 표시
     const selRow = rows.find(tr => String(tr.dataset.rowno) === String(rowNo));
     document.getElementById('diag-resp-person-name').textContent = selRow?.dataset.name || '—';
-    document.getElementById('diag-resp-person-role').textContent = selRow?.querySelectorAll('td')[6]?.textContent || '—';
+    document.getElementById('diag-resp-person-role').textContent = (selRow ? [6, 5].map(i => (selRow.querySelectorAll('td')[i]?.textContent || '').trim()).filter(Boolean).join(' / ') : '') || '—';
 
     // 탭 초기화
     document.querySelectorAll('.diag-resp-tab').forEach(t => {
@@ -2013,6 +2015,15 @@
     document.getElementById('diag-resp-list-modal').style.display = 'none';
   }
 
+  const DIAG_RESP_ORG_MSG = '대상자와 다른 회사의 임직원은 응답자로 지정할 수 없습니다.';
+  function _diagRespTargetCompany() {
+    const tr = document.querySelector(`#state-before .before-data-row[data-rowno="${_diagRespCurrentRowNo}"]`);
+    return (tr && tr.querySelectorAll('td')[5]) ? tr.querySelectorAll('td')[5].textContent.trim() : '';
+  }
+  function _diagRespOrgMismatch(m) {
+    const c = _diagRespTargetCompany();
+    return !!(c && m && m.company !== c);
+  }
   function _diagRespRenderPool() {
     const keyword = (document.getElementById('diag-resp-search-keyword')?.value || '').trim().toLowerCase();
     const sType   = document.getElementById('diag-resp-search-type')?.value || 'name';
@@ -2037,14 +2048,15 @@
     }
     tbody.innerHTML = _diagRespFilteredPool.map((m, i) => {
       const isReg = _diagRespTempList.some(r => r.empno === m.empno);
+    const orgDiff = _diagRespOrgMismatch(m);
       return `<tr style="${isReg ? 'background:#f9f9f9;color:#bbb;' : ''}">
-        <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : `<input type="checkbox" class="diag-resp-pool-chk" data-idx="${i}" onchange="diagRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
+        <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : orgDiff ? '<input type="checkbox" disabled title="대상자와 같은 회사의 임직원만 선택할 수 있습니다." style="cursor:not-allowed;">' : `<input type="checkbox" class="diag-resp-pool-chk" data-idx="${i}" onchange="diagRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
         <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
         <td style="padding:5px 8px;color:#888;font-size:11px;">${_maskL(m.loginId)}</td>
         <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
         <td style="text-align:center;padding:5px 8px;font-size:11px;">${m.company||'-'}</td>
         <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-        <td style="text-align:center;padding:5px 4px;">${isReg ? '' : `<button onclick="diagRespAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
+        <td style="text-align:center;padding:5px 4px;">${isReg ? '' : orgDiff ? '<button disabled title="대상자와 같은 회사의 임직원만 추가할 수 있습니다." style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:#e5e7eb;color:#aaa;border:none;border-radius:3px;cursor:not-allowed;">추가</button>' : `<button onclick="diagRespAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
       </tr>`;
     }).join('');
   }
@@ -2086,6 +2098,7 @@
   function diagRespAddOne(poolIdx) {
     const m = _diagRespFilteredPool[poolIdx];
     if (!m) return;
+  if (_diagRespOrgMismatch(m)) { alert(DIAG_RESP_ORG_MSG); return; }
     if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
     _diagRespTempList.push({...m});
     _diagRespRenderRegistered();
@@ -2098,6 +2111,7 @@
     let cnt = 0;
     checked.forEach(c => {
       const m = _diagRespFilteredPool[+c.dataset.idx];
+      if (m && _diagRespOrgMismatch(m)) return;
       if (m && !_diagRespTempList.find(r => r.empno === m.empno)) { _diagRespTempList.push({...m}); cnt++; }
     });
     document.querySelectorAll('.diag-resp-pool-chk').forEach(c => c.checked = false);
@@ -2207,13 +2221,14 @@
     }
     tbody.innerHTML = members.map((m, i) => {
       const isReg = _diagRespTempList.some(r => r.empno === m.empno);
+    const orgDiff = _diagRespOrgMismatch(m);
       return `<tr style="${isReg ? 'background:#f9f9f9;color:#bbb;' : ''}">
-        <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : `<input type="checkbox" class="diag-resp-split-chk" data-idx="${i}" onchange="diagRespSplitOnCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
+        <td style="text-align:center;padding:5px 4px;">${isReg ? '<span style="font-size:10px;color:#ccc;">등록됨</span>' : orgDiff ? '<input type="checkbox" disabled title="대상자와 같은 회사의 임직원만 선택할 수 있습니다." style="cursor:not-allowed;">' : `<input type="checkbox" class="diag-resp-split-chk" data-idx="${i}" onchange="diagRespSplitOnCheck()" style="cursor:pointer;accent-color:var(--primary);">`}</td>
         <td style="padding:5px 8px;font-weight:600;">${_maskN(m.name)}</td>
         <td style="text-align:center;padding:5px 8px;color:#888;font-size:11px;">${m.empno||'-'}</td>
         <td style="text-align:center;padding:5px 8px;font-size:11px;">${m.company||'-'}</td>
         <td style="padding:5px 8px;color:#888;font-size:11px;">${m.dept||'-'}</td>
-        <td style="text-align:center;padding:5px 4px;">${isReg ? '' : `<button onclick="diagRespSplitAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
+        <td style="text-align:center;padding:5px 4px;">${isReg ? '' : orgDiff ? '<button disabled title="대상자와 같은 회사의 임직원만 추가할 수 있습니다." style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:#e5e7eb;color:#aaa;border:none;border-radius:3px;cursor:not-allowed;">추가</button>' : `<button onclick="diagRespSplitAddOne(${i})" style="height:22px;padding:0 10px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>`}</td>
       </tr>`;
     }).join('');
   }
@@ -2230,6 +2245,7 @@
   function diagRespSplitAddOne(idx) {
     const m = _diagRespSplitFilteredMembers[idx];
     if (!m) return;
+  if (_diagRespOrgMismatch(m)) { alert(DIAG_RESP_ORG_MSG); return; }
     if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
     _diagRespTempList.push({...m});
     _diagRespRenderRegistered();
@@ -2242,6 +2258,7 @@
     let cnt = 0;
     checked.forEach(c => {
       const m = _diagRespSplitFilteredMembers[+c.dataset.idx];
+      if (m && _diagRespOrgMismatch(m)) return;
       if (m && !_diagRespTempList.find(r => r.empno === m.empno)) { _diagRespTempList.push({...m}); cnt++; }
     });
     _diagRespRenderRegistered();

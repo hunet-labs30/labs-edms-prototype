@@ -1489,7 +1489,7 @@ body {
         <!-- 시나리오A: 오류 있음 -->
         <div id="targetPreviewErr">
           <div style="background:#fff8f0;border:1px solid #ffb347;border-radius:6px;padding:10px 16px;font-size:12px;color:#7a3800;font-weight:600;margin-bottom:10px;">
-            ⚠️ 총 5건 중 2건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
+            ⚠️ 총 7건 중 3건 오류가 발생했습니다. 오류 행을 수정 후 다시 업로드해주세요.
           </div>
           <table style="width:100%;border-collapse:collapse;font-size:12px;">
             <thead>
@@ -1506,6 +1506,10 @@ body {
               <tr>
                 <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">5행</td>
                 <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">응답자 아이디 미입력</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;text-align:center;">7행</td>
+                <td style="padding:8px 12px;border:1px solid #f0f2f5;color:#c00000;">대상자·응답자 조직 불일치</td>
               </tr>
             </tbody>
           </table>
@@ -1564,6 +1568,10 @@ body {
             <tr>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">응답범위 코드 불일치</td>
               <td style="padding:10px 14px;border:1px solid #f0f2f5;">C열 값이 코드표의 응답범위 목록에 없는 경우</td>
+            </tr>
+            <tr>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;text-align:center;font-weight:600;color:#1a1a2e;background:#fafbfc;">대상자·응답자 조직 불일치</td>
+              <td style="padding:10px 14px;border:1px solid #f0f2f5;">대상자와 응답자의 소속 회사가 다른 경우</td>
             </tr>
           </tbody>
         </table>
@@ -3679,7 +3687,7 @@ function openRespondentModal(tabId, rowIdx, tabLabel) {
 function _mkInitModal() {
   const target = MK_DIAG_TARGETS[_mkRowIdx];
   document.getElementById('mk-person-name').textContent = target ? target.name : '';
-  document.getElementById('mk-person-meta').textContent = target ? target.meta : '';
+  document.getElementById('mk-person-meta').textContent = target ? [target.dept, target.company].filter(Boolean).join(' / ') : '';
 
   // 진단 유형 목록 (역할 탭 구조에서는 불필요 — 섹션 숨김)
   const typeList = document.getElementById('mk-type-list');
@@ -3732,7 +3740,7 @@ function mkRespSelectMember(rowIdx) {
   _mkTempList = [...(MK_RESPONDENTS[_mkKey()] || [])];
   const target = MK_DIAG_TARGETS[_mkRowIdx];
   document.getElementById('mk-person-name').textContent = target ? target.name : '';
-  document.getElementById('mk-person-meta').textContent = target ? target.meta : '';
+  document.getElementById('mk-person-meta').textContent = target ? [target.dept, target.company].filter(Boolean).join(' / ') : '';
   document.getElementById('mk-center-title').textContent = _mkCurrentTabId.replace('-',' ') + ' 응답자 설정 — ' + (target ? target.name : '');
   _mkRenderMemberList();
   _mkFilterPool(typeof ME_SAMPLE_MEMBERS !== 'undefined' ? ME_SAMPLE_MEMBERS : []);
@@ -3794,17 +3802,22 @@ function _mkRenderPool() {
   const maskL = typeof _mbr_maskL === 'function' ? _mbr_maskL : l => l;
   tbody.innerHTML = _mkFilteredPool.map((m, i) => {
     const isReg = _mkTempList.some(r => r.empno === m.empno);
-    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
+    const orgDiff = _mkIsOrgMismatch(m);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':(orgDiff?'background:#fafafa;color:#bbb;':'')}">
       <td style="text-align:center;padding:5px 4px;">${isReg
         ? '<span style="font-size:10px;color:#ccc;">등록됨</span>'
-        : `<input type="checkbox" class="mk-pool-chk" data-idx="${i}" onchange="mkRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`}
+        : (orgDiff
+          ? '<input type="checkbox" disabled title="대상자와 같은 회사의 임직원만 선택할 수 있습니다." style="cursor:not-allowed;">'
+          : `<input type="checkbox" class="mk-pool-chk" data-idx="${i}" onchange="mkRespOnPoolCheck()" style="cursor:pointer;accent-color:var(--primary);">`)}
       </td>
       <td style="padding:5px 8px;"><strong>${maskN(m.name)}</strong></td>
       <td style="padding:5px 8px;font-size:11px;color:#666;">${maskL(m.loginId||'')}</td>
       <td style="padding:5px 8px;">${m.empno}</td>
       <td style="padding:5px 8px;">${m.company||''}</td>
       <td style="padding:5px 8px;">${m.dept||''}</td>
-      <td style="text-align:center;padding:5px 4px;">${isReg?'':`<button onclick="mkRespAddOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg?'':(orgDiff
+        ? '<button disabled title="대상자와 같은 회사의 임직원만 추가할 수 있습니다." style="height:22px;padding:0 8px;background:#e5e7eb;color:#aaa;border:none;border-radius:3px;font-size:11px;cursor:not-allowed;font-family:inherit;">추가</button>'
+        : `<button onclick="mkRespAddOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`)}</td>
     </tr>`;
   }).join('');
 }
@@ -3819,8 +3832,14 @@ function mkRespToggleAllPool(checked) {
   document.querySelectorAll('#mk-pool-tbody .mk-pool-chk').forEach(c => c.checked = checked);
   document.getElementById('mk-sel-count').textContent = document.querySelectorAll('#mk-pool-tbody .mk-pool-chk:checked').length;
 }
+const MK_ORG_MISMATCH_MSG = '대상자와 다른 회사의 임직원은 응답자로 지정할 수 없습니다.';
+function _mkIsOrgMismatch(m) {
+  const t = MK_DIAG_TARGETS[_mkRowIdx];
+  return !!(t && t.company && m && m.company !== t.company);
+}
 function mkRespAddOne(idx) {
   const m = _mkFilteredPool[idx];
+  if (m && _mkIsOrgMismatch(m)) { alert(MK_ORG_MISMATCH_MSG); return; }
   if (!m || _mkTempList.some(r => r.empno === m.empno)) { showToast('이미 추가된 응답자입니다.'); return; }
   _mkTempList.push(m); _mkRenderPool(); _mkRenderReg();
 }
@@ -3830,6 +3849,7 @@ function mkRespAddChecked() {
   let added = 0;
   checked.forEach(cb => {
     const m = _mkFilteredPool[+cb.dataset.idx];
+    if (m && _mkIsOrgMismatch(m)) return;
     if (m && !_mkTempList.some(r => r.empno === m.empno)) { _mkTempList.push(m); added++; }
   });
   _mkRenderPool(); _mkRenderReg();
@@ -3927,14 +3947,17 @@ function _mkRenderSplitRight(members) {
   }
   tbody.innerHTML = members.map((m,i) => {
     const isReg = _mkTempList.some(r=>r.empno===m.empno);
-    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':''}">
-      <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':`<input type="checkbox" class="mk-split-chk" data-idx="${i}" style="cursor:pointer;accent-color:var(--primary);">`}</td>
+    const orgDiff = _mkIsOrgMismatch(m);
+    return `<tr style="${isReg?'background:#f9f9f9;color:#bbb;':(orgDiff?'background:#fafafa;color:#bbb;':'')}">
+      <td style="text-align:center;padding:5px 4px;">${isReg?'<span style="font-size:10px;color:#ccc;">등록됨</span>':(orgDiff?'<input type="checkbox" disabled title="대상자와 같은 회사의 임직원만 선택할 수 있습니다." style="cursor:not-allowed;">':`<input type="checkbox" class="mk-split-chk" data-idx="${i}" style="cursor:pointer;accent-color:var(--primary);">`)}</td>
       <td style="padding:5px 8px;"><strong>${maskN(m.name)}</strong></td>
       <td style="padding:5px 8px;font-size:11px;color:#666;">${maskL(m.loginId||'')}</td>
       <td style="padding:5px 8px;">${m.empno}</td>
       <td style="padding:5px 8px;">${m.company||''}</td>
       <td style="padding:5px 8px;">${m.dept||''}</td>
-      <td style="text-align:center;padding:5px 4px;">${isReg?'':`<button onclick="mkRespAddSplitOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`}</td>
+      <td style="text-align:center;padding:5px 4px;">${isReg?'':(orgDiff
+        ? '<button disabled title="대상자와 같은 회사의 임직원만 추가할 수 있습니다." style="height:22px;padding:0 8px;background:#e5e7eb;color:#aaa;border:none;border-radius:3px;font-size:11px;cursor:not-allowed;font-family:inherit;">추가</button>'
+        : `<button onclick="mkRespAddSplitOne(${i})" style="height:22px;padding:0 8px;background:var(--primary);color:#fff;border:none;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;">추가</button>`)}</td>
     </tr>`;
   }).join('');
 }
@@ -3942,6 +3965,7 @@ function _mkRenderSplitRight(members) {
 function mkRespToggleAllSplit(checked) { document.querySelectorAll('#mk-split-tbody .mk-split-chk').forEach(c=>c.checked=checked); }
 function mkRespAddSplitOne(idx) {
   const m = _mkSplitMembers[idx];
+  if (m && _mkIsOrgMismatch(m)) { alert(MK_ORG_MISMATCH_MSG); return; }
   if (!m||_mkTempList.some(r=>r.empno===m.empno)){showToast('이미 추가된 응답자입니다.');return;}
   _mkTempList.push(m); _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
 }
@@ -3949,7 +3973,7 @@ function mkRespAddSplitChecked() {
   const checked = document.querySelectorAll('#mk-split-tbody .mk-split-chk:checked');
   if (!checked.length){showToast('추가할 응답자를 선택하세요.');return;}
   let added=0;
-  checked.forEach(cb=>{const m=_mkSplitMembers[+cb.dataset.idx];if(m&&!_mkTempList.some(r=>r.empno===m.empno)){_mkTempList.push(m);added++;}});
+  checked.forEach(cb=>{const m=_mkSplitMembers[+cb.dataset.idx];if(m&&_mkIsOrgMismatch(m))return;if(m&&!_mkTempList.some(r=>r.empno===m.empno)){_mkTempList.push(m);added++;}});
   _mkRenderSplitRight(_mkSplitMembers); _mkRenderReg();
   showToast(added?added+'명이 응답자로 추가되었습니다.':'이미 추가된 응답자입니다.');
 }
