@@ -2134,8 +2134,7 @@ let bulkCurrentFile = null;
     <!-- 푸터 -->
     <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fafafa;">
       <span id="diag-resp-final-cnt" style="margin-right:auto;font-size:12px;font-weight:600;color:#555;">최종 선택 0명</span>
-      <button id="diag-resp-btn-cancel" class="btn btn-reset" style="height:30px;padding:0 20px;" onclick="diagRespListClose()">취소</button>
-      <button id="diag-resp-btn-save" class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">저장</button>
+      <button id="diag-resp-btn-save" class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">선택 인원 등록</button>
     </div>
   </div>
 </div>
@@ -2276,11 +2275,9 @@ function _applyDiagReadOnlyUI() {
   const respAddBtn      = document.getElementById('diag-resp-btn-add');
   const respAddSplitBtn = document.getElementById('diag-resp-btn-add-split');
   const respSaveBtn     = document.getElementById('diag-resp-btn-save');
-  const respCancelBtn   = document.getElementById('diag-resp-btn-cancel');
   if (respAddBtn)       respAddBtn.style.display      = ro ? 'none' : '';
   if (respAddSplitBtn)  respAddSplitBtn.style.display  = ro ? 'none' : '';
   if (respSaveBtn)      respSaveBtn.style.display      = ro ? 'none' : '';
-  if (respCancelBtn)    respCancelBtn.textContent       = ro ? '닫기' : '취소';
 }
 
 // ── 목록 팝업 열기 ──

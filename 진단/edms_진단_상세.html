@@ -434,7 +434,7 @@
           <tr>
             <th style="text-align:left;">진단명</th>
             <th>진단 기간</th>
-            <th>진단진행율</th>
+            <th>진단 진행률(%)</th>
             <th>총 대상자</th>
             <th>총 응답자</th>
             <th>응답완료</th>
@@ -445,7 +445,7 @@
           <tr>
             <td style="text-align:left;"><span id="diagName" style="font-weight:700;color:#1a1a2e;">2025년 상반기 리더십 역량진단</span></td>
             <td style="white-space:nowrap;font-weight:700;color:#1a1a2e;"><span id="diagStartDate">2025.05.01 00:00</span> ~ <span id="diagEndDate">2025.05.31 23:59</span></td>
-            <td><span class="stat-num accent" id="sumRate">0%</span><span class="stat-sub" id="sumRateSub">(0 / 70)</span></td>
+            <td><span class="stat-num accent" id="sumRate">0%</span><span class="stat-sub" id="sumRateSub"> (0/70)</span></td>
             <td><span class="stat-num" id="sumTarget">12</span><span class="stat-sub">명</span></td>
             <td><span class="stat-num" id="sumResp">70</span><span class="stat-sub">명</span></td>
             <td><span class="stat-num" id="sumDone">0</span><span class="stat-sub">명</span></td>
@@ -473,7 +473,7 @@
       </select>
       <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">회사</span>
       <select id="after-filter-company" class="select" style="width:130px;"></select>
-      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">검색어</span>
+      <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;margin-left:12px;">대상자/응답자</span>
       <select id="after-filter-search-type" class="select" style="width:80px;">
         <option value="name">이름</option>
         <option value="empno">사번</option>
@@ -488,9 +488,10 @@
     <div id="state-before">
       <div class="card" style="padding:0;overflow:hidden;">
         <div style="padding:14px 20px;">
-          <div class="action-row" style="margin-bottom:12px;">
+          <div class="action-row" style="margin-bottom:12px;justify-content:space-between;align-items:center;">
+            <span id="beforeResultInfo" style="font-size:13px;color:#555;">검색결과 <strong>0</strong>건</span>
             <div class="action-row-right">
-              <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
+              <button class="btn btn-outline btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀 다운로드</button>
               <button class="btn btn-danger btn-sm" onclick="deleteBeforeSelected()">삭제</button>
               <button class="btn btn-primary btn-sm" onclick="openBulkRegModal()">일괄 등록</button>
               <button class="btn btn-primary btn-sm" onclick="openTargetListModal()">대상자 관리</button>
@@ -502,7 +503,7 @@
               <thead>
                 <tr>
                   <th style="width:36px;"><input type="checkbox" style="cursor:pointer;accent-color:var(--primary);"></th>
-                  <th style="width:36px;">NO</th>
+                  <th style="width:36px;">No.</th>
                   <th style="width:70px;">이름</th>
                   <th style="width:130px;">아이디</th>
                   <th style="width:75px;">사번</th>
@@ -620,19 +621,16 @@
           <!-- 페이지네이션 (공통) -->
           <div class="pagination-row">
             <div class="pg-size-row">
-              페이지당
               <select class="select" style="height:26px;font-size:11px;width:58px;">
                 <option>30</option><option selected>50</option><option>100</option><option>200</option>
               </select>
-              건
+              개씩 보기
             </div>
             <div class="pagination">
-              <button class="pg-btn" title="처음">«</button>
               <button class="pg-btn" title="이전">‹</button>
               <button class="pg-btn active">1</button>
               <button class="pg-btn">2</button>
               <button class="pg-btn" title="다음">›</button>
-              <button class="pg-btn" title="마지막">»</button>
             </div>
           </div>
         </div>
@@ -648,9 +646,9 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <!-- 진단 진행 후 전용: 선택+작업 -->
-            <span class="sel-count-text" id="selCountText" style="display:none;">선택 0건</span>
+            <span class="sel-count-text" id="selCountText" style="display:none;">0명 선택</span>
             <select id="afterWorkSelect" class="select" style="height:28px;font-size:12px;display:none;" onchange="handleWorkSelect(this)">
-              <option value="">작업 선택 ▼</option>
+              <option value="">작업 선택</option>
               <option value="mail">메일 발송</option>
               <option value="datechange">종료일 변경</option>
             </select>
@@ -660,7 +658,7 @@
             <button class="btn btn-outline btn-sm" id="btnAfterAddResp" style="display:none;" onclick="openRespRegModal()">응답자 관리</button>
             <!-- 진단 마감 전 전용: 종료일 변경만 -->
             <button class="btn btn-gray btn-sm" id="btnExpiredDateChange" style="display:none;" onclick="document.getElementById('afterWorkSelect').value='datechange';handleWorkSelect(document.getElementById('afterWorkSelect'));">종료일 변경</button>
-            <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀다운로드</button>
+            <button class="btn btn-primary btn-sm" onclick="directDownload('2025년 상반기 리더십 역량진단')">엑셀 다운로드</button>
           </div>
         </div>
 
@@ -669,7 +667,7 @@
             <thead>
               <tr>
                 <th rowspan="2" style="width:36px;"><input type="checkbox" id="afterChkAll" style="cursor:pointer;accent-color:var(--primary);" onchange="afterSelectAll(this.checked)"></th>
-                <th rowspan="2" style="width:32px;">No</th>
+                <th rowspan="2" style="width:32px;">No.</th>
                 <th colspan="8" class="group-header">진단 대상자 정보</th>
                 <th colspan="7" class="group-header">응답(평가자) 정보</th>
                 <th colspan="3" class="group-header">진단 진행 관리</th>
@@ -815,21 +813,21 @@
               <tr class="withdrawn-row">
                 <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>9</td>
-                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
-                <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="withdrawn-text">탈퇴한 임직원</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
-                <td style="font-size:11px;">—</td>
+                <td style="font-size:11px;">-</td>
               </tr>
               <!-- Row 10: 중단 — 응답(평가자) 탈퇴 (체크박스 비활성화) -->
               <tr class="withdrawn-row">
                 <td><input type="checkbox" class="after-row-chk" disabled style="cursor:not-allowed;opacity:0.4;accent-color:var(--primary);"></td>
                 <td>10</td>
                 <td>정*은</td><td>d***@hunet.co.kr</td><td>2023055</td><td>동아쏘시오홀딩스</td><td>법무팀</td><td>대리</td><td>010-****-5555</td><td><span class="badge badge-green">상사</span></td>
-                <td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+                <td><span class="withdrawn-text">탈퇴한 임직원</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
                 <td><span class="badge badge-gray">미발송</span></td>
                 <td><span class="badge badge-red">중단</span></td>
-                <td style="font-size:11px;">—</td>
+                <td style="font-size:11px;">-</td>
               </tr>
             </tbody>
           </table>
@@ -837,19 +835,16 @@
         <!-- 페이지네이션 (공통) -->
         <div class="pagination-row" style="padding:10px 0 0;">
           <div class="pg-size-row">
-            페이지당
             <select class="select" style="height:26px;font-size:11px;width:58px;">
               <option>30</option><option selected>50</option><option>100</option><option>200</option>
             </select>
-            건
+            개씩 보기
           </div>
           <div class="pagination">
-            <button class="pg-btn" title="처음">«</button>
             <button class="pg-btn" title="이전">‹</button>
             <button class="pg-btn active">1</button>
             <button class="pg-btn">2</button>
             <button class="pg-btn" title="다음">›</button>
-            <button class="pg-btn" title="마지막">»</button>
           </div>
         </div>
       </div>
@@ -858,7 +853,7 @@
 
     <!-- 하단 목록 버튼 -->
     <div style="display:flex;justify-content:flex-end;padding:4px 2px;">
-      <a class="back-btn" href="edms_역량진단_관리.html">← 목록</a>
+      <a class="back-btn" href="edms_역량진단_관리.html">목록</a>
     </div>
 
   </main>
@@ -867,43 +862,36 @@
 <!-- 메일 발송 확인 모달 -->
 <div id="mailModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('mailModal')">
   <div class="modal-box">
-    <div class="modal-title">알림</div>
-    <div class="modal-msg" id="mailModalMsg">선택 인원에게 메일을 전송하겠습니까?</div>
+    <div class="modal-title">안내</div>
+    <div class="modal-msg" id="mailModalMsg">선택 인원에게 메일을 전송하겠습니까?<br>응답자에게 메일이 발송됩니다(응답자가 본인인 경우 본인에게 발송).</div>
     <div class="modal-btn-row">
-      <button class="btn btn-primary btn-sm" onclick="confirmMail()">확인</button>
       <button class="btn btn-reset btn-sm" onclick="closeModalById('mailModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmMail()">확인</button>
     </div>
   </div>
 </div>
 
-<!-- 시작/종료일 변경 모달 -->
+<!-- 종료일 변경 모달 -->
 <div id="dateChangeModal" class="modal-overlay" onclick="if(event.target===this)closeModalById('dateChangeModal')">
   <div class="modal-box">
-    <div class="modal-title">알림</div>
-    <div class="modal-msg" id="dateChangeModalMsg">0선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?</div>
+    <div class="modal-title" style="display:flex;align-items:center;justify-content:space-between;">종료일 변경
+      <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeModalById('dateChangeModal')">×</span>
+    </div>
+    <div class="modal-msg" id="dateChangeModalMsg" style="display:none;"></div>
     <div class="modal-date-row">
       <div class="modal-date-label">시작일</div>
-      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
-        <div style="display:flex;gap:6px;">
-          <input type="date" id="modalStartDateInp" class="input" value="2025-05-01" style="width:140px;height:30px;">
-          <input type="time" id="modalStartTimeInp" class="input" value="00:00" style="width:100px;height:30px;">
-        </div>
-        <div class="modal-notice" id="modalStartDateNote">진행중인 진단은 시작일 변경이 적용되지 않습니다.</div>
-      </div>
+      <div id="modalStartDateTxt" style="font-size:13px;font-weight:600;color:#1a1a2e;">2025.05.01 00:00</div>
     </div>
     <div class="modal-date-row">
       <div class="modal-date-label">종료일</div>
       <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
-        <div style="display:flex;gap:6px;">
-          <input type="date" id="modalEndDateInp" class="input" value="2025-05-31" style="width:140px;height:30px;">
-          <input type="time" id="modalEndTimeInp" class="input" value="23:59" style="width:100px;height:30px;">
-        </div>
+        <input type="date" id="modalEndDateInp" class="input" value="2025-05-31" style="width:160px;height:30px;">
         <div class="modal-notice" id="modalEndDateNote" style="display:none;">현재 설정된 종료일 이전으로는 변경할 수 없습니다.</div>
       </div>
     </div>
     <div class="modal-btn-row">
-      <button class="btn btn-primary btn-sm" onclick="confirmDateChange()">확인</button>
       <button class="btn btn-reset btn-sm" onclick="closeModalById('dateChangeModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmDateChange()">확인</button>
     </div>
   </div>
 </div>
@@ -914,7 +902,7 @@
 
     <!-- 타이틀바 -->
     <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <span id="diag-resp-modal-title" style="font-size:14px;font-weight:700;">진단 응답자 등록</span>
+      <span id="diag-resp-modal-title" style="font-size:14px;font-weight:700;">응답자 등록</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagRespListClose()">×</span>
     </div>
 
@@ -932,10 +920,10 @@
         <div style="padding:10px 12px 8px;border-bottom:1px solid #eee;">
           <div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;">응답자 구분</div>
           <div style="display:flex;flex-direction:column;gap:4px;">
-            <button id="diag-resp-type-manager" onclick="diagRespSelectType('상사')"
-              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">상사</button>
             <button id="diag-resp-type-member" onclick="diagRespSelectType('구성원')"
               style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">구성원</button>
+            <button id="diag-resp-type-manager" onclick="diagRespSelectType('상사')"
+              style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">상사</button>
             <button id="diag-resp-type-peer" onclick="diagRespSelectType('동료')"
               style="text-align:left;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#555;">동료</button>
           </div>
@@ -969,19 +957,20 @@
           <div style="padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0;background:#f8f9fb;">
             <div style="display:flex;gap:6px;align-items:center;">
               <select id="diag-resp-search-company" class="select" style="width:130px;"></select>
-              <select id="diag-resp-search-type" class="select" style="width:70px;">
+              <select id="diag-resp-search-type" class="select" style="width:80px;">
                 <option value="name">이름</option>
+                <option value="loginId">아이디</option>
                 <option value="empno">사번</option>
               </select>
               <input id="diag-resp-search-keyword" class="input" type="text" placeholder="검색어를 입력해주세요." style="flex:1;" onkeydown="if(event.key==='Enter')diagRespSearch()">
-              <button class="btn btn-primary btn-sm" style="height:28px;" onclick="diagRespSearch()">🔍 검색</button>
-              <button class="btn btn-reset btn-sm" style="height:28px;" onclick="diagRespResetSearch()">전체검색</button>
+              <button class="btn btn-primary btn-sm" style="height:28px;" onclick="diagRespSearch()">검색</button>
+              <button class="btn btn-reset btn-sm" style="height:28px;" onclick="diagRespResetSearch()">초기화</button>
             </div>
           </div>
           <!-- 결과 헤더 -->
           <div style="padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;">
-            <span id="diag-resp-result-info" style="font-size:12px;color:#666;">검색 결과 : 0명 · 선택 : 0명</span>
-            <button onclick="diagRespAddSelected()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
+            <span id="diag-resp-result-info" style="font-size:12px;color:#666;">검색결과 0건 · 선택 0명</span>
+            <button onclick="diagRespAddSelected()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>
           </div>
           <!-- 테이블 -->
           <div style="flex:1;overflow-y:auto;">
@@ -1006,7 +995,7 @@
           <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
             <div style="padding:6px 16px;font-size:12px;color:#666;border-bottom:1px solid #f0f2f5;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;">
               <span id="diag-resp-split-result-info">항목을 선택하세요.</span>
-              <button onclick="diagRespAddSplitChecked()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가 →</button>
+              <button onclick="diagRespAddSplitChecked()" style="height:26px;padding:0 16px;font-size:11px;font-weight:700;background:var(--primary);color:#fff;border:none;border-radius:3px;cursor:pointer;">추가</button>
             </div>
             <div style="flex:1;overflow-y:auto;">
               <table class="main-table" style="font-size:12px;">
@@ -1028,8 +1017,9 @@
       <!-- ③ 오른쪽 패널: 등록된 응답자 -->
       <div style="width:260px;border-left:1px solid var(--border);display:flex;flex-direction:column;background:#fffde7;flex-shrink:0;">
         <div style="padding:10px 14px;border-bottom:1px solid #f0e090;display:flex;align-items:center;gap:6px;flex-shrink:0;">
-          <span style="font-size:13px;font-weight:700;color:#555;">등록된 응답자 리스트</span>
+          <span style="font-size:13px;font-weight:700;color:#555;">등록된 응답자</span>
           <span id="diag-resp-reg-cnt" style="font-size:11px;color:var(--primary);font-weight:700;background:#e8f0fe;padding:1px 7px;border-radius:10px;">0명</span>
+          <button onclick="diagRespClearAll()" style="margin-left:auto;height:22px;padding:0 8px;font-size:11px;background:#fff;border:1px solid #ddd;border-radius:3px;cursor:pointer;">전체 삭제</button>
         </div>
         <div id="diag-resp-registered-list" style="flex:1;overflow-y:auto;"></div>
       </div>
@@ -1037,8 +1027,8 @@
 
     <!-- 푸터 -->
     <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fafafa;">
-      <button class="btn btn-reset" style="height:30px;padding:0 20px;" onclick="diagRespListClose()">취소</button>
-      <button class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">저장</button>
+      <span id="diag-resp-final-cnt" style="margin-right:6px;font-size:12px;font-weight:600;color:#555;">최종 선택 0명</span>
+      <button id="diag-resp-btn-save" class="btn btn-primary" style="height:30px;padding:0 20px;" onclick="diagRespSave()">선택 인원 등록</button>
     </div>
   </div>
 </div>
@@ -1049,7 +1039,7 @@
 
     <!-- 타이틀바 -->
     <div style="padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <span style="font-size:14px;font-weight:700;">진단 대상자 목록</span>
+      <span id="tl-title" style="font-size:14px;font-weight:700;">대상자 목록 (0명)</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeTargetListModal()">×</span>
     </div>
 
@@ -1059,8 +1049,8 @@
         <select id="tl-search-company" class="select" style="width:100px;" onchange="targetListSearch()"></select>
         <select id="tl-search-type" class="select" style="width:80px;">
           <option value="name">이름</option>
+          <option value="loginId">아이디</option>
           <option value="empno">사번</option>
-          <option value="dept">부서</option>
         </select>
         <input id="tl-search-keyword" class="input" type="text" placeholder="검색어를 입력해주세요." style="flex:1;height:30px;" onkeydown="if(event.key==='Enter')targetListSearch()">
         <button class="btn btn-primary btn-sm" style="height:30px;" onclick="targetListSearch()">검색</button>
@@ -1070,7 +1060,7 @@
 
     <!-- 결과 헤더 -->
     <div style="padding:8px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid #f0f2f5;">
-      <span id="tl-result-info" style="font-size:12px;color:#666;">총 <strong id="tl-total-cnt">0</strong>명</span>
+      <span id="tl-result-info" style="font-size:12px;color:#666;">검색결과 <strong id="tl-total-cnt">0</strong>건</span>
       <button class="btn btn-danger btn-sm" style="height:26px;" onclick="targetListDeleteSelected()">선택 삭제</button>
     </div>
 
@@ -1080,12 +1070,11 @@
         <thead style="position:sticky;top:0;z-index:1;background:#f0f2f5;">
           <tr>
             <th style="width:36px;"><input type="checkbox" id="tl-chk-all" onchange="targetListSelectAll(this.checked)" style="cursor:pointer;accent-color:var(--primary);"></th>
-            <th style="width:36px;">NO</th>
+            <th style="width:36px;">No.</th>
             <th style="width:80px;">이름</th>
             <th style="width:100px;">사번</th>
             <th style="width:90px;">회사</th>
             <th>부서명</th>
-            <th style="width:60px;">직급</th>
             <th style="width:50px;">삭제</th>
           </tr>
         </thead>
@@ -1246,6 +1235,7 @@
     // URL ?types=self,boss,member,peer (기본값: 모두 표시)
     const typesParam = params.get('types');
     const activeTypes = typesParam ? typesParam.split(',') : ['self', 'boss', 'member', 'peer'];
+    window._diagActiveTypes = activeTypes;
     ['self', 'boss', 'member', 'peer'].forEach(t => {
       const show = activeTypes.includes(t);
       document.querySelectorAll(`.th-resp-${t}, .resp-${t}`).forEach(el => {
@@ -1487,7 +1477,7 @@
     }
     const rate = s.resp ? Math.round(s.done / s.resp * 100) : 0;
     document.getElementById('sumRate').textContent    = rate + '%';
-    document.getElementById('sumRateSub').textContent = '(' + s.done + ' / ' + s.resp + ')';
+    document.getElementById('sumRateSub').textContent = ' (' + s.done + '/' + s.resp + ')';
     document.getElementById('sumTarget').textContent  = s.target;
     document.getElementById('sumResp').textContent    = s.resp;
     document.getElementById('sumDone').textContent    = s.done;
@@ -1533,7 +1523,12 @@
   }
 
   // ── 진단진행전 테이블 렌더링 ──
+  function updateBeforeResultInfo() {
+    const el = document.getElementById('beforeResultInfo');
+    if (el) el.innerHTML = '검색결과 <strong>' + document.querySelectorAll('#state-before .before-data-row').length + '</strong>건';
+  }
   function renderBeforeTable() {
+    updateBeforeResultInfo();
     document.querySelectorAll('#state-before .before-data-row').forEach(tr => {
       const name   = tr.dataset.name   || '-';
       const boss   = parseInt(tr.dataset.boss   || 0);
@@ -1610,7 +1605,7 @@
   // ── After 상태: 선택 건수 (disabled 제외) ──
   function updateSelCount() {
     const count = document.querySelectorAll('.after-row-chk:not(:disabled):checked').length;
-    document.getElementById('selCountText').textContent = '선택 ' + count + '건';
+    document.getElementById('selCountText').textContent = count + '명 선택';
   }
   function afterSelectAll(checked) {
     document.querySelectorAll('.after-row-chk:not(:disabled)').forEach(c => { c.checked = checked; });
@@ -1627,7 +1622,7 @@
       sel.value = ''; return;
     }
     if (val === 'mail') {
-      document.getElementById('mailModalMsg').textContent = '선택 인원에게 메일을 전송하겠습니까?';
+      document.getElementById('mailModalMsg').innerHTML = '선택 인원에게 메일을 전송하겠습니까?<br>응답자에게 메일이 발송됩니다(응답자가 본인인 경우 본인에게 발송).';
       document.getElementById('mailModal').classList.add('open');
     } else if (val === 'resp_delete') {
       if (confirm(count + '명의 응답자를 삭제하겠습니까?\n응답자를 삭제하면 해당 응답자의 진단이 중단됩니다.')) {
@@ -1650,7 +1645,6 @@
       const hasInProgress = checkedRows.some(tr =>
         [...tr.querySelectorAll('.badge')].some(b => b.textContent.trim() === '진행중')
       );
-      document.getElementById('modalStartDateNote').style.display = hasInProgress ? '' : 'none';
 
       // 선택된 행들의 현재 종료일 중 가장 늦은 날짜를 min으로 설정
       const endDates = checkedRows.map(tr => {
@@ -1673,7 +1667,7 @@
         endDateNote.style.display = 'none';
       }
 
-      document.getElementById('dateChangeModalMsg').textContent = count + '선택 인원의 시작/종료일을 아래와 같이 변경하겠습니까?';
+      document.getElementById('modalStartDateTxt').textContent = document.getElementById('diagStartDate').textContent;
       document.getElementById('dateChangeModal').classList.add('open');
     }
     sel.value = '';
@@ -1694,7 +1688,7 @@
     // 진행중 포함 여부에 따라 메시지 분기
     // 진행중 아닌 대상 → 시작/종료일 모두 반영, 진행중 대상 → 종료일만 반영
     closeModalById('dateChangeModal');
-    showToast('시작/종료일이 변경되었습니다.');
+    showToast('종료일이 변경되었습니다.');
   }
 
   // ── 대상자 등록: 공통 모듈 사용 ──
@@ -1741,12 +1735,12 @@
       const empno = cells[4] ? cells[4].textContent.trim() : '';
       const co    = cells[5] ? cells[5].textContent.trim() : '';
       const dept  = cells[6] ? cells[6].textContent.trim() : '';
-      const rank  = cells[7] ? cells[7].textContent.trim() : '';
+      const loginId = cells[3] ? cells[3].textContent.trim() : '';
       if (!scopeNames.includes(co)) return;
       if (company && co !== company) return;
       const kw = keyword.trim().toLowerCase();
       if (kw) {
-        const target = type === 'name' ? name : type === 'empno' ? empno : dept;
+        const target = type === 'name' ? name : type === 'loginId' ? loginId : empno;
         if (!target.toLowerCase().includes(kw)) return;
       }
       seq++;
@@ -1759,12 +1753,12 @@
         <td>${empno}</td>
         <td>${co}</td>
         <td>${dept}</td>
-        <td>${rank}</td>
         <td style="text-align:center;"><button class="btn btn-danger btn-xs" onclick="targetListDeleteRow(this)">삭제</button></td>`;
       tbody.appendChild(row);
     });
-    document.getElementById('tl-total-cnt').textContent = seq;
-    document.getElementById('tl-result-info').innerHTML = '총 <strong id="tl-total-cnt">' + seq + '</strong>명';
+    document.getElementById('tl-result-info').innerHTML = '검색결과 <strong id="tl-total-cnt">' + seq + '</strong>건';
+    const totalInScope = rows.filter(tr => scopeNames.includes((tr.querySelectorAll('td')[5] || {}).textContent?.trim())).length;
+    document.getElementById('tl-title').textContent = '대상자 목록 (' + totalInScope + '명)';
   }
 
   function targetListSearch() {
@@ -1774,6 +1768,7 @@
   function targetListResetSearch() {
     document.getElementById('tl-search-keyword').value = '';
     document.getElementById('tl-search-company').selectedIndex = 0;
+    document.getElementById('tl-search-type').selectedIndex = 0;
     _renderTargetList('');
   }
   function targetListSelectAll(checked) {
@@ -1812,7 +1807,9 @@
     const firstRow = document.querySelector('#state-before tbody tr.before-data-row');
     if (!firstRow) { showToast('먼저 대상자를 등록해주세요.'); return; }
     const rowNo = parseInt(firstRow.dataset.rowno || 1);
-    openRespSetModal(rowNo, '상사');
+    const enabled = window._diagActiveTypes || ['self', 'boss', 'member', 'peer'];
+    const first = [['member', '구성원'], ['boss', '상사'], ['peer', '동료']].find(([k]) => enabled.includes(k));
+    openRespSetModal(rowNo, first ? first[1] : '구성원');
   }
 
   // ── 대상자 삭제 ──
@@ -1826,6 +1823,7 @@
       const cells = tr.querySelectorAll('td');
       if (cells[1]) cells[1].textContent = i + 1;
     });
+    updateBeforeResultInfo();
     showToast(checked.length + '명이 삭제되었습니다.');
   }
 
@@ -1936,9 +1934,12 @@
     _diagRespCurrentType = type;
     // 버튼 스타일 토글
     const btnMap = { '상사': 'diag-resp-type-manager', '구성원': 'diag-resp-type-member', '동료': 'diag-resp-type-peer' };
+    const keyMap = { '상사': 'boss', '구성원': 'member', '동료': 'peer' };
+    const enabled = window._diagActiveTypes || ['self', 'boss', 'member', 'peer'];
     Object.entries(btnMap).forEach(([t, id]) => {
       const btn = document.getElementById(id);
       if (!btn) return;
+      btn.style.display = enabled.includes(keyMap[t]) ? '' : 'none';
       if (t === type) {
         btn.style.border = '1px solid var(--primary)';
         btn.style.background = 'var(--primary)';
@@ -1960,7 +1961,7 @@
 
     // 타이틀
     const typeLabel = {상사:'상사', 구성원:'구성원', 동료:'동료'}[type] || type;
-    document.getElementById('diag-resp-modal-title').textContent = typeLabel + ' 응답자 등록';
+    document.getElementById('diag-resp-modal-title').textContent = '응답자 등록';
     document.getElementById('diag-resp-subtitle').textContent = typeLabel + ' 진단 응답자 설정';
 
     // 대상자 사이드바: before 테이블 전체 행 목록
@@ -2000,7 +2001,7 @@
     document.getElementById('diag-resp-search-type').value = 'name';
     // 회사 드롭다운: 로그인 계정의 소속 범위(상위관리자 기준)에 노출되는 회사만 구성
     const coSel = document.getElementById('diag-resp-search-company');
-    coSel.innerHTML = '<option value="">회사 선택</option>' + _diagScopeCompanyNames().map(c => `<option value="${c}">${c}</option>`).join('');
+    coSel.innerHTML = '<option value="">회사 전체</option>' + _diagScopeCompanyNames().map(c => `<option value="${c}">${c}</option>`).join('');
     _diagRespRenderPool();
     _diagRespRenderRegistered();
   }
@@ -2033,13 +2034,13 @@
       if (!scopeNames.includes(m.company)) return false;
       if (company && m.company !== company) return false;
       if (keyword) {
-        const v = sType === 'name' ? (m.name||'').toLowerCase() : (m.empno||'').toLowerCase();
+        const v = sType === 'name' ? (m.name||'').toLowerCase() : sType === 'loginId' ? (m.loginId||'').toLowerCase() : (m.empno||'').toLowerCase();
         if (!v.includes(keyword)) return false;
       }
       return true;
     });
     document.getElementById('diag-resp-result-info').textContent =
-      '검색 결과 : ' + _diagRespFilteredPool.length + '명 · 선택 : 0명';
+      '검색결과 ' + _diagRespFilteredPool.length + '건 · 선택 0명';
     document.getElementById('diag-resp-chk-all').checked = false;
     const tbody = document.getElementById('diag-resp-pool-tbody');
     if (!_diagRespFilteredPool.length) {
@@ -2063,9 +2064,14 @@
 
   function _diagRespRenderRegistered() {
     document.getElementById('diag-resp-reg-cnt').textContent = _diagRespTempList.length + '명';
+    document.getElementById('diag-resp-final-cnt').textContent = '최종 선택 ' + _diagRespTempList.length + '명';
+    const saveBtn = document.getElementById('diag-resp-btn-save');
+    saveBtn.disabled = _diagRespTempList.length === 0;
+    saveBtn.style.opacity = saveBtn.disabled ? '.45' : '';
+    saveBtn.style.cursor = saveBtn.disabled ? 'not-allowed' : '';
     const list = document.getElementById('diag-resp-registered-list');
     if (!_diagRespTempList.length) {
-      list.innerHTML = '<div style="text-align:center;padding:30px 14px;color:#aaa;font-size:12px;">등록된 응답자가 없습니다.</div>';
+      list.innerHTML = '<div style="text-align:center;padding:30px 14px;color:#aaa;font-size:12px;">현재 조회된 데이터가 없습니다.</div>';
       return;
     }
     list.innerHTML = _diagRespTempList.map((m, i) => `<div style="display:flex;align-items:center;padding:8px 14px;border-bottom:1px solid #f5f0b0;gap:8px;">
@@ -2093,13 +2099,13 @@
     const total   = document.querySelectorAll('.diag-resp-pool-chk').length;
     document.getElementById('diag-resp-chk-all').checked = total > 0 && checked === total;
     document.getElementById('diag-resp-result-info').textContent =
-      '검색 결과 : ' + _diagRespFilteredPool.length + '명 · 선택 : ' + checked + '명';
+      '검색결과 ' + _diagRespFilteredPool.length + '건 · 선택 ' + checked + '명';
   }
   function diagRespAddOne(poolIdx) {
     const m = _diagRespFilteredPool[poolIdx];
     if (!m) return;
   if (_diagRespOrgMismatch(m)) { alert(DIAG_RESP_ORG_MSG); return; }
-    if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
+    if (_diagRespTempList.find(r => r.empno === m.empno)) { return; }
     _diagRespTempList.push({...m});
     _diagRespRenderRegistered();
     _diagRespRenderPool();
@@ -2126,6 +2132,11 @@
     _diagRespRenderRegistered();
     _diagRespRenderPool();
   }
+  function diagRespClearAll() {
+    _diagRespTempList = [];
+    _diagRespRenderRegistered();
+    _diagRespRenderPool();
+  }
   function diagRespSave() {
     const key = _storeKey(_diagRespCurrentRowNo, _diagRespCurrentType);
     BEFORE_RESP_STORE[key] = [..._diagRespTempList];
@@ -2140,7 +2151,7 @@
       }
     }
     diagRespListClose();
-    showToast('저장되었습니다. (' + _diagRespTempList.length + '명)');
+    showToast(_diagRespTempList.length + '명이 응답자로 설정되었습니다.');
   }
 
   // 분류별(스플릿) 패널
@@ -2246,7 +2257,7 @@
     const m = _diagRespSplitFilteredMembers[idx];
     if (!m) return;
   if (_diagRespOrgMismatch(m)) { alert(DIAG_RESP_ORG_MSG); return; }
-    if (_diagRespTempList.find(r => r.empno === m.empno)) { showToast('이미 등록된 응답자입니다.'); return; }
+    if (_diagRespTempList.find(r => r.empno === m.empno)) { return; }
     _diagRespTempList.push({...m});
     _diagRespRenderRegistered();
     _diagRespRenderSplitRight(_diagRespSplitFilteredMembers);
