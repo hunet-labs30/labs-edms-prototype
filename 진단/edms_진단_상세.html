@@ -1363,7 +1363,7 @@
       const pagRow = card.querySelector('.pagination-row');
       if (pagRow) pagRow.style.display = 'none';
       card.querySelector('thead').innerHTML = `<tr>
-        <th style="width:36px;">NO</th><th style="width:70px;">이름</th><th style="width:130px;">아이디</th>
+        <th style="width:36px;">No.</th><th style="width:70px;">이름</th><th style="width:130px;">아이디</th>
         <th style="width:75px;">사번</th><th style="width:65px;">회사</th><th>부서/팀</th>
         <th style="width:52px;">직급</th><th style="width:100px;">휴대번호</th></tr>`;
       card.querySelector('tbody').innerHTML =
@@ -1391,7 +1391,7 @@
     $('afterTable').innerHTML = `
       <thead>
         <tr>
-          <th rowspan="2" style="width:32px;">No</th>
+          <th rowspan="2" style="width:32px;">No.</th>
           <th colspan="7" class="group-header">진단 대상자(응답자) 정보</th>
           <th colspan="2" class="group-header">응답 현황</th>
         </tr>
@@ -1442,7 +1442,7 @@
     const rows = filtered.map((r, i) => ({ r, no: filtered.length - i }));   // No는 내림차순
     $('ontimeTbody').innerHTML = rows.length ? rows.map(({ r, no }) => r[7] === 'out' ? `
         <tr class="withdrawn-row">
-          <td>${no}</td><td><span class="withdrawn-text">(탈퇴한 임직원)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+          <td>${no}</td><td><span class="withdrawn-text">탈퇴한 임직원</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
           <td>${badge(r[7])}</td><td style="font-size:11px;">${r[8]}</td>
         </tr>` : `
         <tr>
