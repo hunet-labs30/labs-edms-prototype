@@ -13,6 +13,7 @@
 .head h1{font-size:17px;margin:0 0 4px}.head p{margin:0;color:var(--sub);font-size:13px}
 .tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);overflow-x:auto}
 .tabs button{padding:10px 16px;border:0;background:none;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;font-size:14px}
+.tabs .grp{align-self:center;font-size:11px;color:var(--sub);padding:0 8px 0 14px;white-space:nowrap}.tabs .grp:first-child{padding-left:0}
 .tabs button.on{color:var(--pri);border-color:var(--pri);font-weight:700}
 .panel{padding-top:14px}
 .hero{background:var(--hero);border:1px solid var(--pri2);border-left:5px solid var(--pri);border-radius:10px;padding:16px 18px;margin-bottom:12px}
@@ -42,7 +43,7 @@ tr.gap td{color:var(--sub);font-size:12px}
 .slide{height:6px;background:var(--line);border-radius:3px;position:relative}
 .slide u{position:absolute;top:-4px;width:2px;height:14px}
 .slide em{position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;transform:translateX(-7px);border:2px solid var(--card)}
-.dv{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
+.dv{display:grid;grid-template-columns:170px 1fr 86px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
 .dvb{height:12px;position:relative;background:var(--line);border-radius:6px}.dvb:after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--sub)}
 .dvb i{position:absolute;top:0;height:100%;border-radius:6px}
 details{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}
@@ -64,15 +65,15 @@ details p{margin:6px 0;font-size:13px}
 const COMP=['커뮤니케이션','문제해결','리더십','협업','전문성'];
 const G=[{n:'소통',ix:[0,3],s:3.5,w:3.0},{n:'사고',ix:[1,4],s:3.6,w:3.3},{n:'리더십',ix:[2],s:3.8,w:3.2}];
 const gOf=i=>G.find(g=>g.ix.includes(i));
-const judge=(v,i)=>{const g=gOf(i);return v>=g.s?'강점':v<g.w?'약점':'보통'};
-const POST={me:[3.6,3.2,2.9,4.0,3.4],mgr:[3.4,3.6,3.5,3.8,3.4],peer:[3.2,3.5,3.4,3.7,3.3],mem:[3.0,3.4,3.3,3.6,3.2],all:[3.3,3.4,3.1,3.5,3.3]};
-const PRE={me:[3.0,2.8,2.5,3.6,3.2],mgr:[3.1,3.3,3.1,3.6,3.3],peer:[2.9,3.1,3.0,3.5,3.2],mem:[2.8,3.0,2.9,3.4,3.1],all:[3.2,3.3,3.0,3.4,3.2]};
+const judge=(v,i)=>{const g=gOf(i);v=Math.round(v*100)/100;return v>=g.s?'강점':v<g.w?'약점':'보통'};
+const POST={me:[3.6,3.2,2.9,4.0,3.4],mgr:[3.2,3.2,3.6,3.8,3.4],peer:[3.0,3.2,3.5,3.7,3.3],mem:[2.8,3.1,3.4,3.6,3.2],all:[3.3,3.4,3.1,3.5,3.3]};
+const PRE={me:[3.0,2.8,2.5,3.6,3.2],mgr:[3.1,3.3,3.2,3.2,2.7],peer:[3.0,3.1,3.1,3.0,2.6],mem:[2.9,3.0,3.0,2.9,2.5],all:[3.2,3.3,3.0,3.4,3.2]};
 const EV={me:['나','var(--pri)'],mgr:['상사','var(--c-mgr)'],peer:['동료','var(--c-peer)'],mem:['구성원','var(--c-mem)'],all:['전사평균','var(--c-all)']};
 const TYPES={
- self:{n:'자가진단 (범용)',multi:0,pp:0,m:'응답자 유형: 본인만 · 지정 기간 또는 상시(상시는 응시 직후 결과 확인)'},
- multi:{n:'다면진단 (범용)',multi:1,pp:0,m:'응답자 유형: 본인 + 상사·동료·구성원 · 진단 마감 후 결과 확인'},
- selfPP:{n:'자가진단 (사전사후)',multi:0,pp:1,m:'사전 응시자 대상 전후 비교 리포트 (사전 미응시자는 범용 결과 리포트)'},
- multiPP:{n:'다면진단 (사전사후)',multi:1,pp:1,m:'사후 진단 종료 후 전후 비교 리포트 · 응답자 유형은 사전 진단과 동일'}
+ self:{n:'자가진단 (범용)',multi:0,pp:0},
+ multi:{n:'다면진단 (범용)',multi:1,pp:0},
+ selfPP:{n:'자가진단 (사전사후)',multi:0,pp:1},
+ multiPP:{n:'다면진단 (사전사후)',multi:1,pp:1}
 };
 /* ===== 헬퍼 ===== */
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
@@ -100,7 +101,15 @@ const rowsOf=()=>COMP.map((c,i)=>({c,i,v:POST.me[i],j:judge(POST.me[i],i)}));
 const weakOf=()=>rowsOf().filter(r=>r.j=='약점').sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
 const strongOf=()=>rowsOf().filter(r=>r.j=='강점').sort((a,b)=>(b.v-gOf(b.i).s)-(a.v-gOf(a.i).s));
 
-/* ================= 자가진단 ================= */
+/* ===== 맹점 / 숨은 강점 (본인 − 주변 GAP 기준, 임시 ±0.5 · 확정 필요) ===== */
+const BLIND=0.5;
+const gapOf=(src,i)=>src.me[i]-oth(src,i);
+const kind=d=>{d=Math.round(d*100)/100;return d>=BLIND?'맹점':d<=-BLIND?'숨은 강점':'일치'};
+const ktag=k=>k=='맹점'?'<span class="tag r">맹점</span>':k=='숨은 강점'?'<span class="tag g">숨은 강점</span>':'<span class="note">일치</span>';
+const sideTxt=d=>d>=0?`내가 +${d.toFixed(1)}`:`주변 +${(-d).toFixed(1)}`;
+const kn=(src,k)=>COMP.filter((c,i)=>kind(gapOf(src,i))==k);
+
+/* ================= 범용 진단 (기존 구성 유지) ================= */
 function self1(){
  const w=weakOf(),s=strongOf();
  const rows=rowsOf().sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
@@ -118,89 +127,113 @@ function self2(){
  +card('전사평균 대비 (나 − 전사평균)',rows.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
 }
 /* ================= 다면진단 ================= */
-function multi1(){
- const rows=COMP.map((c,i)=>({c,i,me:POST.me[i],o:oth(POST,i),d:POST.me[i]-oth(POST,i)})).sort((a,b)=>b.d-a.d);
- const hi=rows[0],lo=rows[4],ag=avg(rows.map(r=>r.d));
- return hero(`내가 본 나와 주변이 본 나는 ${nm(hi.c)}에서 가장 다릅니다`,
-  [`${nm(hi.c)}: 나 ${f1(hi.me)} / 주변 ${f1(hi.o)} → 내가 더 높게 평가`,
-   `${nm(lo.c)}: 나 ${f1(lo.me)} / 주변 ${f1(lo.o)} → ${lo.d<0?'주변이 더 높게 평가':'차이 가장 작음'}`,
-   Math.abs(ag)<0.05?'전체 평균으로 보면 나와 주변의 평가 수준은 비슷하지만, 역량별로는 차이가 있습니다.':`전체적으로 나는 주변보다 ${ag>0?'높게':'낮게'} 평가했습니다 (평균 ${sd(ag)})`])
- +how('주변 = 상사·동료·구성원 평균입니다. GAP = 나 − 주변. 오른쪽(+)은 내가 더 높게, 왼쪽(−)은 주변이 더 높게 본 역량입니다.')
- +card('나 vs 주변 (GAP)',rows.map(r=>dv(r.c,r.d,1,sd(r.d),'var(--c-mem)','var(--pri)')).join('')+'<div class="legend"><em style="background:var(--c-mem)"></em>내가 더 높게<em style="background:var(--pri)"></em>주변이 더 높게</div>');
+/* 우선순위 : 1 나도 주변도 약점 / 2 주변은 약점 또는 맹점(내가 모르는 약점) / 3 나만 약점 */
+function priInfo(){
+ const info=rowsOf().map(r=>{const o=oth(POST,r.i),jo=judge(o,r.i),k=kind(gapOf(POST,r.i));
+  let p=0,lab='';
+  if(r.j=='약점'&&jo=='약점'){p=1;lab='둘 다 약점'}
+  else if(jo=='약점'){p=2;lab='주변만 약점'}
+  else if(k=='맹점'){p=2;lab='맹점'}
+  else if(r.j=='약점'){p=3;lab='나만 약점'}
+  else if(r.j=='강점'&&jo=='강점'){lab='둘 다 강점'}
+  return {...r,o,jo,k,p,lab}});
+ return info.sort((a,b)=>((a.p||9)-(b.p||9))||((a.v-gOf(a.i).w)-(b.v-gOf(b.i).w)));
 }
-function multi2(){
- const ks=['mgr','peer','mem'];
- const rows=ks.map(k=>({k,d:avg(COMP.map((c,i)=>POST.me[i]-POST[k][i]))})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
- const top=rows[0];const big=COMP.map((c,i)=>({c,d:POST.me[i]-POST[top.k][i]})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d))[0];
- return hero(`나와 시각 차이가 가장 큰 평가자는 ${EV[top.k][0]}입니다`,[`평균 GAP ${sd(top.d)} · 특히 ${nm(big.c)}에서 ${sd(big.d)}`])
- +how('같은 역량이라도 상사·동료·구성원이 보는 모습은 다를 수 있습니다. 차이가 큰 평가자와 대화해 보면 행동 단서를 얻을 수 있습니다.')
- +card('평가자 유형별 평균 GAP (나 − 평가자)',rows.map(r=>dv(EV[r.k][0],r.d,1,sd(r.d),'var(--c-mem)','var(--pri)')).join(''))
- +card('평가자 유형 × 역량 GAP',`<table><tr><th>역량</th>${ks.map(k=>`<th>${EV[k][0]}</th>`).join('')}</tr>${COMP.map((c,i)=>`<tr><td>${c}</td>${ks.map(k=>`<td>${gapBadge(POST.me[i]-POST[k][i])}</td>`).join('')}</tr>`).join('')}</table>`);
+const PRI_LAB={1:'나도 주변도 약점',2:'주변은 약점으로 보거나 맹점',3:'나만 약점'};
+function multiB(){
+ const info=priInfo(),by=n=>info.filter(r=>r.p==n);
+ const names=a=>a.map(r=>nm(r.c)).join(' ');
+ const first=by(1)[0]||by(2)[0]||by(3)[0];
+ const title=by(1).length?`지금 가장 먼저 키울 역량은 ${names(by(1))}입니다`:first?`나도 주변도 약점인 역량은 없습니다. 먼저 점검할 역량은 ${nm(first.c)}입니다`:'약점으로 판단된 역량이 없습니다';
+ const subs=[1,2,3].filter(n=>by(n).length).map(n=>`${n}순위 · ${PRI_LAB[n]} : ${names(by(n))}`);
+ const ptag=r=>r.p?`<span class="tag ${r.p==1?'r':r.p==2?'y':'b'}">${r.p}순위 · ${r.lab}</span>`:(r.lab?`<span class="tag g">${r.lab}</span>`:'<span class="note">—</span>');
+ const pj=j=>j=='보통'?'<span class="note">보통</span>':jtag(j);
+ return hero(title,subs)
+ +how('내 판정은 내 점수, 주변 판정은 상사·동료·구성원 평균 점수를 같은 기준점수(역량군별 강점·약점 기준)로 판정한 결과입니다. 나도 주변도 약점인 역량이 지금 가장 먼저 키울 역량(1순위)입니다. 다음은 주변은 약점으로 보거나 내가 주변보다 높게 평가한 맹점 역량(2순위)으로, 내가 인지하지 못한 약점일 수 있어 먼저 점검합니다. 나만 약점으로 보는 역량은 3순위입니다.')
+ +card('나와 주변의 위치 (우선순위 순)',info.map(r=>`<div class="srow"><span>${r.c} ${jtag(r.j)}</span><div class="slide"><u style="left:${pos(gOf(r.i).w)};background:var(--bad)"></u><u style="left:${pos(gOf(r.i).s)};background:var(--ok)"></u><em style="left:${pos(r.o)};background:#14b8a6"></em><em style="left:${pos(r.v)};background:var(--pri)"></em></div><span>${ptag(r)}</span></div>`).join('')+'<div class="legend"><em style="background:var(--pri)"></em>나<em style="background:#14b8a6"></em>주변<em style="background:var(--bad)"></em>약점 기준<em style="background:var(--ok)"></em>강점 기준 (역량군별 설정값)</div>')
+ +card('내 판정과 주변 판정 비교',`<table><tr><th>역량</th><th>내 판정</th><th>주변 판정</th><th>판정 비교</th></tr>${info.map(r=>`<tr><td>${r.c}</td><td>${pj(r.j)}</td><td>${pj(r.jo)}</td><td>${r.j==r.jo?'<span class="tag g">같은 방향</span>':'<span class="tag y">다른 방향</span>'}</td></tr>`).join('')}</table><div class="note">주변 = 상사·동료·구성원 평균</div>`);
 }
-function multi3(){
- const list=rowsOf().filter(r=>r.j!='보통').sort((a,b)=>a.j.localeCompare(b.j));
- const agree=list.filter(r=>r.j=='강점'?oth(POST,r.i)>=POST.all[r.i]:oth(POST,r.i)<POST.all[r.i]);
- return hero(`내 강점·약점 ${list.length}개 중 ${agree.length}개는 주변도 같은 방향으로 봅니다`,
-  [`강점인데 주변 평가가 전사평균보다 낮거나, 약점인데 주변 평가가 전사평균 이상이면 "주변은 다르게 본다"로 표시합니다.`])
- +how('판정은 본인 점수 기준이고, 주변 평균을 전사평균과 비교해 방향이 같은지 봅니다.')
- +card('내 강점·약점에 대한 주변 시각',`<table><tr><th>역량</th><th>내 판정</th><th>나</th><th>주변</th><th>전사평균</th><th>주변 시각</th></tr>${list.map(r=>{const o=oth(POST,r.i),a=POST.all[r.i];const same=r.j=='강점'?o>=a:o<a;return `<tr><td>${r.c}</td><td>${jtag(r.j)}</td><td>${f1(r.v)}</td><td>${f1(o)}</td><td>${f1(a)}</td><td>${same?'<span class="tag g">같은 방향</span>':'<span class="tag y">다르게 봄</span>'}</td></tr>`}).join('')}</table>`);
+
+/* ================= 사전사후 전용 (사후 결과 + 전후 비교) =================
+/* 자가진단 사후 결과 */
+function selfA(){
+ const w=weakOf(),s=strongOf();
+ const rows=rowsOf().sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
+ const vs=COMP.map((c,i)=>({c,i,d:POST.me[i]-POST.all[i]})).sort((a,b)=>b.d-a.d);
+ const up=vs.filter(r=>r.d>0).length;
+ return hero(w.length?`가장 먼저 키울 역량은 ${nm(w[0].c)}입니다`:'약점으로 판정된 역량이 없습니다',
+  [`강점 ${s.map(r=>nm(r.c)).join(' ')||'없음'} · 약점 ${w.map(r=>nm(r.c)).join(' ')||'없음'}`,
+   `전사평균보다 높은 역량은 5개 중 ${up}개입니다 (가장 앞선 역량 ${nm(vs[0].c)}, 가장 뒤처진 역량 ${nm(vs[vs.length-1].c)})`])
+ +how('약점 기준(빨강)보다 왼쪽이면 약점, 강점 기준(초록)보다 오른쪽이면 강점입니다. 전사평균은 이 진단의 모든 대상자 응답 평균이며, 강점·약점 판정과 별개로 조직 안에서의 상대적 위치를 보여 줍니다.')
+ +card('내 역량의 위치 (보완이 급한 순)',rows.map(r=>sl(r.i,[[r.v,'var(--pri)']],f1(r.v))).join('')+'<div class="legend"><em style="background:var(--bad)"></em>약점 기준<em style="background:var(--ok)"></em>강점 기준 (역량군별 설정값)</div>')
+ +card('전사평균 대비 (나 − 전사평균)',vs.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
 }
-/* ================= 사전사후 ================= */
-function pp1(t){
+/* ================= 다면진단 (사후 결과 공통) ================= */
+function multiA(){
+ const rows=COMP.map((c,i)=>({c,i,me:POST.me[i],o:oth(POST,i),d:gapOf(POST,i)})).map(r=>({...r,k:kind(r.d)})).sort((a,b)=>b.d-a.d);
+ const bl=rows.filter(r=>r.k=='맹점'),hs=rows.filter(r=>r.k=='숨은 강점');
+ return hero(bl.length||hs.length?`맹점 ${bl.length}개, 숨은 강점 ${hs.length}개가 있습니다`:'나와 주변의 평가가 크게 다른 역량은 없습니다',
+  [bl.length?`맹점 ${bl.map(r=>nm(r.c)).join(' ')} : 내가 보는 것보다 주변은 낮게 봅니다`:'맹점으로 판단된 역량은 없습니다',
+   hs.length?`숨은 강점 ${hs.map(r=>nm(r.c)).join(' ')} : 내가 보는 것보다 주변은 높게 봅니다`:'숨은 강점으로 판단된 역량은 없습니다'])
+ +how(`주변은 상사·동료·구성원의 평균입니다. 내 점수가 주변보다 ${BLIND} 이상 높으면 맹점(내가 아는 것보다 주변은 낮게 봄), ${BLIND} 이상 낮으면 숨은 강점(내가 아는 것보다 주변은 높게 봄)입니다. 맹점은 행동을 점검할 대상이고, 숨은 강점은 더 드러내면 좋은 강점입니다. 그래프는 가운데를 기준으로 오른쪽(파랑)일수록 주변이 나보다 높게 평가한 것이라 긍정적이고, 왼쪽(빨강)일수록 내가 주변보다 높게 평가한 맹점입니다. 기준(${BLIND})은 확정 전 임시값입니다.`)
+ +card('나 vs 주변 (GAP)',rows.map(r=>dv(`${r.c} ${r.k=='일치'?'':ktag(r.k)}`,-r.d,1,sideTxt(r.d),'var(--pri)','var(--bad)')).join('')+'<div class="legend"><em style="background:var(--bad)"></em>왼쪽 : 내가 더 높게 평가 (맹점 쪽)<em style="background:var(--pri)"></em>오른쪽 : 주변이 더 높게 평가 (숨은 강점 쪽)</div>');
+}
+/* ================= 사전사후: 전후 비교 ================= */
+function ppA(){
  const d=COMP.map((c,i)=>({c,i,d:POST.me[i]-PRE.me[i],pre:PRE.me[i],post:POST.me[i]})).sort((a,b)=>b.d-a.d);
  const up=d.filter(r=>r.d>0).length,flat=d.filter(r=>r.d<=0);
  const out=COMP.filter((c,i)=>judge(PRE.me[i],i)=='약점'&&judge(POST.me[i],i)!='약점');
- return hero(`사전 대비 5개 중 ${up}개 역량이 올랐습니다 (평균 ${sd(avg(d.map(r=>r.d)))})`,
-  [`가장 크게 오른 역량 ${nm(d[0].c)} ${sd(d[0].d)}`,
-   out.length?`약점에서 벗어난 역량 ${out.map(nm).join(' ')}`:'약점에서 벗어난 역량은 아직 없습니다',
-   `변화 없음·하락 ${flat.map(r=>nm(r.c)).join(' ')||'없음'}`])
- +how('회색 점이 사전, 파란 점이 사후입니다. 빨강·초록 눈금은 약점·강점 기준이라, 점이 눈금을 넘어가면 판정이 바뀝니다.')
- +card('본인 점수 변화 (변화가 큰 순)',d.map(r=>sl(r.i,[[r.pre,'var(--pre)'],[r.post,'var(--pri)']],`${f1(r.pre)} → ${f1(r.post)} (${sd(r.d)})`)).join(''))
- +(t.multi?'':'');
-}
-function pp2(){
  const col={약점:[],보통:[],강점:[]};
  COMP.forEach((c,i)=>{const a=judge(PRE.me[i],i),b=judge(POST.me[i],i);col[b].push(`${c} <span class="note">${a==b?'(유지)':'← '+a}</span>`)});
- const rk={약점:0,보통:1,강점:2};
- const mv=COMP.filter((c,i)=>rk[judge(POST.me[i],i)]>rk[judge(PRE.me[i],i)]).length;
- return hero(`판정이 한 단계 이상 올라간 역량은 ${mv}개입니다`,['사후 판정 기준으로 분류하고, 사전 판정은 작은 글씨로 표시했습니다.'])
- +how('같은 점수 상승이라도 기준점수를 넘었는지가 중요합니다. 약점 → 보통, 보통 → 강점으로 이동한 역량이 실질적인 성장입니다.')
+ return hero(`사전 대비 5개 중 ${up}개 역량이 올랐습니다 (평균 ${sd(avg(d.map(r=>r.d)))})`,
+  [`가장 크게 오른 역량 ${nm(d[0].c)} ${sd(d[0].d)}`,out.length?`약점에서 벗어난 역량 ${out.map(nm).join(' ')}`:'약점에서 벗어난 역량은 아직 없습니다',`변화 없음·하락 ${flat.map(r=>nm(r.c)).join(' ')||'없음'}`])
+ +how('회색 점이 사전, 파란 점이 사후입니다. 빨강·초록 눈금은 약점·강점 기준이라, 점이 눈금을 넘어가면 판정이 바뀝니다. 같은 점수 상승이라도 기준점수를 넘었는지가 중요하며, 약점 → 보통, 보통 → 강점으로 이동한 역량이 실질적인 성장입니다.')
+ +card('본인 점수 변화 (변화가 큰 순)',d.map(r=>sl(r.i,[[r.pre,'var(--pre)'],[r.post,'var(--pri)']],`${f1(r.pre)} → ${f1(r.post)} (${sd(r.d)})`)).join(''))
  +card('사후 판정 보드',`<div class="board">${['약점','보통','강점'].map(k=>`<div><span class="tag ${k=='강점'?'g':k=='약점'?'r':''}">${k}</span>${col[k].map(x=>`<div class="it">${x}</div>`).join('')||'<div class="note">없음</div>'}</div>`).join('')}</div>`);
 }
-function mpp1(){
- const rows=COMP.map((c,i)=>({c,i,m:POST.me[i]-PRE.me[i],o:oth(POST,i)-oth(PRE,i)}));
+function mppA(){
+ const rows=COMP.map((c,i)=>({c,i,m:POST.me[i]-PRE.me[i],o:oth(POST,i)-oth(PRE,i),a:judge(PRE.me[i],i),b:judge(POST.me[i],i),pa:judge(oth(PRE,i),i),pb:judge(oth(POST,i),i),ka:kind(gapOf(PRE,i)),kb:kind(gapOf(POST,i))}));
  const ma=avg(rows.map(r=>r.m)),oa=avg(rows.map(r=>r.o));
- const msg=ma>0&&oa>0?(oa>=ma?'주변이 느끼는 변화가 나보다 큽니다':'내가 느끼는 만큼 주변도 성장을 인정합니다'):ma>0?'내가 느끼는 변화를 주변은 아직 느끼지 못합니다':'스스로도 주변도 뚜렷한 변화를 느끼지 못합니다';
- return hero(msg,[`나의 변화 평균 ${sd(ma)} · 주변(상사·동료·구성원)의 변화 평균 ${sd(oa)}`])
- +how('다면 사전사후에서 가장 중요한 것은 "주변이 실제로 달라졌다고 보는가"입니다. 나의 변화보다 주변의 변화가 행동 변화의 근거입니다.')
- +card('역량별 변화: 나 vs 주변',rows.map(r=>dv(r.c+' · 나',r.m,1,sd(r.m),'var(--pri)','var(--pri)')+dv('· 주변',r.o,1,sd(r.o),'var(--c-mem)','var(--c-mem)')).join('<hr style="border:0;border-top:1px solid var(--line)">'));
+ const nms=fn=>rows.filter(fn).map(r=>nm(r.c)).join(' ')||'없음';
+ const bp=rows.filter(r=>r.ka=='맹점').length,bq=rows.filter(r=>r.kb=='맹점').length;
+ const wa=rows.filter(r=>r.a=='약점').length,wb=rows.filter(r=>r.b=='약점').length;
+ const tr=(n,x,y,end)=>`${n}은 ${x}개에서 ${y}개로 ${y<x?(end?'줄었습니다':'줄고'):y>x?(end?'늘었습니다':'늘고'):(end?'그대로입니다':'그대로이고')}`;
+ const msg=tr('약점',wa,wb,false)+', '+tr('맹점',bp,bq,true);
+ const jt=(a,b)=>{
+  if(a=='약점'&&b!='약점')return '<span class="tag g">약점 탈출</span>';
+  if(a!='약점'&&b=='약점')return '<span class="tag r">약점으로 하락</span>';
+  if(a=='강점'&&b!='강점')return '<span class="tag y">강점 약화</span>';
+  if(a!='강점'&&b=='강점')return '<span class="tag g">강점 달성</span>';
+  return '<span class="note">변화 없음</span>'};
+ const bt=(a,b)=>a=='맹점'&&b=='맹점'?'<span class="tag y">맹점 유지</span>':a=='맹점'?'<span class="tag g">맹점 해소</span>':b=='맹점'?'<span class="tag r">맹점 발생</span>':'<span class="note">—</span>';
+ const pj=j=>j=='보통'?'보통':jtag(j);
+ return hero(msg,[
+   `약점 : 해소 ${nms(r=>r.a=='약점'&&r.b!='약점')} · 새로 생김 ${nms(r=>r.a!='약점'&&r.b=='약점')}`,
+   `맹점 : 해소 ${nms(r=>r.ka=='맹점'&&r.kb!='맹점')} · 새로 생김 ${nms(r=>r.ka!='맹점'&&r.kb=='맹점')}`])
+ +how('나의 판정과 주변의 판정이 사전에서 사후로 어떻게 바뀌었는지, 맹점이 해소되었는지 새로 생겼는지를 비교합니다. 주변 판정은 상사·동료·구성원 평균 점수를 같은 기준점수로 판정한 결과입니다. 나의 변화보다 주변의 변화가 행동 변화의 근거입니다. 맹점 판단 기준(±'+BLIND+')은 확정 전 임시값입니다.')
+ +card('역량별 변화 내용',`<table><tr><th>역량</th><th>나의 판정</th><th>주변 판정</th><th>맹점 변화</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${pj(r.a)} → ${pj(r.b)}</td><td>${pj(r.pa)} → ${pj(r.pb)}</td><td>${bt(r.ka,r.kb)}</td></tr>`).join('')}</table><div class="note">주변 = 상사·동료·구성원 평균 · 맹점 = 내가 주변보다 높게 평가한 역량</div>`);
 }
-function mpp2(){
- const rows=COMP.map((c,i)=>({c,a:PRE.me[i]-oth(PRE,i),b:POST.me[i]-oth(POST,i)}));
- const dn=rows.filter(r=>Math.abs(r.b)<Math.abs(r.a)).length;
- return hero(`나와 주변의 시각 차이가 줄어든 역량은 5개 중 ${dn}개입니다`,['GAP의 절댓값이 사전보다 작아지면 "줄어듦"으로 봅니다. 줄수록 자기 인식이 주변 시각과 가까워진 것입니다.'])
- +how('GAP = 나 − 주변. 사전·사후 GAP이 모두 큰 역량은 계속 시각 차이가 있다는 뜻이므로 대화가 필요합니다.')
- +card('사전·사후 GAP 변화',`<table><tr><th>역량</th><th>사전 GAP</th><th>사후 GAP</th><th>변화</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${gapBadge(r.a)}</td><td>${gapBadge(r.b)}</td><td>${Math.abs(r.b)<Math.abs(r.a)?'<span class="tag g">줄어듦</span>':Math.abs(r.b)==Math.abs(r.a)?'유지':'<span class="tag y">커짐</span>'}</td></tr>`).join('')}</table>`);
-}
-function mpp3(){
- const ks=['mgr','peer','mem'];
- const rows=ks.map(k=>({k,d:avg(COMP.map((c,i)=>POST[k][i]-PRE[k][i]))})).sort((a,b)=>b.d-a.d);
- return hero(`변화를 가장 크게 느낀 평가자는 ${EV[rows[0].k][0]}, 가장 적게 느낀 평가자는 ${EV[rows[2].k][0]}입니다`,[rows.map(r=>`${EV[r.k][0]} ${sd(r.d)}`).join(' · ')])
- +how('평가자 유형별 평균 점수 변화(사후 − 사전)입니다. 변화를 덜 느끼는 평가자에게 행동 변화를 더 보여 줄 필요가 있습니다.')
- +card('평가자 유형별 평균 변화',rows.map(r=>dv(EV[r.k][0],r.d,1,sd(r.d),EV[r.k][1],EV[r.k][1])).join(''));
-}
+
 /* ================= 다음 행동 (공통) ================= */
 const COURSES=[['약점','리더십','팀을 움직이는 리더의 대화법','온라인'],['약점','문제해결','문제 정의와 해결안 도출','마이크로러닝'],['강점','협업','협업 리더십 심화','온라인'],['강점','커뮤니케이션','전달력을 높이는 스토리텔링','오프라인']];
 function act(t){
  const w=weakOf(),s=strongOf();
- let title=w.length?`${w.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점이 없으니 강점을 더 키워 보세요';
- const subs=[];
- if(t.multi){const r=COMP.map((c,i)=>({c,d:POST.me[i]-oth(POST,i)})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d))[0];subs.push(`주변과 시각 차이가 가장 큰 ${nm(r.c)}(${sd(r.d)})에 대해 동료·상사와 이야기해 보세요.`)}
- if(t.pp){const still=w.map(r=>nm(r.c)).join(' ');subs.push(still?`사후에도 약점인 역량: ${still}`:'사후에는 약점으로 남은 역량이 없습니다.')}
- const cs=COURSES.filter(c=>w.some(r=>r.c==c[1])||s.some(r=>r.c==c[1]));
- return hero(title,subs)
- +how('강점/약점 판정은 본인 점수 기준입니다. 추천 과정은 진단 생성 시 설정한 경우에만 노출됩니다.')
- +card('추천 과정',cs.map(c=>`<div class="course"><div class="th"></div><div><b>${c[2]}</b><br><span class="tag">${c[3]}</span><span class="tag ${c[0]=='강점'?'g':'r'}">${c[0]=='강점'?'강화':'보완'} · ${c[1]}</span></div></div>`).join('')||'<div class="note">해당 과정이 없습니다.</div>','<button class="btn" onclick="openDr()">전체 보기</button>');
+ const cardHtml=(c,tags)=>`<div class="course"><div class="th"></div><div><b>${c[2]}</b><br><span class="tag">${c[3]}</span>${tags}</div></div>`;
+ let title,subs=[],cards,hw;
+ if(t.multi){
+  const info=priInfo(),by=n=>info.filter(r=>r.p==n);
+  const top=by(1).length?by(1):by(2).length?by(2):by(3);
+  title=top.length?`${top.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점·맹점으로 판단된 역량이 없습니다';
+  [1,2,3].forEach(n=>{if(by(n).length)subs.push(`${n}순위 · ${PRI_LAB[n]} : ${by(n).map(r=>nm(r.c)).join(' ')}`)});
+  cards=info.filter(r=>r.p).map(r=>{const co=COURSES.find(x=>x[1]==r.c);return co?cardHtml(co,`<span class="tag ${r.p==1?'r':r.p==2?'y':'b'}">${r.p}순위 · ${r.lab} · ${r.c}</span>`):''}).join('');
+  hw='추천 역량은 우선순위 순서로 보여 줍니다. 1순위는 나도 주변도 약점인 역량, 2순위는 주변은 약점으로 보거나 맹점인 역량(내가 모르는 약점), 3순위는 나만 약점으로 보는 역량입니다. 추천 과정은 진단 생성 시 설정한 경우에만 노출됩니다.';
+ }else{
+  title=w.length?`${w.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점이 없으니 강점을 더 키워 보세요';
+  cards=COURSES.filter(c=>w.some(r=>r.c==c[1])||s.some(r=>r.c==c[1])).map(c=>cardHtml(c,`<span class="tag ${c[0]=='강점'?'g':'r'}">${c[0]=='강점'?'강화':'보완'} · ${c[1]}</span>`)).join('');
+  hw='강점/약점 판정은 본인 점수 기준입니다. 추천 과정은 진단 생성 시 설정한 경우에만 노출됩니다.';
+ }
+ if(t.pp)subs.push(w.length?`사후에도 약점인 역량: ${w.map(r=>nm(r.c)).join(' ')}`:'사후에는 약점으로 남은 역량이 없습니다.');
+ return hero(title,subs)+how(hw)+card('추천 과정',cards||'<div class="note">해당 과정이 없습니다.</div>','<button class="btn" onclick="openDr()">전체 보기</button>');
 }
 
 /* ================= 근거 데이터 (기존 6개 섹션) ================= */
@@ -251,17 +284,17 @@ function renderDr(){
 
 /* ===== 유형별 탭 (질문 중심) ===== */
 const FLOW={
- self:[['지금 나는 어디에?',self1],['전사 대비 나는?',self2],['그래서 무엇을?',act],['근거 데이터',evidence]],
- multi:[['나 vs 주변',multi1],['누가 다르게 보나?',multi2],['내 강점·약점, 주변도?',multi3],['그래서 무엇을?',act],['근거 데이터',evidence]],
- selfPP:[['달라졌나?',pp1],['판정이 바뀌었나?',pp2],['그래서 무엇을?',act],['근거 데이터',evidence]],
- multiPP:[['달라졌나? (나 vs 주변)',mpp1],['시각 차이는 줄었나?',mpp2],['누가 변화를 느꼈나?',mpp3],['그래서 무엇을?',act],['근거 데이터',evidence]]
+ self:[['지금 나는 어디에?',self1],['전사 대비 나는?',self2],['어떤 역량부터 키울까?',act],['근거 데이터',evidence]],
+ multi:[['지금 나는 어디에?',multiB],['나 vs 주변',multiA],['어떤 역량부터 키울까?',act],['근거 데이터',evidence]],
+ selfPP:[['얼마나 성장했나?',ppA,'전후 비교'],['지금 나는 어디에?',selfA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']],
+ multiPP:[['얼마나 성장했나?',mppA,'전후 비교'],['지금 나는 어디에?',multiB,'사후 결과'],['나 vs 주변',multiA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']]
 };
 function draw(){
  document.getElementById('types').innerHTML=Object.entries(TYPES).map(([k,v])=>`<button class="${k==tp?'on':''}" onclick="tp='${k}';tb=0;ev='me';sub=0;draw()">${v.n}</button>`).join('');
  const t=TYPES[tp],tabs=FLOW[tp];
  document.getElementById('ttl').textContent='진단 결과 · '+t.n;
- document.getElementById('meta').innerHTML=`리더십 역량진단 · 홍길동 · ${t.pp?'사전 2026.03 / 사후 2026.09':'2026.09.01 ~ 2026.09.30'}<br>${t.m}`;
- document.getElementById('tabs').innerHTML=tabs.map(([n],i)=>`<button class="${i==tb?'on':''}" onclick="tb=${i};draw()">${n}</button>`).join('');
+ document.getElementById('meta').innerHTML=`리더십 역량진단 · 홍길동 · ${t.pp?'사전 2026.03 / 사후 2026.09':'2026.09.01 ~ 2026.09.30'}`;
+ document.getElementById('tabs').innerHTML=tabs.map(([n,fn],i)=>`<button class="${i==tb?'on':''}" onclick="tb=${i};draw()">${n}</button>`).join('');
  document.getElementById('panel').innerHTML=tabs[tb][1](t);
  renderDr();
 }
