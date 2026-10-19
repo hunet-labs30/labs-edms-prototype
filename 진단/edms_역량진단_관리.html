@@ -694,7 +694,7 @@
                 <th class="center">문항수</th>
                 <th>최종 수정일</th>
                 <th class="center">공개 여부</th>
-                <th id="colResultTemplate" style="display:none;">결과지 템플릿</th>
+                <th id="colResultTemplate" class="center" style="display:none;">진단지 구분</th>
                 <th style="width:180px;">관리</th>
               </tr>
             </thead>
@@ -1670,11 +1670,10 @@
             ${q.isPublic?'공개':'비공개'}
           </button>
         </td>
-        <td style="${isHunetViewer ? '' : 'display:none;'}">
-          <select style="padding:4px 6px;font-size:11px;border:1px solid #dde1e7;border-radius:3px;">
-            <option value="standard" ${q.resultTemplate === 'standard' ? 'selected' : ''}>기본 템플릿</option>
-            <option value="ai_literacy" ${q.resultTemplate === 'ai_literacy' ? 'selected' : ''}>AI리터러시 결과지</option>
-          </select>
+        <td class="center" style="${isHunetViewer ? '' : 'display:none;'}">
+          ${q.locked
+            ? '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#e3f2fd;color:#0d47a1;white-space:nowrap;">휴넷 전용 상품</span>'
+            : '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#f1f3f5;color:#666;white-space:nowrap;">자체 진단지</span>'}
         </td>
         <td>
           <div class="row-actions">

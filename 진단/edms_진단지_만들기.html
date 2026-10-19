@@ -1144,11 +1144,11 @@ body {
 
                 <!-- 휴넷 임직원 전용 설정 -->
                 <div class="form-row s3-hunet-box">
-                  <label>결과지 템플릿 <span class="s3-hunet-tag">휴넷 임직원 전용</span></label>
-                  <select class="form-input" id="s3ResultTpl" onchange="renderS3Summary()">
-                    <option value="">기본 템플릿</option>
-                    <option value="ailiteracy">AI리터러시 결과지</option>
-                  </select>
+                  <label>휴넷 전용 상품 여부 <span class="s3-hunet-tag">휴넷 임직원 전용</span></label>
+                  <div class="radio-group" style="display:flex;gap:20px;">
+                    <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;"><input type="radio" name="s3HunetProduct" value="N" checked onchange="renderS3Summary()"> 아니오</label>
+                    <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;"><input type="radio" name="s3HunetProduct" value="Y" onchange="renderS3Summary()"> 예</label>
+                  </div>
                   <div class="form-hint">휴넷 임직원에게만 노출되는 설정입니다. 고객사 교육담당자에게는 노출되지 않습니다.</div>
                 </div>
               </div>
@@ -1492,7 +1492,7 @@ function renderS3Summary() {
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
     </div>
     ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
-    ${(() => { const sel = document.getElementById('s3ResultTpl'); return sel && sel.value ? `<div class="s3-summary-section-title">결과지 템플릿</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">휴넷 전용</span><span class="s3-summary-val">${sel.options[sel.selectedIndex].text}</span></div>` : ''; })()}
+    ${(() => { const r = document.querySelector('input[name="s3HunetProduct"]:checked'); return r && r.value === 'Y' ? `<div class="s3-summary-section-title">상품 구분</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">휴넷 전용</span><span class="s3-summary-val">휴넷 전용 상품</span></div>` : ''; })()}
     ${warnHtml}`;
 }
 

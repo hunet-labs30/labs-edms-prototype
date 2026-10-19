@@ -874,6 +874,10 @@ body {
     <option value="edms_진단_만들기.html" selected>V2 · 범용/사후진단 + 대상·결과 노출 설정</option>
     <option value="edms_진단_만들기_v1_구버전.html">V1 · 구버전</option>
   </select>
+  <select class="lang-select" id="viewerRoleSelect" onchange="setViewerRole(this.value === 'hunet')" title="보기 권한 시뮬레이션" style="margin-right:6px;">
+    <option value="general">보기 권한: 일반 교육담당자</option>
+    <option value="hunet">보기 권한: 휴넷 임직원</option>
+  </select>
   <span class="user-name">김이름 님</span>
   <button class="btn-header">로그아웃</button>
   <select class="lang-select"><option>한국어</option><option>English</option></select>
@@ -1323,6 +1327,13 @@ body {
                       <label><input type="radio" name="runMode" value="ontime" style="cursor:pointer;" onchange="setRunMode('ontime')"> 전 임직원 대상 및 응답 즉시 결과 노출</label>
                     </div>
                     <div id="runModeHint" style="margin-top:6px;font-size:11.5px;color:#8a94a6;line-height:1.6;"></div>
+                  </td>
+                </tr>
+                <tr id="step6-report-row" style="display:none;">
+                  <th class="form-th">결과 리포트 <span style="font-size:10px;font-weight:700;color:#fff;background:var(--primary);padding:2px 7px;border-radius:8px;margin-left:4px;">휴넷 임직원 전용</span></th>
+                  <td class="form-td">
+                    <select class="form-input" id="reportSelect" style="width:280px;" onchange="this.dataset.manual='1';"></select>
+                    <div id="reportHint" style="margin-top:6px;font-size:11.5px;color:#8a94a6;line-height:1.6;"></div>
                   </td>
                 </tr>
                 <tr id="step6-period-row">
@@ -2407,6 +2418,8 @@ function filterQuestionnaires() {
     if (!q.compatTypes || !q.compatTypes.includes(selectedDiagnosticType)) return false;
     const override = qsetVisibilityOverride[q.id];
     if (override && q.id !== selectedDiagnosticId) return false;
+    // 휴넷 전용 상품 진단지는 휴넷 임직원만 선택 가능 (일반 교육담당자에게는 목록에서 미노출)
+    if (q.locked && !isHunetViewer && q.id !== selectedDiagnosticId) return false;
     return true;
   });
 }
@@ -2472,6 +2485,58 @@ function stepDisplayMeta() {
   return { total: 8, map: { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8 }, hidden: [] };
 }
 
+// ── 결과 리포트 매핑: 휴넷 임직원에게만 노출, 일반 교육담당자는 기본 형태(자동 매핑)로 제공 ──
+let isHunetViewer = false;
+const REPORT_NAMES = ['일반진단 결과 리포트', 'AI리터러시 결과 리포트'];   // 선택 가능한 리포트 (사전사후진단은 비교 리포트로 고정)
+
+// 진단 조건에 따른 기본 리포트와 변경 가능 여부
+function autoReportInfo() {
+  if (selectedQuestionnaire && selectedQuestionnaire.resultTemplate === 'ai_literacy') {
+    return { name: 'AI리터러시 결과 리포트', fixed: false, hint: '휴넷 전용 상품 진단지는 상품 전용 리포트가 기본으로 선택되며, 필요 시 일반 결과 리포트로 변경할 수 있습니다.' };
+  }
+  if (selectedDiagnosticType === '사전사후') {
+    return { name: '사전사후 비교 결과 리포트', fixed: true,
+      hint: isOntimeMode() ? '사전진단 응시자에게는 전후 비교 리포트, 미응시자에게는 범용진단 결과 리포트가 제공됩니다.' : '사전진단과 사후진단을 비교하는 리포트로 고정됩니다.' };
+  }
+  return { name: '일반진단 결과 리포트', fixed: false,
+    hint: '기본 결과 리포트가 선택되어 있으며, 필요 시 변경할 수 있습니다.' };
+}
+
+function currentReportName() {
+  const sel = document.getElementById('reportSelect');
+  return sel && sel.value ? sel.value : autoReportInfo().name;
+}
+
+function applyReportRow() {
+  const row = document.getElementById('step6-report-row');
+  if (!row) return;
+  row.style.display = isHunetViewer ? '' : 'none';
+  if (!isHunetViewer) return;
+  const info = autoReportInfo();
+  const sel = document.getElementById('reportSelect');
+  const prev = sel.value;
+  const names = REPORT_NAMES.includes(info.name) ? REPORT_NAMES : [info.name];
+  sel.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+  sel.value = names.includes(prev) ? prev : info.name;
+  if (sel.dataset.auto !== info.name) { sel.dataset.manual = ''; sel.dataset.auto = info.name; }
+  if (info.fixed || sel.dataset.manual !== '1') sel.value = info.name;
+  sel.disabled = info.fixed;
+  document.getElementById('reportHint').textContent = info.hint;
+}
+
+function setViewerRole(hunet) {
+  isHunetViewer = hunet;
+  // 일반 교육담당자로 전환하면 아직 확정되지 않은 상품형 진단지 선택은 해제
+  if (!hunet && selectedQuestionnaire && selectedQuestionnaire.locked && !isProductQsetLocked()) {
+    selectedDiagnosticId = null;
+    selectedQuestionnaire = null;
+    const sel = document.getElementById('reportSelect');
+    if (sel) sel.dataset.auto = '';
+  }
+  renderStep1();
+  applyStepVisibility();
+}
+
 function setRunMode(mode) {
   selectedRunMode = mode;
   applyStepVisibility();
@@ -2497,6 +2562,7 @@ function applyStepVisibility() {
   const runRow = document.getElementById('step6-runmode-row');
   if (runRow) runRow.style.display = selfOnly ? '' : 'none';
   document.querySelectorAll('input[name="runMode"]').forEach(r => { r.checked = r.value === selectedRunMode; });
+  applyReportRow();
   const runHint = document.getElementById('runModeHint');
   if (runHint) runHint.innerHTML = selectedRunMode === 'ontime'
     ? (selectedDiagnosticType === '사전사후'
@@ -4187,7 +4253,7 @@ function generateStep7Review() {
     { step: 3, label: '응답자 유형 설정',  value: selectedRoles.length ? selectedRoles.join(', ') : '(미선택)' },
     { step: 4, label: '역량 점수 설정',    value: '역량군별 강점/약점 기준 설정됨' },
     { step: 5, label: '추천 과정 연결',    value: `총 ${totalCourses}개 과정 설정` },
-    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${selectedDiagnosticType === '사전사후' ? `사전 ${selectedPreDiag ? selectedPreDiag.start + ' ~ ' + selectedPreDiag.end : '(미선택)'} / 사후 ${postPeriod}` : period}` + (isOntimeMode() ? ' / 전 임직원 대상 및 응답 즉시 결과 노출' : '') },
+    { step: 6, label: '진단 기본 설정',    value: `${diagName} / ${selectedDiagnosticType === '사전사후' ? `사전 ${selectedPreDiag ? selectedPreDiag.start + ' ~ ' + selectedPreDiag.end : '(미선택)'} / 사후 ${postPeriod}` : period}` + (isOntimeMode() ? ' / 전 임직원 대상 및 응답 즉시 결과 노출' : '') + (isHunetViewer ? ' / 결과 리포트: ' + currentReportName() : '') },
     { step: 7, label: '응답자 등록',
       value: selectedDiagnosticType === '사전사후' ? '사전진단의 대상자·응답자 자동 적용 (추가·삭제 가능)' : '유형별 응답자 등록됨' },
   ];
