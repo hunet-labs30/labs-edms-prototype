@@ -307,6 +307,19 @@ body {
   text-decoration: underline;
 }
 
+/* 상품형 진단지 안내 (저장된 진단에서 진단지 변경 불가) */
+.product-qset-notice {
+  margin: 0 14px 14px;
+  padding: 12px 14px;
+  background: #f7f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.product-qset-notice-title { font-size: 12px; font-weight: 700; color: #333; margin-bottom: 6px; }
+.product-qset-notice ul { margin: 0; padding-left: 16px; }
+.product-qset-notice li { font-size: 12px; color: #666; line-height: 1.6; }
+
 /* 진단지 없는 빈 상태 */
 .step1-no-data {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1186,12 +1199,20 @@ body {
             <div id="step1DataView" style="display:flex;flex:1;">
               <div class="step1-panel-wrap" style="flex:1;">
                 <div class="step1-left">
-                  <div class="step1-search-row">
+                  <div class="step1-search-row" id="step1SearchRow">
                     <input type="text" class="step1-search-input" id="step1SearchInput" placeholder="검색어를 입력해주세요.">
                     <button class="btn btn-primary btn-sm" onclick="searchQuestionnaires()">검색</button>
                   </div>
                   <div class="step1-card-list" id="step1CardList"></div>
-                  <div class="step1-link-btn">
+                  <div class="product-qset-notice" id="step1ProductNotice" style="display:none;">
+                    <div class="product-qset-notice-title">🔒 상품형 진단지 안내</div>
+                    <ul>
+                      <li>상품형 진단지는 휴넷에서 제공하는 진단 상품으로, 임시저장 또는 진단 생성 이후에는 진단지를 변경할 수 없습니다.</li>
+                      <li>문항은 확인할 수 있으나 수정할 수 없으며, 상품 전용 결과지가 자동으로 적용됩니다.</li>
+                      <li>다른 진단지로 진단을 진행하려면 새 진단을 생성해 주세요.</li>
+                    </ul>
+                  </div>
+                  <div class="step1-link-btn" id="step1LinkBtn">
                     <!-- 분기: EDMS 진단지 생성 개발 완료 시 → edms_진단지_만들기.html / 미완료 시 → 진단 플랫폼 외부 링크 -->
                     <a href="edms_진단지_만들기.html" onclick="/* TODO: 개발 미완료 시 href를 진단 플랫폼 URL로 교체 */">새 진단지 만들기 →</a>
                   </div>
@@ -2517,11 +2538,46 @@ function getAdjacentStep(from, dir) {
   return step;
 }
 
+// 상품형(locked) 진단지로 임시저장 또는 생성된 진단은 진단지를 변경할 수 없다.
+function isProductQsetLocked() {
+  return !!(selectedQuestionnaire && selectedQuestionnaire.locked && (hasDraftSaved || _diagStatus !== 'before'));
+}
+
+function applyProductQsetLockUI(locked) {
+  const show = (id, on, disp) => { const el = document.getElementById(id); if (el) el.style.display = on ? (disp || '') : 'none'; };
+  show('step1SearchRow', !locked);
+  show('step1LinkBtn', !locked);
+  show('step1ProductNotice', locked, 'block');
+  const protoBtns = document.getElementById('step2ProtoBtns');
+  if (protoBtns) protoBtns.style.display = locked ? 'none' : 'flex';
+  const titleEl = document.getElementById('step2Title');
+  const descEl  = document.getElementById('step2Desc');
+  if (titleEl) titleEl.textContent = locked ? '선택된 진단지' : '진단지를 선택해주세요.';
+  if (descEl)  descEl.innerHTML = locked
+    ? '이 진단에 사용 중인 상품형 진단지입니다.'
+    : '진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.';
+
+  // 상품형 진단지는 문항 열람이 가능해야 하므로 상태 잠금 오버레이는 걷어낸다 (목록은 선택 1건만 노출되어 변경 불가)
+  if (locked) document.querySelectorAll('#step-content-2 .step-lock-overlay').forEach(o => o.remove());
+
+  const head = document.querySelector('#step-content-2 .wiz-card-head');
+  if (head) {
+    head.querySelectorAll('.product-lock-badge').forEach(b => b.remove());
+    if (locked && !head.querySelector('.step-lock-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'step-lock-badge product-lock-badge';
+      badge.innerHTML = '🔒 변경 불가';
+      head.appendChild(badge);
+    }
+  }
+}
+
 function renderStep1() {
   const cardList = document.getElementById('step1CardList');
   cardList.innerHTML = '';
 
-  const filteredQs = filterQuestionnaires();
+  const productLocked = isProductQsetLocked();
+  const filteredQs = productLocked ? [selectedQuestionnaire] : filterQuestionnaires();
 
   filteredQs.forEach(q => {
     const card = document.createElement('div');
@@ -2529,7 +2585,7 @@ function renderStep1() {
     card.dataset.qid = q.id;
 
     // 호환되지 않는 진단지는 비활성 처리
-    if (!q.compatTypes.includes(selectedDiagnosticType)) {
+    if (!productLocked && !q.compatTypes.includes(selectedDiagnosticType)) {
       card.style.opacity = '0.5';
       card.style.cursor = 'not-allowed';
       card.title = '선택한 진단유형과 호환되지 않습니다.';
@@ -2549,7 +2605,10 @@ function renderStep1() {
       <div class="diag-card-date">등록일 ${q.date}</div>
     `;
 
-    if (!q.compatTypes.includes(selectedDiagnosticType)) {
+    if (productLocked) {
+      card.style.cursor = 'default';
+      card.onclick = () => selectQuestionnaire(q.id);
+    } else if (!q.compatTypes.includes(selectedDiagnosticType)) {
       card.onclick = (e) => {
         showToast('상시진단 전용 진단지입니다.');
         e.preventDefault();
@@ -2564,6 +2623,8 @@ function renderStep1() {
   // 기본 선택: 기존 선택이 목록에 남아있으면 유지, 없으면 첫 번째 항목
   const keepId = filteredQs.some(q => q.id === selectedDiagnosticId) ? selectedDiagnosticId : filteredQs[0]?.id;
   if (keepId) selectQuestionnaire(keepId);
+
+  applyProductQsetLockUI(productLocked);
 }
 
 // ─── 사전사후진단: 사전진단(완료된 범용진단) 선택 ───
@@ -4047,6 +4108,11 @@ function saveDraft() {
   const msg = document.getElementById('draftSavedMsg');
   msg.classList.add('show');
   setTimeout(() => msg.classList.remove('show'), 2500);
+  if (isProductQsetLocked()) {
+    renderStep1();
+    showToast('임시저장 되었습니다. 상품형 진단지는 이후 변경할 수 없습니다.');
+    return;
+  }
   showToast('임시저장 되었습니다.');
 }
 
@@ -4566,6 +4632,9 @@ function setDiagStatus(status) {
 
   applyStep5PartialLock(status);
 
+  /* ── 상품형 진단지는 저장 이후 변경 불가 (위 잠금 배지 재생성 이후 반영) ── */
+  if (selectedDiagnosticType !== '사전사후') renderStep1();
+
   /* ── STEP 7 버튼 분기 ── */
   const createBtn = document.getElementById('step7-create-btn');
   const saveBtn   = document.getElementById('step7-save-btn');
@@ -4587,9 +4656,17 @@ function saveDiagEdit() {
 (function initFromUrl() {
   const params = new URLSearchParams(location.search);
   const s = params.get('status');
+  // 진단 관리 목록에서 상품형 진단지로 만든 진단으로 진입한 경우 해당 진단지를 선택된 상태로 복원
+  const qset = Number(params.get('qset'));
+  if (qset) {
+    selectedDiagnosticId = qset;
+    selectedQuestionnaire = QUESTIONNAIRES.find(q => q.id === qset) || null;
+  }
   if (s && ['before','after','expired','completed'].includes(s)) {
     setDiagStatus(s);
   }
+  // 임시저장된 진단은 status=before여도 저장 이력이 있으므로 저장 상태를 복원
+  if (params.get('draft') === '1') { hasDraftSaved = true; renderStep1(); }
 })();
 </script>
 
