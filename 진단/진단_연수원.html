@@ -337,6 +337,10 @@ function switchTab(btn, targetId) {
 //
 // 결과보기 탭: target='self' (waiting 제외, selfResponder 무관)
 //   → 결과보기(done+결과확정) / 결과대기(그 외)
+//
+// ontime: true = 상시 진단 (전 임직원 대상 및 응답 즉시 결과 노출)
+//   → 대상자·응답자 배정 없이 전 임직원에게 노출 (진단하기 탭), 시작일에 자동 진행·종료일 경과 시 자동 완료(done)
+//   → 응답을 완료(pct 100)하면 결과보기 탭에 즉시 노출 (결과대기·결과없음 없음, 응답대상자·응답율 미표시)
 
 /* ─────────────────────────────────────────────────
    진단 데이터
@@ -442,6 +446,64 @@ const DATA_DIAG = [
     target: 'self', targetName: '', selfResponder: true,
     period: '2025.04.01 ~ 2025.04.30', questions: 60, answered: 60, pct: 100,
     diagStatus: 'done'
+  },
+
+  // ── 상시 진단 (ontime) ──
+  // 대기: 시작일에 자동 오픈되므로 연수원 미노출
+  {
+    id: 37, typeName: 'LC', typeLabel: '리더십역량', ontime: true,
+    name: '신규 입사자 온보딩 체크리스트',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2027.01.04 ~ 2027.12.31', questions: 12, answered: 0, pct: 0,
+    diagStatus: 'waiting'
+  },
+  // 진행 중 · 응답 전 → 진단하기
+  {
+    id: 31, typeName: 'LC', typeLabel: '리더십역량', ontime: true,
+    name: '신임 팀장 리더십 체크',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.10.01 ~ 2026.12.31', questions: 24, answered: 0, pct: 0,
+    diagStatus: 'ongoing'
+  },
+  // 진행 중 · 응답 중 → 이어하기
+  {
+    id: 32, typeName: 'LC', typeLabel: '리더십역량', ontime: true,
+    name: '영업 신입 커뮤니케이션 체크',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.09.01 ~ 2026.12.31', questions: 18, answered: 10, pct: 56,
+    diagStatus: 'ongoing'
+  },
+  // 진행 중 · 응답 완료 → 진단완료 + 결과보기 탭 즉시 노출
+  {
+    id: 33, typeName: 'LC', typeLabel: '리더십역량', ontime: true,
+    name: '자주하는 실수 체크리스트',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.08.01 ~ 2026.12.31', questions: 20, answered: 20, pct: 100,
+    diagStatus: 'ongoing'
+  },
+  // 종료일 경과(자동 완료) · 미응답 → 진단종료
+  {
+    id: 34, typeName: 'LC', typeLabel: '리더십역량', ontime: true,
+    name: '직무 몰입도 체크',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.01.05 ~ 2026.06.30', questions: 16, answered: 0, pct: 0,
+    diagStatus: 'done'
+  },
+  // 사후진단 상시 · 응답 완료
+  {
+    id: 35, typeName: 'LC', typeLabel: '리더십역량', ontime: true, post: true,
+    name: '신임 팀장 리더십 체크 사후진단',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.10.10 ~ 2026.12.31', questions: 24, answered: 24, pct: 100,
+    diagStatus: 'ongoing'
+  },
+  // 사후진단 상시 · 응답 완료
+  {
+    id: 36, typeName: 'LC', typeLabel: '리더십역량', ontime: true, post: true,
+    name: '영업 신입 커뮤니케이션 체크 사후진단',
+    target: 'self', targetName: '', selfResponder: true,
+    period: '2026.10.05 ~ 2026.12.31', questions: 18, answered: 18, pct: 100,
+    diagStatus: 'ongoing'
   }
 ];
 
@@ -486,7 +548,14 @@ function progColor(pct) {
 
 /* ─── 버튼: 진단하기 탭 ─── */
 function renderDiagBtn(item) {
-  if (item.diagStatus === 'done' || item.pct === 100) {
+  if (item.pct === 100) {
+    return `<button class="btn-diag completed" disabled>진단완료</button>`;
+  }
+  // 상시 진단: 종료일 경과로 자동 완료된 미완료 건 → 진단종료
+  if (item.ontime && item.diagStatus === 'done') {
+    return `<button class="btn-diag done" disabled>진단종료</button>`;
+  }
+  if (item.diagStatus === 'done') {
     return `<button class="btn-diag completed" disabled>진단완료</button>`;
   }
   if (item.answered === 0) {
@@ -540,6 +609,18 @@ function renderCard(item) {
 /* ─── 카드: 결과보기 탭 — 결과 확정 (결과보기 버튼) ─── */
 function renderResultCard(item) {
   const rateClass = item.responseRate === 100 ? 'full' : '';
+  const stats = item.ontime ? '' : `
+        <div class="result-stats">
+          <div class="result-stat">
+            <span class="result-stat-label">응답대상자</span>
+            <span class="result-stat-value">${item.respondentCount}명</span>
+          </div>
+          <div class="result-stat">
+            <span class="result-stat-label">응답율</span>
+            <span class="result-stat-value ${rateClass}">${item.responseRate}%</span>
+          </div>
+        </div>
+        <div class="diag-divider"></div>`;
   return `
     <div class="diag-card">
       <div class="diag-info">
@@ -551,18 +632,7 @@ function renderResultCard(item) {
           <span class="diag-period">📅 ${fmtDate(item.startDate)} ~ ${fmtDate(item.endDate)}</span>
         </div>
       </div>
-      <div class="diag-right">
-        <div class="result-stats">
-          <div class="result-stat">
-            <span class="result-stat-label">응답대상자</span>
-            <span class="result-stat-value">${item.respondentCount}명</span>
-          </div>
-          <div class="result-stat">
-            <span class="result-stat-label">응답율</span>
-            <span class="result-stat-value ${rateClass}">${item.responseRate}%</span>
-          </div>
-        </div>
-        <div class="diag-divider"></div>
+      <div class="diag-right">${stats}
         <div class="result-btn-group">
           <button class="btn-result-confirm" onclick="location.href='../진단_결과_보기.html'">결과보기</button>
         </div>
@@ -678,16 +748,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 결과보기 탭 — 결과없음: target=self, done, DATA_RESULT에 없는 것 (응답 0건 마감)
   const DATA_RESULT_NONE = DATA_DIAG
-    .filter(d => d.target === 'self' && d.diagStatus === 'done' && !resultIds.has(d.id))
+    .filter(d => !d.ontime && d.target === 'self' && d.diagStatus === 'done' && !resultIds.has(d.id))
     .sort(byStartDesc);
 
   // 결과보기 탭 — 결과대기: target=self, waiting/done 제외, DATA_RESULT에 없는 것
   const DATA_RESULT_PENDING = DATA_DIAG
-    .filter(d => d.target === 'self' && d.diagStatus !== 'waiting' && d.diagStatus !== 'done' && !resultIds.has(d.id))
+    .filter(d => !d.ontime && d.target === 'self' && d.diagStatus !== 'waiting' && d.diagStatus !== 'done' && !resultIds.has(d.id))
     .sort(byStartDesc);
 
   // 결과보기 탭 — 결과 확정: 시작일 내림차순
-  const DATA_RESULT_SORTED = [...DATA_RESULT].sort(byStartDesc);
+  // 상시 진단: 응답 완료(100%) 즉시 결과 확정으로 노출 (응답대상자·응답율 미표시)
+  const DATA_RESULT_ONTIME = DATA_DIAG
+    .filter(d => d.ontime && d.diagStatus !== 'waiting' && d.pct === 100)
+    .map(d => {
+      const m = d.period.match(/(\d{4})\.(\d{2})\.(\d{2}) ~ (\d{4})\.(\d{2})\.(\d{2})/);
+      return { ...d, startDate: `${m[1]}-${m[2]}-${m[3]} 00:00`, endDate: `${m[4]}-${m[5]}-${m[6]} 23:59` };
+    });
+  const DATA_RESULT_SORTED = [...DATA_RESULT, ...DATA_RESULT_ONTIME].sort(byStartDesc);
 
   renderDiagList(DATA_DIAG_ACTIVE, 'list-diag', 'cnt-diag');
   renderResultList(DATA_RESULT_SORTED, DATA_RESULT_NONE, DATA_RESULT_PENDING, 'list-result', 'cnt-result');
