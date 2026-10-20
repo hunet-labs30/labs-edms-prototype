@@ -70,8 +70,8 @@ const POST={me:[3.6,3.2,2.9,4.0,3.4],mgr:[3.2,3.2,3.6,3.8,3.4],peer:[3.0,3.2,3.5
 const PRE={me:[3.0,2.8,2.5,3.6,3.2],mgr:[3.1,3.3,3.2,3.2,2.7],peer:[3.0,3.1,3.1,3.0,2.6],mem:[2.9,3.0,3.0,2.9,2.5],all:[3.2,3.3,3.0,3.4,3.2]};
 const EV={me:['나','var(--pri)'],mgr:['상사','var(--c-mgr)'],peer:['동료','var(--c-peer)'],mem:['구성원','var(--c-mem)'],all:['전사평균','var(--c-all)']};
 const TYPES={
- self:{n:'자가진단 (범용)',multi:0,pp:0},
- multi:{n:'다면진단 (범용)',multi:1,pp:0},
+ self:{n:'자가진단 (일반)',multi:0,pp:0},
+ multi:{n:'다면진단 (일반)',multi:1,pp:0},
  selfPP:{n:'자가진단 (사전사후)',multi:0,pp:1},
  multiPP:{n:'다면진단 (사전사후)',multi:1,pp:1}
 };
@@ -109,7 +109,7 @@ const ktag=k=>k=='맹점'?'<span class="tag r">맹점</span>':k=='숨은 강점'
 const sideTxt=d=>d>=0?`내가 +${d.toFixed(1)}`:`주변 +${(-d).toFixed(1)}`;
 const kn=(src,k)=>COMP.filter((c,i)=>kind(gapOf(src,i))==k);
 
-/* ================= 범용 진단 (기존 구성 유지) ================= */
+/* ================= 일반 진단 (기존 구성 유지) ================= */
 function self1(){
  const w=weakOf(),s=strongOf();
  const rows=rowsOf().sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));

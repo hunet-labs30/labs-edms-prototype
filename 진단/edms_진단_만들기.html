@@ -871,7 +871,7 @@ body {
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
   <select class="lang-select" onchange="if(this.value) location.href=this.value" title="진단 만들기 버전 선택" style="margin-right:6px;">
-    <option value="edms_진단_만들기.html" selected>V2 · 범용/사후진단 + 대상·결과 노출 설정</option>
+    <option value="edms_진단_만들기.html" selected>V2 · 일반/사후진단 + 대상·결과 노출 설정</option>
     <option value="edms_진단_만들기_v1_구버전.html">V1 · 구버전</option>
   </select>
   <select class="lang-select" id="viewerRoleSelect" onchange="setViewerRole(this.value === 'hunet')" title="보기 권한 시뮬레이션" style="margin-right:6px;">
@@ -1116,15 +1116,15 @@ body {
           </div>
           <div class="wiz-card-body padded">
             <div style="display:flex;gap:16px;max-width:1020px;">
-              <div class="diagtype-choice-card selected" data-type="범용" onclick="chooseDiagType('범용')">
+              <div class="diagtype-choice-card selected" data-type="일반" onclick="chooseDiagType('일반')">
                 <div style="font-size:26px;margin-bottom:10px;">🎯</div>
-                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">범용진단</div>
+                <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">일반진단</div>
                 <div style="font-size:12.5px;color:#777;line-height:1.6;">대상자·응답자를 지정해 진행하고, 기간 종료 후 결과를 확인합니다.</div>
               </div>
               <div class="diagtype-choice-card" data-type="사전사후" onclick="chooseDiagType('사전사후')">
                 <div style="font-size:26px;margin-bottom:10px;">📈</div>
                 <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">사후진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">완료된 범용진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
+                <div style="font-size:12.5px;color:#777;line-height:1.6;">완료된 일반진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
               </div>
             </div>
           </div>
@@ -1151,7 +1151,7 @@ body {
           </div>
           <div class="wiz-card-body">
 
-            <!-- ▸ 사전사후진단: 사전진단(완료된 범용진단) 선택 뷰 -->
+            <!-- ▸ 사전사후진단: 사전진단(완료된 일반진단) 선택 뷰 -->
             <div id="step2PrePostView" style="display:none;flex:1;">
               <div class="step1-panel-wrap" style="flex:1;">
                 <div class="step1-left">
@@ -1924,7 +1924,7 @@ const QUESTIONNAIRES = [
     subCount: 11,
     qCount: 50,
     date: '2025-03-15',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2009,7 +2009,7 @@ const QUESTIONNAIRES = [
     subCount: 9,
     qCount: 72,
     date: '2025-01-20',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2104,7 +2104,7 @@ const QUESTIONNAIRES = [
     subCount: 5,
     qCount: 26,
     date: '2025-11-01',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     types: [
@@ -2156,7 +2156,7 @@ const QUESTIONNAIRES = [
     subCount: 3,
     qCount: 15,
     date: '2026-01-15',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: true,
     resultTemplate: 'ai_literacy',
     types: [
@@ -2205,7 +2205,7 @@ const QUESTIONNAIRES = [
     subCount: 4,
     qCount: 8,
     date: '2026-09-20',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     useTypes: false,
@@ -2251,7 +2251,7 @@ const QUESTIONNAIRES = [
     subCount: 3,
     qCount: 9,
     date: '2026-09-25',
-    compatTypes: ['범용', '사전사후'],
+    compatTypes: ['일반', '사전사후'],
     locked: false,
     resultTemplate: 'standard',
     useTypes: false,
@@ -2344,10 +2344,10 @@ let respondentSettings = {};
 let courseSettings = {};
 let currentCourseSettingKey = null;
 let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부 — 대상자 등록(일괄/개별)은 이 값이 true여야 사용 가능
-let selectedDiagnosticType = '범용'; // 진단유형: 범용 | 사전사후 (기본값: 범용진단)
+let selectedDiagnosticType = '일반'; // 진단유형: 일반 | 사전사후 (기본값: 일반진단)
 let selectedRunMode = 'period';      // 진행 방식: period(지정 기간) | ontime(상시) — 응답자 유형이 본인만일 때만 상시 선택 가능
 
-// 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 범용진단" (프로토타입 샘플)
+// 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 일반진단" (프로토타입 샘플)
 // respondents = 대상자 1인당 응답자 수 (본인은 0 = 별도 지정 없음)
 let selectedPreDiag = null;
 const PRE_DIAGNOSES = [
@@ -2496,7 +2496,7 @@ function autoReportInfo() {
   }
   if (selectedDiagnosticType === '사전사후') {
     return { name: '사전사후 비교 결과 리포트', fixed: true,
-      hint: isOntimeMode() ? '사전진단 응시자에게는 전후 비교 리포트, 미응시자에게는 범용진단 결과 리포트가 제공됩니다.' : '사전진단과 사후진단을 비교하는 리포트로 고정됩니다.' };
+      hint: isOntimeMode() ? '사전진단 응시자에게는 전후 비교 리포트, 미응시자에게는 일반진단 결과 리포트가 제공됩니다.' : '사전진단과 사후진단을 비교하는 리포트로 고정됩니다.' };
   }
   return { name: '일반진단 결과 리포트', fixed: false,
     hint: '기본 결과 리포트가 선택되어 있으며, 필요 시 변경할 수 있습니다.' };
@@ -2566,7 +2566,7 @@ function applyStepVisibility() {
   const runHint = document.getElementById('runModeHint');
   if (runHint) runHint.innerHTML = selectedRunMode === 'ontime'
     ? (selectedDiagnosticType === '사전사후'
-        ? '대상자·응답자 등록 없이 진행합니다. 사전진단 응시자는 전후 비교 결과 리포트, 미응시자는 범용진단 결과 리포트가 제공됩니다.'
+        ? '대상자·응답자 등록 없이 진행합니다. 사전진단 응시자는 전후 비교 결과 리포트, 미응시자는 일반진단 결과 리포트가 제공됩니다.'
         : '대상자·응답자 등록 없이 진행합니다.')
     : '';
 
@@ -2581,7 +2581,7 @@ function applyStepVisibility() {
   const s2 = (id) => document.getElementById(id);
   if (s2('step2Title')) s2('step2Title').textContent = isPrePost ? '사전진단을 선택해주세요.' : '진단지를 선택해주세요.';
   if (s2('step2Desc')) s2('step2Desc').innerHTML = isPrePost
-    ? '사후진단의 기준이 될 완료된 범용진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
+    ? '사후진단의 기준이 될 완료된 일반진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
     : '진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.';
   if (s2('wiz-step2-title')) s2('wiz-step2-title').textContent = isPrePost ? '사전진단 선택' : '진단지 선택';
   if (s2('wiz-step2-desc')) s2('wiz-step2-desc').textContent = isPrePost ? '사후진단의 기준 진단 선택' : '어떤 역량을 진단할지 선택';
@@ -2693,7 +2693,7 @@ function renderStep1() {
   applyProductQsetLockUI(productLocked);
 }
 
-// ─── 사전사후진단: 사전진단(완료된 범용진단) 선택 ───
+// ─── 사전사후진단: 사전진단(완료된 일반진단) 선택 ───
 
 let preDiagPage = 1;
 
@@ -4245,7 +4245,7 @@ function generateStep7Review() {
 
   const meta = stepDisplayMeta();
   const allRows = [
-    { step: 1, label: '진단 유형 선택',    value: selectedDiagnosticType === '사전사후' ? '사후진단' : '범용진단' },
+    { step: 1, label: '진단 유형 선택',    value: selectedDiagnosticType === '사전사후' ? '사후진단' : '일반진단' },
     { step: 2, label: selectedDiagnosticType === '사전사후' ? '사전진단 선택' : '진단지 선택',
       value: selectedDiagnosticType === '사전사후'
         ? (selectedPreDiag ? `${selectedPreDiag.name} (${qName}) · 진단지·응답자 유형·역량 점수 기준 자동 적용` : '(미선택)')
@@ -4535,17 +4535,17 @@ let _diagStatus = 'before';
 // (STEP1 "진단유형 선택"이 새로 추가되며 기존 STEP 번호가 전부 +1 밀림)
 // before:    전체 수정 가능
 // after(진행 중)/expired(마감 전):
-//   범용진단·사전사후진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
+//   일반진단·사전사후진단 — STEP 2(진단지 선택)·3(응답자 유형) 항상 잠금. STEP 7(대상자&응답자)은 진행 중엔 수정 가능, 마감 전엔 잠금.
 //              STEP 6(진단 기본 설정)는 완전잠금이 아닌 "부분 수정"(applyStep5PartialLock 별도 처리) — 이 목록에는 포함하지 않음.
 //   사전사후진단 — STEP 3·4는 사전진단 설정이 자동 적용되어 노출하지 않음. STEP 1·2 항상 잠금, STEP 7(자동 적용된 대상자·응답자)은 마감 전엔 잠금.
-//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 범용진단과 동일하게 부분 수정으로 별도 처리.
+//   상시진단 — STEP 1·2만 잠금(STEP3·7은 애초에 없음). STEP6도 일반진단과 동일하게 부분 수정으로 별도 처리.
 // STEP 1(진단유형 선택)은 진단이 생성된 이후(진행 중/마감 전/완료)에는 항상 잠금 — STEP2와 동일하게 변경 불가
 // completed: 전체 잠금 (STEP6도 이때만 완전 잠금이라 이 목록에 포함)
 const STEP_LOCK_MAP = {
-  before:    { 범용: [],         사전사후: [] },
-  after:     { 범용: [1, 2, 3],     사전사후: [1, 2] },
-  expired:   { 범용: [1, 2, 3, 7],  사전사후: [1, 2, 7] },
-  completed: { 범용: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
+  before:    { 일반: [],         사전사후: [] },
+  after:     { 일반: [1, 2, 3],     사전사후: [1, 2] },
+  expired:   { 일반: [1, 2, 3, 7],  사전사후: [1, 2, 7] },
+  completed: { 일반: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
 };
 
 // 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)

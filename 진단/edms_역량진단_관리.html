@@ -400,7 +400,7 @@
   <div class="subtitle">365연수원(40)</div>
   <div class="spacer"></div>
   <select class="lang-select" onchange="if(this.value) location.href=this.value" title="진단 관리 버전 선택" style="margin-right:6px;">
-    <option value="edms_역량진단_관리.html" selected>V2 · 범용/사전사후 + 상시 진행 방식</option>
+    <option value="edms_역량진단_관리.html" selected>V2 · 일반/사전사후 + 상시 진행 방식</option>
     <option value="edms_역량진단_관리_v1_구버전.html">V1 · 구버전</option>
   </select>
   <span class="user-name">김이름 님</span>
@@ -596,7 +596,7 @@
         </select>
         <select id="main-filter-diagtype" class="select" style="width:110px;margin-left:6px;">
           <option value="">진단유형 전체</option>
-          <option value="범용">범용진단</option>
+          <option value="일반">일반진단</option>
           <option value="사전사후">사후진단</option>
         </select>
         <span class="label-auto" style="margin-left:16px;">진단명</span>
@@ -1072,42 +1072,42 @@
   // ── 진단 목록 데이터 ──
   const DIAGNOSTIC_LIST = [
     // 임시저장
-    { id:15, name:'2026년 하반기 임원 역량진단 (작성중)', diagType:'범용', startDate:null, endDate:null, questions:50, memberCount:null, respondentCount:null, status:'임시저장', createdDate:'2026.06.06', progress:0, step:'STEP2' },
+    { id:15, name:'2026년 하반기 임원 역량진단 (작성중)', diagType:'일반', startDate:null, endDate:null, questions:50, memberCount:null, respondentCount:null, status:'임시저장', createdDate:'2026.06.06', progress:0, step:'STEP2' },
 
-    // 진행중 (범용진단)
-    { id:12, name:'2025년 상반기 리더십 역량진단', diagType:'범용', startDate:'2025.05.01', endDate:'2025.05.31', questions:36, memberCount:245, respondentCount:152, totalMembers:245, status:'진행중', createdDate:'2025.04.20', progress:62 },
-    { id:11, name:'팀장급 코칭리더십 진단 (2차)', diagType:'범용', startDate:'2025.05.05', endDate:'2025.05.25', questions:48, memberCount:38, respondentCount:18, totalMembers:38, status:'진행중', createdDate:'2025.04.28', progress:47 },
+    // 진행중 (일반진단)
+    { id:12, name:'2025년 상반기 리더십 역량진단', diagType:'일반', startDate:'2025.05.01', endDate:'2025.05.31', questions:36, memberCount:245, respondentCount:152, totalMembers:245, status:'진행중', createdDate:'2025.04.20', progress:62 },
+    { id:11, name:'팀장급 코칭리더십 진단 (2차)', diagType:'일반', startDate:'2025.05.05', endDate:'2025.05.25', questions:48, memberCount:38, respondentCount:18, totalMembers:38, status:'진행중', createdDate:'2025.04.28', progress:47 },
 
-    // 마감 가능 (범용진단)
-    { id:10, name:'신임 팀장 온보딩 역량진단', diagType:'범용', startDate:'2025.04.10', endDate:'2025.04.30', questions:24, memberCount:22, respondentCount:18, totalMembers:22, status:'마감 가능', createdDate:'2025.03.31', progress:82 },
-    { id:9, name:'2025년 상반기 핵심인재 역량진단', diagType:'범용', startDate:'2025.03.01', endDate:'2025.03.31', questions:60, memberCount:45, respondentCount:45, totalMembers:45, status:'마감 가능', createdDate:'2025.02.20', progress:100 },
+    // 마감 가능 (일반진단)
+    { id:10, name:'신임 팀장 온보딩 역량진단', diagType:'일반', startDate:'2025.04.10', endDate:'2025.04.30', questions:24, memberCount:22, respondentCount:18, totalMembers:22, status:'마감 가능', createdDate:'2025.03.31', progress:82 },
+    { id:9, name:'2025년 상반기 핵심인재 역량진단', diagType:'일반', startDate:'2025.03.01', endDate:'2025.03.31', questions:60, memberCount:45, respondentCount:45, totalMembers:45, status:'마감 가능', createdDate:'2025.02.20', progress:100 },
 
-    // 대기 (범용진단)
-    { id:8, name:'2026년 하반기 전사 역량진단', diagType:'범용', startDate:'2026.08.01', endDate:'2026.08.31', questions:104, memberCount:200, respondentCount:200, totalMembers:200, status:'대기', createdDate:'2026.05.01', progress:0 },
-    { id:7, name:'2026년 상반기 전사 역량진단', diagType:'범용', startDate:'2026.05.14', endDate:'2026.12.31', questions:104, memberCount:580, respondentCount:580, totalMembers:580, status:'대기', createdDate:'2026.04.14', progress:0 },
+    // 대기 (일반진단)
+    { id:8, name:'2026년 하반기 전사 역량진단', diagType:'일반', startDate:'2026.08.01', endDate:'2026.08.31', questions:104, memberCount:200, respondentCount:200, totalMembers:200, status:'대기', createdDate:'2026.05.01', progress:0 },
+    { id:7, name:'2026년 상반기 전사 역량진단', diagType:'일반', startDate:'2026.05.14', endDate:'2026.12.31', questions:104, memberCount:580, respondentCount:580, totalMembers:580, status:'대기', createdDate:'2026.04.14', progress:0 },
 
     // 리포트 생성중
-    { id:6, name:'2025년 2분기 마케팅팀 역량진단', diagType:'범용', startDate:'2025.03.03', endDate:'2025.03.28', questions:36, memberCount:52, respondentCount:52, totalMembers:52, status:'리포트 생성중', createdDate:'2025.03.28', progress:100 },
+    { id:6, name:'2025년 2분기 마케팅팀 역량진단', diagType:'일반', startDate:'2025.03.03', endDate:'2025.03.28', questions:36, memberCount:52, respondentCount:52, totalMembers:52, status:'리포트 생성중', createdDate:'2025.03.28', progress:100 },
 
     // 완료
-    { id:5, name:'2025년 1분기 영업팀 역량진단', diagType:'범용', startDate:'2025.03.03', endDate:'2025.03.28', questions:36, memberCount:67, respondentCount:67, totalMembers:67, status:'완료', createdDate:'2025.02.10', progress:100 },
-    { id:4, name:'2024년 하반기 리더십 역량진단', diagType:'범용', startDate:'2024.11.01', endDate:'2024.11.30', questions:36, memberCount:312, respondentCount:303, totalMembers:303, status:'완료', createdDate:'2024.10.01', progress:97 },
-    { id:3, name:'2024년 중간리더 핵심역량 진단', diagType:'범용', startDate:'2024.09.02', endDate:'2024.09.27', questions:48, memberCount:89, respondentCount:89, totalMembers:89, status:'완료', createdDate:'2024.08.20', progress:100 },
-    { id:2, name:'2024년 상반기 전사 역량진단', diagType:'범용', startDate:'2024.05.01', endDate:'2024.05.31', questions:104, memberCount:540, respondentCount:507, totalMembers:507, status:'완료', createdDate:'2024.04.01', progress:94 },
+    { id:5, name:'2025년 1분기 영업팀 역량진단', diagType:'일반', startDate:'2025.03.03', endDate:'2025.03.28', questions:36, memberCount:67, respondentCount:67, totalMembers:67, status:'완료', createdDate:'2025.02.10', progress:100 },
+    { id:4, name:'2024년 하반기 리더십 역량진단', diagType:'일반', startDate:'2024.11.01', endDate:'2024.11.30', questions:36, memberCount:312, respondentCount:303, totalMembers:303, status:'완료', createdDate:'2024.10.01', progress:97 },
+    { id:3, name:'2024년 중간리더 핵심역량 진단', diagType:'일반', startDate:'2024.09.02', endDate:'2024.09.27', questions:48, memberCount:89, respondentCount:89, totalMembers:89, status:'완료', createdDate:'2024.08.20', progress:100 },
+    { id:2, name:'2024년 상반기 전사 역량진단', diagType:'일반', startDate:'2024.05.01', endDate:'2024.05.31', questions:104, memberCount:540, respondentCount:507, totalMembers:507, status:'완료', createdDate:'2024.04.01', progress:94 },
 
-    // 사전사후진단 — 사전진단(완료된 범용진단)을 기준으로 만든 사후진단. 목록에는 사후진단 기간 기준으로 표시
+    // 사전사후진단 — 사전진단(완료된 일반진단)을 기준으로 만든 사후진단. 목록에는 사후진단 기간 기준으로 표시
     { id:17, name:'2024년 하반기 리더십 역량진단 사후진단', diagType:'사전사후', preId:4, startDate:'2026.09.15', endDate:'2026.10.31', questions:36, memberCount:303, respondentCount:120, totalMembers:303, status:'진행중', createdDate:'2026.09.01', progress:40 },
     { id:16, name:'2025년 1분기 영업팀 역량진단 사후진단', diagType:'사전사후', preId:5, startDate:'2026.11.02', endDate:'2026.11.30', questions:36, memberCount:67, respondentCount:67, totalMembers:67, status:'대기', createdDate:'2026.09.20', progress:0 },
 
     // 상시진단 (새로 추가) — endDate가 지나면 자동으로 완료 처리(마감하기 액션 없음, getEffectiveStatus 참조)
-    { id:'ONTIME1', name:'자주하는 실수 체크리스트 (상시)', diagType:'범용', ontime:true, startDate:'2025.12.01', endDate:'2026.12.31', questions:20, participantCount:245, unlimitedResponse:true, status:'진행중', createdDate:'2025.12.01', progress:null },
-    { id:'ONTIME3', name:'신규 입사자 온보딩 체크리스트 (상시)', diagType:'범용', ontime:true, startDate:'2027.01.04', endDate:'2027.12.31', questions:12, participantCount:0, unlimitedResponse:false, status:'대기', createdDate:'2026.10.01', progress:null },
-    { id:'ONTIME2', qsetId:4, name:'AI리터러시 진단 (상품형)', diagType:'범용', ontime:true, startDate:'2026.01.15', endDate:'2026.08.31', questions:15, participantCount:118, unlimitedResponse:false, status:'진행중', createdDate:'2026.01.15', progress:null },
+    { id:'ONTIME1', name:'자주하는 실수 체크리스트 (상시)', diagType:'일반', ontime:true, startDate:'2025.12.01', endDate:'2026.12.31', questions:20, participantCount:245, unlimitedResponse:true, status:'진행중', createdDate:'2025.12.01', progress:null },
+    { id:'ONTIME3', name:'신규 입사자 온보딩 체크리스트 (상시)', diagType:'일반', ontime:true, startDate:'2027.01.04', endDate:'2027.12.31', questions:12, participantCount:0, unlimitedResponse:false, status:'대기', createdDate:'2026.10.01', progress:null },
+    { id:'ONTIME2', qsetId:4, name:'AI리터러시 진단 (상품형)', diagType:'일반', ontime:true, startDate:'2026.01.15', endDate:'2026.08.31', questions:15, participantCount:118, unlimitedResponse:false, status:'진행중', createdDate:'2026.01.15', progress:null },
 
-    // 사전사후 + 상시: 사전진단(상시 범용)이 종료(자동 완료)된 뒤 같은 대상으로 사후진단(상시)을 진행. 사후진단은 preId로 사전진단을 참조
-    { id:'ONTIME_PRE1', name:'신임 팀장 리더십 체크 (상시)', diagType:'범용', ontime:true, startDate:'2026.02.02', endDate:'2026.06.30', questions:24, participantCount:86, unlimitedResponse:false, status:'완료', createdDate:'2026.02.02', progress:null },
+    // 사전사후 + 상시: 사전진단(상시 일반)이 종료(자동 완료)된 뒤 같은 대상으로 사후진단(상시)을 진행. 사후진단은 preId로 사전진단을 참조
+    { id:'ONTIME_PRE1', name:'신임 팀장 리더십 체크 (상시)', diagType:'일반', ontime:true, startDate:'2026.02.02', endDate:'2026.06.30', questions:24, participantCount:86, unlimitedResponse:false, status:'완료', createdDate:'2026.02.02', progress:null },
     { id:'ONTIME_POST1', name:'신임 팀장 리더십 체크 사후진단 (상시)', diagType:'사전사후', preId:'ONTIME_PRE1', ontime:true, startDate:'2026.07.01', endDate:'2027.01.31', questions:24, participantCount:54, unlimitedResponse:false, status:'진행중', createdDate:'2026.06.20', progress:null },
-    { id:'ONTIME_PRE2', name:'영업 신입 커뮤니케이션 체크 (상시)', diagType:'범용', ontime:true, startDate:'2026.03.02', endDate:'2026.09.30', questions:18, participantCount:42, unlimitedResponse:false, status:'완료', createdDate:'2026.03.02', progress:null },
+    { id:'ONTIME_PRE2', name:'영업 신입 커뮤니케이션 체크 (상시)', diagType:'일반', ontime:true, startDate:'2026.03.02', endDate:'2026.09.30', questions:18, participantCount:42, unlimitedResponse:false, status:'완료', createdDate:'2026.03.02', progress:null },
     { id:'ONTIME_POST2', name:'영업 신입 커뮤니케이션 체크 사후진단 (상시)', diagType:'사전사후', preId:'ONTIME_PRE2', ontime:true, startDate:'2027.02.01', endDate:'2027.07.31', questions:18, participantCount:0, unlimitedResponse:false, status:'대기', createdDate:'2026.09.28', progress:null },
   ];
 
@@ -1170,11 +1170,11 @@
       ? `<div style="font-size:11px;">${diag.startDate} 00:00<br>${diag.endDate} 23:59</div>`
       : (diag.startDate ? `<div style="font-size:11px;">${diag.startDate}</div>` : '<div style="font-size:11px; color:#bbb;">-</div>');
 
-    // 진단유형 배지 (범용=파랑, 사전/사후=보라) — 상시는 유형이 아니라 진행 방식이므로 대상자 칸의 "상시" 배지로 표시
+    // 진단유형 배지 (일반=파랑, 사전/사후=보라) — 상시는 유형이 아니라 진행 방식이므로 대상자 칸의 "상시" 배지로 표시
     // 사후진단 행은 "사후", 그 사후진단의 사전진단(preId)으로 쓰인 행은 "사전"으로 표시
     const typeLabel = diag.diagType === '사전사후' ? '사후'
       : (DIAGNOSTIC_LIST.some(d => d.diagType === '사전사후' && d.preId === diag.id) ? '사전' : diag.diagType);
-    const typeColor = { '범용': ['#e3f2fd', '#0d47a1'], '사전': ['#f3e5f5', '#6a1b9a'], '사후': ['#f3e5f5', '#6a1b9a'] }[typeLabel] || ['#e3f2fd', '#0d47a1'];
+    const typeColor = { '일반': ['#e3f2fd', '#0d47a1'], '사전': ['#f3e5f5', '#6a1b9a'], '사후': ['#f3e5f5', '#6a1b9a'] }[typeLabel] || ['#e3f2fd', '#0d47a1'];
     const typeCell = `
       <td style="text-align:center;">
         <span style="display:inline-block;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap;
@@ -1197,7 +1197,7 @@
         </td>
       `;
     } else {
-      // 범용진단: 기존 대로 대상자/응답자를 각각 별도 컬럼에 표시
+      // 일반진단: 기존 대로 대상자/응답자를 각각 별도 컬럼에 표시
       const memberDisplay = diag.memberCount || '설정';
       const respondentDisplay = diag.respondentCount !== null ? diag.respondentCount : '설정';
       targetCell = `
@@ -1241,7 +1241,7 @@
         ? `<td><button class="btn btn-sm btn-outline" onclick="directDownload('${diag.name}', this)">다운로드</button></td>`
         : '<td style="color:#bbb;">-</td>';
     } else {
-      // 범용진단: 진행중 / 마감 가능 / 리포트 생성중 / 완료 상태에서 응답 데이터 다운로드 가능
+      // 일반진단: 진행중 / 마감 가능 / 리포트 생성중 / 완료 상태에서 응답 데이터 다운로드 가능
       downloadCell = ['진행중', '마감 가능', '리포트 생성중', '완료'].includes(displayStatus)
         ? `<td><button class="btn btn-sm btn-outline" onclick="directDownload('${diag.name}', this)">다운로드</button></td>`
         : '<td style="color:#bbb;">-</td>';
@@ -1608,10 +1608,10 @@
 
   // ── 샘플 데이터 ──
   let QSET_DATA = [
-    { id:'QSET_001', name:'팀장 리더십 역량 진단', target:'팀장급', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.12.01', updatedBy:'김담당', locked:false, resultTemplate:'standard', compatTypes:['범용','상시'] },
-    { id:'QSET_002', name:'임원 리더십 역량 진단', target:'임원', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.11.15', updatedBy:'김담당', locked:false, resultTemplate:'standard', compatTypes:['범용','상시'] },
-    { id:'QSET_003', name:'중간관리자 리더십 진단', target:'과·차장급', types:2, groups:8, items:24, questions:72, isPublic:true, updatedAt:'2025.10.20', updatedBy:'이담당', locked:false, resultTemplate:'standard', compatTypes:['범용','상시'] },
-    { id:'QSET_004', name:'AI리터러시 진단 (상품형)', target:'전사', types:1, groups:3, items:15, questions:15, isPublic:true, updatedAt:'2026.01.15', updatedBy:'시스템', locked:true, resultTemplate:'ai_literacy', compatTypes:['범용','상시'] },
+    { id:'QSET_001', name:'팀장 리더십 역량 진단', target:'팀장급', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.12.01', updatedBy:'김담당', locked:false, resultTemplate:'standard', compatTypes:['일반','상시'] },
+    { id:'QSET_002', name:'임원 리더십 역량 진단', target:'임원', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.11.15', updatedBy:'김담당', locked:false, resultTemplate:'standard', compatTypes:['일반','상시'] },
+    { id:'QSET_003', name:'중간관리자 리더십 진단', target:'과·차장급', types:2, groups:8, items:24, questions:72, isPublic:true, updatedAt:'2025.10.20', updatedBy:'이담당', locked:false, resultTemplate:'standard', compatTypes:['일반','상시'] },
+    { id:'QSET_004', name:'AI리터러시 진단 (상품형)', target:'전사', types:1, groups:3, items:15, questions:15, isPublic:true, updatedAt:'2026.01.15', updatedBy:'시스템', locked:true, resultTemplate:'ai_literacy', compatTypes:['일반','상시'] },
   ];
 
   let qsetDeleteTargetId = null;

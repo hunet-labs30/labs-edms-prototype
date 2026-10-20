@@ -403,14 +403,14 @@ const DATA_DIAG = [
     name: '2026년 상반기 리더십스타일 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 0, pct: 0,
-    diagStatus: 'waiting', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'waiting', diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 4, typeName: 'LC', typeLabel: '리더십역량',
     name: '2026년 상반기 리더십역량 진단',
     target: 'other', targetName: '김철수', selfResponder: true,
     period: '2026.05.01 ~ 2026.05.31', questions: 60, answered: 0, pct: 0,
-    diagStatus: 'waiting', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'waiting', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── ongoing: 대상자=본인, 응답자=본인 O → 진단하기 + 결과보기 ──
@@ -419,14 +419,14 @@ const DATA_DIAG = [
     name: '2026년 상반기 리더십스타일 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 0, pct: 0,
-    diagStatus: 'ongoing', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'ongoing', diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 2, typeName: 'LC', typeLabel: '리더십역량',
     name: '2026년 상반기 리더십역량 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.05.01 ~ 2026.05.31', questions: 60, answered: 36, pct: 60,
-    diagStatus: 'ongoing', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'ongoing', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── ongoing: 대상자=본인, 응답자=본인 X → 결과보기만 ──
@@ -435,7 +435,7 @@ const DATA_DIAG = [
     name: '2026년 상반기 리더십역량 진단 (동료평가만)',
     target: 'self', targetName: '', selfResponder: false,
     period: '2026.05.01 ~ 2026.05.31', questions: 0, answered: 0, pct: 0,
-    diagStatus: 'ongoing', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'ongoing', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── ongoing: 대상자=타인, 응답자=본인 O → 진단하기만 ──
@@ -444,7 +444,7 @@ const DATA_DIAG = [
     name: '2026년 상반기 리더십스타일 진단',
     target: 'other', targetName: '박지민', selfResponder: true,
     period: '2026.05.01 ~ 2026.05.31', questions: 36, answered: 11, pct: 30,
-    diagStatus: 'ongoing', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'ongoing', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── ongoing: 진행율 100% (관리자 마감 전) ──
@@ -453,7 +453,7 @@ const DATA_DIAG = [
     name: '2026년 1분기 비즈니스상황 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.04.01 ~ 2026.04.30', questions: 24, answered: 24, pct: 100,
-    diagStatus: 'ongoing', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'ongoing', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── closed: 대상자=본인, 응답자=본인 O ──
@@ -462,14 +462,14 @@ const DATA_DIAG = [
     name: '2026년 1분기 비즈니스상황 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.04.01 ~ 2026.04.30', questions: 24, answered: 10, pct: 42,
-    diagStatus: 'closed', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'closed', diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 12, typeName: 'LC', typeLabel: '리더십역량',
     name: '2026년 1분기 리더십역량 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2026.04.01 ~ 2026.04.30', questions: 60, answered: 30, pct: 50,
-    diagStatus: 'closed', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'closed', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── closed: 대상자=타인, 응답자=본인 O ──
@@ -478,7 +478,7 @@ const DATA_DIAG = [
     name: '2026년 1분기 리더십역량 진단',
     target: 'other', targetName: '이영후', selfResponder: true,
     period: '2026.04.01 ~ 2026.04.30', questions: 60, answered: 24, pct: 40,
-    diagStatus: 'closed', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'closed', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── done: 대상자=타인, 응답자=본인 O → 진단하기(진단완료) ──
@@ -487,7 +487,7 @@ const DATA_DIAG = [
     name: '2025년 하반기 리더십역량 진단',
     target: 'other', targetName: '김민준', selfResponder: true,
     period: '2025.10.01 ~ 2025.10.31', questions: 60, answered: 60, pct: 100,
-    diagStatus: 'done', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'done', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── done: 대상자=본인, 응답자 0건 마감 → 결과보기(결과없음) ──
@@ -496,7 +496,7 @@ const DATA_DIAG = [
     name: '2025년 상반기 리더십역량 진단',
     target: 'self', targetName: '', selfResponder: true,
     period: '2025.04.01 ~ 2025.04.30', questions: 60, answered: 60, pct: 100,
-    diagStatus: 'done', diagType: '범용', responseLimit: 0, rounds: []
+    diagStatus: 'done', diagType: '일반', responseLimit: 0, rounds: []
   },
 
   // ── 상시진단 샘플 ──
@@ -535,7 +535,7 @@ const DATA_RESULT = [
     target: 'self', selfResponder: true,
     startDate: '2025-12-01 00:00', endDate: '2025-12-31 00:00',
     respondentCount: 18, responseRate: 72, diagStatus: 'done',
-    diagType: '범용', responseLimit: 0, rounds: []
+    diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 7, typeName: 'LS', typeLabel: '리더십스타일',
@@ -543,7 +543,7 @@ const DATA_RESULT = [
     target: 'self', selfResponder: false,
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
     respondentCount: 15, responseRate: 80, diagStatus: 'done',
-    diagType: '범용', responseLimit: 0, rounds: []
+    diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 9, typeName: 'BSA', typeLabel: '비즈니스상황',
@@ -551,7 +551,7 @@ const DATA_RESULT = [
     target: 'self', selfResponder: true,
     startDate: '2025-10-01 00:00', endDate: '2025-10-31 00:00',
     respondentCount: 20, responseRate: 100, diagStatus: 'done',
-    diagType: '범용', responseLimit: 0, rounds: []
+    diagType: '일반', responseLimit: 0, rounds: []
   },
   {
     id: 22, typeName: 'ONTIME', typeLabel: '자주하는실수',
