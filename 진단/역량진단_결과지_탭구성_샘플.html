@@ -2,33 +2,157 @@
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>역량진단 결과지 탭 구성 샘플</title>
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--tx:#1f2937;--sub:#6b7280;--line:#e5e7eb;--pri:#2563eb;--pri2:#dbeafe;--pre:#9ca3af;--ok:#059669;--bad:#dc2626;--c-mgr:#8b5cf6;--c-peer:#14b8a6;--c-mem:#f59e0b;--c-all:#9ca3af;--hero:#eff6ff}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#111827;--card:#1f2937;--tx:#f3f4f6;--sub:#9ca3af;--line:#374151;--pri2:#1e3a8a;--hero:#172554}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,'Malgun Gothic',sans-serif}
-.wrap{max-width:960px;margin:0 auto;padding:16px}
-.types{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.types button{padding:8px 14px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:20px;cursor:pointer}
-.types button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-.head{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
-.head h1{font-size:17px;margin:0 0 4px}.head p{margin:0;color:var(--sub);font-size:13px}
-.tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);overflow-x:auto}
-.tabs button{padding:10px 16px;border:0;background:none;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;font-size:14px}
-.tabs .grp{align-self:center;font-size:11px;color:var(--sub);padding:0 8px 0 14px;white-space:nowrap}.tabs .grp:first-child{padding-left:0}
-.tabs button.on{color:var(--pri);border-color:var(--pri);font-weight:700}
+:root{--bg:#F5F6FA;--card:#fff;--tx:#111827;--text-700:#374151;--sub:#6B7280;--text-400:#9CA3AF;--line:#E5E7EB;--line2:#F3F4F6;--pri:#246CF9;--pri2:#EEF3FF;--pre:#9CA3AF;--ok:#246CF9;--bad:#DC2626;--c-mgr:#7C3AED;--c-peer:#14B8A6;--c-mem:#F97316;--c-all:#9CA3AF;--hero:#EEF3FF;--blue-bg:#EEF3FF;--red-bg:#FEE2E2;--green:#16A34A;--green-bg:#DCFCE7;--orange:#F97316;--orange-bg:#FFF4ED;--purple:#7C3AED;--purple-bg:#EDE9FE;--gray-bg:#F3F4F6;--font:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',-apple-system,sans-serif;--r-sm:4px;--r-md:6px;--r-lg:8px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 var(--font)}
+html,body{height:100%}
+/* ── GNB · 좌측 메뉴 · 본문 영역 (진단_결과_자가진단과 동일) ── */
+.gnb{position:fixed;top:0;left:0;right:0;height:56px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:300}
+.gnb-logo{font-size:17px;font-weight:800;color:var(--tx);letter-spacing:-.5px;display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0}
+.gnb-logo-box{width:28px;height:28px;background:var(--pri);border-radius:6px;display:flex;align-items:center;justify-content:center}.gnb-logo-box svg{width:15px;height:15px}
+.gnb-search-wrap{flex:1;max-width:580px;margin:0 auto}
+.gnb-search{width:100%;height:36px;background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:0 16px 0 38px;font-size:13px;color:var(--text-700);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;font-family:inherit}
+.gnb-search::placeholder{color:#B0B7C3}
+.gnb-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.gnb-icon{width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--sub);display:flex;align-items:center;justify-content:center;border-radius:var(--r-md);position:relative}.gnb-icon:hover{background:var(--bg)}.gnb-icon svg{width:20px;height:20px}
+.gnb-badge{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--bad);border-radius:50%;border:1.5px solid #fff}
+.app{display:flex;padding-top:56px;min-height:100vh}
+.sidebar{position:fixed;top:56px;left:0;width:200px;height:calc(100vh - 56px);background:var(--card);border-right:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;padding:12px 0 20px;z-index:200}
+.sb-menu{list-style:none;margin:0;padding:0}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;text-decoration:none;border-left:3px solid transparent;white-space:nowrap}
+.sb-item:hover{background:var(--bg);color:var(--text-700)}
+.sb-item.active{background:var(--pri2);color:var(--pri);font-weight:700;border-left-color:var(--pri)}
+.sb-item svg{width:15px;height:15px;flex-shrink:0}.sb-item.sm{font-size:13px;padding:7px 18px}
+.sb-divider{height:1px;background:var(--line);margin:8px 0}
+.sb-footer{padding:12px 10px 0;border-top:1px solid var(--line);margin-top:8px}
+.sb-footer-item{display:flex;align-items:center;gap:7px;padding:7px 8px;font-size:12px;color:var(--text-400);cursor:pointer;border-radius:var(--r-md)}.sb-footer-item:hover{background:var(--bg);color:var(--sub)}.sb-footer-item svg{width:13px;height:13px}
+.main-wrap{margin-left:200px;flex:1;min-width:0}
+.main{padding:24px 28px 60px}
+.page-header{margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.breadcrumb{font-size:12px;color:var(--text-400);margin-bottom:6px;display:flex;align-items:center;gap:6px}.breadcrumb span{color:var(--sub)}
+.page-title{font-size:20px;font-weight:700;color:var(--tx);letter-spacing:-.4px}
+.btn-secondary-outline{background:var(--card);color:var(--sub);border:1.5px solid var(--line);text-decoration:none}.btn-secondary-outline:hover{border-color:var(--pri);color:var(--pri);background:var(--card)}
+.btn-outline{text-decoration:none}
+/* 유형 미리보기 바 */
+.preview-bar{background:#eef3ff;border:1px solid #bfdbfe;border-radius:var(--r-md);padding:8px 14px;margin-bottom:16px;font-size:12px;color:#1d4ed8;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.preview-bar label{font-weight:700}
+.jc{display:inline-flex;align-items:center;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700}.jc.s{background:var(--blue-bg);color:var(--pri)}.jc.w{background:var(--red-bg);color:var(--bad)}.jc.m{background:var(--gray-bg);color:var(--sub)}.jsums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.jsum{border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 14px;text-align:center}.jsum .jn{margin-top:8px;font-size:13px;color:var(--sub)}.jsum .jn i{font-style:normal;margin:0 8px;color:var(--text-400)}.jsum .jn b{font-size:20px;color:var(--tx)}.jrows .jr{display:grid;grid-template-columns:minmax(90px,1fr) auto 80px;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line2)}.jrows .jr:last-child{border-bottom:none}.jnm{font-weight:700;color:var(--tx)}.jch{display:inline-flex;align-items:center;gap:8px}.jch .arr{font-style:normal;color:var(--text-400)}.jrows .jr>:last-child{text-align:right}
+.pp-sc{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}.pp-sc .pp-l{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:3px}.pp-post .num{font-size:38px;font-weight:800;color:var(--tx);line-height:1}.pp-post .denom{font-size:15px;font-weight:600;color:var(--text-400);margin-left:2px}.pp-pre b{font-size:20px;font-weight:700;color:var(--text-400);line-height:1}.pp-d{font-size:13.5px;font-weight:800;padding:3px 10px;border-radius:12px;margin-bottom:2px}.pp-d.hi{color:var(--pri);background:var(--pri2)}.pp-d.lo{color:var(--bad);background:var(--red-bg)}
+.sl-dot.big{width:20px;height:20px}.sl-dot[data-tip]{cursor:default}.sl-dot[data-tip]::before{content:"";position:absolute;inset:-9px}
+.ms2{display:flex;gap:26px;flex-wrap:wrap;margin:2px 0 12px}.ms2-p{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;font-weight:600;color:var(--text-400)}.ms2-p .pp-d{font-size:12px;padding:2px 8px;margin:0}.ms2 .ms2-l{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:3px;display:flex;align-items:center;gap:5px}.ms2 .ms2-l i{width:8px;height:8px;border-radius:2px;display:inline-block}.ms2 .num{font-size:30px;font-weight:800;color:var(--tx);line-height:1}
+.lg-dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:3px solid var(--pri);background:#fff;margin:0 4px 0 0;vertical-align:middle;box-sizing:border-box}.lg-bar{display:inline-block;height:14px;border-left:2px dashed;margin:0 6px 0 0;vertical-align:middle}.lg-bar.w{border-color:rgba(220,38,38,.6)}.lg-bar.s{border-color:rgba(36,108,249,.6)}.tipbox{position:fixed;z-index:999;background:#111827;color:#fff;font-size:12px;line-height:1.6;padding:8px 11px;border-radius:6px;pointer-events:none;white-space:pre-line;display:none}
+.dt .dt-gh{border-left:1px solid var(--line2)}.dt .dt-h2 th{font-size:11.5px;font-weight:600;color:var(--text-400)}.dt .dt-v{font-weight:700;color:var(--tx)}.dt .dt-gap2{font-size:11px;font-weight:600;margin-top:1px}.dt .dt-mute{color:var(--text-400)}.dt .dt-ph{color:var(--text-400);font-size:12px}.dt .dt-chg2{font-weight:800;border-right:1px solid var(--line2)}.dt .dt-name{font-weight:600}.dt td.grp-cell{background:#fff}.dt tr.dt-last td{border-bottom:1px solid var(--line)}
+.preview-bar .grp{display:flex;align-items:center;gap:8px}
+.gg{padding:34px 8px 22px}.gg-track{position:relative;height:10px;background:var(--line);border-radius:5px}.gg-fill{position:absolute;left:0;top:0;bottom:0;background:var(--pri);border-radius:5px;opacity:.25}
+.gg-dot{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--pri);transform:translate(-50%,-50%)}.gg-dot.pre{width:12px;height:12px;border:3px solid var(--c-mem)}
+.gg-org{position:absolute;top:-8px;bottom:-8px;border-left:2px dashed #9ca3af}
+.gg-ax{position:relative;height:16px;margin-top:10px;font-size:11px;color:var(--text-400)}.gg-ax span{position:absolute;transform:translateX(-50%)}
+.gb-wrap{margin-top:22px;padding-top:18px;border-top:1px solid var(--line2)}.gb-title{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:14px}
+.gb-row{display:flex;gap:10px;overflow-x:auto}.gb-col{flex:1 0 56px;min-width:0;cursor:default}
+.gb-plot{position:relative;height:180px;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),var(--line2) calc(25% - 1px),var(--line2) 25%)}
+.gb-bar{position:absolute;left:24%;right:24%;bottom:0;background:#111827;border-radius:4px 4px 0 0}.gb-bar.s{background:var(--pri)}.gb-bar.w{background:var(--bad)}
+.gb-val{position:absolute;left:0;right:0;text-align:center;font-size:12px;font-weight:700;color:var(--tx);transform:translateY(-100%);padding-bottom:3px}
+.gb-avg{position:absolute;left:8%;right:8%;height:0;border-top:2px dashed #9ca3af}.gb-pre{position:absolute;left:30%;right:30%;height:3px;margin-bottom:-1px;background:var(--c-mem);border-radius:2px}
+.gb-name{font-size:12px;font-weight:600;color:var(--tx);text-align:center;margin-top:8px;line-height:1.35;word-break:keep-all}.gb-gap{font-size:11px;text-align:center;margin-top:3px;color:var(--sub)}
+.types{display:flex;gap:8px;flex-wrap:wrap}
+.types button{height:30px;padding:0 12px;border:1px solid #93c5fd;border-radius:6px;background:#fff;color:#1d4ed8;font:600 12px var(--font);cursor:pointer}
+.types button.on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+@media(max-width:900px){.sidebar{display:none}.main-wrap{margin-left:0}.main{padding:20px 16px 60px}}
 .panel{padding-top:14px}
-.hero{background:var(--hero);border:1px solid var(--pri2);border-left:5px solid var(--pri);border-radius:10px;padding:16px 18px;margin-bottom:12px}
-.hero .k{font-size:12px;color:var(--pri);font-weight:700;margin-bottom:4px}.hero .t{font-size:19px;font-weight:700;line-height:1.4}.hero p{margin:6px 0 0;color:var(--sub);font-size:13px}
-.how{border:1px dashed var(--line);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--sub);margin-bottom:12px}.how b{color:var(--tx);margin-right:6px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
-.card h3{margin:0 0 10px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+/* 상단 정보 카드 */
+.meta-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.meta-item{display:flex;flex-direction:column;gap:2px}.meta-label{font-size:11px;color:var(--text-400)}.meta-val{font-size:13px;font-weight:600;color:var(--tx)}.meta-divider{width:1px;height:30px;background:var(--line);flex-shrink:0}
+/* 섹션 */
+.sec{margin-bottom:24px}.sec>h2{font-size:16px;font-weight:700;letter-spacing:-.3px;margin:0 0 10px;display:flex;align-items:center;gap:8px}.sec>h2 .tag{font-weight:600;margin:0}
+.section-card,.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:16px;overflow:hidden}
+.card{padding:20px}
+.section-head{padding:14px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.section-head h3{font-size:14px;font-weight:700;color:var(--tx);margin:0}
+.section-body{padding:20px}
+.rc-head-more{display:inline-flex;align-items:center;gap:4px;font:700 13px var(--font);color:var(--pri);background:var(--pri2);border:1px solid var(--pri);border-radius:8px;padding:8px 16px;white-space:nowrap;cursor:pointer}
+.rc-head-more:hover{background:var(--pri);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--pri);background:var(--card);color:var(--pri);border-radius:var(--r-md);cursor:pointer;font:600 13px var(--font)}
+.btn:hover{background:var(--pri2)}
+/* 총평 */
+.ov{display:flex;gap:28px;align-items:center;flex-wrap:wrap}.ov-chart{flex:1 1 300px;min-width:260px}.ov-side{flex:1 1 260px;border-left:1px solid var(--line2);padding-left:28px}
+.ov2-label{font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.headline-score{display:flex;align-items:center;gap:10px}.headline-score .num{font-size:34px;font-weight:800;color:var(--tx);line-height:1}.headline-score .denom{font-size:15px;font-weight:600;color:var(--text-400);margin-left:2px}
+.headline-desc{font-size:13.5px;color:var(--text-700);line-height:1.7;margin-top:10px}
+.hi{color:var(--pri);font-weight:700}.lo{color:var(--bad);font-weight:700}
+.ov.rev .ov-chart{flex:2 1 360px}.ov.rev .ov-side{order:-1;flex:1 1 220px;border-left:0;padding-left:0;border-right:1px solid var(--line2);padding-right:28px}
+@media(max-width:640px){.ov-side{border-left:0;padding-left:0}.ov.rev .ov-side{border-right:0;padding-right:0}}
+.mb-row{display:grid;gap:10px;align-items:center;margin:12px 0}.mb-n{text-align:right;font-size:13px;font-weight:700;color:var(--tx)}.mb-lab{font-size:13px;font-weight:500;color:var(--text-700)}.mb-lab i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.mb-trk{position:relative;height:12px;background:var(--bg);border-radius:6px}.mb-trk .mb-bar{position:absolute;left:0;top:0;height:100%;border-radius:6px}.mb-trk.pp{height:22px}.mb-trk.pp .mb-bar{top:auto;bottom:0;height:11px}.mb-trk.pp .mb-bar.pre{top:0;bottom:auto;height:7px;opacity:.45}
+.mb-ref{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--text-400)}
+.mb-ax{position:relative;height:16px}.mb-ax span{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--text-400)}
+/* 강점·약점 상세 카드 */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sw-detail-card{border-radius:var(--r-md);padding:14px 16px;border:1px solid}
+.sw-detail-card.strength{background:var(--blue-bg);border-color:#BFDBFE}.sw-detail-card.weakness{background:var(--red-bg);border-color:#FECACA}.sw-detail-card.mid{background:var(--gray-bg);border-color:var(--line)}
+.sw-detail-title{font-size:12px;font-weight:700;margin-bottom:12px}
+.sw-detail-card.strength .sw-detail-title{color:var(--pri)}.sw-detail-card.weakness .sw-detail-title{color:var(--bad)}.sw-detail-card.mid .sw-detail-title{color:var(--text-700)}
+.sw-item-row{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--text-700);padding:3px 0 3px 13px;position:relative}
+.sw-item-row::before{content:'';position:absolute;left:2px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--text-400);transform:translateY(-50%)}
+@media(max-width:640px){.board{grid-template-columns:1fr}}
+/* 핵심 메시지 · 읽는 법 */
+.hero{background:var(--hero);border:1px solid #BFDBFE;border-radius:var(--r-lg);padding:16px 20px;margin-bottom:12px}
+.hero .k{font-size:11.5px;color:var(--pri);font-weight:700;margin-bottom:4px}.hero .t{font-size:18px;font-weight:800;line-height:1.4;color:var(--tx)}.hero p{margin:6px 0 0;color:var(--text-700);font-size:13px}
+.how{background:var(--bg);border-radius:var(--r-md);padding:12px 16px;font-size:13px;color:var(--text-700);margin-bottom:12px;line-height:1.7}.how b{color:var(--tx);margin-right:6px}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;background:var(--pri2);color:var(--pri);margin-right:4px}
-.tag.r{background:#fee2e2;color:var(--bad)}.tag.g{background:#d1fae5;color:var(--ok)}.tag.y{background:#fef3c7;color:#b45309}.tag.b{background:#dbeafe;color:#1d4ed8}
-.btn{padding:6px 12px;border:1px solid var(--pri);background:var(--card);color:var(--pri);border-radius:6px;cursor:pointer;font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--sub);font-weight:600}
+/* 태그 · 뱃지 */
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;font-weight:700;background:var(--pri2);color:var(--pri);margin-right:4px}
+.tag.r{background:var(--red-bg);color:var(--bad)}.tag.g{background:var(--green-bg);color:var(--green)}.tag.y{background:var(--orange-bg);color:var(--orange)}.tag.b{background:var(--pri2);color:var(--pri)}
+.mini-badge{display:inline-flex;padding:1px 7px;border-radius:8px;font-size:10.5px;font-weight:700;margin-left:6px}.mini-badge.s{background:var(--blue-bg);color:var(--pri)}.mini-badge.w{background:var(--red-bg);color:var(--bad)}
+/* 표 */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;font-size:12px;font-weight:700;color:var(--sub);background:var(--bg);border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--line2);text-align:center;vertical-align:middle;color:var(--text-700)}
+tr:last-child td{border-bottom:none}
+th.ta-l,td.ta-l{text-align:left}
+td.grp-cell{background:var(--bg);border-right:1px solid var(--line2);text-align:left;width:150px;vertical-align:middle}
+tr.grp-last td{border-bottom:1px solid var(--line)}
+.grp-name{font-size:13px;font-weight:700;color:var(--tx)}
 tr.gap td{color:var(--sub);font-size:12px}
 .note{color:var(--sub);font-size:12px;margin-top:6px}
-.legend{font-size:12px;color:var(--sub);margin-bottom:8px}.legend em{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:middle}
+/* 범례 */
+.legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line2);font-size:12px;color:var(--sub)}.legend em{display:inline-block;width:10px;height:8px;border-radius:2px;margin:0 4px 0 0;vertical-align:middle}
+/* 슬라이더 */
+.srow{display:grid;grid-template-columns:150px 1fr 150px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.sl{padding:10px 0}.sl-track{position:relative;height:4px;background:var(--line);border-radius:2px}
+.sl-thr{position:absolute;top:-5px;height:14px;border-left:2px dashed}.sl-thr.s{border-color:rgba(36,108,249,.5)}.sl-thr.w{border-color:rgba(220,38,38,.45)}
+.sl-dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid;transform:translate(-50%,-50%)}
+.dv{display:grid;grid-template-columns:170px 1fr 86px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
+.dvb{height:12px;position:relative;background:var(--bg);border-radius:6px}.dvb:after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--text-400)}
+.dvb i{position:absolute;top:0;height:100%;border-radius:6px}
+/* 추천 과정 · 드로어 */
+.top-list{display:flex;flex-direction:column;gap:14px}
+.top-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px 18px;background:var(--card)}
+.top-title-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.top-badge{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:10px;background:var(--pri2);color:var(--pri)}
+.top-factor{font-size:14px;font-weight:700;color:var(--tx)}.top-grp{font-size:12px;color:var(--text-400)}
+.top-reason{font-size:12.5px;color:var(--sub);line-height:1.6;margin-bottom:14px}.top-reason b{color:var(--tx)}
+.top-course{display:flex;gap:16px;align-items:center}.top-course-wrap{position:relative;padding:0 18px}.top-arrow{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--sub);padding:0;box-shadow:0 1px 3px rgba(0,0,0,.08);z-index:2}.top-arrow:hover{border-color:var(--pri);color:var(--pri)}.top-arrow svg{width:16px;height:16px}.top-arrow.left{left:-8px}.top-arrow.right{right:-8px}.top-counter{position:absolute;top:-8px;right:0;font-size:11.5px;font-weight:600;color:var(--sub);background:var(--card);padding:2px 9px;border-radius:900px;border:1px solid var(--line)}.top-desc{font-size:12.5px;color:var(--sub);line-height:1.5}
+.top-thumb{width:190px;height:120px;border-radius:8px;background:var(--gray-bg);flex-shrink:0}
+.top-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.top-tag{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:var(--text-400)}
+.top-tag svg,.top-meta svg{width:13px;height:13px;flex-shrink:0}
+.top-ctitle{font-size:15px;font-weight:700;color:var(--tx);line-height:1.4}
+.top-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--sub)}.top-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+@media(max-width:760px){.top-course{flex-direction:column;align-items:flex-start}.top-thumb{width:100%;height:150px}}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:8px;background:var(--card);cursor:pointer}
+.cd-item:hover{border-color:var(--pri);box-shadow:0 2px 8px rgba(36,108,249,.08)}
+.cd-item-thumb{width:72px;height:54px;border-radius:var(--r-md);flex-shrink:0;background:var(--line2)}
+.cd-item-left{flex:1;min-width:0}.cd-item-cmp{font-size:10.5px;font-weight:700;color:var(--text-400);margin-bottom:3px}
+.cd-item-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.4}
+.cd-item-type{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:5px}
+.cd-item-type.online{background:var(--blue-bg);color:var(--pri)}.cd-item-type.offline{background:var(--green-bg);color:var(--green)}.cd-item-type.micro{background:var(--orange-bg);color:var(--orange)}
+.drawer{position:fixed;top:0;right:0;height:100%;width:460px;max-width:95vw;background:var(--card);z-index:501;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.14)}
+.drawer.on{transform:translateX(0)}
+.cd-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--line);flex-shrink:0}.cd-title{font-size:15px;font-weight:700;color:var(--tx)}
+.cd-close{height:32px;padding:0 10px;border:none;background:none;cursor:pointer;color:var(--sub);font:600 13px var(--font);border-radius:var(--r-md)}.cd-close:hover{background:var(--bg)}
+.cd-tabs{display:flex;padding:0 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.cd-tab{padding:10px 14px;font-size:13px;font-weight:600;color:var(--text-400);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px}.cd-tab.active{color:var(--pri);border-bottom-color:var(--pri)}
+.cd-body{flex:1;overflow-y:auto;padding:16px 20px 24px}
+/* 근거 데이터 (예비) */
 .sc{display:flex;gap:10px;align-items:baseline;margin:6px 0}.sc b{font-size:24px}.sc span{color:var(--sub);font-size:12px}
 .lv{display:flex;gap:3px;margin:8px 0}.lv i{flex:1;height:8px;border-radius:3px;background:var(--line)}.lv i.on{background:var(--pri)}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.chips button{padding:4px 12px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:14px;cursor:pointer;font-size:12px}.chips button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
@@ -39,42 +163,126 @@ tr.gap td{color:var(--sub);font-size:12px}
 .bars div{width:22px;border-radius:3px 3px 0 0;position:relative;min-height:2px}
 .bars div span{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--tx)}
 .gn{font-size:12px;color:var(--sub);margin:6px 0 -22px}
-.srow{display:grid;grid-template-columns:150px 1fr 150px;gap:10px;align-items:center;margin:14px 0;font-size:13px}
-.slide{height:6px;background:var(--line);border-radius:3px;position:relative}
-.slide u{position:absolute;top:-4px;width:2px;height:14px}
-.slide em{position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;transform:translateX(-7px);border:2px solid var(--card)}
-.dv{display:grid;grid-template-columns:170px 1fr 86px;gap:10px;align-items:center;margin:10px 0;font-size:13px}
-.dvb{height:12px;position:relative;background:var(--line);border-radius:6px}.dvb:after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--sub)}
-.dvb i{position:absolute;top:0;height:100%;border-radius:6px}
-details{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}
+details{border:1px solid var(--line);border-radius:var(--r-md);padding:8px 12px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}
 details p{margin:6px 0;font-size:13px}
-.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.board>div{border:1px solid var(--line);border-radius:8px;padding:10px;font-size:13px}.board .it{margin:6px 0}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,100%);background:var(--card);border-left:1px solid var(--line);box-shadow:-4px 0 16px rgba(0,0,0,.15);padding:16px;overflow:auto;display:none;z-index:9}
-.drawer.on{display:block}.drawer h2{font-size:15px;margin:0 0 10px;display:flex;justify-content:space-between}
-.course{display:flex;gap:10px;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px;cursor:pointer;font-size:13px}
-.course .th{width:64px;height:44px;background:var(--line);border-radius:4px;flex:none}
-</style></head><body><div class="wrap">
-<div class="types" id="types"></div>
-<div class="head"><h1 id="ttl"></h1><p id="meta"></p></div>
-<div class="tabs" id="tabs"></div>
-<div class="panel" id="panel"></div>
+</style></head><body>
+<header class="gnb">
+  <a href="#" class="gnb-logo"><div class="gnb-logo-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>LABS</a>
+  <div class="gnb-search-wrap"><input class="gnb-search" type="text" placeholder="과정명, 키워드로 검색해 보세요"></div>
+  <div class="gnb-right">
+    <button class="gnb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="gnb-badge"></span></button>
+    <button class="gnb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+  </div>
+</header>
+<div class="app">
+  <aside class="sidebar">
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Contents</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Connect</a></li>
+      <li><a href="#" class="sb-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>my Canvas</a></li>
+    </ul>
+    <div class="sb-divider"></div>
+    <ul class="sb-menu">
+      <li><a href="#" class="sb-item sm">학습상세</a></li>
+      <li><a href="#" class="sb-item sm">교재 배송현황</a></li>
+      <li><a href="#" class="sb-item sm">관심과정</a></li>
+      <li><a href="#" class="sb-item sm">스크랩</a></li>
+      <li><a href="#" class="sb-item sm">학점</a></li>
+      <li><a href="#" class="sb-item sm">IDP</a></li>
+      <li><a href="#" class="sb-item sm active">진단</a></li>
+      <li><a href="#" class="sb-item sm">레벨/마일리지</a></li>
+      <li><a href="#" class="sb-item sm">필수교육</a></li>
+      <li><a href="#" class="sb-item sm">사외교육</a></li>
+      <li><a href="#" class="sb-item sm">결재하기</a></li>
+      <li><a href="#" class="sb-item sm">팀원현황</a></li>
+    </ul>
+    <div class="sb-footer">
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>학습 문의 및 원격 상담</div>
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>모바일 App 설치</div>
+      <div class="sb-footer-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>설정</div>
+    </div>
+  </aside>
+  <div class="main-wrap"><main class="main">
+<div class="preview-bar"><label>화면 구성 미리보기</label><div class="types" id="types"></div><div class="grp"><label>역량군 수</label><div class="types" id="gcnt"></div></div></div>
+<div class="page-header">
+  <div>
+    <div class="breadcrumb"><span>my Canvas</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>진단</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>결과 보기</span></div>
+    <div class="page-title">역량진단 결과</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <a class="btn btn-secondary-outline" href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>목록으로</a>
+    <button class="btn btn-outline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>PDF 저장</button>
+  </div>
 </div>
+<div class="meta-card" id="meta"></div>
+<div id="secTop"></div>
+<div id="secFw"></div>
+<div id="panel"></div>
+<div id="secEv"></div>
+</main></div></div>
 <div class="drawer" id="drawer"></div>
 <script>
 /* ===== 데이터 (더미) ===== */
-const COMP=['커뮤니케이션','문제해결','리더십','협업','전문성'];
-const G=[{n:'소통',ix:[0,3],s:3.5,w:3.0},{n:'사고',ix:[1,4],s:3.6,w:3.3},{n:'리더십',ix:[2],s:3.8,w:3.2}];
+let COMP=['커뮤니케이션','문제해결','리더십','협업','전문성'];
+/* d: 역량군 설명(선택 입력, 샘플 문구) — 세부역량에는 설명 없음 */
+let G=[{n:'소통',ix:[0,3],s:3.5,w:3.0,d:'생각과 의견을 명확하게 전달하고 다른 사람과 협력해 성과를 만드는 영역'},{n:'사고',ix:[1,4],s:3.6,w:3.3,d:''},{n:'리더십',ix:[2],s:3.8,w:3.2,d:'목표를 제시하고 구성원을 이끌어 성과를 만드는 영역'}];
 const gOf=i=>G.find(g=>g.ix.includes(i));
 const judge=(v,i)=>{const g=gOf(i);v=Math.round(v*100)/100;return v>=g.s?'강점':v<g.w?'약점':'보통'};
-const POST={me:[3.6,3.2,2.9,4.0,3.4],mgr:[3.2,3.2,3.6,3.8,3.4],peer:[3.0,3.2,3.5,3.7,3.3],mem:[2.8,3.1,3.4,3.6,3.2],all:[3.3,3.4,3.1,3.5,3.3]};
-const PRE={me:[3.0,2.8,2.5,3.6,3.2],mgr:[3.1,3.3,3.2,3.2,2.7],peer:[3.0,3.1,3.1,3.0,2.6],mem:[2.9,3.0,3.0,2.9,2.5],all:[3.2,3.3,3.0,3.4,3.2]};
-const EV={me:['나','var(--pri)'],mgr:['상사','var(--c-mgr)'],peer:['동료','var(--c-peer)'],mem:['구성원','var(--c-mem)'],all:['전사평균','var(--c-all)']};
+let POST={me:[3.6,3.0,2.9,4.0,3.2],mgr:[2.5,2.8,3.5,2.9,2.9],peer:[2.8,2.9,3.4,3.0,3.0],mem:[3.1,3.0,3.3,3.1,3.1],all:[3.3,3.4,3.1,3.5,3.3]};
+let PRE={me:[3.0,2.8,3.2,3.6,3.2],mgr:[2.9,3.0,3.3,3.0,2.9],peer:[2.8,3.1,3.2,3.1,3.0],mem:[2.9,3.0,3.1,3.2,3.0],all:[3.2,3.3,3.0,3.4,3.2]};
+/* 역량군 수 미리보기용 샘플 데이터 생성 — 역량군마다 시나리오(강점·약점·보통, 맹점·숨은 강점 등)를 돌려가며 구성 */
+const GN=['소통','사고','리더십','전략기획','고객지향','혁신성과','글로벌','디지털전환','윤리경영','협력'];
+const GCN=[['커뮤니케이션','협업'],['문제해결','전문성'],['리더십'],['경청'],['의사결정'],['목표관리'],['동기부여'],['변화관리'],['전략적사고'],['고객이해']];   /* 역량군별 세부역량 */
+/* 사후 시나리오: [본인, 주변판정 평균] — 역량군 기준점수(s 강점 / w 약점) 기준 */
+const SCN=[
+ (s,w)=>[w-.3,w-.45],            /* 나도 주변도 약점 */
+ (s,w)=>[s+.3,w+.1],             /* 맹점 (본인 강점, 주변 보통) */
+ (s,w)=>[w-.3,(s+w)/2+.2],       /* 나만 약점 */
+ (s,w)=>[s+.5,s+.35],            /* 둘 다 강점 */
+ (s,w)=>[(s+w)/2,w-.3],          /* 주변만 약점 */
+ (s,w)=>[(s+w)/2,s+.4],          /* 숨은 강점 (주변이 더 높음) */
+ (s,w)=>[(s+w)/2+.05,(s+w)/2-.1],/* 둘 다 보통 */
+ (s,w)=>[s+.2,s+.3]              /* 둘 다 강점 */
+];
+const DM=[-.2,.4,-.5,.9,.3,-.1,.5,-.2,.4,.1];     /* 본인 사후−사전 */
+const DO=[.2,.1,-.1,.2,.1,.1,.2,.1,-.3,.2];     /* 주변판정 사후−사전 */
+let gn=3;
+function setGroupCount(n){
+ gn=n;
+ const cl=v=>Math.max(1,Math.min(5,Math.round(v*100)/100)),grp=[],comp=[];
+ const P={me:[],mgr:[],peer:[],mem:[],all:[]},Q={me:[],mgr:[],peer:[],mem:[],all:[]};
+ GCN.slice(0,n).forEach((names,gi)=>{
+  const s=3.5+(gi%3)*0.1,w=3.0+(gi%3)*0.1,ix=[];
+  let [m,o]=n==1?[4.25,2.9]:SCN[gi%SCN.length](s,w);
+  const pm=n==1?3.8:m-DM[gi%DM.length],po=n==1?3.0:o-DO[gi%DO.length];
+  names.forEach((nmz,j)=>{
+   const off=names.length==2?(j?-.1:.1):0;
+   ix.push(comp.length);comp.push(nmz);
+   P.me.push(cl(m+off));P.mgr.push(cl(o+.15));P.peer.push(cl(o));P.mem.push(cl(o-.15));P.all.push(cl((m+o)/2));
+   Q.me.push(cl(pm+off));Q.mgr.push(cl(po+.15));Q.peer.push(cl(po));Q.mem.push(cl(po-.15));Q.all.push(cl((pm+po)/2-.05));
+  });
+  grp.push({n:GN[gi],ix,s,w,d:gi%3==1?'':(gi==0?'생각과 의견을 명확하게 전달하고 다른 사람과 협력해 성과를 만드는 영역':gi==2?'목표를 제시하고 구성원을 이끌어 성과를 만드는 영역':`${GN[gi]} 관련 행동을 측정하는 세부역량 영역 (샘플 문구)`)});
+ });
+ COMP=comp;G=grp;POST=P;PRE=Q;
+ buildU();
+}
+const EV={me:['나','var(--pri)'],mgr:['상사','var(--c-mgr)'],peer:['동료','var(--c-peer)'],mem:['구성원','var(--c-mem)'],oth:['주변판정','#0f766e'],all:['조직평균','var(--c-all)']};
 const TYPES={
  self:{n:'자가진단 (일반)',multi:0,pp:0},
  multi:{n:'다면진단 (일반)',multi:1,pp:0},
  selfPP:{n:'자가진단 (사전사후)',multi:0,pp:1},
  multiPP:{n:'다면진단 (사전사후)',multi:1,pp:1}
 };
+/* 진단 프레임워크 · 실천 가이드 · 강약점 의미 (문구는 샘플 — 실제 문구 확정 필요) */
+const COMP_TIP=['회의에서 결론부터 말하고, 상대의 말을 한 번 요약해 확인해 보세요.','문제를 한 문장으로 정의한 뒤 원인 세 가지를 적어 보세요.','주 1회 구성원과 면담해 어려움을 묻고 지원 방안을 함께 정해 보세요.','타 부서와 공유할 일정과 산출물을 먼저 제안해 보세요.','매주 학습 시간을 정해 직무 사례를 1건씩 정리해 보세요.'];
+const MEAN='강점은 판정 기준 이상으로 잘 갖춘 세부역량이라 유지하며 활용하면 되고, 약점은 기준에 미치지 못해 우선 보완이 필요한 세부역량입니다. 판정은 역량군별로 설정한 점수 기준(강점 이상 / 약점 미만)에 따르며, 상위 몇 개를 고르는 방식이 아닙니다.';
+/* 세부역량(선택): 있는 세부역량에만 노출 — 샘플 */
+/* 역량(=역량군) 단위 데이터: 역량군 평균 점수 — 위치·비교·우선순위·추천 등 그래프는 이 단위 사용 (세부역량 단위는 상세 점수 표) */
+let UC=[],UPOST={},UPRE={};
+const uOf=i=>G[i];
+const ujudge=(v,i)=>{const g=G[i];v=Math.round(v*100)/100;return v>=g.s?'강점':v<g.w?'약점':'보통'};
+function buildU(){UC=G.map(g=>g.n);const m=src=>Object.fromEntries(Object.keys(src).map(k=>[k,G.map(g=>avg(g.ix.map(i=>src[k][i])))]));UPOST=m(POST);UPRE=m(PRE)}
 /* ===== 헬퍼 ===== */
 const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 const f1=v=>v.toFixed(1);
@@ -83,53 +291,67 @@ const nm=c=>`「${c}」`;
 const keys=t=>t.multi?['me','mgr','peer','mem','all']:['me','all'];
 const oth=(src,i)=>avg([src.mgr[i],src.peer[i],src.mem[i]]);
 const gs=(src,k,g)=>avg(g.ix.map(i=>src[k][i]));
-const jtag=j=>j=='보통'?'':`<span class="tag ${j=='강점'?'g':'r'}">${j}</span>`;
+const jtag=j=>j=='보통'?'':`<span class="mini-badge ${j=='강점'?'s':'w'}">${j}</span>`;
 const gapBadge=d=>{const r=Math.round(d*10)/10;return r==0?'<span class="note">—</span>':`<span class="tag ${r>0?'y':'b'}">${r>0?'+':''}${r.toFixed(1)}</span>`};
-const card=(t,b,r='')=>`<div class="card"><h3><span>${t}</span>${r}</h3>${b}</div>`;
+const card=(t,b,r='')=>`<div class="section-card"><div class="section-head"><h3>${t}</h3>${r}</div><div class="section-body">${b}</div></div>`;
 const hero=(title,subs=[])=>`<div class="hero"><div class="k">핵심 메시지</div><div class="t">${title}</div>${subs.map(s=>`<p>${s}</p>`).join('')}</div>`;
 const how=t=>`<div class="how"><b>이렇게 읽으세요</b>${t}</div>`;
 const track=v=>`<div class="lv">${[1,2,3,4,5].map(n=>`<i class="${n<=Math.round(v)?'on':''}"></i>`).join('')}</div>`;
 const pos=v=>(v-1)/4*100+'%';
 /* 기준점수 눈금이 있는 슬라이더 행: dots=[[값,색]] */
-const sl=(i,dots,right)=>{const g=gOf(i);return `<div class="srow"><span>${COMP[i]} ${jtag(judge(POST.me[i],i))}</span><div class="slide"><u style="left:${pos(g.w)};background:var(--bad)"></u><u style="left:${pos(g.s)};background:var(--ok)"></u>${dots.map(([v,c])=>`<em style="left:${pos(v)};background:${c}"></em>`).join('')}</div><span>${right}</span></div>`};
+const sl=(i,dots,right,nb)=>{const g=uOf(i);return `<div class="srow"><span>${UC[i]}${nb?'':' '+jtag(ujudge(UPOST.me[i],i))}</span><div class="sl"><div class="sl-track"><i class="sl-thr w" style="left:${pos(g.w)}"></i><i class="sl-thr s" style="left:${pos(g.s)}"></i>${dots.map(([v,c,lb],di)=>`<i class="sl-dot${dots.length==2&&di==0&&Math.abs(v-dots[1][0])<0.05?' big':''}"${lb?` data-tip="${UC[i]} (${ujudge(v,i)})&#10;${lb} ${f1(v)}점&#10;약점 기준 ${f1(g.w)}점 · 강점 기준 ${f1(g.s)}점"`:''} style="left:${pos(v)};border-color:${c}"></i>`).join('')}</div></div><span>${right}</span></div>`};
 /* 0 기준 좌우 막대 */
 const dv=(label,val,max,txt,cp='var(--pri)',cn='var(--c-mem)')=>{const w=Math.min(Math.abs(val)/max,1)*50;return `<div class="dv"><span>${label}</span><div class="dvb"><i style="${val>=0?`left:50%;background:${cp}`:`right:50%;background:${cn}`};width:${w}%"></i></div><span>${txt}</span></div>`};
+setGroupCount(3);
 let tp='self',tb=0,ev='me',sub=0,drOpen=0,drTab=0;
 
 /* ===== 공통 계산 ===== */
-const rowsOf=()=>COMP.map((c,i)=>({c,i,v:POST.me[i],j:judge(POST.me[i],i)}));
-const weakOf=()=>rowsOf().filter(r=>r.j=='약점').sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
-const strongOf=()=>rowsOf().filter(r=>r.j=='강점').sort((a,b)=>(b.v-gOf(b.i).s)-(a.v-gOf(a.i).s));
+const rowsOf=()=>UC.map((c,i)=>({c,i,v:UPOST.me[i],j:ujudge(UPOST.me[i],i)}));
+const weakOf=()=>rowsOf().filter(r=>r.j=='약점').sort((a,b)=>(a.v-uOf(a.i).w)-(b.v-uOf(b.i).w));
+const strongOf=()=>rowsOf().filter(r=>r.j=='강점').sort((a,b)=>(b.v-uOf(b.i).s)-(a.v-uOf(a.i).s));
+/* 세부역량 단위(추천 과정 기준) */
+const lfRows=()=>COMP.map((c,i)=>({c,i,v:POST.me[i],j:judge(POST.me[i],i)}));
+const lfWeak=()=>lfRows().filter(r=>r.j=='약점').sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
+const lfStrong=()=>lfRows().filter(r=>r.j=='강점').sort((a,b)=>(b.v-gOf(b.i).s)-(a.v-gOf(a.i).s));
 
 /* ===== 맹점 / 숨은 강점 (본인 − 주변 GAP 기준, 임시 ±0.5 · 확정 필요) ===== */
 const BLIND=0.5;
+const EXTREME=1.0;   /* 본인-주변 종합 점수 차이가 이 값 이상이면 '크게 다름' 문구 (임시 · 확정 필요) */
 const gapOf=(src,i)=>src.me[i]-oth(src,i);
 const kind=d=>{d=Math.round(d*100)/100;return d>=BLIND?'맹점':d<=-BLIND?'숨은 강점':'일치'};
 const ktag=k=>k=='맹점'?'<span class="tag r">맹점</span>':k=='숨은 강점'?'<span class="tag g">숨은 강점</span>':'<span class="note">일치</span>';
 const sideTxt=d=>d>=0?`내가 +${d.toFixed(1)}`:`주변 +${(-d).toFixed(1)}`;
-const kn=(src,k)=>COMP.filter((c,i)=>kind(gapOf(src,i))==k);
+const kn=(src,k)=>UC.filter((c,i)=>kind(gapOf(src,i))==k);
 
+/* 내 역량(=역량군)의 위치: 역량군 평균 점수를 역량군 기준점수와 비교, 보완이 급한 순 */
+const grpPosRows=()=>G.map((g,gi)=>{const v=Math.round(UPOST.me[gi]*100)/100;return {g,v,j:v>=g.s?'강점':v<g.w?'약점':'보통'}}).sort((a,b)=>(a.v-a.g.w)-(b.v-b.g.w));   /* 보완이 급한 순(약점 기준과의 거리) */
+/* 내 역량의 위치 카드 + 범례 (○ 본인 점수 / ┆ 약점·강점 기준) */
+const posCard=()=>card('내 역량의 위치',grpPosRows().map(slG).join('')+'<div class="legend"><span class="lg-dot"></span>본인 점수<span class="lg-bar w"></span>약점 기준<span class="lg-bar s"></span>강점 기준 (역량군별 설정값)</div>');
+/* 핵심 메시지: 타이틀 + 그 근거만. 약점 → 강점 → 둘 다 없음 순으로 분기 */
+function posHero(){
+ const rows=grpPosRows(),w=rows.filter(r=>r.j=='약점').sort((a,b)=>(a.v-a.g.w)-(b.v-b.g.w)),s=rows.filter(r=>r.j=='강점').sort((a,b)=>(b.v-b.g.s)-(a.v-a.g.s));
+ if(w.length){const r=w[0];return hero(`가장 먼저 키울 역량은 ${nm(r.g.n)}입니다`,[`${nm(r.g.n)} 점수 ${f1(r.v)}점이 약점 기준(${f1(r.g.w)}점)보다 ${f1(r.g.w-r.v)}점 낮습니다.`])}
+ if(s.length){const r=s[0];return hero('약점으로 판정된 역량이 없습니다',[`${nm(r.g.n)} 점수 ${f1(r.v)}점으로 강점 기준(${f1(r.g.s)}점) 이상입니다.`])}
+ return hero('약점·강점으로 판정된 역량이 없습니다',['모든 역량이 약점 기준 이상, 강점 기준 미만입니다.']);
+}
+const slG=r=>`<div class="srow"><span>${r.g.n} ${jtag(r.j)}</span><div class="sl"><div class="sl-track"><i class="sl-thr w" style="left:${pos(r.g.w)}"></i><i class="sl-thr s" style="left:${pos(r.g.s)}"></i><i class="sl-dot" data-tip="${r.g.n} (${r.j})&#10;본인 ${f1(r.v)}점&#10;약점 기준 ${f1(r.g.w)}점 · 강점 기준 ${f1(r.g.s)}점" style="left:${pos(r.v)};border-color:var(--pri)"></i></div></div><span>${f1(r.v)}</span></div>`;
 /* ================= 일반 진단 (기존 구성 유지) ================= */
 function self1(){
- const w=weakOf(),s=strongOf();
- const rows=rowsOf().sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
- return hero(w.length?`가장 먼저 키울 역량은 ${nm(w[0].c)}입니다`:'약점으로 판정된 역량이 없습니다',
-  [`강점 ${s.map(r=>nm(r.c)).join(' ')||'없음'} · 약점 ${w.map(r=>nm(r.c)).join(' ')||'없음'}`,
-   w.length?`${nm(w[0].c)}은 약점 기준(${gOf(w[0].i).w})보다 ${f1(gOf(w[0].i).w-w[0].v)}점 낮습니다.`:''])
- +how('약점 기준(빨강)보다 왼쪽이면 약점, 강점 기준(초록)보다 오른쪽이면 강점입니다. 위에서부터 보완이 급한 순서로 정렬했습니다.')
- +card('내 역량의 위치 (보완이 급한 순)',rows.map(r=>sl(r.i,[[r.v,'var(--pri)']],f1(r.v))).join('')+'<div class="legend"><em style="background:var(--bad)"></em>약점 기준<em style="background:var(--ok)"></em>강점 기준 (역량군별 설정값)</div>');
+ return posHero()
+ +how('약점 기준보다 왼쪽이면 약점, 강점 기준보다 오른쪽이면 강점입니다.')
+ +posCard();
 }
 function self2(){
- const rows=COMP.map((c,i)=>({c,i,d:POST.me[i]-POST.all[i]})).sort((a,b)=>b.d-a.d);
+ const rows=UC.map((c,i)=>({c,i,d:Math.round((UPOST.me[i]-UPOST.all[i])*10)/10})).sort((a,b)=>b.d-a.d);
  const up=rows.filter(r=>r.d>0).length;
- return hero(`전사평균보다 높은 역량은 5개 중 ${up}개입니다`,[`가장 앞선 역량 ${nm(rows[0].c)} ${sd(rows[0].d)} · 가장 뒤처진 역량 ${nm(rows[4].c)} ${sd(rows[4].d)}`])
- +how('전사평균은 이 진단의 모든 대상자 응답 평균입니다. 약점·강점 판정과 별개로, 같은 조직 안에서의 상대적 위치를 보여 줍니다.')
- +card('전사평균 대비 (나 − 전사평균)',rows.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
+ return hero(`조직평균보다 높은 역량은 ${rows.length}개 중 ${up}개입니다`,[`가장 앞선 역량 ${nm(rows[0].c)} ${sd(rows[0].d)} · 가장 뒤처진 역량 ${nm(rows[rows.length-1].c)} ${sd(rows[rows.length-1].d)}`])
+ +how('조직평균은 이 진단 전체 대상자의 응답 평균입니다.')
+ +card('조직평균 대비 (나 − 조직평균)',rows.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
 }
 /* ================= 다면진단 ================= */
 /* 우선순위 : 1 나도 주변도 약점 / 2 주변은 약점 또는 맹점(내가 모르는 약점) / 3 나만 약점 */
-function priInfo(){
- const info=rowsOf().map(r=>{const o=oth(POST,r.i),jo=judge(o,r.i),k=kind(gapOf(POST,r.i));
+function priInfo(leaf){
+ const R=leaf?lfRows():rowsOf(),PS=leaf?POST:UPOST,jf=leaf?judge:ujudge,gf=leaf?gOf:uOf;const info=R.map(r=>{const o=oth(PS,r.i),jo=jf(o,r.i),k=kind(gapOf(PS,r.i));
   let p=0,lab='';
   if(r.j=='약점'&&jo=='약점'){p=1;lab='둘 다 약점'}
   else if(jo=='약점'){p=2;lab='주변만 약점'}
@@ -137,7 +359,7 @@ function priInfo(){
   else if(r.j=='약점'){p=3;lab='나만 약점'}
   else if(r.j=='강점'&&jo=='강점'){lab='둘 다 강점'}
   return {...r,o,jo,k,p,lab}});
- return info.sort((a,b)=>((a.p||9)-(b.p||9))||((a.v-gOf(a.i).w)-(b.v-gOf(b.i).w)));
+ return info.sort((a,b)=>((a.p||9)-(b.p||9))||((a.v-gf(a.i).w)-(b.v-gf(b.i).w)));
 }
 const PRI_LAB={1:'나도 주변도 약점',2:'주변은 약점으로 보거나 맹점',3:'나만 약점'};
 function multiB(){
@@ -145,54 +367,60 @@ function multiB(){
  const names=a=>a.map(r=>nm(r.c)).join(' ');
  const first=by(1)[0]||by(2)[0]||by(3)[0];
  const title=by(1).length?`지금 가장 먼저 키울 역량은 ${names(by(1))}입니다`:first?`나도 주변도 약점인 역량은 없습니다. 먼저 점검할 역량은 ${nm(first.c)}입니다`:'약점으로 판단된 역량이 없습니다';
- const subs=[1,2,3].filter(n=>by(n).length).map(n=>`${n}순위 · ${PRI_LAB[n]} : ${names(by(n))}`);
- const ptag=r=>r.p?`<span class="tag ${r.p==1?'r':r.p==2?'y':'b'}">${r.p}순위 · ${r.lab}</span>`:(r.lab?`<span class="tag g">${r.lab}</span>`:'<span class="note">—</span>');
+ const ev=r=>nm(r.c);
+ const subs=['둘 다 약점','주변만 약점','맹점','나만 약점'].map(l=>{const a=info.filter(r=>r.lab==l);return `${l} : ${a.length?a.map(ev).join(' '):'없음'}`});
+ const ptag=r=>r.p?`<span class="tag ${r.p==1?'r':r.p==2?'y':'b'}">${r.lab}</span>`:(r.lab?`<span class="tag g">${r.lab}</span>`:'<span class="note">—</span>');
  const pj=j=>j=='보통'?'<span class="note">보통</span>':jtag(j);
  return hero(title,subs)
- +how('내 판정은 내 점수, 주변 판정은 상사·동료·구성원 평균 점수를 같은 기준점수(역량군별 강점·약점 기준)로 판정한 결과입니다. 나도 주변도 약점인 역량이 지금 가장 먼저 키울 역량(1순위)입니다. 다음은 주변은 약점으로 보거나 내가 주변보다 높게 평가한 맹점 역량(2순위)으로, 내가 인지하지 못한 약점일 수 있어 먼저 점검합니다. 나만 약점으로 보는 역량은 3순위입니다.')
- +card('나와 주변의 위치 (우선순위 순)',info.map(r=>`<div class="srow"><span>${r.c} ${jtag(r.j)}</span><div class="slide"><u style="left:${pos(gOf(r.i).w)};background:var(--bad)"></u><u style="left:${pos(gOf(r.i).s)};background:var(--ok)"></u><em style="left:${pos(r.o)};background:#14b8a6"></em><em style="left:${pos(r.v)};background:var(--pri)"></em></div><span>${ptag(r)}</span></div>`).join('')+'<div class="legend"><em style="background:var(--pri)"></em>나<em style="background:#14b8a6"></em>주변<em style="background:var(--bad)"></em>약점 기준<em style="background:var(--ok)"></em>강점 기준 (역량군별 설정값)</div>')
- +card('내 판정과 주변 판정 비교',`<table><tr><th>역량</th><th>내 판정</th><th>주변 판정</th><th>판정 비교</th></tr>${info.map(r=>`<tr><td>${r.c}</td><td>${pj(r.j)}</td><td>${pj(r.jo)}</td><td>${r.j==r.jo?'<span class="tag g">같은 방향</span>':'<span class="tag y">다른 방향</span>'}</td></tr>`).join('')}</table><div class="note">주변 = 상사·동료·구성원 평균</div>`);
+ +how(`나와 주변의 점수를 같은 기준점수(역량군별 약점·강점 기준)로 각각 판정합니다.<br><b style="margin:0">둘 다 약점</b> 나와 주변 모두 약점 기준 미만입니다.<br><b style="margin:0">주변만 약점</b> 주변만 약점 기준 미만입니다.<br><b style="margin:0">나만 약점</b> 나만 약점 기준 미만이고, 주변은 약점이 아닙니다.`)
+ +card('나와 주변의 위치',info.map(r=>sl(r.i,[[r.o,'#14b8a6','주변판정'],[r.v,'var(--pri)','나']],ptag(r),1)).join('')+'<div class="legend"><span class="lg-dot"></span>나<span class="lg-dot" style="border-color:#14b8a6"></span>주변판정<span class="lg-bar w"></span>약점 기준<span class="lg-bar s"></span>강점 기준 (역량군별 설정값)</div>')
+ +card('내 판정과 주변 판정 비교',`<table><tr><th>역량</th><th>내 판정</th><th>주변 판정</th><th>판정 비교</th></tr>${info.map(r=>`<tr><td>${r.c}</td><td>${pj(r.j)}</td><td>${pj(r.jo)}</td><td>${r.j==r.jo?'<span class="tag g">같은 방향</span>':'<span class="tag y">다른 방향</span>'}</td></tr>`).join('')}</table>`);
 }
 
 /* ================= 사전사후 전용 (사후 결과 + 전후 비교) =================
 /* 자가진단 사후 결과 */
 function selfA(){
- const w=weakOf(),s=strongOf();
- const rows=rowsOf().sort((a,b)=>(a.v-gOf(a.i).w)-(b.v-gOf(b.i).w));
- const vs=COMP.map((c,i)=>({c,i,d:POST.me[i]-POST.all[i]})).sort((a,b)=>b.d-a.d);
- const up=vs.filter(r=>r.d>0).length;
- return hero(w.length?`가장 먼저 키울 역량은 ${nm(w[0].c)}입니다`:'약점으로 판정된 역량이 없습니다',
-  [`강점 ${s.map(r=>nm(r.c)).join(' ')||'없음'} · 약점 ${w.map(r=>nm(r.c)).join(' ')||'없음'}`,
-   `전사평균보다 높은 역량은 5개 중 ${up}개입니다 (가장 앞선 역량 ${nm(vs[0].c)}, 가장 뒤처진 역량 ${nm(vs[vs.length-1].c)})`])
- +how('약점 기준(빨강)보다 왼쪽이면 약점, 강점 기준(초록)보다 오른쪽이면 강점입니다. 전사평균은 이 진단의 모든 대상자 응답 평균이며, 강점·약점 판정과 별개로 조직 안에서의 상대적 위치를 보여 줍니다.')
- +card('내 역량의 위치 (보완이 급한 순)',rows.map(r=>sl(r.i,[[r.v,'var(--pri)']],f1(r.v))).join('')+'<div class="legend"><em style="background:var(--bad)"></em>약점 기준<em style="background:var(--ok)"></em>강점 기준 (역량군별 설정값)</div>')
- +card('전사평균 대비 (나 − 전사평균)',vs.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
+ const vs=UC.map((c,i)=>({c,i,d:Math.round((UPOST.me[i]-UPOST.all[i])*10)/10})).sort((a,b)=>b.d-a.d);
+ return posHero()
+ +how('약점 기준보다 왼쪽이면 약점, 강점 기준보다 오른쪽이면 강점입니다. 조직평균은 이 진단 전체 대상자의 응답 평균입니다.')
+ +posCard()
+ +card('조직평균 대비 (나 − 조직평균)',vs.map(r=>dv(r.c,r.d,1,sd(r.d))).join(''));
 }
 /* ================= 다면진단 (사후 결과 공통) ================= */
 function multiA(){
- const rows=COMP.map((c,i)=>({c,i,me:POST.me[i],o:oth(POST,i),d:gapOf(POST,i)})).map(r=>({...r,k:kind(r.d)})).sort((a,b)=>b.d-a.d);
- const bl=rows.filter(r=>r.k=='맹점'),hs=rows.filter(r=>r.k=='숨은 강점');
+ const rows=UC.map((c,i)=>({c,i,me:UPOST.me[i],o:oth(UPOST,i),d:gapOf(UPOST,i)})).map(r=>({...r,k:kind(r.d)})).sort((a,b)=>b.d-a.d);
+ const bl=rows.filter(r=>r.k=='맹점'),hs=rows.filter(r=>r.k=='숨은 강점'),ev2=r=>nm(r.c);
  return hero(bl.length||hs.length?`맹점 ${bl.length}개, 숨은 강점 ${hs.length}개가 있습니다`:'나와 주변의 평가가 크게 다른 역량은 없습니다',
-  [bl.length?`맹점 ${bl.map(r=>nm(r.c)).join(' ')} : 내가 보는 것보다 주변은 낮게 봅니다`:'맹점으로 판단된 역량은 없습니다',
-   hs.length?`숨은 강점 ${hs.map(r=>nm(r.c)).join(' ')} : 내가 보는 것보다 주변은 높게 봅니다`:'숨은 강점으로 판단된 역량은 없습니다'])
- +how(`주변은 상사·동료·구성원의 평균입니다. 내 점수가 주변보다 ${BLIND} 이상 높으면 맹점(내가 아는 것보다 주변은 낮게 봄), ${BLIND} 이상 낮으면 숨은 강점(내가 아는 것보다 주변은 높게 봄)입니다. 맹점은 행동을 점검할 대상이고, 숨은 강점은 더 드러내면 좋은 강점입니다. 그래프는 가운데를 기준으로 오른쪽(파랑)일수록 주변이 나보다 높게 평가한 것이라 긍정적이고, 왼쪽(빨강)일수록 내가 주변보다 높게 평가한 맹점입니다. 기준(${BLIND})은 확정 전 임시값입니다.`)
+  (bl.length||hs.length)?[bl.length?`맹점 ${bl.map(ev2).join(' ')}`:'',hs.length?`숨은 강점 ${hs.map(ev2).join(' ')}`:''].filter(Boolean):[`모든 역량의 나와 주변판정 점수 차이가 ${BLIND} 미만입니다.`])
+ +how(`<b style="margin:0">맹점</b> 내가 주변보다 ${BLIND}점 이상 높게 평가한 역량입니다. 스스로는 잘한다고 보지만 주변은 그렇게 보지 않을 수 있습니다.<br><b style="margin:0">숨은 강점</b> 내가 주변보다 ${BLIND}점 이상 낮게 평가한 역량입니다. 주변은 강점으로 보지만 스스로는 알아차리지 못했을 수 있습니다. (기준 ${BLIND}은 확정 전 임시값)`)
  +card('나 vs 주변 (GAP)',rows.map(r=>dv(`${r.c} ${r.k=='일치'?'':ktag(r.k)}`,-r.d,1,sideTxt(r.d),'var(--pri)','var(--bad)')).join('')+'<div class="legend"><em style="background:var(--bad)"></em>왼쪽 : 내가 더 높게 평가 (맹점 쪽)<em style="background:var(--pri)"></em>오른쪽 : 주변이 더 높게 평가 (숨은 강점 쪽)</div>');
 }
 /* ================= 사전사후: 전후 비교 ================= */
+/* 사후 판정 변화: 역량군마다 사전 → 사후 판정을 한 줄로, 위쪽에 판정별 개수 요약 */
+function pjChange(){
+ const rank={약점:0,보통:1,강점:2};
+ const rows=UC.map((c,i)=>{const a=ujudge(UPRE.me[i],i),b=ujudge(UPOST.me[i],i);return {c,a,b,d:rank[b]-rank[a]}}).sort((x,y)=>y.d-x.d);
+ const cls=j=>j=='강점'?'s':j=='약점'?'w':'m',chip=j=>`<span class="jc ${cls(j)}">${j}</span>`;
+ const tag=d=>d>0?'<span class="tag g">▲ 개선</span>':d<0?'<span class="tag r">▼ 하락</span>':'<span class="note">유지</span>';
+ const cnt=(k,key)=>rows.filter(r=>r[key]==k).length;
+ const sum=['약점','보통','강점'].map(k=>`<div class="jsum ${cls(k)}"><div class="jl">${chip(k)}</div><div class="jn">${cnt(k,'a')}개<i>→</i><b>${cnt(k,'b')}개</b></div></div>`).join('');
+ const list=rows.map(r=>`<div class="jr"><span class="jnm">${r.c}</span><span class="jch">${chip(r.a)}<i class="arr">→</i>${chip(r.b)}</span>${tag(r.d)}</div>`).join('');
+ return card('판정 변화 (사전 → 사후)',`<div class="jsums">${sum}</div><div class="jrows">${list}</div><div class="note">약점 · 보통 · 강점은 역량군별 기준점수로 판정한 결과입니다.</div>`);
+}
 function ppA(){
- const d=COMP.map((c,i)=>({c,i,d:POST.me[i]-PRE.me[i],pre:PRE.me[i],post:POST.me[i]})).sort((a,b)=>b.d-a.d);
- const up=d.filter(r=>r.d>0).length,flat=d.filter(r=>r.d<=0);
- const out=COMP.filter((c,i)=>judge(PRE.me[i],i)=='약점'&&judge(POST.me[i],i)!='약점');
+ const d=UC.map((c,i)=>({c,i,d:UPOST.me[i]-UPRE.me[i],pre:UPRE.me[i],post:UPOST.me[i]})).sort((a,b)=>b.d-a.d);
+ const up=d.filter(r=>r.d>0).length,flat=d.filter(r=>Math.round(r.d*10)/10<0);
+ const out=UC.filter((c,i)=>ujudge(UPRE.me[i],i)=='약점'&&ujudge(UPOST.me[i],i)!='약점');
  const col={약점:[],보통:[],강점:[]};
- COMP.forEach((c,i)=>{const a=judge(PRE.me[i],i),b=judge(POST.me[i],i);col[b].push(`${c} <span class="note">${a==b?'(유지)':'← '+a}</span>`)});
- return hero(`사전 대비 5개 중 ${up}개 역량이 올랐습니다 (평균 ${sd(avg(d.map(r=>r.d)))})`,
-  [`가장 크게 오른 역량 ${nm(d[0].c)} ${sd(d[0].d)}`,out.length?`약점에서 벗어난 역량 ${out.map(nm).join(' ')}`:'약점에서 벗어난 역량은 아직 없습니다',`변화 없음·하락 ${flat.map(r=>nm(r.c)).join(' ')||'없음'}`])
- +how('회색 점이 사전, 파란 점이 사후입니다. 빨강·초록 눈금은 약점·강점 기준이라, 점이 눈금을 넘어가면 판정이 바뀝니다. 같은 점수 상승이라도 기준점수를 넘었는지가 중요하며, 약점 → 보통, 보통 → 강점으로 이동한 역량이 실질적인 성장입니다.')
- +card('본인 점수 변화 (변화가 큰 순)',d.map(r=>sl(r.i,[[r.pre,'var(--pre)'],[r.post,'var(--pri)']],`${f1(r.pre)} → ${f1(r.post)} (${sd(r.d)})`)).join(''))
- +card('사후 판정 보드',`<div class="board">${['약점','보통','강점'].map(k=>`<div><span class="tag ${k=='강점'?'g':k=='약점'?'r':''}">${k}</span>${col[k].map(x=>`<div class="it">${x}</div>`).join('')||'<div class="note">없음</div>'}</div>`).join('')}</div>`);
+ UC.forEach((c,i)=>{const a=ujudge(UPRE.me[i],i),b=ujudge(UPOST.me[i],i);col[b].push(`${c} <span class="note">${a==b?'(유지)':'← '+a}</span>`)});
+ return hero(up?`사전 대비 ${UC.length}개 중 ${up}개 역량이 올랐습니다`:'사전 대비 오른 역량이 없습니다',
+  [up?`가장 크게 오른 역량 ${nm(d[0].c)} ${f1(d[0].pre)} → ${f1(d[0].post)} (${sd(d[0].d)})`:'',out.length?`약점에서 벗어난 역량 ${out.map(nm).join(' ')}`:'',flat.length?`하락한 역량 ${flat.map(r=>nm(r.c)).join(' ')}`:''].filter(Boolean))
+ +how('회색 점이 사전, 파란 점이 사후입니다. 점이 기준 눈금을 넘으면 판정이 바뀝니다.')
+ +card('본인 점수 변화 (변화가 큰 순)',d.map(r=>sl(r.i,[[r.pre,'var(--pre)','사전'],[r.post,'var(--pri)','사후']],`${f1(r.pre)} → <b>${f1(r.post)}</b> (${sd(r.d)})`)).join(''))
+ +pjChange();
 }
 function mppA(){
- const rows=COMP.map((c,i)=>({c,i,m:POST.me[i]-PRE.me[i],o:oth(POST,i)-oth(PRE,i),a:judge(PRE.me[i],i),b:judge(POST.me[i],i),pa:judge(oth(PRE,i),i),pb:judge(oth(POST,i),i),ka:kind(gapOf(PRE,i)),kb:kind(gapOf(POST,i))}));
+ const rows=UC.map((c,i)=>({c,i,m:UPOST.me[i]-UPRE.me[i],o:oth(UPOST,i)-oth(UPRE,i),a:ujudge(UPRE.me[i],i),b:ujudge(UPOST.me[i],i),pa:ujudge(oth(UPRE,i),i),pb:ujudge(oth(UPOST,i),i),ka:kind(gapOf(UPRE,i)),kb:kind(gapOf(UPOST,i))}));
  const ma=avg(rows.map(r=>r.m)),oa=avg(rows.map(r=>r.o));
  const nms=fn=>rows.filter(fn).map(r=>nm(r.c)).join(' ')||'없음';
  const bp=rows.filter(r=>r.ka=='맹점').length,bq=rows.filter(r=>r.kb=='맹점').length;
@@ -205,64 +433,114 @@ function mppA(){
   if(a=='강점'&&b!='강점')return '<span class="tag y">강점 약화</span>';
   if(a!='강점'&&b=='강점')return '<span class="tag g">강점 달성</span>';
   return '<span class="note">변화 없음</span>'};
- const bt=(a,b)=>a=='맹점'&&b=='맹점'?'<span class="tag y">맹점 유지</span>':a=='맹점'?'<span class="tag g">맹점 해소</span>':b=='맹점'?'<span class="tag r">맹점 발생</span>':'<span class="note">—</span>';
+ const bt=(a,b)=>b=='맹점'&&a!=b?'<span class="tag r">신규 맹점</span>':b=='숨은 강점'&&a!=b?'<span class="tag g">신규 숨은 강점</span>':a=='맹점'&&b!=a?'<span class="tag b">맹점 해소</span>':'<span class="note">—</span>';
  const pj=j=>j=='보통'?'보통':jtag(j);
  return hero(msg,[
-   `약점 : 해소 ${nms(r=>r.a=='약점'&&r.b!='약점')} · 새로 생김 ${nms(r=>r.a!='약점'&&r.b=='약점')}`,
-   `맹점 : 해소 ${nms(r=>r.ka=='맹점'&&r.kb!='맹점')} · 새로 생김 ${nms(r=>r.ka!='맹점'&&r.kb=='맹점')}`])
- +how('나의 판정과 주변의 판정이 사전에서 사후로 어떻게 바뀌었는지, 맹점이 해소되었는지 새로 생겼는지를 비교합니다. 주변 판정은 상사·동료·구성원 평균 점수를 같은 기준점수로 판정한 결과입니다. 나의 변화보다 주변의 변화가 행동 변화의 근거입니다. 맹점 판단 기준(±'+BLIND+')은 확정 전 임시값입니다.')
- +card('역량별 변화 내용',`<table><tr><th>역량</th><th>나의 판정</th><th>주변 판정</th><th>맹점 변화</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${pj(r.a)} → ${pj(r.b)}</td><td>${pj(r.pa)} → ${pj(r.pb)}</td><td>${bt(r.ka,r.kb)}</td></tr>`).join('')}</table><div class="note">주변 = 상사·동료·구성원 평균 · 맹점 = 내가 주변보다 높게 평가한 역량</div>`);
+   `약점 해소 : ${nms(r=>r.a=='약점'&&r.b!='약점')}`,
+   `신규 약점 : ${nms(r=>r.a!='약점'&&r.b=='약점')}`,
+   `맹점 해소 : ${nms(r=>r.ka=='맹점'&&r.kb!='맹점')}`,
+   `신규 맹점 : ${nms(r=>r.ka!='맹점'&&r.kb=='맹점')}`])
+ +how('나와 주변의 판정이 사전에서 사후로 바뀐 내용을 비교합니다. 맹점 기준(±'+BLIND+')은 확정 전 임시값입니다.')
+ +card('역량별 변화 내용',`<table><tr><th>역량</th><th>나의 판정</th><th>주변 판정</th><th>변화 내용</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${pj(r.a)} → ${pj(r.b)}</td><td>${pj(r.pa)} → ${pj(r.pb)}</td><td>${bt(r.ka,r.kb)}</td></tr>`).join('')}</table><div class="note">맹점 = 내가 주변보다 높게 평가한 역량</div>`);
 }
 
 /* ================= 다음 행동 (공통) ================= */
+const TYPE_CLS={온라인:'online',오프라인:'offline',마이크로러닝:'micro'};
 const COURSES=[['약점','리더십','팀을 움직이는 리더의 대화법','온라인'],['약점','문제해결','문제 정의와 해결안 도출','마이크로러닝'],['강점','협업','협업 리더십 심화','온라인'],['강점','커뮤니케이션','전달력을 높이는 스토리텔링','오프라인']];
+/* 과정 추천: 1순위·2순위 영역 카드 (추천 사유 + 연계 과정 넘겨보기) — 과정 문구는 샘플 */
+const IC={folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>',type:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>',user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg>',clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41L11 3.83A2 2 0 009.5 3H4a1 1 0 00-1 1v5.5a2 2 0 00.59 1.41l9.58 9.58a2 2 0 002.83 0l4.59-4.59a2 2 0 000-2.83z"/><circle cx="6.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>',l:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>',r:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>'};
+/* [과정명, 소개, 유형, 학습시간, 가격] */
+const CAR={
+ '커뮤니케이션':[['전달력을 높이는 스토리텔링','메시지 구조화부터 전달 기법까지, 청중을 설득하는 말하기 역량을 익히는 과정','오프라인','3시간','무료'],['회의에서 결론부터 말하는 법','핵심을 먼저 말하고 근거를 덧붙이는 보고·회의 커뮤니케이션 요령을 배우는 과정','마이크로러닝','35분','무료'],['경청과 피드백 대화','상대의 말을 이해하고 피드백을 주고받는 대화 기술을 사례로 익히는 과정','온라인','1시간 10분','29,000원']],
+ '문제해결':[['문제 정의와 해결안 도출','문제를 한 문장으로 정의하고 원인과 해결안을 구조적으로 도출하는 방법을 배우는 과정','마이크로러닝','45분','무료'],['로직트리로 원인 찾기','로직트리와 5Why로 문제의 근본 원인을 찾는 실습 중심 과정','온라인','1시간','무료'],['데이터로 결정하는 문제해결','데이터를 근거로 대안을 비교하고 의사결정하는 방법을 다루는 과정','온라인','1시간 30분','35,000원']],
+ '리더십':[['팀을 움직이는 리더의 대화법','구성원과의 1:1 면담과 피드백 대화 기법을 사례 중심으로 익히는 과정','온라인','1시간 10분','무료'],['리더를 위한 코칭 기본기','질문과 경청으로 구성원의 성장을 돕는 코칭 방법을 학습하는 과정','마이크로러닝','40분','무료'],['성과를 만드는 팀 운영','목표 설정부터 점검까지 팀 운영 전 과정을 다루는 과정','온라인','1시간 30분','49,000원']],
+ '협업':[['협업 리더십 심화','부서 간 협업을 이끄는 조율·갈등 관리 리더십을 심화 학습하는 과정','온라인','1시간 20분','39,000원'],['부서 간 협업 프로세스 설계','협업 일정과 산출물을 사전에 합의하는 프로세스 설계 방법을 배우는 과정','마이크로러닝','50분','무료'],['갈등을 성과로 바꾸는 협상','이해관계가 다른 팀과 합의점을 찾는 협상 기술을 익히는 과정','온라인','1시간','무료']],
+ '전문성':[['직무 지식 학습 루틴 만들기','매주 학습 시간을 정해 직무 사례를 정리하는 학습 습관을 만드는 과정','마이크로러닝','30분','무료'],['업무 사례 정리와 공유','업무 사례를 구조화해 팀과 공유하는 지식 관리 방법을 배우는 과정','온라인','1시간','무료'],['직무 전문가로 성장하는 로드맵','경력 단계별 역량 로드맵을 세우고 실행하는 방법을 다루는 과정','온라인','1시간 20분','29,000원']]
+};
+const carOf=c=>CAR[c]||CAR[Object.keys(CAR)[Math.max(0,COMP.indexOf(c))%5]];   /* 샘플: 과정이 없는 세부역량은 임의 과정으로 대체 */
+/* 추천 과정: 선정된 역량(=역량군) 안에서 점수가 가장 낮은 세부역량에 매핑된 과정 */
+const lowLeaf=gi=>G[gi].ix.reduce((a,b)=>POST.me[b]<POST.me[a]?b:a);
+let TOP=[],topIdx=[];
+function topItems(t){
+ const mk=(r,kind,k)=>({r,kind,badge:`${k+1}순위`,leaf:lowLeaf(r.i)});
+ if(t.multi){const info=priInfo(),list=info.filter(r=>r.p).concat(info.filter(r=>!r.p));return list.slice(0,2).map((r,k)=>mk(r,r.p?'m':'f',k))}
+ const gp=r=>UPOST.all[r.i]-r.v,srt=a=>a.sort((x,y)=>(gp(y)-gp(x))||(x.v-y.v)),rows=rowsOf();
+ return srt(rows.filter(r=>r.j=='약점')).concat(srt(rows.filter(r=>r.j!='약점'))).slice(0,2).map((r,k)=>mk(r,r.j=='약점'?'w':'f',k));
+}
+function topReason(it,n){
+ const r=it.r,g=uOf(r.i),v=`<b>${f1(r.v)}점</b>`,a=UPOST.all[r.i],gap=Math.round((a-r.v)*10)/10,gp=Math.abs(gap).toFixed(1);
+ let s;
+ if(it.kind=='m')s=`${r.c} 점수는 나 ${v}, 주변판정 <b>${f1(r.o)}점</b>으로 ${r.lab}에 해당해, 우선 학습 영역으로 추천하였습니다.`;
+ else if(it.kind=='w')s=`${r.c} 점수가 ${v}으로 약점 기준(${f1(g.w)}점) 미만${gap>0?`이고 조직평균(${f1(a)}점)보다 <b>${gp}점</b> 낮아`:'이어서'}, 우선 학습 영역으로 추천하였습니다.`;
+ else s=`${r.c} 점수가 ${v}으로 ${gap>0?`조직평균(${f1(a)}점)보다 <b>${gp}점</b> 낮아, 우선 학습`:'양호한 수준이지만, 역량 강화를 위한'} 영역으로 추천하였습니다.`;
+ return s+`<br>아래에 해당 영역과 연계된 과정 ${n}개를 선정하였습니다.`;
+}
+function topCourseHTML(k){
+ const it=TOP[k],lf=COMP[it.leaf],c=carOf(lf)[topIdx[k]],g=uOf(it.r.i);
+ return `<div class="top-course"><div class="top-thumb"></div><div class="top-info"><div class="top-tag">${IC.folder}<span>${g.n}</span>${IC.chev}<span>${lf}</span></div><div class="top-ctitle">${c[0]}</div><div class="top-desc">${c[1]}</div><div class="top-meta"><span>${IC.type}${c[2]}</span><span>${IC.user}직무공통</span><span>${IC.clock}${c[3]}</span><span>${IC.tag}${c[4]}</span></div></div></div>`;
+}
+function topNav(k,d){const n=carOf(COMP[TOP[k].leaf]).length;topIdx[k]=(topIdx[k]+d+n)%n;document.getElementById('topC'+k).innerHTML=topCourseHTML(k);document.getElementById('topN'+k).textContent=(topIdx[k]+1)+' / '+n}
+function topSec(items){
+ TOP=items;topIdx=items.map(()=>0);
+ const list=items.map((it,k)=>{const cs=carOf(COMP[it.leaf])||[];if(!cs.length)return '';
+  return `<div class="top-card"><div class="top-title-row"><span class="top-factor">${it.r.c}</span></div><div class="top-reason">${topReason(it,cs.length)}</div><div class="top-course-wrap"><button class="top-arrow left" onclick="topNav(${k},-1)" aria-label="이전 과정">${IC.l}</button><div id="topC${k}">${topCourseHTML(k)}</div><button class="top-arrow right" onclick="topNav(${k},1)" aria-label="다음 과정">${IC.r}</button><span class="top-counter" id="topN${k}">1 / ${cs.length}</span></div></div>`}).join('');
+ return card('과정 추천',`<div class="top-list">${list||'<div class="note">해당 과정이 없습니다.</div>'}</div>`,'<button class="rc-head-more" onclick="openDr()">추천과정 전체보기 ›</button>');
+}
 function act(t){
- const w=weakOf(),s=strongOf();
- const cardHtml=(c,tags)=>`<div class="course"><div class="th"></div><div><b>${c[2]}</b><br><span class="tag">${c[3]}</span>${tags}</div></div>`;
- let title,subs=[],cards,hw;
+ const w=weakOf();
+ let title,subs=[];
  if(t.multi){
   const info=priInfo(),by=n=>info.filter(r=>r.p==n);
   const top=by(1).length?by(1):by(2).length?by(2):by(3);
   title=top.length?`${top.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점·맹점으로 판단된 역량이 없습니다';
-  [1,2,3].forEach(n=>{if(by(n).length)subs.push(`${n}순위 · ${PRI_LAB[n]} : ${by(n).map(r=>nm(r.c)).join(' ')}`)});
-  cards=info.filter(r=>r.p).map(r=>{const co=COURSES.find(x=>x[1]==r.c);return co?cardHtml(co,`<span class="tag ${r.p==1?'r':r.p==2?'y':'b'}">${r.p}순위 · ${r.lab} · ${r.c}</span>`):''}).join('');
-  hw='추천 역량은 우선순위 순서로 보여 줍니다. 1순위는 나도 주변도 약점인 역량, 2순위는 주변은 약점으로 보거나 맹점인 역량(내가 모르는 약점), 3순위는 나만 약점으로 보는 역량입니다. 추천 과정은 진단 생성 시 설정한 경우에만 노출됩니다.';
- }else{
-  title=w.length?`${w.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점이 없으니 강점을 더 키워 보세요';
-  cards=COURSES.filter(c=>w.some(r=>r.c==c[1])||s.some(r=>r.c==c[1])).map(c=>cardHtml(c,`<span class="tag ${c[0]=='강점'?'g':'r'}">${c[0]=='강점'?'강화':'보완'} · ${c[1]}</span>`)).join('');
-  hw='강점/약점 판정은 본인 점수 기준입니다. 추천 과정은 진단 생성 시 설정한 경우에만 노출됩니다.';
- }
+ }else title=w.length?`${w.map(r=>nm(r.c)).join(' ')} 보완부터 시작하세요`:'약점이 없으니 강점을 더 키워 보세요';
+ /* 서브타이틀: 가장 우선 / 다음 — 추천 과정 카드와 같은 순서. 순위(약점·맹점) 대상이 없으면 약점 기준에 가까운 역량으로 대체 */
+ const why=it=>it.kind=='m'?it.r.lab:it.kind=='w'?'약점 기준 미만':'약점은 아니지만 기준에 가까운 역량';
+ const tl=topItems(t);
+ tl.forEach((it,k)=>subs.push(`${k?'다음':'가장 우선'} : ${nm(it.r.c)} (${why(it)})`));
  if(t.pp)subs.push(w.length?`사후에도 약점인 역량: ${w.map(r=>nm(r.c)).join(' ')}`:'사후에는 약점으로 남은 역량이 없습니다.');
- return hero(title,subs)+how(hw)+card('추천 과정',cards||'<div class="note">해당 과정이 없습니다.</div>','<button class="btn" onclick="openDr()">전체 보기</button>');
+ return hero(title,subs)+topSec(topItems(t));
 }
 
 /* ================= 근거 데이터 (기존 6개 섹션) ================= */
-function evSummary(t){
- return `<div class="grid">${G.map(g=>{const me=gs(POST,'me',g),mp=gs(PRE,'me',g);const ref=t.multi?avg(['me','mgr','peer','mem'].map(k=>gs(POST,k,g))):gs(POST,'all',g);
-  return `<div class="card"><b>${g.n}</b> <span class="note">강점 ≥${g.s} · 약점 &lt;${g.w}</span><div class="sc"><b>${t.pp?f1(mp)+' → ':''}${f1(me)}</b><span>${t.pp?'본인 (사전 → 사후)':'본인'}</span></div><div class="sc"><b style="font-size:16px">${f1(ref)}</b><span>${t.multi?'전체 평균':'전사평균'}</span>${gapBadge(me-ref)}</div>${track(me)}</div>`}).join('')}</div>`
-  +`<div class="note">전체 평균: 나를 평가한 응답자 전원 평균(본인 포함) · 전사평균: 해당 진단 모든 대상자의 응답자 전원 평균 · 척도 1~5(AB척도는 5점 환산)</div>`;
-}
 function evIndex(t){
+ const ik=t.multi?keys(t).slice(0,1).concat(['oth'],keys(t).slice(1)):keys(t),gv=(src,k,g)=>k=='oth'?avg(g.ix.map(i=>oth(src,i))):gs(src,k,g);
  const axis='<div class="y"><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>';
  if(t.pp){
-  const chips=`<div class="chips">${keys(t).map(k=>`<button class="${k==ev?'on':''}" onclick="ev='${k}';draw()">${EV[k][0]}</button>`).join('')}</div>`;
-  const bars=G.map(g=>`<div class="gp"><div class="bars">${[['var(--pre)',PRE],[EV[ev][1],POST]].map(([c,src])=>{const v=gs(src,ev,g);return `<div style="height:${(v-1)/4*100}%;background:${c}"><span>${f1(v)}</span></div>`}).join('')}</div><div class="gn">${g.n}</div></div>`).join('');
+  const chips=`<div class="chips">${ik.map(k=>`<button class="${k==ev?'on':''}" onclick="ev='${k}';drawEv()">${EV[k][0]}</button>`).join('')}</div>`;
+  const bars=G.map(g=>`<div class="gp"><div class="bars">${[['var(--pre)',PRE],[EV[ev][1],POST]].map(([c,src])=>{const v=gv(src,ev,g);return `<div style="height:${(v-1)/4*100}%;background:${c}"><span>${f1(v)}</span></div>`}).join('')}</div><div class="gn">${g.n}</div></div>`).join('');
   return card('종합지수 · 평가자 유형별 전후',chips+`<div class="legend"><em style="background:var(--pre)"></em>사전<em style="background:${EV[ev][1]}"></em>사후</div><div class="chart">${axis}${bars}</div><div style="height:22px"></div>`);
  }
- const ks=keys(t);
- const bars=G.map(g=>`<div class="gp"><div class="bars">${ks.map(k=>{const v=gs(POST,k,g);return `<div style="height:${(v-1)/4*100}%;background:${EV[k][1]}"><span>${f1(v)}</span></div>`}).join('')}</div><div class="gn">${g.n}</div></div>`).join('');
- return card('종합지수',`<div class="legend">${ks.map(k=>`<em style="background:${EV[k][1]}"></em>${EV[k][0]}`).join('')}</div><div class="chart">${axis}${bars}</div><div style="height:22px"></div><div class="note">상사·동료·구성원은 실제 응답이 있을 때만 노출 · 전사평균은 항상 노출</div>`);
-}
-function evComp(t){
- return card('역량별 지수',COMP.map((c,i)=>sl(i,[...(t.pp?[[PRE.me[i],'var(--pre)']]:[]),[POST.all[i],'var(--c-all)'],[POST.me[i],'var(--pri)']],gapBadge(POST.me[i]-POST.all[i]))).join('')+`<div class="legend"><em style="background:var(--pri)"></em>나${t.pp?'<em style="background:var(--pre)"></em>나(사전)':''}<em style="background:var(--c-all)"></em>전사평균 · GAP = 나 − 전사평균</div>`);
+ const ks=ik;
+ const bars=G.map(g=>`<div class="gp"><div class="bars">${ks.map(k=>{const v=gv(POST,k,g);return `<div style="height:${(v-1)/4*100}%;background:${EV[k][1]}"><span>${f1(v)}</span></div>`}).join('')}</div><div class="gn">${g.n}</div></div>`).join('');
+ return card('종합지수',`<div class="legend">${ks.map(k=>`<em style="background:${EV[k][1]}"></em>${EV[k][0]}`).join('')}</div><div class="chart">${axis}${bars}</div><div style="height:22px"></div>`);
 }
 function evDetail(t){
- const ks=keys(t);
- const body=COMP.map((c,i)=>{
-  const sc=ks.map(k=>`<td>${t.pp?f1(PRE[k][i])+' → ':''}<b>${f1(POST[k][i])}</b></td>`).join('');
-  const gp=ks.map(k=>k=='me'?'<td>GAP</td>':`<td>${t.pp?gapBadge(PRE.me[i]-PRE[k][i])+' → ':''}${gapBadge(POST.me[i]-POST[k][i])}</td>`).join('');
-  return `<tr><td rowspan="2"><b>${c}</b> ${jtag(judge(POST.me[i],i))}</td>${sc}</tr><tr class="gap">${gp}</tr>`}).join('');
- return card('역량별 상세 점수',`<table><tr><th>역량</th>${ks.map(k=>`<th>${EV[k][0]}</th>`).join('')}</tr>${body}</table><div class="note">점수행 + GAP행 2행 구조${t.pp?' · 사전 → 사후':''}</div>`);
+ /* 구조: 역량군 > 세부역량. 사전사후는 세부역량마다 사전·사후 2행, 평가자별 [점수(GAP) | 변화] */
+ const k0=keys(t),ks=t.multi?k0.slice(0,4).concat(['oth'],k0.slice(4)):k0,pp=t.pp,ph=pp?['사전','사후']:['사후'],per=ph.length;
+ const r1=d=>Math.round(d*10)/10;
+ const gT=d=>(r1(d)>0?'+':'')+r1(d).toFixed(1),gC=d=>r1(d)>0?'hi':r1(d)<0?'lo':'dt-mute';
+ const chg=d=>r1(d)==0?'<span class="dt-mute">—</span>':`<span class="${r1(d)>0?'hi':'lo'}">${r1(d)>0?'▲':'▼'}${Math.abs(r1(d)).toFixed(1)}</span>`;
+ /* 점수 칸: 점수 + (본인 외) 본인과의 GAP — 사전 행 GAP은 색 없이 */
+ const rv=(src,k,i)=>k=='oth'?avg([src.mgr[i],src.peer[i],src.mem[i]]):src[k][i];const sc=(src,k,i,pre)=>{const v=rv(src,k,i),g=k=='me'?null:src.me[i]-v;return `<td class="dt-sc"><div class="dt-v">${f1(v)}</div>${g===null?'':`<div class="dt-gap2 ${pre?'dt-mute':gC(g)}">${gT(g)}</div>`}</td>`};
+ const R=pp?' rowspan="2"':'';
+ const head=`<tr><th class="ta-l"${R} style="width:140px">역량군</th><th class="ta-l"${R}>세부역량</th>${pp?'<th rowspan="2" style="width:56px">구분</th>':''}${ks.map(k=>`<th${pp?' colspan="2"':''} class="dt-gh">${EV[k][0]}</th>`).join('')}</tr>`
+  +(pp?`<tr class="dt-h2">${ks.map(k=>`<th>${k=='me'?'점수':'점수 (GAP)'}</th><th>변화</th>`).join('')}</tr>`:'');
+ let body='';
+ G.forEach(g=>{
+  g.ix.forEach((i,ii)=>{
+   const j=judge(POST.me[i],i),last=ii==g.ix.length-1;
+   ph.forEach((p,pi)=>{
+    const src=p=='사전'?PRE:POST,pre=p=='사전';let cells='';
+    if(ii==0&&pi==0)cells+=`<td class="grp-cell" rowspan="${g.ix.length*per}"><div class="grp-name">${g.n}</div></td>`;
+    if(pi==0)cells+=`<td class="ta-l dt-name"${R}>${COMP[i]}</td>`;
+    if(pp)cells+=`<td class="dt-ph">${p}</td>`;
+    cells+=ks.map(k=>sc(src,k,i,pre)+(pp&&pi==0?`<td class="dt-chg2" rowspan="2">${chg(rv(POST,k,i)-rv(PRE,k,i))}</td>`:'')).join('');
+    body+=`<tr class="${last&&pi==per-1?'dt-last':''}">${cells}</tr>`;
+   });
+  });
+ });
+ return card('세부역량별 상세 점수',`<div style="overflow-x:auto"><table class="dt">${head}${body}</table></div><div class="note">점수 아래 GAP = 본인 점수 − 해당 점수${pp?' · 변화 = 사후 − 사전':''}</div>`);
 }
 function evOpen(t){
  const qs=['리더로서 계속 유지했으면 하는 행동을 적어 주세요.','개선이 필요하다고 생각하는 행동을 적어 주세요.'];
@@ -270,33 +548,124 @@ function evOpen(t){
  const block=(l,si)=>qs.map(q=>`<details><summary>${l?`[${l}] `:''}${q}</summary>${ans(si)}</details>`).join('');
  return card('주관식 응답',(t.pp?block('사전',0)+block('사후',1):block('',1))+'<div class="note">기본 접힘 · 본인만 "나", 타 응답자는 유형 구분 없이 응답자1·2… · 무응답자 미노출</div>');
 }
-const EVID=[['역량군 서머리',evSummary],['종합지수',evIndex],['역량별 지수',evComp],['상세 점수',evDetail],['주관식 응답',evOpen]];
-function evidence(t){return `<div class="chips">${EVID.map(([n],i)=>`<button class="${i==sub?'on':''}" onclick="sub=${i};draw()">${n}</button>`).join('')}</div>`+EVID[sub][1](t)}
+/* 진단 프레임워크: 결과 해석의 전제이므로 화면 맨 앞(제목 영역)에 접이식으로 제공 */
+function frameworkHTML(){
+ /* 설명은 역량군에만 있고(선택 입력), 세부역량은 이름만 노출 */
+ const rows=G.filter(g=>g.d&&g.d.trim()).map(g=>`<tr><td class="grp-cell"><div class="grp-name">${g.n}</div></td><td class="ta-l" style="color:var(--sub)">${g.d}</td></tr>`).join('');
+ if(!rows)return '';   /* 설명이 입력된 역량군이 없으면 영역 자체 미노출 */
+ return `<div class="sec"><h2>역량 설명</h2><div class="section-card"><table><thead><tr><th class="ta-l" style="width:150px">역량군</th><th class="ta-l">설명</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+const EVID=[['종합지수',evIndex,1],['상세 점수',evDetail],['주관식 응답',evOpen]];   /* 3번째 값 1 = 다면진단에서만 노출 (평가자 유형별 값이라 위 총평·위치 그래프와 겹치지 않음) */
+const evList=t=>EVID.filter(e=>!e[2]||t.multi);
+function evidence(t){const L=evList(t);if(sub>=L.length)sub=0;return `<div class="cd-tabs" style="padding:0;margin-bottom:14px;flex-wrap:wrap">${L.map(([n],i)=>`<div class="cd-tab${i==sub?' active':''}" style="white-space:nowrap" onclick="sub=${i};drawEv()">${n}</div>`).join('')}</div>`+L[sub][1](t)}
+function drawEv(){document.getElementById('ev').innerHTML=evidence(TYPES[tp])}
 
 /* ===== 추천 과정 드로어 ===== */
 function openDr(){drOpen=1;drTab=0;renderDr()}
+const cdItem=c=>`<div class="cd-item"><div class="cd-item-thumb"></div><div class="cd-item-left"><div class="cd-item-cmp"><span class="tag ${c[0]=='강점'?'g':'r'}">${c[1]}</span></div><div class="cd-item-name">${c[2]}</div><span class="cd-item-type ${TYPE_CLS[c[3]]||'online'}">${c[3]}</span></div></div>`;
 function renderDr(){
  const d=document.getElementById('drawer');d.className='drawer'+(drOpen?' on':'');
  const tabs=['전체','강점 역량[강화]','약점 역량[보완]'];
  const list=COURSES.filter(c=>drTab==0||(drTab==1&&c[0]=='강점')||(drTab==2&&c[0]=='약점'));
- d.innerHTML=`<h2><span>추천 과정</span><button class="btn" onclick="drOpen=0;renderDr()">닫기</button></h2><div class="chips">${tabs.map((n,i)=>`<button class="${i==drTab?'on':''}" onclick="drTab=${i};renderDr()">${n}</button>`).join('')}</div>`+(list.map(c=>`<div class="course"><div class="th"></div><div><b>${c[2]}</b><br><span class="tag">${c[3]}</span><span class="tag ${c[0]=='강점'?'g':'r'}">${c[1]}</span></div></div>`).join('')||'<div class="note">해당 과정이 없습니다.</div>');
+ d.innerHTML=`<div class="cd-head"><div class="cd-title">추천 과정</div><button class="cd-close" onclick="drOpen=0;renderDr()">닫기</button></div><div class="cd-tabs">${tabs.map((n,i)=>`<div class="cd-tab${i==drTab?' active':''}" onclick="drTab=${i};renderDr()">${n}</div>`).join('')}</div><div class="cd-body">`+(list.map(c=>cdItem(c)).join('')||'<div class="note">해당 과정이 없습니다.</div>')+'</div>';
 }
 
 /* ===== 유형별 탭 (질문 중심) ===== */
 const FLOW={
- self:[['지금 나는 어디에?',self1],['전사 대비 나는?',self2],['어떤 역량부터 키울까?',act],['근거 데이터',evidence]],
+ self:[['지금 나는 어디에?',self1],['조직 대비 나는?',self2],['어떤 역량부터 키울까?',act],['근거 데이터',evidence]],
  multi:[['지금 나는 어디에?',multiB],['나 vs 주변',multiA],['어떤 역량부터 키울까?',act],['근거 데이터',evidence]],
  selfPP:[['얼마나 성장했나?',ppA,'전후 비교'],['지금 나는 어디에?',selfA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']],
  multiPP:[['얼마나 성장했나?',mppA,'전후 비교'],['지금 나는 어디에?',multiB,'사후 결과'],['나 vs 주변',multiA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']]
 };
 function draw(){
  document.getElementById('types').innerHTML=Object.entries(TYPES).map(([k,v])=>`<button class="${k==tp?'on':''}" onclick="tp='${k}';tb=0;ev='me';sub=0;draw()">${v.n}</button>`).join('');
- const t=TYPES[tp],tabs=FLOW[tp];
- document.getElementById('ttl').textContent='진단 결과 · '+t.n;
- document.getElementById('meta').innerHTML=`리더십 역량진단 · 홍길동 · ${t.pp?'사전 2026.03 / 사후 2026.09':'2026.09.01 ~ 2026.09.30'}`;
- document.getElementById('tabs').innerHTML=tabs.map(([n,fn],i)=>`<button class="${i==tb?'on':''}" onclick="tb=${i};draw()">${n}</button>`).join('');
- document.getElementById('panel').innerHTML=tabs[tb][1](t);
+ document.getElementById('gcnt').innerHTML=[1,3,6,10].map(n=>`<button class="${n==gn?'on':''}" onclick="setGroupCount(${n});sub=0;draw()">${n}개</button>`).join('');
+ const t=TYPES[tp],secs=FLOW[tp].filter(f=>f[1]!==evidence);
+ const mi=(l,v)=>`<div class="meta-item"><div class="meta-label">${l}</div><div class="meta-val">${v}</div></div>`;
+ document.getElementById('meta').innerHTML=mi('진단명','2026 하반기 리더십 역량진단')+'<div class="meta-divider"></div>'+mi('진단대상자','홍길동')+'<div class="meta-divider"></div>'+mi('진단기간',t.pp?'사전 2026.03 / 사후 2026.09':'2026.09.01 ~ 2026.09.30');
+ document.getElementById('secTop').innerHTML=`<div class="sec"><h2>총평</h2><div class="section-card"><div class="section-body">${overview(t)}</div></div></div>`;
+ document.getElementById('secFw').innerHTML=frameworkHTML();
+ document.getElementById('panel').innerHTML=secs.map(([n,fn,lb])=>`<div class="sec"><h2>${n}${lb?`<span class="tag">${lb}</span>`:''}</h2>${fn(t)}</div>`).join('');
+ document.getElementById('secEv').innerHTML='<div class="sec"><h2>근거 데이터</h2><div id="ev"></div></div>';
+ drawEv();
  renderDr();
 }
+/* ================= 총평 (그래프 + 종합 점수 + 코멘트 한 카드) ================= */
+function radarSVG(t){
+ /* 꼭지 = 역량군 (역량군 평균 점수) */
+ const N=G.length,cx=200,cy=130,R=82,gv=(src,k)=>G.map(g=>gs(src,k,g));
+ const me=gv(POST,'me'),all=gv(POST,'all'),pre=t.pp?gv(PRE,'me'):null;
+ const pt=(i,v)=>{const a=-Math.PI/2+2*Math.PI*i/N,r=R*v/5;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]};
+ const poly=arr=>arr.map((v,i)=>pt(i,v).map(x=>x.toFixed(1)).join(',')).join(' ');
+ const rings=[1,2,3,4,5].map(v=>`<polygon points="${poly(G.map(()=>v))}" fill="none" stroke="var(--line)"/>`).join('');
+ const axes=G.map((g,i)=>{const [x,y]=pt(i,5);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)"/>`}).join('');
+ const jd=(v,g)=>{v=Math.round(v*100)/100;return v>=g.s?'강점':v<g.w?'약점':'보통'};
+ const tip=i=>(pre?[`${G[i].n} (${jd(me[i],G[i])})`,`사후 본인 ${f1(me[i])}점`,`사전 본인 ${f1(pre[i])}점`,`사전 대비 ${sd(me[i]-pre[i])}`,`조직평균 ${f1(all[i])}점`]:[`${G[i].n} (${jd(me[i],G[i])})`,`본인 ${f1(me[i])}점`,`조직평균 ${f1(all[i])}점`,`조직평균 대비 ${sd(me[i]-all[i])}`]).join('&#10;');
+ const labels=G.map((g,i)=>{const [x,y]=pt(i,6.9),an=Math.abs(x-cx)<6?'middle':x>cx?'start':'end';
+  return `<g style="cursor:default" data-tip="${tip(i)}"><text x="${x.toFixed(1)}" y="${(y-2).toFixed(1)}" text-anchor="${an}" font-size="12" font-weight="700" fill="var(--tx)">${g.n}</text><text x="${x.toFixed(1)}" y="${(y+12).toFixed(1)}" text-anchor="${an}" font-size="12" font-weight="700" fill="var(--tx)">${f1(me[i])}</text></g>`}).join('');
+ const dots=me.map((v,i)=>{const [x,y]=pt(i,v);return `<g style="cursor:default" data-tip="${tip(i)}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="16" fill="transparent"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#fff" stroke="var(--pri)" stroke-width="3"/></g>`}).join('');
+ const prePoly=pre?`<polygon points="${poly(pre)}" fill="rgba(245,158,11,.10)" stroke="var(--c-mem)" stroke-width="1.8"/>`:'';
+ return `<svg viewBox="0 0 400 270" width="100%" style="max-width:400px;display:block;margin:0 auto">${rings}${axes}${t.pp?'':`<polygon points="${poly(all)}" fill="rgba(156,163,175,.15)" stroke="#9ca3af" stroke-dasharray="5 4" stroke-width="2"/>`}${prePoly}<polygon points="${poly(me)}" fill="rgba(37,99,235,.18)" stroke="var(--pri)" stroke-width="2.5"/>${dots}${labels}</svg><div class="legend" style="text-align:center">${t.pp?'<em style="background:var(--c-mem)"></em>본인(사전)<em style="background:var(--pri)"></em>본인(사후)':'<em style="background:var(--pri)"></em>본인'}${t.pp?'':'<em style="background:#9ca3af"></em>조직평균'}</div>`;
+}
+/* 다면진단(일반 · 사전사후): 본인 · 주변판정 · 조직평균 가로 막대 (사전사후는 사전 얇은 막대 + 사후 막대) */
+function multiBars(t){
+ const sc=v=>(v/5*100).toFixed(1)+'%';
+ const items=[['me','본인','var(--pri)',avg(UPOST.me),avg(UPRE.me)],['ot','주변판정','var(--c-peer)',avg(UC.map((c,i)=>oth(UPOST,i))),avg(UC.map((c,i)=>oth(UPRE,i)))],['org','조직평균','var(--c-all)',avg(UPOST.all),avg(UPRE.all)]];
+ const org=items[2][3];
+ const cols=t.pp?'84px 1fr 48px 48px 62px':'84px 1fr 52px 62px';
+ const gapT=d=>{const r=Math.round(d*100)/100;return `<span class="${r>0?'hi':r<0?'lo':''}">${r>0?'+':''}${r.toFixed(2)}</span>`};
+ const chg=d=>{const r=Math.round(d*100)/100;return r==0?'—':`<span class="${r>0?'hi':'lo'}">${r>0?'▲':'▼'}${Math.abs(r).toFixed(2)}</span>`};
+ const head=`<div class="mb-row" style="grid-template-columns:${cols}"><span class="note">구분</span><div style="position:relative;height:18px"><span class="note" style="position:absolute;left:${sc(org)};transform:translateX(-50%);white-space:nowrap">조직평균 ${org.toFixed(2)}</span></div>${t.pp?'<span class="note mb-n">사전</span><span class="note mb-n">사후</span><span class="note mb-n">변화</span>':'<span class="note mb-n">점수</span><span class="note mb-n">GAP</span>'}</div>`;
+ const rows=items.slice(0,2).map(([k,l,c,post,pre])=>`<div class="mb-row" style="grid-template-columns:${cols}"><span class="mb-lab"><i style="background:${c}"></i>${l}</span><div class="mb-trk${t.pp?' pp':''}">${t.pp?`<div class="mb-bar pre" style="width:${sc(pre)};background:${c}"></div>`:''}<div class="mb-bar" style="width:${sc(post)};background:${c}"></div><b class="mb-ref" style="left:${sc(org)}"></b></div>${t.pp?`<span class="mb-n" style="color:var(--sub)">${pre.toFixed(2)}</span><span class="mb-n"><b>${post.toFixed(2)}</b></span><span class="mb-n">${chg(post-pre)}</span>`:`<span class="mb-n"><b>${post.toFixed(2)}</b></span><span class="mb-n">${k=='me'?'<span class="note">—</span>':gapT(items[0][3]-post)}</span>`}</div>`).join('');
+ const axis=`<div class="mb-row" style="grid-template-columns:${cols}"><span></span><div class="mb-ax">${[0,1,2,3,4,5].map(v=>`<span style="left:${sc(v)}">${v.toFixed(1)}</span>`).join('')}</div></div>`;
+ return head+rows+axis+`<div class="legend">${t.pp?'위 얇은 막대 = 사전, 아래 막대 = 사후':'GAP = 본인 − 주변판정'}</div>`;
+}
+/* 자가진단 · 방사형 부적합 구간(역량 1~2개 / 9개 이상): 종합 점수 슬라이더 */
+function gaugeHTML(t){
+ const me=avg(UPOST.me),org=avg(UPOST.all),pre=t.pp?avg(UPRE.me):null,p=v=>((v/5)*100).toFixed(1)+'%';
+ return `<div class="gg"><div class="gg-track"><i class="gg-fill" style="width:${p(me)}"></i>${pre!==null?`<i class="gg-dot pre" style="left:${p(pre)}" title="사전 ${pre.toFixed(2)}"></i>`:''}${t.pp?'':`<i class="gg-org" style="left:${p(org)}" title="조직평균 ${org.toFixed(2)}"></i>`}<i class="gg-dot" style="left:${p(me)}" title="본인 ${me.toFixed(2)}"></i></div><div class="gg-ax">${[0,1,2,3,4,5].map(v=>`<span style="left:${p(v)}">${v}</span>`).join('')}</div></div><div class="legend" style="justify-content:center"><em style="background:var(--pri)"></em>본인 ${me.toFixed(2)}${pre!==null?`<em style="background:var(--c-mem)"></em>사전 ${pre.toFixed(2)}`:''}${t.pp?'':`<em style="background:#9ca3af"></em>조직평균 ${org.toFixed(2)}`}</div>`;
+}
+/* 다면진단 총평: 본인 점수 · 주변판정 점수 + 두 점수 차이 설명 + 주변판정 정의 */
+function multiOverview(t){
+ const me=avg(UPOST.me),ot=avg(UC.map((c,i)=>oth(UPOST,i))),d=Math.round((me-ot)*100)/100,ad=Math.abs(d).toFixed(2);
+ const L=[];
+ L.push(d==0?'본인 점수와 주변판정 점수가 같습니다.':`본인 점수가 주변판정보다 <b class="${d>0?'hi':'lo'}">${ad}점 ${d>0?'높습니다':'낮습니다'}</b>. `+(Math.abs(d)>=EXTREME?(d>0?'본인이 주변보다 훨씬 높게 평가하고 있어, 스스로를 과대평가하고 있을 가능성이 큽니다. 주변의 평가를 먼저 확인해 보세요.':'주변이 본인보다 훨씬 높게 평가하고 있어, 스스로를 과소평가하고 있을 가능성이 큽니다.'):Math.abs(d)>=BLIND?(d>0?'스스로를 주변보다 높게 평가하고 있어, 주변이 보는 모습과 차이가 있을 수 있습니다.':'주변이 본인보다 높게 평가하고 있어, 스스로를 낮게 보고 있을 수 있습니다.'):Math.abs(d)<0.1?'본인과 주변의 평가가 거의 같습니다.':'본인과 주변의 평가가 비슷한 수준입니다.'));
+ const info=priInfo(),by=n=>info.filter(r=>r.p==n),top=by(1).length?by(1):by(2).length?by(2):by(3);
+ L.push(top.length?`먼저 점검할 역량은 <b class="lo">${top.map(r=>r.c).join(', ')}</b>입니다.`:'나와 주변 모두 약점으로 보는 역량은 없습니다.');
+ if(t.pp){const pm=avg(UPRE.me),po=avg(UC.map((c,i)=>oth(UPRE,i))),a=Math.round((me-pm)*100)/100,b=Math.round((ot-po)*100)/100,sg=x=>`<b class="${x>=0?'hi':'lo'}">${x>=0?'+':''}${x.toFixed(2)}점</b>`;L.unshift(`사전 대비 본인은 ${sg(a)}, 주변판정은 ${sg(b)} 변했습니다.`)}
+ L.push('보완·강화가 필요한 역량을 위한 추천 과정을 아래에서 확인해 보세요.');
+ /* 점수 블록: 사후(현재) 점수를 크게, 사전사후는 사전 점수와 증감을 함께 */
+ const msItem=(lab,col,post,pre)=>{const d=Math.round((post-pre)*100)/100;return `<div><div class="ms2-l"><i style="background:${col}"></i>${lab}</div><span class="num">${post.toFixed(2)}</span>${t.pp?`<div class="ms2-p"><span>사전 ${pre.toFixed(2)}</span><span class="pp-d ${d>=0?'hi':'lo'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(2)}</span></div>`:''}</div>`};
+ return `<div class="ov rev"><div class="ov-chart">${multiBars(t)}</div><div class="ov-side"><div class="ov2-label">종합 점수</div><div class="ms2">${msItem('본인','var(--pri)',me,avg(UPRE.me))}${msItem('주변판정','var(--c-peer)',ot,avg(UC.map((c,i)=>oth(UPRE,i))))}</div><div class="headline-desc">${L.join('<br>')}</div><div class="note">주변판정 : 상사·동료·구성원 응답의 평균 점수입니다.</div></div></div>`;
+}/* 종합 점수 블록: 사전사후는 사후 점수를 크게, 사전 점수와 증감(증감률)을 함께 표시 */
+function selfScoreHTML(t,me){
+ const main=`<div class="ov2-label">종합 점수</div>`;
+ if(!t.pp)return main+`<div class="headline-score"><span class="num">${me.toFixed(2)}<span class="denom">/5.0</span></span></div>`;
+ const pre=avg(UPRE.me),d=Math.round((me-pre)*100)/100;
+ return main+`<div class="pp-sc"><div class="pp-post"><span class="pp-l">사후</span><span class="num">${me.toFixed(2)}<span class="denom">/5.0</span></span></div><div class="pp-pre"><span class="pp-l">사전</span><b>${pre.toFixed(2)}</b></div><span class="pp-d ${d>=0?'hi':'lo'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(2)}</span></div>`;
+}
+function overview(t){
+ const me=avg(UPOST.me);
+ const cmp=(n,v,end)=>{const d=Math.round((me-v)*100)/100;return d==0?`${n}(${v.toFixed(2)}점)과 ${end?'같습니다.':'같고'}`:`${n}(${v.toFixed(2)}점)보다 <b class="${d>0?'hi':'lo'}">${Math.abs(d).toFixed(2)}점 ${d>0?(end?'높습니다':'높고'):(end?'낮습니다':'낮고')}</b>${end?'.':''}`};
+ const refs=t.multi?[['주변판정',avg(UC.map((c,i)=>oth(UPOST,i)))],['조직평균',avg(UPOST.all)]]:[['조직평균',avg(UPOST.all)]];
+ const L=[refs.map(([n,v],k)=>cmp(n,v,k==refs.length-1)).join(' ')];
+ const rows=rowsOf(),hi=rows.reduce((a,b)=>b.v>a.v?b:a),lo=rows.reduce((a,b)=>b.v<a.v?b:a);
+ if(t.multi){
+  const info=priInfo(),by=n=>info.filter(r=>r.p==n),top=by(1).length?by(1):by(2).length?by(2):by(3);
+  L.push(top.length?`나와 주변의 평가를 함께 보면 <b class="lo">${top.map(r=>r.c).join(', ')}</b>을 가장 먼저 점검하는 것이 좋아요.`:'나와 주변 모두 약점으로 보는 역량은 없어요.');
+ }else if(G.length>1){
+  const gl=G.map((g,gi)=>({n:g.n,v:UPOST.me[gi]})),gh=gl.reduce((a,b)=>b.v>a.v?b:a),gw=gl.reduce((a,b)=>b.v<a.v?b:a);
+  L.push(`가장 강점인 역량군은 <b class="hi">${gh.n}(${f1(gh.v)}점)</b>, 가장 보완이 필요한 역량군은 <b class="lo">${gw.n}(${f1(gw.v)}점)</b>이에요.`);
+ }else L.push(`가장 강점인 세부역량은 <b class="hi">${hi.c}(${f1(hi.v)}점)</b>, 가장 보완이 필요한 세부역량은 <b class="lo">${lo.c}(${f1(lo.v)}점)</b>이에요.`);
+ if(t.pp){const pre=avg(UPRE.me),dd=Math.round((me-pre)*100)/100;L.unshift(`사전(${pre.toFixed(2)}점) 대비 <b class="${dd>=0?'hi':'lo'}">${dd>=0?'+':''}${dd.toFixed(2)}점 ${dd>=0?'상승':'하락'}</b>했어요.`)}
+ L.push('보완·강화가 필요한 역량을 위한 추천 과정을 아래에서 확인해 보세요.');
+ if(t.multi)return multiOverview(t);
+ const many=!t.multi&&(G.length<3||G.length>8);   /* 방사형은 역량군 3~8개일 때만, 그 밖에는 종합 점수 슬라이더로 대체 */
+ if(many)return `<div class="ov"><div class="ov-chart">${gaugeHTML(t)}</div><div class="ov-side">${selfScoreHTML(t,me)}<div class="headline-desc">${L.join('<br>')}</div></div></div>`;
+ return `<div class="ov${t.multi?' rev':''}"><div class="ov-chart">${t.multi?multiBars(t):radarSVG(t)}</div><div class="ov-side">${selfScoreHTML(t,me)}<div class="headline-desc">${L.join('<br>')}</div></div></div>`;
+}
+/* 마우스오버 툴팁 (data-tip) */
+const tipEl=document.createElement('div');tipEl.className='tipbox';document.body.appendChild(tipEl);
+document.addEventListener('mousemove',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(!el){tipEl.style.display='none';return}tipEl.textContent=el.getAttribute('data-tip');tipEl.style.display='block';tipEl.style.left=Math.min(e.clientX+14,innerWidth-tipEl.offsetWidth-8)+'px';tipEl.style.top=(e.clientY+16)+'px'});
 draw();
 </script></body></html>
