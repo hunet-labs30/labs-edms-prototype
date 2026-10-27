@@ -39,6 +39,7 @@ html,body{height:100%}
 .pp-sc{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}.pp-sc .pp-l{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:3px}.pp-post .num{font-size:38px;font-weight:800;color:var(--tx);line-height:1}.pp-post .denom{font-size:15px;font-weight:600;color:var(--text-400);margin-left:2px}.pp-pre b{font-size:20px;font-weight:700;color:var(--text-400);line-height:1}.pp-d{font-size:13.5px;font-weight:800;padding:3px 10px;border-radius:12px;margin-bottom:2px}.pp-d.hi{color:var(--pri);background:var(--pri2)}.pp-d.lo{color:var(--bad);background:var(--red-bg)}
 .sl-dot.big{width:20px;height:20px}.sl-dot[data-tip]{cursor:default}.sl-dot[data-tip]::before{content:"";position:absolute;inset:-9px}
 .ms2{display:flex;gap:26px;flex-wrap:wrap;margin:2px 0 12px}.ms2-p{display:flex;align-items:center;gap:6px;margin-top:7px;font-size:12px;font-weight:600;color:var(--text-400)}.ms2-p .pp-d{font-size:12px;padding:2px 8px;margin:0}.ms2 .ms2-l{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:3px;display:flex;align-items:center;gap:5px}.ms2 .ms2-l i{width:8px;height:8px;border-radius:2px;display:inline-block}.ms2 .num{font-size:30px;font-weight:800;color:var(--tx);line-height:1}
+.cp-t1{font-size:15px;font-weight:800;margin-bottom:10px}.cp-g{margin-bottom:14px}.cp-n{font-size:13px;font-weight:800;margin-bottom:4px}.cp-main{display:grid;grid-template-columns:1fr 10px 104px;gap:8px;align-items:center}.cp-r{display:grid;grid-template-columns:34px 1fr 44px;gap:8px;align-items:center;margin:4px 0}.cp-l{font-size:12px;color:var(--sub);font-weight:600}.cp-t{height:12px;background:#eef0f3;border-radius:4px;overflow:hidden}.cp-t i{display:block;height:100%;border-radius:4px}.cp-r b{font-size:12.5px;text-align:right;color:var(--sub);font-weight:600}.cp-r b.cp-post{font-size:15px;font-weight:800;color:var(--tx)}.cp-brk{align-self:stretch;margin:6px 0;border:2px solid #9ca3af;border-left:0;border-radius:0 6px 6px 0}.cp-d{font-size:13px;font-weight:800;padding:8px 6px;border-radius:8px;text-align:center}.cp-d.hi{background:var(--green-bg);color:var(--green)}.cp-d.lo{background:var(--red-bg);color:var(--bad)}.cp-d.z{background:#f3f4f6;color:var(--sub)}.cp-ax{position:relative;height:16px}.cp-ax span{position:absolute;transform:translateX(-50%);font-size:11px;color:var(--sub)}.cp-sum{margin-top:12px;padding:14px 16px;background:#f1f5fb;border-radius:12px}.cp-sum h4{margin:0 0 6px;font-size:13px}.cp-sum ul{margin:0;padding-left:18px;font-size:13px;line-height:1.7}.td-t{font-size:15px;font-weight:800;margin:18px 0 8px}.td{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:11px 14px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:8px;background:#fff}.td .d{color:var(--sub);font-size:12.5px}.td .v{margin-top:3px;font-size:13.5px;line-height:1.7}
 .lg-dot{display:inline-block;width:12px;height:12px;border-radius:50%;border:3px solid var(--pri);background:#fff;margin:0 4px 0 0;vertical-align:middle;box-sizing:border-box}.lg-bar{display:inline-block;height:14px;border-left:2px dashed;margin:0 6px 0 0;vertical-align:middle}.lg-bar.w{border-color:rgba(220,38,38,.6)}.lg-bar.s{border-color:rgba(36,108,249,.6)}.tipbox{position:fixed;z-index:999;background:#111827;color:#fff;font-size:12px;line-height:1.6;padding:8px 11px;border-radius:6px;pointer-events:none;white-space:pre-line;display:none}
 .dt .dt-gh{border-left:1px solid var(--line2)}.dt .dt-h2 th{font-size:11.5px;font-weight:600;color:var(--text-400)}.dt .dt-v{font-weight:700;color:var(--tx)}.dt .dt-gap2{font-size:11px;font-weight:600;margin-top:1px}.dt .dt-mute{color:var(--text-400)}.dt .dt-ph{color:var(--text-400);font-size:12px}.dt .dt-chg2{font-weight:800;border-right:1px solid var(--line2)}.dt .dt-name{font-weight:600}.dt td.grp-cell{background:#fff}.dt tr.dt-last td{border-bottom:1px solid var(--line)}
 .preview-bar .grp{display:flex;align-items:center;gap:8px}
@@ -165,6 +166,21 @@ tr.gap td{color:var(--sub);font-size:12px}
 .gn{font-size:12px;color:var(--sub);margin:6px 0 -22px}
 details{border:1px solid var(--line);border-radius:var(--r-md);padding:8px 12px;margin-bottom:8px}summary{cursor:pointer;font-weight:600}
 details p{margin:6px 0;font-size:13px}
+/* ===== 정리안: 다면진단(사전사후) 영역 구분 ===== */
+.zn{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;margin-bottom:20px;scroll-margin-top:112px}
+.zn-h{margin-bottom:18px}.zn-h h2{font-size:17px;font-weight:700;margin:0;letter-spacing:-.3px}.zn-h p{margin:4px 0 0;font-size:13px;color:var(--sub)}
+.zn .section-card,.zn .card{border:0;border-radius:0;background:transparent;margin:0 0 16px;overflow:visible}
+.zn .section-card:last-child{margin-bottom:0}
+.zn .section-head{padding:0 0 10px;border:0}.zn .section-body{padding:0}
+.zn .how{background:none;padding:0;font-size:12.5px;color:var(--sub);margin:8px 0 16px}
+.zn{min-width:0}.zn #ev{overflow-x:auto}
+.zn-2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:start}
+.zn .td-t,.zn .sec>h2{display:none}.zn .sec{margin:0}
+.td-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.zn .td{grid-template-columns:1fr;gap:6px;margin:0;background:var(--bg);border:0;border-radius:var(--r-md)}
+.zn .td-h{display:flex;align-items:flex-start;gap:8px}.zn .td-h>span:first-child{flex:none}.zn .td-h .d{color:var(--sub);font-size:12.5px;line-height:1.5;padding-top:1px}.zn .td .v{margin-top:8px}
+@media(max-width:900px){.zn-2{grid-template-columns:1fr;gap:20px}}
+@media(max-width:700px){.td-grid{grid-template-columns:1fr}.zn{padding:18px}}
 </style></head><body>
 <header class="gnb">
   <a href="#" class="gnb-logo"><div class="gnb-logo-box"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>LABS</a>
@@ -237,15 +253,15 @@ const GCN=[['커뮤니케이션','협업'],['문제해결','전문성'],['리더
 /* 사후 시나리오: [본인, 주변판정 평균] — 역량군 기준점수(s 강점 / w 약점) 기준 */
 const SCN=[
  (s,w)=>[w-.3,w-.45],            /* 나도 주변도 약점 */
- (s,w)=>[s+.3,w+.1],             /* 맹점 (본인 강점, 주변 보통) */
- (s,w)=>[w-.3,(s+w)/2+.2],       /* 나만 약점 */
+ (s,w)=>[s+.3,w-.1],             /* 맹점 (본인이 높고, 주변은 약점) */
+ (s,w)=>[w-.3,s+.05],            /* 나만 약점 + 숨은 강점 (주변은 강점) */
  (s,w)=>[s+.5,s+.35],            /* 둘 다 강점 */
- (s,w)=>[(s+w)/2,w-.3],          /* 주변만 약점 */
+ (s,w)=>[(s+w)/2,w-.15],         /* 주변만 약점 */
  (s,w)=>[(s+w)/2,s+.4],          /* 숨은 강점 (주변이 더 높음) */
  (s,w)=>[(s+w)/2+.05,(s+w)/2-.1],/* 둘 다 보통 */
  (s,w)=>[s+.2,s+.3]              /* 둘 다 강점 */
 ];
-const DM=[-.2,.4,-.5,.9,.3,-.1,.5,-.2,.4,.1];     /* 본인 사후−사전 */
+const DM=[-.2,.7,-.5,.9,.3,-.1,.5,-.2,.4,.1];     /* 본인 사후−사전 */
 const DO=[.2,.1,-.1,.2,.1,.1,.2,.1,-.3,.2];     /* 주변판정 사후−사전 */
 let gn=3;
 function setGroupCount(n){
@@ -318,10 +334,13 @@ const lfStrong=()=>lfRows().filter(r=>r.j=='강점').sort((a,b)=>(b.v-gOf(b.i).s
 const BLIND=0.5;
 const EXTREME=1.0;   /* 본인-주변 종합 점수 차이가 이 값 이상이면 '크게 다름' 문구 (임시 · 확정 필요) */
 const gapOf=(src,i)=>src.me[i]-oth(src,i);
-const kind=d=>{d=Math.round(d*100)/100;return d>=BLIND?'맹점':d<=-BLIND?'숨은 강점':'일치'};
+/* 맹점 = 본인이 주변보다 BLIND 이상 높고 주변판정이 약점 기준 미만 / 숨은 강점 = 본인이 주변보다 BLIND 이상 낮고 주변판정이 강점 기준 이상 */
+/* 차이 축소(본인 점수 하락) = 맹점이 사라졌지만 본인 점수가 SHRINK 이상 내려간 경우 (임시 · 확정 필요) */
+const SHRINK=0.1;
+const kindAt=(src,i,leaf)=>{const d=Math.round(gapOf(src,i)*100)/100,j=(leaf?judge:ujudge)(oth(src,i),i);return d>=BLIND&&j=='약점'?'맹점':d<=-BLIND&&j=='강점'?'숨은 강점':'일치'};
 const ktag=k=>k=='맹점'?'<span class="tag r">맹점</span>':k=='숨은 강점'?'<span class="tag g">숨은 강점</span>':'<span class="note">일치</span>';
 const sideTxt=d=>d>=0?`내가 +${d.toFixed(1)}`:`주변 +${(-d).toFixed(1)}`;
-const kn=(src,k)=>UC.filter((c,i)=>kind(gapOf(src,i))==k);
+const kn=(src,k)=>UC.filter((c,i)=>kindAt(src,i)==k);
 
 /* 내 역량(=역량군)의 위치: 역량군 평균 점수를 역량군 기준점수와 비교, 보완이 급한 순 */
 const grpPosRows=()=>G.map((g,gi)=>{const v=Math.round(UPOST.me[gi]*100)/100;return {g,v,j:v>=g.s?'강점':v<g.w?'약점':'보통'}}).sort((a,b)=>(a.v-a.g.w)-(b.v-b.g.w));   /* 보완이 급한 순(약점 기준과의 거리) */
@@ -351,11 +370,11 @@ function self2(){
 /* ================= 다면진단 ================= */
 /* 우선순위 : 1 나도 주변도 약점 / 2 주변은 약점 또는 맹점(내가 모르는 약점) / 3 나만 약점 */
 function priInfo(leaf){
- const R=leaf?lfRows():rowsOf(),PS=leaf?POST:UPOST,jf=leaf?judge:ujudge,gf=leaf?gOf:uOf;const info=R.map(r=>{const o=oth(PS,r.i),jo=jf(o,r.i),k=kind(gapOf(PS,r.i));
+ const R=leaf?lfRows():rowsOf(),PS=leaf?POST:UPOST,jf=leaf?judge:ujudge,gf=leaf?gOf:uOf;const info=R.map(r=>{const o=oth(PS,r.i),jo=jf(o,r.i),k=kindAt(PS,r.i,leaf);
   let p=0,lab='';
   if(r.j=='약점'&&jo=='약점'){p=1;lab='둘 다 약점'}
-  else if(jo=='약점'){p=2;lab='주변만 약점'}
   else if(k=='맹점'){p=2;lab='맹점'}
+  else if(jo=='약점'){p=2;lab='주변만 약점'}
   else if(r.j=='약점'){p=3;lab='나만 약점'}
   else if(r.j=='강점'&&jo=='강점'){lab='둘 다 강점'}
   return {...r,o,jo,k,p,lab}});
@@ -374,7 +393,7 @@ function multiB(){
  return hero(title,subs)
  +how(`나와 주변의 점수를 같은 기준점수(역량군별 약점·강점 기준)로 각각 판정합니다.<br><b style="margin:0">둘 다 약점</b> 나와 주변 모두 약점 기준 미만입니다.<br><b style="margin:0">주변만 약점</b> 주변만 약점 기준 미만입니다.<br><b style="margin:0">나만 약점</b> 나만 약점 기준 미만이고, 주변은 약점이 아닙니다.`)
  +card('나와 주변의 위치',info.map(r=>sl(r.i,[[r.o,'#14b8a6','주변판정'],[r.v,'var(--pri)','나']],ptag(r),1)).join('')+'<div class="legend"><span class="lg-dot"></span>나<span class="lg-dot" style="border-color:#14b8a6"></span>주변판정<span class="lg-bar w"></span>약점 기준<span class="lg-bar s"></span>강점 기준 (역량군별 설정값)</div>')
- +card('내 판정과 주변 판정 비교',`<table><tr><th>역량</th><th>내 판정</th><th>주변 판정</th><th>판정 비교</th></tr>${info.map(r=>`<tr><td>${r.c}</td><td>${pj(r.j)}</td><td>${pj(r.jo)}</td><td>${r.j==r.jo?'<span class="tag g">같은 방향</span>':'<span class="tag y">다른 방향</span>'}</td></tr>`).join('')}</table>`);
+ ;
 }
 
 /* ================= 사전사후 전용 (사후 결과 + 전후 비교) =================
@@ -388,11 +407,10 @@ function selfA(){
 }
 /* ================= 다면진단 (사후 결과 공통) ================= */
 function multiA(){
- const rows=UC.map((c,i)=>({c,i,me:UPOST.me[i],o:oth(UPOST,i),d:gapOf(UPOST,i)})).map(r=>({...r,k:kind(r.d)})).sort((a,b)=>b.d-a.d);
+ const rows=UC.map((c,i)=>({c,i,me:UPOST.me[i],o:oth(UPOST,i),d:gapOf(UPOST,i)})).map(r=>({...r,k:kindAt(UPOST,r.i)})).sort((a,b)=>b.d-a.d);
  const bl=rows.filter(r=>r.k=='맹점'),hs=rows.filter(r=>r.k=='숨은 강점'),ev2=r=>nm(r.c);
  return hero(bl.length||hs.length?`맹점 ${bl.length}개, 숨은 강점 ${hs.length}개가 있습니다`:'나와 주변의 평가가 크게 다른 역량은 없습니다',
-  (bl.length||hs.length)?[bl.length?`맹점 ${bl.map(ev2).join(' ')}`:'',hs.length?`숨은 강점 ${hs.map(ev2).join(' ')}`:''].filter(Boolean):[`모든 역량의 나와 주변판정 점수 차이가 ${BLIND} 미만입니다.`])
- +how(`<b style="margin:0">맹점</b> 내가 주변보다 ${BLIND}점 이상 높게 평가한 역량입니다. 스스로는 잘한다고 보지만 주변은 그렇게 보지 않을 수 있습니다.<br><b style="margin:0">숨은 강점</b> 내가 주변보다 ${BLIND}점 이상 낮게 평가한 역량입니다. 주변은 강점으로 보지만 스스로는 알아차리지 못했을 수 있습니다. (기준 ${BLIND}은 확정 전 임시값)`)
+  (bl.length||hs.length)?[bl.length?`맹점 ${bl.map(ev2).join(' ')}`:'',hs.length?`숨은 강점 ${hs.map(ev2).join(' ')}`:''].filter(Boolean):['맹점 · 숨은 강점에 해당하는 역량이 없습니다.'])
  +card('나 vs 주변 (GAP)',rows.map(r=>dv(`${r.c} ${r.k=='일치'?'':ktag(r.k)}`,-r.d,1,sideTxt(r.d),'var(--pri)','var(--bad)')).join('')+'<div class="legend"><em style="background:var(--bad)"></em>왼쪽 : 내가 더 높게 평가 (맹점 쪽)<em style="background:var(--pri)"></em>오른쪽 : 주변이 더 높게 평가 (숨은 강점 쪽)</div>');
 }
 /* ================= 사전사후: 전후 비교 ================= */
@@ -420,28 +438,15 @@ function ppA(){
  +pjChange();
 }
 function mppA(){
- const rows=UC.map((c,i)=>({c,i,m:UPOST.me[i]-UPRE.me[i],o:oth(UPOST,i)-oth(UPRE,i),a:ujudge(UPRE.me[i],i),b:ujudge(UPOST.me[i],i),pa:ujudge(oth(UPRE,i),i),pb:ujudge(oth(UPOST,i),i),ka:kind(gapOf(UPRE,i)),kb:kind(gapOf(UPOST,i))}));
- const ma=avg(rows.map(r=>r.m)),oa=avg(rows.map(r=>r.o));
- const nms=fn=>rows.filter(fn).map(r=>nm(r.c)).join(' ')||'없음';
- const bp=rows.filter(r=>r.ka=='맹점').length,bq=rows.filter(r=>r.kb=='맹점').length;
- const wa=rows.filter(r=>r.a=='약점').length,wb=rows.filter(r=>r.b=='약점').length;
- const tr=(n,x,y,end)=>`${n}은 ${x}개에서 ${y}개로 ${y<x?(end?'줄었습니다':'줄고'):y>x?(end?'늘었습니다':'늘고'):(end?'그대로입니다':'그대로이고')}`;
- const msg=tr('약점',wa,wb,false)+', '+tr('맹점',bp,bq,true);
- const jt=(a,b)=>{
-  if(a=='약점'&&b!='약점')return '<span class="tag g">약점 탈출</span>';
-  if(a!='약점'&&b=='약점')return '<span class="tag r">약점으로 하락</span>';
-  if(a=='강점'&&b!='강점')return '<span class="tag y">강점 약화</span>';
-  if(a!='강점'&&b=='강점')return '<span class="tag g">강점 달성</span>';
-  return '<span class="note">변화 없음</span>'};
- const bt=(a,b)=>b=='맹점'&&a!=b?'<span class="tag r">신규 맹점</span>':b=='숨은 강점'&&a!=b?'<span class="tag g">신규 숨은 강점</span>':a=='맹점'&&b!=a?'<span class="tag b">맹점 해소</span>':'<span class="note">—</span>';
- const pj=j=>j=='보통'?'보통':jtag(j);
- return hero(msg,[
-   `약점 해소 : ${nms(r=>r.a=='약점'&&r.b!='약점')}`,
-   `신규 약점 : ${nms(r=>r.a!='약점'&&r.b=='약점')}`,
-   `맹점 해소 : ${nms(r=>r.ka=='맹점'&&r.kb!='맹점')}`,
-   `신규 맹점 : ${nms(r=>r.ka!='맹점'&&r.kb=='맹점')}`])
- +how('나와 주변의 판정이 사전에서 사후로 바뀐 내용을 비교합니다. 맹점 기준(±'+BLIND+')은 확정 전 임시값입니다.')
- +card('역량별 변화 내용',`<table><tr><th>역량</th><th>나의 판정</th><th>주변 판정</th><th>변화 내용</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${pj(r.a)} → ${pj(r.b)}</td><td>${pj(r.pa)} → ${pj(r.pb)}</td><td>${bt(r.ka,r.kb)}</td></tr>`).join('')}</table><div class="note">맹점 = 내가 주변보다 높게 평가한 역량</div>`);
+ const rows=UC.map((c,i)=>({c,i,m:Math.round((UPOST.me[i]-UPRE.me[i])*100)/100,a:ujudge(UPRE.me[i],i),b:ujudge(UPOST.me[i],i),pa:ujudge(oth(UPRE,i),i),pb:ujudge(oth(UPOST,i),i),ka:kindAt(UPRE,i),kb:kindAt(UPOST,i)}));
+ const LV={'약점':0,'보통':1,'강점':2};   /* 판정 수준 비교용 */
+ const grow=(x,y)=>LV[y]>LV[x]?' <span class="tag g">성장</span>':'';   /* 판정 등급이 올라간 경우 */
+ const by=(fn)=>rows.filter(fn).map(r=>nm(r.c)).join(' ');
+ const seg=(s,u,d)=>u&&d?`${s} 판정으로 좋아진 역량은 ${u}, 나빠진 역량은 ${d}입니다`:u?`${s} 판정으로 좋아진 역량은 ${u}입니다`:d?`${s} 판정으로 나빠진 역량은 ${d}입니다`:'';   /* 해당 역량이 있는 문장만 노출 */
+ const heroT=[seg('본인',by(r=>LV[r.b]>LV[r.a]),by(r=>LV[r.b]<LV[r.a])),seg('주변',by(r=>LV[r.pb]>LV[r.pa]),by(r=>LV[r.pb]<LV[r.pa]))].filter(Boolean).join('. ')||'사전 대비 판정이 바뀐 역량이 없습니다';
+ return hero(heroT)
+ +how('나와 주변의 판정이 사전에서 사후로 바뀐 내용을 비교합니다. 판정은 약점 · 보통 · 강점 기준입니다.')
+ +card('역량별 변화 내용',`<table><tr><th>역량</th><th>나의 판정</th><th>주변 판정</th></tr>${rows.map(r=>`<tr><td>${r.c}</td><td>${r.a} → ${r.b}${grow(r.a,r.b)}</td><td>${r.pa} → ${r.pb}${grow(r.pa,r.pb)}</td></tr>`).join('')}</table>`);
 }
 
 /* ================= 다음 행동 (공통) ================= */
@@ -577,6 +582,21 @@ const FLOW={
  selfPP:[['얼마나 성장했나?',ppA,'전후 비교'],['지금 나는 어디에?',selfA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']],
  multiPP:[['얼마나 성장했나?',mppA,'전후 비교'],['지금 나는 어디에?',multiB,'사후 결과'],['나 vs 주변',multiA,'사후 결과'],['어떤 역량부터 키울까?',act,'사후 결과'],['근거 데이터',evidence,'사후 결과']]
 };
+/* 다면진단(사전사후): 영역(zone)별 구성 — 기존 섹션 함수를 그대로 쓰고 배치만 바꾼다 */
+function zoneLayout(){
+ const t=TYPES[tp];
+ const DESC={'얼마나 성장했나?':'사전 대비 달라진 내용','지금 나는 어디에?':t.pp?'사후 결과 기준 현재 위치':'현재 위치','조직 대비 나는?':'조직평균과 비교한 결과','나 vs 주변':'본인 판정과 주변판정의 차이','어떤 역량부터 키울까?':'우선순위와 추천 과정'};
+ window.ZONE=1;const top=t.multi?multiOverview(t):overview(t);window.ZONE=0;
+ const topDesc=t.pp?(t.multi?'본인·주변판정 종합점수의 사전·사후 비교':'종합점수의 사전·사후 비교'):(t.multi?'본인·주변판정 종합점수':'종합점수와 조직평균 비교');
+ const flow=FLOW[tp].filter(f=>f[1]!==evidence).map(([n,fn],i)=>['zf'+i,n,DESC[n]||'',fn(t)]);
+ if(t.multi)flow.splice(t.pp?1:0,0,['zt','약점 · 맹점 확인','약점·맹점·강점·숨은 강점에 해당하는 역량','<div class="td-grid">'+termDefs().replace('<div class="td-t">약점 · 맹점 확인</div>','')+'</div>']);
+ const Z=[['z1','총평',topDesc,top]];
+ const fw=frameworkHTML();
+ if(fw)Z.push(['z1b','역량 설명','진단에 사용한 역량군의 의미',fw]);
+ Z.push(...flow,['z7','근거 데이터',t.multi?'종합지수·상세 점수·주관식 응답':'종합지수·상세 점수','<div id="ev"></div>']);
+ document.getElementById('secTop').innerHTML=Z.map(z=>`<section class="zn" id="${z[0]}"><div class="zn-h"><h2>${z[1]}</h2><p>${z[2]}</p></div>${z[3]}</section>`).join('');
+ ['secFw','panel','secEv'].forEach(id=>document.getElementById(id).innerHTML='');
+}
 function draw(){
  document.getElementById('types').innerHTML=Object.entries(TYPES).map(([k,v])=>`<button class="${k==tp?'on':''}" onclick="tp='${k}';tb=0;ev='me';sub=0;draw()">${v.n}</button>`).join('');
  document.getElementById('gcnt').innerHTML=[1,3,6,10].map(n=>`<button class="${n==gn?'on':''}" onclick="setGroupCount(${n});sub=0;draw()">${n}개</button>`).join('');
@@ -587,6 +607,7 @@ function draw(){
  document.getElementById('secFw').innerHTML=frameworkHTML();
  document.getElementById('panel').innerHTML=secs.map(([n,fn,lb])=>`<div class="sec"><h2>${n}${lb?`<span class="tag">${lb}</span>`:''}</h2>${fn(t)}</div>`).join('');
  document.getElementById('secEv').innerHTML='<div class="sec"><h2>근거 데이터</h2><div id="ev"></div></div>';
+ zoneLayout();
  drawEv();
  renderDr();
 }
@@ -625,6 +646,26 @@ function gaugeHTML(t){
  const me=avg(UPOST.me),org=avg(UPOST.all),pre=t.pp?avg(UPRE.me):null,p=v=>((v/5)*100).toFixed(1)+'%';
  return `<div class="gg"><div class="gg-track"><i class="gg-fill" style="width:${p(me)}"></i>${pre!==null?`<i class="gg-dot pre" style="left:${p(pre)}" title="사전 ${pre.toFixed(2)}"></i>`:''}${t.pp?'':`<i class="gg-org" style="left:${p(org)}" title="조직평균 ${org.toFixed(2)}"></i>`}<i class="gg-dot" style="left:${p(me)}" title="본인 ${me.toFixed(2)}"></i></div><div class="gg-ax">${[0,1,2,3,4,5].map(v=>`<span style="left:${p(v)}">${v}</span>`).join('')}</div></div><div class="legend" style="justify-content:center"><em style="background:var(--pri)"></em>본인 ${me.toFixed(2)}${pre!==null?`<em style="background:var(--c-mem)"></em>사전 ${pre.toFixed(2)}`:''}${t.pp?'':`<em style="background:#9ca3af"></em>조직평균 ${org.toFixed(2)}`}</div>`;
 }
+/* 다면진단 사전사후 총평: 본인 · 주변판정 각각 사전/사후 막대 + 사전 대비 변화 + 종합결과 요약 */
+function multiPPCmp(me,ot,L){
+ const pm=avg(UPRE.me),po=avg(UC.map((c,i)=>oth(UPRE,i))),r2=x=>Math.round(x*100)/100,sc=v=>(v/5*100).toFixed(1)+'%';
+ const grp=(lab,col,pre,post)=>{const d=r2(post-pre),cls=d>0?'hi':d<0?'lo':'z';return `<div class="cp-g"><div class="cp-n" style="color:${col}">${lab}</div><div class="cp-main"><div>${[['사전',pre,.45],['사후',post,1]].map(([l,v,o])=>`<div class="cp-r"><span class="cp-l">${l}</span><div class="cp-t"><i style="width:${sc(v)};background:${col};opacity:${o}"></i></div><b class="${l=='사후'?'cp-post':''}">${v.toFixed(2)}</b></div>`).join('')}</div><div class="cp-brk"></div><div class="cp-d ${cls}">${d==0?'변화 없음':(d>0?'▲ +':'▼ −')+Math.abs(d).toFixed(2)+'점'}</div></div></div>`};
+ const ax=`<div class="cp-main"><div class="cp-r"><span></span><div class="cp-ax">${[0,1,2,3,4,5].map(v=>`<span style="left:${sc(v)}">${v}</span>`).join('')}</div><span></span></div><span></span><span class="note" style="text-align:right">점수 기준 : 5점 만점</span></div>`;
+ const dir=(n,a,b)=>{const d=r2(b-a);return `${n}은 사전 대비 점수가 ${d>0?'상승':d<0?'하락':'같'}${d==0?'습니다':'했습니다'}.`};
+ const rest=L.slice(1).filter(s=>!(UC.length==1&&(s.startsWith('먼저 점검할 역량')||s.startsWith('나와 주변 모두 약점'))));
+ return `<div class="cp-t1">종합점수 비교</div>${grp('본인','var(--pri)',pm,me)}${grp('주변판정','var(--c-peer)',po,ot)}${ax}<div class="cp-sum"><h4>종합결과 요약</h4><ul><li>${dir('본인',pm,me)}</li><li>${dir('주변판정',po,ot)}</li>${rest.map(s=>`<li>${s}</li>`).join('')}</ul></div><div class="note" style="margin-top:8px">주변판정 : 상사·동료·구성원 응답의 평균 점수입니다.</div>${window.ZONE?'':termDefs()}`;
+}
+/* 다면진단 주요 결과: 약점 · 맹점 · 강점 · 숨은 강점 용어 정의와 해당 역량(사후 기준) */
+function termDefs(){
+ const R=UC.map((c,i)=>({c,me:UPOST.me[i],o:oth(UPOST,i),g:G[i],j:ujudge(UPOST.me[i],i),k:kindAt(UPOST,i)}));
+ const list=(a,fn)=>a.length?a.map(r=>`<b>${nm(r.c)}</b> ${fn(r)}`).join('<br>'):'<span class="note">해당 역량 없음</span>';
+ const row=(tg,d,v)=>`<div class="td"><div class="td-h">${tg}<span class="d">${d}</span></div><div class="v">${v}</div></div>`;
+ return `<div class="td-t">약점 · 맹점 확인</div>`
+  +row(jtag('약점'),'내 점수가 약점 기준 미만인 역량',list(R.filter(r=>r.j=='약점'),r=>`나 ${f1(r.me)}점`))
+  +row(ktag('맹점'),`내가 주변보다 ${BLIND}점 이상 높게 평가했고, 주변판정이 약점 기준 미만인 역량`,list(R.filter(r=>r.k=='맹점'),r=>`나 ${f1(r.me)}점 · 주변판정 ${f1(r.o)}점`))
+  +row(jtag('강점'),'내 점수가 강점 기준 이상인 역량',list(R.filter(r=>r.j=='강점'),r=>`나 ${f1(r.me)}점`))
+  +row(ktag('숨은 강점'),`내가 주변보다 ${BLIND}점 이상 낮게 평가했고, 주변판정이 강점 기준 이상인 역량`,list(R.filter(r=>r.k=='숨은 강점'),r=>`나 ${f1(r.me)}점 · 주변판정 ${f1(r.o)}점`));
+}
 /* 다면진단 총평: 본인 점수 · 주변판정 점수 + 두 점수 차이 설명 + 주변판정 정의 */
 function multiOverview(t){
  const me=avg(UPOST.me),ot=avg(UC.map((c,i)=>oth(UPOST,i))),d=Math.round((me-ot)*100)/100,ad=Math.abs(d).toFixed(2);
@@ -636,7 +677,7 @@ function multiOverview(t){
  L.push('보완·강화가 필요한 역량을 위한 추천 과정을 아래에서 확인해 보세요.');
  /* 점수 블록: 사후(현재) 점수를 크게, 사전사후는 사전 점수와 증감을 함께 */
  const msItem=(lab,col,post,pre)=>{const d=Math.round((post-pre)*100)/100;return `<div><div class="ms2-l"><i style="background:${col}"></i>${lab}</div><span class="num">${post.toFixed(2)}</span>${t.pp?`<div class="ms2-p"><span>사전 ${pre.toFixed(2)}</span><span class="pp-d ${d>=0?'hi':'lo'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(2)}</span></div>`:''}</div>`};
- return `<div class="ov rev"><div class="ov-chart">${multiBars(t)}</div><div class="ov-side"><div class="ov2-label">종합 점수</div><div class="ms2">${msItem('본인','var(--pri)',me,avg(UPRE.me))}${msItem('주변판정','var(--c-peer)',ot,avg(UC.map((c,i)=>oth(UPRE,i))))}</div><div class="headline-desc">${L.join('<br>')}</div><div class="note">주변판정 : 상사·동료·구성원 응답의 평균 점수입니다.</div></div></div>`;
+ if(t.pp)return multiPPCmp(me,ot,L);return `<div class="ov rev"><div class="ov-chart">${multiBars(t)}</div><div class="ov-side"><div class="ov2-label">종합 점수</div><div class="ms2">${msItem('본인','var(--pri)',me,avg(UPRE.me))}${msItem('주변판정','var(--c-peer)',ot,avg(UC.map((c,i)=>oth(UPRE,i))))}</div><div class="headline-desc">${L.join('<br>')}</div><div class="note">주변판정 : 상사·동료·구성원 응답의 평균 점수입니다.</div></div></div>${window.ZONE?'':termDefs()}`;
 }/* 종합 점수 블록: 사전사후는 사후 점수를 크게, 사전 점수와 증감(증감률)을 함께 표시 */
 function selfScoreHTML(t,me){
  const main=`<div class="ov2-label">종합 점수</div>`;
