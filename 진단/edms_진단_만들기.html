@@ -1124,7 +1124,7 @@ body {
               <div class="diagtype-choice-card" data-type="사전사후" onclick="chooseDiagType('사전사후')">
                 <div style="font-size:26px;margin-bottom:10px;">📈</div>
                 <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">사후진단</div>
-                <div style="font-size:12.5px;color:#777;line-height:1.6;">완료된 일반진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
+                <div style="font-size:12.5px;color:#777;line-height:1.6;">진행중 또는 마감된 일반진단을 사전진단으로 선택해 사후진단을 진행하고, 비교 결과를 확인합니다.</div>
               </div>
             </div>
           </div>
@@ -1151,7 +1151,7 @@ body {
           </div>
           <div class="wiz-card-body">
 
-            <!-- ▸ 사전사후진단: 사전진단(완료된 일반진단) 선택 뷰 -->
+            <!-- ▸ 사전사후진단: 사전진단(진행중·마감 상태의 일반진단) 선택 뷰 -->
             <div id="step2PrePostView" style="display:none;flex:1;">
               <div class="step1-panel-wrap" style="flex:1;">
                 <div class="step1-left">
@@ -2347,10 +2347,13 @@ let hasDraftSaved = false; // 임시저장을 1회 이상 진행했는지 여부
 let selectedDiagnosticType = '일반'; // 진단유형: 일반 | 사전사후 (기본값: 일반진단)
 let selectedRunMode = 'period';      // 진행 방식: period(지정 기간) | ontime(상시) — 응답자 유형이 본인만일 때만 상시 선택 가능
 
-// 사전사후진단: 사전진단으로 선택할 수 있는 "완료된 일반진단" (프로토타입 샘플)
+// 사전사후진단: 사전진단으로 선택할 수 있는 "진행중·마감 상태의 일반진단" (프로토타입 샘플, 대기 상태는 선택 불가)
 // respondents = 대상자 1인당 응답자 수 (본인은 0 = 별도 지정 없음)
 let selectedPreDiag = null;
 const PRE_DIAGNOSES = [
+  { id: 'D-2026-0515', name: '2026 4분기 리더십 역량진단(대기)',         qid: 1, start: '2026-11-10', end: '2026-11-28', respondents: { '본인': 0, '상사': 1 } },
+  { id: 'D-2026-0510', name: '2026 HRD아카이브 역량진단(상시)',           qid: 3, start: '2026-10-01', end: '2027-03-31', respondents: { '본인': 0 }, runMode: 'ontime' },
+  { id: 'D-2026-0508', name: '2026 4분기 조직문화 진단',                 qid: 3, start: '2026-10-12', end: '2026-11-06', respondents: { '본인': 0 } },
   { id: 'D-2026-0505', name: '2026 AI 리터러시 진단(상시)',             qid: 3, start: '2026-09-01', end: '2026-09-30', respondents: { '본인': 0 }, runMode: 'ontime' },
   { id: 'D-2026-0492', name: '2026 조직문화 진단(생산본부)',            qid: 3, start: '2026-08-03', end: '2026-08-21', respondents: { '본인': 0 } },
   { id: 'D-2026-0477', name: '2026 하반기 리더십 역량진단 1차',          qid: 1, start: '2026-07-06', end: '2026-07-24', respondents: { '본인': 0, '상사': 1, '동료': 3 } },
@@ -2581,7 +2584,7 @@ function applyStepVisibility() {
   const s2 = (id) => document.getElementById(id);
   if (s2('step2Title')) s2('step2Title').textContent = isPrePost ? '사전진단을 선택해주세요.' : '진단지를 선택해주세요.';
   if (s2('step2Desc')) s2('step2Desc').innerHTML = isPrePost
-    ? '사후진단의 기준이 될 완료된 일반진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
+    ? '사후진단의 기준이 될 진행중 또는 마감된 일반진단을 선택해주세요.<br>진단지, 응답자 유형, 역량 점수 기준, 대상자·응답자가 자동으로 적용됩니다.'
     : '진단에 사용할 진단지를 선택해주세요.<br>진단지가 없다면 진단지를 먼저 생성해야 합니다.';
   if (s2('wiz-step2-title')) s2('wiz-step2-title').textContent = isPrePost ? '사전진단 선택' : '진단지 선택';
   if (s2('wiz-step2-desc')) s2('wiz-step2-desc').textContent = isPrePost ? '사후진단의 기준 진단 선택' : '어떤 역량을 진단할지 선택';
@@ -2693,7 +2696,15 @@ function renderStep1() {
   applyProductQsetLockUI(productLocked);
 }
 
-// ─── 사전사후진단: 사전진단(완료된 일반진단) 선택 ───
+// ─── 사전사후진단: 사전진단(진행중·마감 상태의 일반진단) 선택 ───
+
+// 진단 상태: 대기(시작 전) / 진행중 / 마감. 사전진단으로는 진행중·마감만 선택 가능
+function preDiagStatus(p) {
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  if (p.start > today) return '대기';
+  return p.end < today ? '마감' : '진행중';
+}
 
 let preDiagPage = 1;
 
@@ -2733,6 +2744,7 @@ function renderPreDiagList(keepPage) {
   const kw = (document.getElementById('preDiagSearch')?.value || '').trim().toLowerCase();
   const yf = ySel ? ySel.value : '';
   const rows = PRE_DIAGNOSES
+    .filter(p => preDiagStatus(p) !== '대기')
     .filter(p => (!kw || p.name.toLowerCase().includes(kw)) && (!yf || p.end.startsWith(yf)))
     .sort((a, b) => b.end.localeCompare(a.end));
 
@@ -2753,7 +2765,7 @@ function renderPreDiagList(keepPage) {
     card.dataset.pid = p.id;
     card.innerHTML = `
       <div class="diag-card-title"><span>${p.name}</span></div>
-      <div class="diag-card-meta">${q ? q.name : '-'}${p.runMode === 'ontime' ? ' · 상시' : ''}</div>
+      <div class="diag-card-meta">${preDiagStatus(p)} · ${q ? q.name : '-'}${p.runMode === 'ontime' ? ' · 상시' : ''}</div>
       <div class="diag-card-date">${p.start} ~ ${p.end}</div>
     `;
     card.onclick = () => selectPreDiagnosis(p.id);
@@ -2765,6 +2777,19 @@ function renderPreDiagList(keepPage) {
     document.getElementById('preDiagPreviewContent').style.display = 'none';
     document.getElementById('preDiagPreviewEmpty').style.display = '';
   }
+}
+
+// 사전진단의 대상자·응답자 설정을 사후진단 STEP7에 채움 (프로토타입: 대상자는 샘플 대상자 전원, 응답자는 사전진단의 유형별 인원 기준)
+function applyPreDiagRespondents(p) {
+  Object.keys(MK_RESPONDENTS).forEach(k => delete MK_RESPONDENTS[k]);
+  if (typeof ME_SAMPLE_MEMBERS === 'undefined') return;
+  const scopedTargets = MK_DIAG_TARGETS.filter(t => !t.company || _diagScopeCompanyNames().includes(t.company));
+  Object.entries(p.respondents).forEach(([role, n]) => {
+    if (role === '본인' || !n) return;
+    scopedTargets.forEach((t, ri) => {
+      MK_RESPONDENTS[`${role}:${ri}`] = ME_SAMPLE_MEMBERS.filter(m => m.empno !== t.empno).slice(0, n);
+    });
+  });
 }
 
 // 사전진단을 고르면 진단지·응답자 유형·역량 점수 기준·대상자/응답자가 그대로 적용됨
@@ -2779,17 +2804,7 @@ function selectPreDiagnosis(id) {
   Object.keys(p.respondents).forEach(k => { respondentSettings[k] = true; });
   if (!isSelfOnlyRespondent()) selectedRunMode = 'period';
 
-  // 사전진단의 응답자를 대상자별로 미리 채움 (이후 STEP7에서 추가·삭제 가능)
-  Object.keys(MK_RESPONDENTS).forEach(k => delete MK_RESPONDENTS[k]);
-  if (typeof ME_SAMPLE_MEMBERS !== 'undefined') {
-    const scopedTargets = MK_DIAG_TARGETS.filter(t => !t.company || _diagScopeCompanyNames().includes(t.company));
-    Object.entries(p.respondents).forEach(([role, n]) => {
-      if (role === '본인' || !n) return;
-      scopedTargets.forEach((t, ri) => {
-        MK_RESPONDENTS[`${role}:${ri}`] = ME_SAMPLE_MEMBERS.filter(m => m.empno !== t.empno).slice(0, n);
-      });
-    });
-  }
+  applyPreDiagRespondents(p); // 사전진단의 대상자·응답자 설정을 가져옴 (이후 STEP7에서 추가·삭제 가능)
   generateScoreSettings(); // 사전진단과 동일한 역량 점수 기준 적용
 
   // 진단명이 비어 있거나 자동 입력값이면 "사전진단명 + 사후진단"으로 채움
@@ -2818,6 +2833,7 @@ function renderPreDiagPreview(p) {
   content.innerHTML = `
     <div class="preview-title">${p.name}</div>
     <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+      ${row('진단 상태', preDiagStatus(p))}
       ${row('진단 기간', `${p.start} ~ ${p.end}`)}
       ${row('대상·결과 노출', p.runMode === 'ontime' ? '전 임직원 대상 및 응답 즉시 결과 노출' : '대상 지정 및 기간 종료 후 결과 노출')}
       ${row('진단지', `${q ? q.name + ' (' + q.qCount + '문항)' : '-'}`)}
@@ -4333,7 +4349,7 @@ function validateDates() {
   return true;
 }
 
-// 사전사후진단: 사후진단 기간만 입력 (사전진단 종료일시 이후여야 함)
+// 사전사후진단: 사후진단 기간만 입력 (사전진단 기간과의 선후 제한 없음)
 function validatePostDates() {
   if (!selectedPreDiag) { showToast('사전진단을 선택해주세요.'); return false; }
   const postStartDate = document.getElementById('postStartDate').value;
@@ -4347,13 +4363,8 @@ function validatePostDates() {
   const today = new Date(); today.setHours(0,0,0,0);
   const postStart = new Date(postStartDate + (postStartTime ? 'T' + postStartTime : 'T00:00'));
   const postEnd   = new Date(postEndDate   + (postEndTime   ? 'T' + postEndTime   : 'T23:59'));
-  const preEnd    = new Date(selectedPreDiag.end + 'T23:59');
   if (postStart < today) {
     showToast('사후진단 시작일은 오늘 이후(오늘 포함) 날짜여야 합니다.');
-    return false;
-  }
-  if (postStart <= preEnd) {
-    showToast('사후진단 시작일시는 사전진단 종료일시 이후여야 합니다.');
     return false;
   }
   if (postEnd < postStart) {
@@ -4472,14 +4483,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const diagNameEl = document.getElementById('diagNameInput');
   if (diagNameEl) diagNameEl.addEventListener('input', () => { diagNameEl.dataset.auto = ''; });
   const today = new Date().toISOString().split('T')[0];
-  const preEnd = document.getElementById('diagEndDate');
   const postStart = document.getElementById('postStartDate');
   const postEnd = document.getElementById('postEndDate');
   if (postStart) postStart.min = today;
   if (postEnd) postEnd.min = today;
-  if (preEnd && postStart) {
-    preEnd.addEventListener('change', () => { postStart.min = preEnd.value || today; });
-  }
   if (postStart && postEnd) {
     postStart.addEventListener('change', () => {
       postEnd.min = postStart.value || today;
