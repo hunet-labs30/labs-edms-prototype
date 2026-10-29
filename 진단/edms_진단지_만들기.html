@@ -1493,7 +1493,7 @@ function renderS3Summary() {
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
     </div>
     ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
-    ${(() => { const r = document.querySelector('input[name="s3SheetType"]:checked'); const nm = { own:'자체 진단지', hunet:'휴넷 전용 상품', archive:'HRD아카이브용' }[r ? r.value : 'own']; return `<div class="s3-summary-section-title">진단지 구분</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">유형</span><span class="s3-summary-val">${nm}</span></div>`; })()}
+    ${(() => { const r = document.querySelector('input[name="s3SheetType"]:checked'); const nm = { own:'자체 진단지', hunet:'휴넷 전용 상품', archive:'HRD아카이브용' }[r ? r.value : 'own']; if (!r || r.value === 'own') return ''; return `<div class="s3-summary-section-title">진단지 구분</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">유형</span><span class="s3-summary-val">${nm}</span></div>`; })()}
     ${warnHtml}`;
 }
 
