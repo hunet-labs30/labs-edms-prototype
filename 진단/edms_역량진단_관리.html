@@ -1612,6 +1612,7 @@
     { id:'QSET_002', name:'임원 리더십 역량 진단', target:'임원', types:3, groups:12, items:36, questions:108, isPublic:true, updatedAt:'2025.11.15', updatedBy:'김담당', locked:false, resultTemplate:'standard', compatTypes:['일반','상시'] },
     { id:'QSET_003', name:'중간관리자 리더십 진단', target:'과·차장급', types:2, groups:8, items:24, questions:72, isPublic:true, updatedAt:'2025.10.20', updatedBy:'이담당', locked:false, resultTemplate:'standard', compatTypes:['일반','상시'] },
     { id:'QSET_004', name:'AI리터러시 진단 (상품형)', target:'전사', types:1, groups:3, items:15, questions:15, isPublic:true, updatedAt:'2026.01.15', updatedBy:'시스템', locked:true, resultTemplate:'ai_literacy', compatTypes:['일반','상시'] },
+    { id:'QSET_005', name:'HRD아카이브 역량진단', kind:'archive', target:'전사', types:2, groups:6, items:18, questions:30, isPublic:true, updatedAt:'2026.10.29', updatedBy:'이강은', locked:true, resultTemplate:'standard', compatTypes:['일반','상시'] },
   ];
 
   let qsetDeleteTargetId = null;
@@ -1671,9 +1672,11 @@
           </button>
         </td>
         <td class="center" style="${isHunetViewer ? '' : 'display:none;'}">
-          ${q.locked
-            ? '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#e3f2fd;color:#0d47a1;white-space:nowrap;">휴넷 전용 상품</span>'
-            : '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#f1f3f5;color:#666;white-space:nowrap;">자체 진단지</span>'}
+          ${q.kind === 'archive'
+            ? '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#f3e8ff;color:#6b21a8;white-space:nowrap;">HRD아카이브용</span>'
+            : q.locked
+              ? '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#e3f2fd;color:#0d47a1;white-space:nowrap;">휴넷 전용 상품</span>'
+              : '<span style="display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;background:#f1f3f5;color:#666;white-space:nowrap;">자체 진단지</span>'}
         </td>
         <td>
           <div class="row-actions">
