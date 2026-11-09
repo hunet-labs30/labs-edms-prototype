@@ -219,7 +219,6 @@ body {
 /* 사전진단 목록: 건수 행 / 페이지네이션 */
 .step1-count-row { padding: 8px 16px; font-size: 12px; color: #666; border-bottom: 1px solid #f0f2f5; flex-shrink: 0; }
 .step1-count-row b { color: var(--primary); font-weight: 700; }
-#preDiagPageSize option:checked { background: #e8f0fe; }
 .step1-pagination { display: none; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; padding: 10px 14px; border-top: 1px solid #f0f2f5; flex-shrink: 0; background: #fff; }
 .pg-btn { min-width: 28px; height: 28px; border: 1px solid #ddd; background: #fff; border-radius: 3px; font-size: 12px; cursor: pointer; color: #555; display: flex; align-items: center; justify-content: center; font-family: inherit; transition: all 0.15s; }
 .pg-btn:hover { border-color: var(--primary); color: var(--primary); }
@@ -1162,15 +1161,6 @@ body {
                   </div>
                   <div class="step1-count-row" id="preDiagCount"></div>
                   <div class="step1-card-list" id="preDiagCardList"></div>
-                  <div class="step1-pagination" id="preDiagFooter">
-                    <select id="preDiagPageSize" onchange="renderPreDiagList()" style="height:28px;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px;font-family:inherit;background:#fff;">
-                      <option value="30">30개씩 보기</option>
-                      <option value="50" selected>50개씩 보기</option>
-                      <option value="100">100개씩 보기</option>
-                      <option value="200">200개씩 보기</option>
-                    </select>
-                    <div id="preDiagPagination" style="display:flex;align-items:center;gap:4px;"></div>
-                  </div>
                 </div>
                 <div class="step1-right">
                   <div id="preDiagPreviewEmpty" class="preview-empty">
@@ -1351,7 +1341,7 @@ body {
                 </tr>
                 
                 <tr id="step6-post-period-row" style="display:none;">
-                  <th class="form-th">사후진단 기간 <span class="req">*</span></th>
+                  <th class="form-th">진단 기간 <span class="req">*</span></th>
                   <td class="form-td">
                     <div class="inline-row">
                       <input class="form-input w-date" id="postStartDate" type="date">
@@ -2706,31 +2696,7 @@ function preDiagStatus(p) {
   return p.end < today ? '마감' : '진행중';
 }
 
-let preDiagPage = 1;
-
-function goPreDiagPage(n) {
-  preDiagPage = n;
-  renderPreDiagList(true);
-  document.getElementById('preDiagCardList').scrollTop = 0; // 페이지 이동 시 목록 상단으로
-}
-
-function renderPreDiagPagination(totalPages) {
-  const footer = document.getElementById('preDiagFooter');
-  const el = document.getElementById('preDiagPagination');
-  if (!footer || !el) return;
-  if (!totalPages) { footer.style.display = 'none'; el.innerHTML = ''; return; }
-  const start = Math.max(1, Math.min(preDiagPage - 2, totalPages - 4));
-  const end = Math.min(totalPages, start + 4);
-  let html = `<button class="pg-btn" onclick="goPreDiagPage(${preDiagPage - 1})" ${preDiagPage === 1 ? 'disabled' : ''}>&#8249;</button>`;
-  for (let i = start; i <= end; i++) {
-    html += `<button class="pg-btn${i === preDiagPage ? ' active' : ''}" onclick="goPreDiagPage(${i})">${i}</button>`;
-  }
-  html += `<button class="pg-btn" onclick="goPreDiagPage(${preDiagPage + 1})" ${preDiagPage === totalPages ? 'disabled' : ''}>&#8250;</button>`;
-  el.innerHTML = html;
-  footer.style.display = 'flex'; // N개씩 보기는 페이지 수와 관계없이 노출
-}
-
-function renderPreDiagList(keepPage) {
+function renderPreDiagList() {
   const list = document.getElementById('preDiagCardList');
   if (!list) return;
 
@@ -2748,15 +2714,9 @@ function renderPreDiagList(keepPage) {
     .filter(p => (!kw || p.name.toLowerCase().includes(kw)) && (!yf || p.end.startsWith(yf)))
     .sort((a, b) => b.end.localeCompare(a.end));
 
-  // 검색·필터를 바꾸면 1페이지로, 페이지 이동/재진입 시에는 현재 페이지 유지
-  if (!keepPage) preDiagPage = 1;
-  const pageSize = parseInt(document.getElementById('preDiagPageSize')?.value) || 50;
-  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
-  if (preDiagPage > totalPages) preDiagPage = totalPages;
-  const pageRows = rows.slice((preDiagPage - 1) * pageSize, preDiagPage * pageSize);
+  const pageRows = rows;
 
   document.getElementById('preDiagCount').innerHTML = `총 <b>${rows.length}</b>건 <span style="color:#aaa;">· 종료일 최신순</span>`;
-  renderPreDiagPagination(rows.length ? totalPages : 0);
   list.innerHTML = rows.length ? '' : '<div style="padding:32px 0;text-align:center;font-size:12.5px;color:#aaa;">조건에 맞는 사전진단이 없습니다.</div>';
   pageRows.forEach(p => {
     const q = QUESTIONNAIRES.find(x => x.id === p.qid);
@@ -4443,7 +4403,7 @@ function goToStep(step) {
   applyStepVisibility();
 
   currentStep = step;
-  if (step === 2) { if (selectedDiagnosticType === '사전사후') renderPreDiagList(true); else renderStep1(); }
+  if (step === 2) { if (selectedDiagnosticType === '사전사후') renderPreDiagList(); else renderStep1(); }
   if (step === 3) generateRespondentCards();
   if (step === 4) generateScoreSettings();
   if (step === 5) generateCourseTree();
