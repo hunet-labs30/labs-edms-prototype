@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABS 연수원 Admin - 진단 관리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #2563eb; --primary-light: #eff6ff; --bg: #f1f5f9;
+    --sidebar-bg: #1e293b; --sidebar-text: #94a3b8; --sidebar-hover: #334155; --header-bg: #0f172a;
+    --admin-red: #dc2626; --white: #fff; --border: #e2e8f0; --text: #1e293b; --text-muted: #64748b;
+    --card-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  }
+  body { font-family: 'Malgun Gothic','맑은 고딕',-apple-system,sans-serif; font-size: 13px; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .top-header { background: var(--header-bg); color: #fff; height: 48px; display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .logo { font-size: 15px; font-weight: 700; } .logo span { color: #60a5fa; }
+  .admin-badge { background: var(--admin-red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .8px; }
+  .header-divider { width: 1px; height: 16px; background: rgba(255,255,255,.12); }
+  .subtitle { font-size: 12px; color: #64748b; } .spacer { flex: 1; }
+  .user-name { font-size: 13px; color: #cbd5e1; }
+  .btn-header { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #94a3b8; padding: 4px 12px; border-radius: 5px; font-size: 12px; cursor: pointer; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  .sidebar { width: 210px; background: var(--sidebar-bg); overflow-y: auto; flex-shrink: 0; padding: 8px 0 24px; }
+  .nav-group-header { display: flex; align-items: center; gap: 6px; padding: 9px 14px; cursor: pointer; user-select: none; color: var(--sidebar-text); font-size: 12px; font-weight: 600; border-left: 2px solid transparent; }
+  .nav-group-header:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+  .nav-group.open > .nav-group-header { color: #93c5fd; background: rgba(96,165,250,.08); border-left-color: #3b82f6; }
+  .nav-group-sub > .nav-group-header { padding-left: 22px; font-weight: 500; }
+  .nav-group-label { flex: 1; } .nav-arrow { font-size: 8px; color: #475569; transition: transform .2s; }
+  .nav-group.open > .nav-group-header .nav-arrow { transform: rotate(90deg); color: #60a5fa; }
+  .nav-sub { max-height: 0; overflow: hidden; }
+  .nav-group.open > .nav-sub { max-height: 4000px; padding: 2px 0 4px; }
+  .nav-item { display: block; padding: 5px 12px 5px 22px; color: #64748b; font-size: 12px; text-decoration: none; cursor: pointer; }
+  .nav-group-sub .nav-item { padding-left: 34px; }
+  .nav-item:hover { background: var(--sidebar-hover); color: #cbd5e1; }
+  .nav-item.active { background: var(--primary); color: #fff; font-weight: 600; }
+  .main { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .page-header { display: flex; align-items: center; justify-content: space-between; }
+  .page-title { font-size: 17px; font-weight: 700; color: #0f172a; }
+  .breadcrumb { font-size: 11px; color: #94a3b8; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--card-shadow); }
+  .view { display: none; flex-direction: column; gap: 14px; } .view.active { display: flex; }
+  /* 입력 */
+  .input, .select, .textarea { height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-size: 13px; color: var(--text); background: #fff; outline: none; font-family: inherit; }
+  .textarea { height: 80px; padding: 8px 10px; resize: vertical; width: 100%; }
+  .input:focus, .select:focus, .textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .input.error { border-color: #dc2626; }
+  .select { cursor: pointer; padding-right: 28px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .btn { height: 34px; padding: 0 18px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: inherit; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; } .btn-primary:hover { background: #1d4ed8; }
+  .btn-outline { background: #fff; color: #374151; border: 1px solid #d1d5db; } .btn-outline:hover { background: #f9fafb; }
+  .btn-reset { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-sm { height: 30px; padding: 0 14px; font-size: 12px; border-radius: 5px; }
+  .btn-xs { height: 26px; padding: 0 10px; font-size: 11px; border-radius: 4px; }
+  .btn-ghost { background: transparent; color: #475569; border: 1px solid #e2e8f0; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  /* 검색 */
+  .search-row { display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid #f1f5f9; }
+  .search-label { width: 90px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; }
+  .search-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .search-actions { padding: 12px 20px 14px; display: flex; justify-content: flex-end; gap: 6px; }
+  /* 요약 카드 */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-card { padding: 14px 18px; } .stat-label { font-size: 12px; color: #64748b; } .stat-num { font-size: 22px; font-weight: 700; margin-top: 2px; }
+  .stat-scope { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  /* 테이블 */
+  .result-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; gap: 8px; }
+  .result-count { color: var(--text-muted); } .result-count strong { color: var(--primary); }
+  .main-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .main-table th { background: #f8fafc; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; font-weight: 600; color: #475569; text-align: center; white-space: nowrap; }
+  .main-table td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; text-align: center; white-space: nowrap; }
+  .main-table td.left { text-align: left; }
+  .main-table tbody tr:hover td { background: #f8fafc; }
+  .link-cell { color: var(--primary); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .empty-row td { padding: 44px 0 !important; color: #94a3b8; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .b-hunet { background: #e0f2fe; color: #0369a1; } .b-hrd { background: #f3e8ff; color: #7e22ce; }
+  .b-draft { background: #f1f5f9; color: #475569; } .b-wait { background: #fef3c7; color: #92400e; }
+  .b-run { background: #dcfce7; color: #166534; } .b-close { background: #ffedd5; color: #9a3412; }
+  .b-report { background: #e0e7ff; color: #3730a3; } .b-done { background: #e2e8f0; color: #334155; }
+  .b-type { background: #eff6ff; color: #1d4ed8; } .b-always { background: #fce7f3; color: #9d174d; }
+  .toggle-btn { height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid; font-family: inherit; }
+  .t-on { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; } .t-off { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid #f1f5f9; }
+  .pg-btn { min-width: 28px; height: 28px; border: 1px solid #e2e8f0; background: #fff; border-radius: 5px; font-size: 12px; color: #64748b; }
+  .pg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+  .actions { display: flex; gap: 4px; justify-content: center; }
+  /* 위저드 */
+  .stepper { display: flex; padding: 14px 20px; gap: 6px; flex-wrap: wrap; }
+  .step { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #94a3b8; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; }
+  .step .n { width: 18px; height: 18px; border-radius: 50%; background: #e2e8f0; color: #64748b; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step.done { color: #1d4ed8; } .step.done .n { background: #bfdbfe; color: #1d4ed8; }
+  .step.current { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 600; } .step.current .n { background: #fff; color: var(--primary); }
+  .wiz-body { display: grid; grid-template-columns: 1fr 280px; gap: 14px; align-items: start; }
+  .wiz-main { padding: 20px 24px; min-height: 320px; }
+  .wiz-side { padding: 16px 18px; }
+  .sec-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .sec-desc { font-size: 12px; color: #64748b; margin-bottom: 14px; }
+  .form-row { display: flex; align-items: flex-start; padding: 10px 0; gap: 0; }
+  .form-label { width: 120px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: #475569; padding-top: 8px; }
+  .req { color: #dc2626; margin-left: 2px; }
+  .form-body { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .radio-group { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; padding-top: 6px; }
+  .radio-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; }
+  .radio-label input { accent-color: var(--primary); width: 15px; height: 15px; }
+  .hint { font-size: 11px; color: #94a3b8; width: 100%; } .hint.err { color: #dc2626; }
+  .opt-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; width: 100%; }
+  .opt-card.sel { border-color: var(--primary); background: var(--primary-light); }
+  .opt-card .t { font-weight: 600; } .opt-card .d { font-size: 11px; color: #64748b; margin-top: 2px; }
+  .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #475569; line-height: 1.7; width: 100%; }
+  .info-box.blue { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+  .info-box.warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+  .info-box.err { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+  .wiz-footer { display: flex; justify-content: space-between; padding: 14px 20px; border-top: 1px solid #f1f5f9; }
+  .sum-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; border-bottom: 1px dashed #f1f5f9; }
+  .sum-row b { font-weight: 600; }
+  .tree { font-size: 12px; line-height: 2; } .tree .l1 { font-weight: 700; } .tree .l2 { padding-left: 16px; } .tree .l3 { padding-left: 32px; color: #475569; }
+  .q-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #f1f5f9; border-radius: 6px; margin-bottom: 6px; font-size: 12px; }
+  .q-type { background: #eff6ff; color: #1d4ed8; padding: 1px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .company-banner { padding: 10px 16px; display: flex; gap: 8px; align-items: center; font-size: 12px; }
+  /* 모달 */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9000; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,.22); display: flex; flex-direction: column; max-height: 90vh; width: 480px; max-width: 94vw; }
+  .modal-header { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .modal-title { font-size: 15px; font-weight: 700; flex: 1; } .modal-close { background: none; border: none; font-size: 20px; color: #94a3b8; cursor: pointer; }
+  .modal-body { padding: 18px 20px; overflow-y: auto; font-size: 13px; line-height: 1.7; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 6px; padding: 12px 20px; border-top: 1px solid var(--border); }
+  .drop { border: 1.5px dashed #cbd5e1; border-radius: 6px; padding: 18px; text-align: center; font-size: 12px; color: #94a3b8; cursor: pointer; }
+  .drop:hover { border-color: var(--primary); color: var(--primary); }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 9999; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .detail-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .detail-cell { padding: 12px 18px; border-bottom: 1px solid #f1f5f9; } .detail-cell .k { font-size: 11px; color: #94a3b8; } .detail-cell .v { font-weight: 600; margin-top: 2px; }
+.tab-bar{display:flex;border-bottom:2px solid #e0e3e8;margin:0 0 16px}
+.tab-btn{background:none;border:none;padding:10px 20px;font-size:13px;font-weight:500;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab-btn.active{color:#1a73e8;border-bottom-color:#1a73e8;font-weight:700}
+</style>
+</head>
+<body>
+<header class="top-header">
+  <div class="logo">LABS <span>연수원</span></div>
+  <div class="admin-badge">ADMIN</div>
+  <div class="header-divider"></div>
+  <div class="subtitle">연수원 관리자 전용</div>
+  <div class="spacer"></div>
+  <span class="user-name">이강은님</span>
+  <button class="btn-header">로그아웃</button>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">임직원 관리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">임직원 조회</a></div></div>
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">거래처 관리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">거래처 목록</a></div></div>
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">연수원 관리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">연수원 관리목록</a></div></div>
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">고객행복센터</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">1:1 문의 관리</a><a class="nav-item">자주 쓰는 답변 관리</a></div></div>
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">공지 관리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">공통 공지사항 관리</a><a class="nav-item">기업별 공지사항 관리</a></div></div>
+    <div class="nav-group"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">알림 관리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">알림 이력</a><a class="nav-item">알림 발송</a></div></div>
+    <div class="nav-group open">
+      <div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">부가서비스</span><span class="nav-arrow">▶</span></div>
+      <div class="nav-sub">
+        <div class="nav-group nav-group-sub"><div class="nav-group-header" onclick="toggleNav(this)"><span class="nav-group-label">데이터 처리</span><span class="nav-arrow">▶</span></div><div class="nav-sub"><a class="nav-item">데이터 업데이트</a><a class="nav-item">데이터 추출</a></div></div>
+        <a class="nav-item" style="padding-left:22px">파일 다운로드</a>
+        <a class="nav-item active" id="nav-diag" style="padding-left:22px" onclick="go('assess')">진단 관리 <span class="badge" style="background:#fee2e2;color:#b91c1c;font-size:9px;padding:1px 6px">신규</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ===== 진단지 관리 ===== -->
+    <section class="view" id="v-qset">
+      <div class="page-header"><div class="page-title">진단지 관리</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단지 관리</div></div>
+      <div class="tab-bar"><button class="tab-btn " onclick="go('assess')">진단 관리</button><button class="tab-btn active" onclick="go('qset')">진단지 관리</button></div>
+      <div class="info-box blue">휴넷 전용 상품·HRD아카이브용 진단지를 관리합니다. 교육담당자가 만든 자체 진단지는 EDMS에서만 관리되며 이 목록에 노출되지 않습니다.</div>
+      <div class="card">
+        <div class="search-row">
+          <div class="search-label">진단지명</div>
+          <div class="search-body"><input class="input" id="qs-name" style="width:260px" placeholder="진단지명을 입력해주세요." onkeydown="if(event.key==='Enter')qsSearch()"></div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">진단지 구분</div>
+          <div class="search-body"><select class="select" id="qs-kind" style="width:180px"><option value="">전체</option><option>휴넷 전용 상품</option><option>HRD아카이브용</option></select></div>
+          <div class="search-label" style="margin-left:24px">공개여부</div>
+          <div class="search-body"><select class="select" id="qs-open" style="width:140px"><option value="">전체</option><option value="Y">공개</option><option value="N">비공개</option></select></div>
+        </div>
+        <div class="search-actions"><button class="btn btn-reset" onclick="qsReset()">초기화</button><button class="btn btn-primary" onclick="qsSearch()">검색</button></div>
+      </div>
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">총 <strong id="qs-count">0</strong>건</div>
+          <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="openBulk()">일괄 등록</button><button class="btn btn-primary btn-sm" onclick="startQWiz()">진단지 만들기</button></div>
+        </div>
+        <table class="main-table"><thead><tr><th>No</th><th>진단지명</th><th>진단지 구분</th><th>문항수</th><th>생성된 진단 수</th><th>최종수정일</th><th>공개여부</th><th>관리</th></tr></thead><tbody id="qs-body"></tbody></table>
+        <div class="table-footer"><div style="font-size:12px;color:#64748b">페이지당 <select class="select btn-sm" style="height:28px"><option>30</option><option selected>50</option><option>100</option><option>200</option></select>건</div><div><button class="pg-btn active">1</button></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 진단지 상세 ===== -->
+    <section class="view" id="v-qdetail">
+      <div class="page-header"><div class="page-title" id="qd-title">진단지 상세</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단지 관리 &gt; 진단지 상세</div></div>
+      <div class="card"><div class="detail-grid" id="qd-info"></div></div>
+      <div class="stat-grid" id="qd-stats"></div>
+      <div class="card">
+        <div class="search-row">
+          <div class="search-label">연수원</div>
+          <div class="search-body"><select class="select" id="qd-company" style="width:200px" onchange="qdSearch()"></select></div>
+          <div class="search-label" style="margin-left:24px">상태</div>
+          <div class="search-body"><select class="select" id="qd-status" style="width:150px" onchange="qdSearch()"><option value="">전체</option><option>임시저장</option><option>대기</option><option>진행중</option><option>마감 가능</option><option>리포트 생성중</option><option>완료</option></select>
+            <select class="select" id="qd-type" style="width:140px" onchange="qdSearch()"><option value="">진단유형 전체</option><option value="일반">일반진단</option><option value="사후">사후진단</option></select></div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">진단명</div>
+          <div class="search-body"><input class="input" id="qd-name" style="width:260px" placeholder="진단명을 입력해주세요." onkeydown="if(event.key==='Enter')qdSearch()"></div>
+        </div>
+        <div class="search-actions"><button class="btn btn-reset" onclick="qdReset()">초기화</button><button class="btn btn-primary" onclick="qdSearch()">검색</button></div>
+      </div>
+      <div class="card">
+        <div class="result-header"><div class="result-count">이 진단지로 생성된 진단 총 <strong id="qd-count">0</strong>건</div></div>
+        <div style="overflow-x:auto"><table class="main-table"><thead><tr><th>No</th><th>연수원명</th><th>진단기간</th><th style="text-align:left">진단명</th><th>문항수</th><th>진단유형</th><th>진단대상자</th><th>진단응답자</th><th>응답 현황</th><th>응답 데이터</th><th>결과 데이터</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="qd-body"></tbody></table></div>
+        <div class="table-footer"><div style="font-size:12px;color:#64748b">페이지당 <select class="select btn-sm" style="height:28px"><option>30</option><option selected>50</option><option>100</option><option>200</option></select>건</div><div><button class="pg-btn active">1</button></div></div>
+      </div>
+      <div class="info-box">진단지를 수정·삭제해도 이미 생성된 진단에는 영향이 없습니다. (진단 생성 시점의 진단지가 진단별로 독립 저장됩니다.)</div>
+      <div><button class="btn btn-outline" onclick="go('qset')">목록</button></div>
+    </section>
+
+    <!-- ===== 진단 관리 ===== -->
+    <section class="view" id="v-assess">
+      <div class="page-header"><div class="page-title">진단 관리</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리</div></div>
+      <div class="tab-bar"><button class="tab-btn active" onclick="go('assess')">진단 관리</button><button class="tab-btn " onclick="go('qset')">진단지 관리</button></div>
+      <div class="card">
+        <div class="search-row">
+          <div class="search-label">연수원</div>
+          <div class="search-body"><select class="select" id="as-company" style="width:220px" onchange="asSearch()"></select><span class="hint" style="width:auto">연수원을 선택하지 않으면 전체 연수원의 진단을 조회합니다.</span></div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">상태</div>
+          <div class="search-body"><select class="select" id="as-status" style="width:130px"><option value="">전체</option><option>임시저장</option><option>대기</option><option>진행중</option><option>마감 가능</option><option>리포트 생성중</option><option>완료</option></select>
+            <select class="select" id="as-type" style="width:140px"><option value="">진단유형 전체</option><option value="일반">일반진단</option><option value="사후">사후진단</option></select></div>
+          <div class="search-label" style="margin-left:24px">진단명</div>
+          <div class="search-body"><input class="input" id="as-name" style="width:240px" placeholder="진단명을 입력해주세요." onkeydown="if(event.key==='Enter')asSearch()"></div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">진단 기간</div>
+          <div class="search-body"><input type="date" class="input" id="as-from" onkeydown="return false" onpaste="return false"><span>~</span><input type="date" class="input" id="as-to" onkeydown="return false" onpaste="return false"></div>
+        </div>
+        <div class="search-actions"><button class="btn btn-reset" onclick="asReset()">초기화</button><button class="btn btn-primary" onclick="asSearch()">검색</button></div>
+      </div>
+      <div class="stat-grid" id="as-stats"></div>
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">총 <strong id="as-count">0</strong>건</div>
+          <button class="btn btn-primary btn-sm" onclick="startAWiz()">+ 진단 만들기</button>
+        </div>
+        <div style="overflow-x:auto"><table class="main-table"><thead><tr><th>No</th><th>연수원명</th><th>진단기간</th><th style="text-align:left">진단명</th><th>문항수</th><th>진단유형</th><th>진단지 구분</th><th>진단대상자</th><th>진단응답자</th><th>응답 현황</th><th>응답 데이터</th><th>결과 데이터</th><th>상태</th><th>등록일</th><th>관리</th></tr></thead><tbody id="as-body"></tbody></table></div>
+        <div class="table-footer"><div style="font-size:12px;color:#64748b"><select class="select btn-sm" style="height:28px"><option>30개씩 보기</option><option selected>50개씩 보기</option><option>100개씩 보기</option><option>200개씩 보기</option></select></div><div><button class="pg-btn active">1</button></div></div>
+      </div>
+    </section>
+
+    <!-- ===== 진단 상세 ===== -->
+    <section class="view" id="v-detail">
+      <div class="page-header"><div class="page-title" id="dt-title">진단 상세</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리 &gt; 진단 상세</div></div>
+      <div class="info-box blue">EDMS 진단 상세와 동일한 화면·기능을 제공합니다. 대상자·응답자 관리, 종료일 변경, 시작·마감을 Admin에서도 수행할 수 있습니다. (프로토타입은 요약 화면)</div>
+      <div class="card"><div class="detail-grid" id="dt-info"></div></div>
+      <div class="card">
+        <div class="result-header">
+          <div class="result-count">대상자 <strong id="dt-count">0</strong>명</div>
+          <div style="display:flex;gap:6px" id="dt-btns"></div>
+        </div>
+        <table class="main-table"><thead><tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>메일발송상태</th><th>진단진행상태</th><th>진단종료일</th></tr></thead><tbody id="dt-body"></tbody></table>
+      </div>
+      <div><button class="btn btn-outline" onclick="go(detailFrom==='qdetail'?'qdetail':'assess')">목록</button></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="modal"><div class="modal" id="modal-box"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 샘플 데이터 ===== */
+const COMPANIES = [
+  { id:1, name:'휴넷', enabled:true }, { id:2, name:'삼성전자', enabled:true },
+  { id:3, name:'현대자동차', enabled:false }, { id:4, name:'LG화학', enabled:true }
+];
+let QSETS = [
+  { id:1, name:'AI리터러시 진단 (2026)', kind:'휴넷 전용 상품', q:42, mod:'2026-10-28 14:20', open:true },
+  { id:2, name:'AI리터러시 진단 (간편형)', kind:'휴넷 전용 상품', q:20, mod:'2026-10-21 09:40', open:true },
+  { id:3, name:'HRD아카이브 사전진단', kind:'HRD아카이브용', q:18, mod:'2026-10-29 11:05', open:true },
+  { id:4, name:'HRD아카이브 사후진단', kind:'HRD아카이브용', q:24, mod:'2026-10-29 11:12', open:true },
+  { id:5, name:'리더십 CUBE 진단 (검토중)', kind:'휴넷 전용 상품', q:60, mod:'2026-09-30 16:30', open:false }
+];
+let ASSESS = [
+  { id:1, co:1, name:'2026 AI리터러시 전사 진단', qset:1, type:'일반', always:false, start:'2026-11-10 09:00', end:'2026-11-30 18:00', status:'대기', targets:320, done:0, reg:'2026-11-02' },
+  { id:2, co:2, name:'삼성전자 AI 역량 진단 1차', qset:1, type:'일반', always:false, start:'2026-10-15 09:00', end:'2026-11-14 18:00', status:'진행중', targets:1200, done:684, reg:'2026-10-10' },
+  { id:3, co:2, name:'삼성전자 AI 역량 진단 1차 사후진단', qset:1, type:'사후', always:false, start:'2026-11-20 09:00', end:'2026-12-20 18:00', status:'임시저장', targets:0, done:0, reg:'2026-11-01' },
+  { id:4, co:4, name:'LG화학 AI리터러시 상시 진단', qset:2, type:'일반', always:true, start:'2026-09-01 00:00', end:'2026-12-31 23:59', status:'진행중', targets:0, done:412, reg:'2026-08-28' },
+  { id:5, co:3, name:'현대자동차 AI리터러시 진단', qset:1, type:'일반', always:false, start:'2026-09-20 09:00', end:'2026-10-31 18:00', status:'마감 가능', targets:850, done:790, reg:'2026-09-12' },
+  { id:6, co:1, name:'휴넷 AI리터러시 파일럿', qset:2, type:'일반', always:false, start:'2026-08-01 09:00', end:'2026-08-31 18:00', status:'완료', targets:90, done:88, reg:'2026-07-25' },
+  { id:7, co:4, name:'LG화학 AI리터러시 진단 2차', qset:1, type:'일반', always:false, start:'2026-10-01 09:00', end:'2026-10-25 18:00', status:'리포트 생성중', targets:560, done:540, reg:'2026-09-24' },
+  { id:8, co:1, name:'HRD아카이브 최초 진단(사전)', qset:3, type:'사전', always:true, start:'2026-11-01 00:00', end:'2027-03-31 23:59', status:'진행중', targets:0, done:57, reg:'2026-10-30' }
+];
+let nextQ = 100, nextA = 100;
+const REPORTS = ['일반진단 결과 리포트', 'AI리터러시 결과 리포트'];
+
+/* ===== 공통 ===== */
+const $ = id => document.getElementById(id);
+function toggleNav(el){ el.closest('.nav-group').classList.toggle('open'); }
+let toastTimer;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2400); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function openModal(title, body, footer, width){
+  $('modal-box').style.width = width||'480px';
+  $('modal-box').innerHTML = `<div class="modal-header"><div class="modal-title">${title}</div><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">${body}</div><div class="modal-footer">${footer}</div>`;
+  $('modal').classList.add('open');
+}
+function closeModal(){ $('modal').classList.remove('open'); }
+let confirmCb = null;
+function confirmBox(title, msg, okLabel, cb, danger){
+  confirmCb = cb;
+  openModal(title, msg, `<button class="btn btn-outline btn-sm" onclick="closeModal()">취소</button><button class="btn ${danger?'btn-danger':'btn-primary'} btn-sm" onclick="closeModal();confirmCb&&confirmCb()">${okLabel}</button>`);
+}
+function alertBox(msg){ openModal('안내', msg, `<button class="btn btn-primary btn-sm" onclick="closeModal()">확인</button>`); }
+
+let dirty = false;           // 위저드 저장 전 이탈 방지
+let currentView = 'qset';
+let detailFrom = 'assess';   // 진단 상세 진입 경로 (assess / qdetail)
+let QD_ID = null;            // 진단지 상세 대상
+function go(view, force){
+  if (dirty && !force && (currentView==='qwiz' || currentView==='awiz')) {
+    confirmBox('이동 확인','입력한 내용이 사라집니다. 이동하시겠습니까?','이동',()=>{ dirty=false; go(view,true); }, true);
+    return;
+  }
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('v-'+view).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const navKey = (view==='qset'||view==='qwiz'||view==='qdetail'||(view==='detail'&&detailFrom==='qdetail')) ? 'qset' : 'assess';
+  $('nav-diag').classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#v-'+navKey+' .tab-btn').forEach((b,i)=>{ if((navKey==='qset')===(i===1)) b.classList.add('active'); });
+  if (view==='qset') qsSearch();
+  if (view==='assess') asSearch();
+  if (view==='qdetail') qdSearch();
+  document.querySelector('.main').scrollTop = 0;
+}
+
+/* ===== 진단지 관리 목록 ===== */
+function kindBadge(k){ return `<span class="badge ${k==='HRD아카이브용'?'b-hrd':'b-hunet'}">${k}</span>`; }
+function qsSearch(){
+  const n=$('qs-name').value.trim(), k=$('qs-kind').value, o=$('qs-open').value;
+  const rows = QSETS.filter(q => (!n||q.name.includes(n)) && (!k||q.kind===k) && (!o||(o==='Y')===q.open))
+                    .sort((a,b)=> b.mod.localeCompare(a.mod));
+  $('qs-count').textContent = rows.length;
+  $('qs-body').innerHTML = rows.length ? rows.map((q,i)=>`<tr>
+    <td>${rows.length-i}</td><td class="left"><span class="link-cell" onclick="openQDetail(${q.id})">${esc(q.name)}</span></td>
+    <td>${kindBadge(q.kind)}</td><td>${q.q}</td><td>${ASSESS.filter(a=>a.qset===q.id).length}건</td><td>${q.mod}</td>
+    <td><button class="toggle-btn ${q.open?'t-on':'t-off'}" onclick="toggleOpen(${q.id})">${q.open?'공개':'비공개'}</button></td>
+    <td><div class="actions"><button class="btn btn-ghost btn-xs" onclick="editQset(${q.id})">수정</button><button class="btn btn-ghost btn-xs" onclick="copyQset(${q.id})">복사</button><button class="btn btn-ghost btn-xs" style="color:#dc2626" onclick="delQset(${q.id})">삭제</button></div></td></tr>`).join('')
+    : `<tr class="empty-row"><td colspan="8">${'현재 조회된 데이터가 없습니다.'}</td></tr>`;
+}
+function qsReset(){ $('qs-name').value=''; $('qs-kind').value=''; $('qs-open').value=''; qsSearch(); }
+function toggleOpen(id){ const q=QSETS.find(x=>x.id===id); q.open=!q.open; qsSearch(); toast(q.open?'공개로 변경되었습니다.':'비공개로 변경되었습니다.'); }
+function copyQset(id){
+  const q=QSETS.find(x=>x.id===id);
+  QSETS.push({...q, id:nextQ++, name:q.name+' (Copy)', mod:nowStr()});
+  qsSearch(); toast('진단지가 복사되었습니다.');
+}
+function delQset(id){
+  const q=QSETS.find(x=>x.id===id); const used=ASSESS.filter(a=>a.qset===id).length;
+  confirmBox('진단지 삭제', `'${esc(q.name)}' 진단지를 삭제하시겠습니까?<br><span style="color:#64748b;font-size:12px">${used?`이 진단지로 생성된 진단 ${used}건은 그대로 유지됩니다.`:'이미 생성된 진단에는 영향이 없습니다.'}</span>`, '삭제', ()=>{ ASSESS.filter(a=>a.qset===id).forEach(a=>a.qsnap={name:q.name,kind:q.kind}); QSETS=QSETS.filter(x=>x.id!==id); qsSearch(); toast('진단지가 삭제되었습니다.'); }, true);
+}
+function nowStr(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+/* ===== 위저드 연결 (EDMS 위저드와 동일 화면의 Admin 페이지로 이동) ===== */
+function openBulk(){ location.href='진단지_만들기.html?bulk=1'; }
+function startQWiz(){ location.href='진단지_만들기.html'; }
+function editQset(id){ const q=QSETS.find(x=>x.id===id); location.href='진단지_만들기.html?edit='+id+'&name='+encodeURIComponent(q.name)+'&kind='+encodeURIComponent(q.kind); }
+function startAWiz(){ const co=$('as-company').value; location.href='진단_만들기.html'+(co?'?co='+co:''); }
+function importNew(){
+  try {
+    const qn=localStorage.getItem('adminNewQset');
+    if(qn){ localStorage.removeItem('adminNewQset'); const r=JSON.parse(qn);
+      if(r.editId){ const q=QSETS.find(x=>x.id==r.editId); if(q) Object.assign(q,{name:r.name,q:r.q||q.q,mod:nowStr()}); }
+      else QSETS.push({id:nextQ++,name:r.name,kind:r.kind,q:r.q||0,mod:nowStr(),open:true}); }
+    const an=localStorage.getItem('adminNewAssess');
+    if(an){ localStorage.removeItem('adminNewAssess'); const r=JSON.parse(an);
+      const qs=QSETS.find(x=>x.name===r.qname);
+      ASSESS.push({id:nextA++,co:r.co,name:r.name||'(진단명 미입력)',qset:qs?qs.id:null,qsnap:{name:r.qname||'-',kind:r.kind,q:qs?qs.q:0},type:r.type,always:r.always,start:r.start,end:r.end,status:r.always?'진행중':'대기',targets:0,done:0,reg:nowStr().slice(0,10)}); }
+  } catch(e) {}
+}
+
+/* ===== 진단 관리 목록 ===== */
+const STATUS_BADGE = { '임시저장':'b-draft','대기':'b-wait','진행중':'b-run','마감 가능':'b-close','리포트 생성중':'b-report','완료':'b-done' };
+function coName(id){ const c = COMPANIES.find(c=>c.id===id); return c ? c.name : '-'; }
+function qsetOf(id){ return QSETS.find(q=>q.id===id); }
+function aq(a){ return qsetOf(a.qset) || { ...a.qsnap, deleted:true }; }   // 삭제된 진단지는 삭제 전 정보로 유지
+function initCompanySelect(){
+  $('as-company').innerHTML = `<option value="">전체 연수원</option>` + COMPANIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+function asFiltered(){
+  const co=$('as-company').value, st=$('as-status').value, ty=$('as-type').value, n=$('as-name').value.trim(), f=$('as-from').value, t=$('as-to').value;
+  return ASSESS.filter(a => (!co||a.co==co) && (!st||a.status===st) && (!ty||(ty==='사후'?a.type==='사후':a.type!=='사후')) && (!n||a.name.includes(n))
+      && (!f||a.end.slice(0,10)>=f) && (!t||a.start.slice(0,10)<=t)).sort((a,b)=>b.reg.localeCompare(a.reg)||b.id-a.id);
+}
+function assessRow(a, no, o){
+  o = o || {};
+  const dash = '<span style="color:#bbb">-</span>';
+    const q = aq(a); const st = a.status;
+    const period = `<div style="font-size:11px">${a.start.slice(0,10)} ${a.start.slice(11)||'00:00'}<br>${a.end.slice(0,10)} ${a.end.slice(11)||'23:59'}</div>`;
+    const typeLabel = a.type;   // 일반 / 사전 / 사후
+    const typeCell = `<td><span class="badge ${typeLabel==='일반'?'b-type':'b-hrd'}">${typeLabel}</span></td>`;
+    // 진단대상자·진단응답자: 상시는 두 컬럼을 병합해 참여인원만 표시 (EDMS와 동일)
+    let who;
+    if (a.always) who = `<td colspan="2"><span class="link-cell" onclick="toast('참여자 목록 팝업이 열립니다. (조회 전용, EDMS와 동일)')"><span class="badge b-always">상시</span> ${a.done}명</span></td>`;
+    else { const t = a.targets? a.targets.toLocaleString() : '설정'; who = `<td><span class="link-cell" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">${t}</span></td><td><span class="link-cell" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">${a.targets? a.targets.toLocaleString() : '설정'}</span></td>`; }
+    // 응답 현황 (상시는 숨김, 임시저장은 '-')
+    let prog;
+    if (a.always) prog = '<td></td>';
+    else if (st==='임시저장') prog = `<td>${dash}</td>`;
+    else { const pct = a.targets? Math.round(a.done/a.targets*100):0; const col = pct>=100?'#1a7a4a':(pct>=80?'#f4b65a':'#1a73e8');
+      prog = `<td><div style="display:flex;align-items:center;gap:6px;min-width:130px"><div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px"><div style="width:${pct}%;height:100%;background:${col};border-radius:3px"></div></div><span style="font-size:11px">${a.done.toLocaleString()}/${a.targets.toLocaleString()} <span style="color:${col}">(${pct}%)</span></span></div></td>`; }
+    // 응답 데이터 / 결과 데이터
+    const canDl = a.always ? a.done>0 : ['진행중','마감 가능','리포트 생성중','완료'].includes(st);
+    const dl = canDl ? `<td><button class="btn btn-outline btn-xs" onclick="toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.')">다운로드</button></td>` : `<td>${dash}</td>`;
+    let res;
+    if (a.always) res = a.done>0 ? `<td><button class="btn btn-outline btn-xs" onclick="toast('개인리포트 확인 팝업이 열립니다. (EDMS와 동일)')">확인</button></td>` : '<td style="color:#bbb">—</td>';
+    else if (st==='완료') res = `<td><button class="btn btn-outline btn-xs" onclick="toast('개인리포트 확인 팝업이 열립니다. (EDMS와 동일)')">확인</button></td>`;
+    else if (st==='리포트 생성중') res = `<td><button class="btn btn-outline btn-xs" disabled title="리포트 생성 완료 후 확인 가능합니다.">확인</button></td>`;
+    else res = '<td style="color:#bbb">—</td>';
+    // 상태 (배지 + 시작하기/마감하기)
+    let stCell = `<span class="badge ${STATUS_BADGE[st]}">${st}</span>`;
+    if (st==='대기') stCell += `<div style="margin-top:4px">${a.always?'<span style="font-size:11px;color:#888">시작일에 자동 오픈</span>':`<button class="btn btn-primary btn-xs" onclick="startAssess(${a.id})">시작하기</button>`}</div>`;
+    else if (st==='마감 가능') stCell += `<div style="margin-top:4px"><button class="btn btn-primary btn-xs" onclick="closeAssess(${a.id})">마감하기</button></div>`;
+    // 관리 (진단 관리 / 임시저장만 삭제)
+    const act = `<div class="actions"><button class="btn btn-ghost btn-xs" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">진단 관리</button>${st==='임시저장'?`<button class="btn btn-ghost btn-xs" style="color:#dc2626" onclick="delAssess(${a.id})">삭제</button>`:''}</div>`;
+    return `<tr ${st==='임시저장'?'style="background:#fdf9ff"':''}><td>${no}</td><td>${coName(a.co)}</td><td>${period}</td>
+      <td class="left"><span class="link-cell" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">${esc(a.name)}</span></td><td>${q.q||'-'}</td>${typeCell}${o.noKind?'':`<td>${kindBadge(q.kind)}</td>`}${who}${prog}${dl}${res}<td>${stCell}</td><td style="font-size:11px">${a.reg}</td><td>${act}</td></tr>`;
+}
+
+function asSearch(){
+  const rows = asFiltered(); const co=$('as-company').value;
+  const cnt = s => rows.filter(a=>s.includes(a.status)).length;
+  const scope = co ? coName(+co) : '전체 연수원';
+  const subs = { '전체 진단':'누적 진단 건', '대기':'진단 시작 전', '진행중':'응답 수집 중', '완료':'데이터 다운로드 가능' };
+  $('as-stats').innerHTML = [['전체 진단',rows.length],['대기',cnt(['대기'])],['진행중',cnt(['진행중'])],['완료',cnt(['완료'])]]
+    .map(([l,v])=>`<div class="card stat-card"><div class="stat-label">${l}</div><div class="stat-num">${v}</div><div class="stat-scope">${subs[l]} · ${scope}</div></div>`).join('');
+  $('as-count').textContent = rows.length;
+  $('as-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i)).join('') : `<tr class="empty-row"><td colspan="15">현재 조회된 데이터가 없습니다.</td></tr>`;
+}
+function refreshLists(){ asSearch(); if(currentView==='qdetail') qdSearch(); }
+function asReset(){ ['as-company','as-status','as-type','as-name','as-from','as-to'].forEach(i=>$(i).value=''); asSearch(); }
+function delAssess(id){
+  const a=ASSESS.find(x=>x.id===id);
+  confirmBox('진단 삭제', `'${esc(a.name)}' 진단을 삭제하시겠습니까?`, '삭제', ()=>{ ASSESS=ASSESS.filter(x=>x.id!==id); refreshLists(); toast('진단이 삭제되었습니다.'); }, true);
+}
+function checkEnabled(a){
+  if (!COMPANIES.find(c=>c.id===a.co).enabled) { alertBox('진단 기능이 미사용 상태입니다. 사용으로 전환 후 이용해주세요.'); return false; }
+  return true;
+}
+function startAssess(id){
+  const a=ASSESS.find(x=>x.id===id); if(!checkEnabled(a)) return;
+  confirmBox('진단 시작', `<b>${esc(a.name)}</b><br>진단 기간: ${a.start} ~ ${a.end}<br>대상자: ${a.targets.toLocaleString()}명<br><br>진단을 시작하시겠습니까?<br><span style="color:#64748b;font-size:12px">진단 시작 시 대상자 및 응답자에게 안내 메일이 발송됩니다.</span>`, '시작하기', ()=>{ a.status='진행중'; refreshLists(); toast('진단이 시작되었습니다. 대상자에게 메일이 발송됩니다.'); });
+}
+function closeAssess(id){
+  const a=ASSESS.find(x=>x.id===id); if(!checkEnabled(a)) return;
+  const left = a.targets-a.done;
+  const guide = left>0 ? '리포트 생성 조건에 부합하지 않는 대상자가 있습니다. 진단을 마감하시겠습니까? 마감 시 연장이 불가합니다.' : '마감 시 연장이 불가합니다. 마감하시겠습니까?';
+  confirmBox('진단 마감', `<b>${esc(a.name)}</b><br>응답 완료 ${a.done.toLocaleString()}명 / 미완료 ${left.toLocaleString()}명<br><br>${guide}`, '확인', ()=>{ a.status='리포트 생성중'; refreshLists(); toast('진단이 마감되었습니다. 리포트를 생성 중입니다.'); });
+}
+
+/* ===== 진단지 상세 (생성된 진단 현황) ===== */
+function openQDetail(id){
+  QD_ID = id;
+  $('qd-company').innerHTML = `<option value="">전체 연수원</option>` + COMPANIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  ['qd-company','qd-status','qd-type','qd-name'].forEach(i=>$(i).value='');
+  go('qdetail');
+}
+function qdRows(){
+  const co=$('qd-company').value, st=$('qd-status').value, n=$('qd-name').value.trim();
+  return ASSESS.filter(a=>a.qset===QD_ID && (!co||a.co==co) && (!st||a.status===st) && (!$('qd-type').value||($('qd-type').value==='사후'?a.type==='사후':a.type!=='사후')) && (!n||a.name.includes(n)))
+               .sort((a,b)=>b.reg.localeCompare(a.reg)||b.id-a.id);
+}
+function qdSearch(){
+  const q = qsetOf(QD_ID); if(!q) return;
+  $('qd-title').textContent = q.name;
+  const cells = [['진단지 구분',q.kind],['문항수',q.q+'개'],['공개여부',q.open?'공개':'비공개'],['최종수정일',q.mod]];
+  $('qd-info').innerHTML = cells.map(([k,v])=>`<div class="detail-cell"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
+  const rows = qdRows();
+  const cnt = s => rows.filter(a=>s.includes(a.status)).length;
+  const resp = rows.reduce((t,a)=>t+a.done,0);
+  const co=$('qd-company').value; const scope = co ? coName(+co) : '전체 연수원';
+  $('qd-stats').innerHTML = [['생성된 진단',rows.length+'건'],['진행중',cnt(['진행중'])+'건'],['완료',cnt(['완료'])+'건'],['총 응답 건수',resp.toLocaleString()+'건']]
+    .map(([l,v])=>`<div class="card stat-card"><div class="stat-label">${l}</div><div class="stat-num">${v}</div><div class="stat-scope">${scope} 기준</div></div>`).join('');
+  $('qd-count').textContent = rows.length;
+  $('qd-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i, {from:'qdetail', noKind:true})).join('') : `<tr class="empty-row"><td colspan="14">${($('qd-company').value||$('qd-status').value||$('qd-type').value||$('qd-name').value)?'검색 결과가 없습니다.':'이 진단지로 생성된 진단이 없습니다.'}</td></tr>`;
+}
+function qdReset(){ ['qd-company','qd-status','qd-type','qd-name'].forEach(i=>$(i).value=''); qdSearch(); }
+
+/* ===== 진단 상세 (요약) ===== */
+function openDetail(id, from){
+  detailFrom = from || 'assess';
+  const a=ASSESS.find(x=>x.id===id); const q=aq(a);
+  $('dt-title').textContent = a.name;
+  const cells = [['연수원',coName(a.co)],['진단 기간',`${a.start} ~ ${a.end}`],['상태',a.status],['진단유형',a.type+(a.always?' · 상시':'')],['진단지',q.name],['진단지 구분',q.kind],['총 대상자',a.always?'상시':a.targets.toLocaleString()+'명'],['응답완료',a.done.toLocaleString()+'명']];
+  $('dt-info').innerHTML = cells.map(([k,v])=>`<div class="detail-cell"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
+  const names = ['김민수','이서연','박지훈','최유진','정다은'];
+  const rows = a.always ? [] : names.map((n,i)=>`<tr><td>${i+1}</td><td>${n[0]}*${n.slice(-1)}</td><td>u${i+1}***@${coName(a.co)==='휴넷'?'hunet.co.kr':'company.com'}</td><td>${['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'][i]}</td><td>${a.status==='임시저장'||a.status==='대기'?'-':'발송완료'}</td><td>${a.status==='임시저장'||a.status==='대기'?'-':(i<a.done%5+1?'완료':'진행중')}</td><td>${a.end.slice(0,10)}</td></tr>`).join('');
+  $('dt-body').innerHTML = rows || `<tr class="empty-row"><td colspan="7">${a.always?'상시 진단은 대상자·응답자를 등록하지 않습니다. 응답은 실시간으로 누적됩니다.':'등록된 대상자가 없습니다.'}</td></tr>`;
+  $('dt-count').textContent = a.always ? 0 : a.targets.toLocaleString();
+  const editable = a.status!=='마감 가능'&&a.status!=='리포트 생성중'&&a.status!=='완료';
+  $('dt-btns').innerHTML = `<button class="btn btn-outline btn-sm" onclick="toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.')">엑셀 다운로드</button>` + (editable&&!a.always?`<button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 대상자 관리 팝업이 열립니다.')">대상자 관리</button><button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 응답자 관리 팝업이 열립니다.')">응답자 관리</button>`:'');
+  go('detail');
+}
+
+/* ===== 초기화 ===== */
+initCompanySelect();
+importNew();
+go(location.hash==='#assess'?'assess':'qset', true);
+window.addEventListener('beforeunload', e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+</script>
+</body>
+</html>
