@@ -437,7 +437,7 @@ function assessRow(a, no, o){
     // 관리 (진단 관리 / 임시저장만 삭제)
     const act = `<div class="actions"><button class="btn btn-ghost btn-xs" onclick="manageAssess(${a.id})">진단 관리</button>${st==='임시저장'?`<button class="btn btn-ghost btn-xs" style="color:#dc2626" onclick="delAssess(${a.id})">삭제</button>`:''}</div>`;
     return `<tr ${st==='임시저장'?'style="background:#fdf9ff"':''}><td>${no}</td><td>${coName(a.co)}</td><td>${period}</td>
-      <td class="left"><span class="link-cell" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">${esc(a.name)}</span></td><td>${q.q||'-'}</td>${typeCell}${o.noKind?'':`<td>${kindBadge(q.kind)}</td>`}${who}${prog}${dl}${res}<td>${stCell}</td><td style="font-size:11px">${a.reg}</td><td>${act}</td></tr>`;
+      <td class="left"><span class="link-cell" onclick="${st==='임시저장'?`manageAssess(${a.id})`:`openDetail(${a.id}${o.from?`,'${o.from}'`:''})`}">${esc(a.name)}</span></td><td>${q.q||'-'}</td>${typeCell}${o.noKind?'':`<td>${kindBadge(q.kind)}</td>`}${who}${prog}${dl}${res}<td>${stCell}</td><td style="font-size:11px">${a.reg}</td><td>${act}</td></tr>`;
 }
 
 function asSearch(){
