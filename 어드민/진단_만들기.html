@@ -1015,8 +1015,8 @@ body {
           <div class="wiz-card-body padded">
             <div id="adminCompanyBox" style="margin-bottom:18px;max-width:1020px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border:1px solid #dde1e7;border-radius:6px;background:#f8faff;">
               <label style="font-weight:700;font-size:13px;white-space:nowrap;">대상 연수원 <span style="color:#d32f2f;">*</span></label>
-              <select id="adminCompany" class="form-input" style="height:34px;min-width:220px;"><option value="">연수원을 선택해주세요.</option><option value="1">휴넷</option><option value="2">삼성전자</option><option value="4">LG화학</option></select>
-              <span style="font-size:12px;color:#888;">1단계에서 다음으로 넘어가면 변경할 수 없습니다. 대상자·응답자는 이 연수원(및 하위 조직) 임직원만 지정할 수 있습니다.</span>
+              <select id="adminCompany" class="form-input" style="height:34px;min-width:220px;" onfocus="this.dataset.prev=this.value" onchange="onCompanyChange(this)"><option value="">연수원을 선택해주세요.</option><option value="1">휴넷</option><option value="2">삼성전자</option><option value="4">LG화학</option></select>
+              <span style="font-size:12px;color:#888;">대상자·응답자는 이 연수원(및 하위 조직) 임직원만 지정할 수 있습니다. 연수원을 변경하면 지금까지 설정한 내용이 모두 초기화됩니다.</span>
             </div>
             <div style="display:flex;gap:16px;max-width:1020px;">
               <div class="diagtype-choice-card selected" data-type="일반" onclick="chooseDiagType('일반')">
@@ -1772,6 +1772,20 @@ body {
   </div>
 </div>
 
+<!-- 대상 연수원 변경 경고 팝업 -->
+<div class="modal-overlay" id="companyChangeModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-body" style="padding:24px 24px 20px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
+      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">연수원을 변경하면<br>지금까지 설정한 내용이 모두 초기화됩니다.</p>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-gray" onclick="cancelCompanyChange()">닫기</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmCompanyChange()">확인</button>
+    </div>
+  </div>
+</div>
+
 <!-- 진단 유형 변경 경고 팝업 -->
 <div class="modal-overlay" id="diagTypeChangeModal">
   <div class="modal-box" style="width:400px;">
@@ -2351,6 +2365,27 @@ function applyDiagTypeChange(type) {
   currentStep = 1;
   maxReachedStep = 1;
   goToStep(1);
+}
+
+// 대상 연수원 변경: 설정한 내용이 있으면 확인 후 마법사를 처음부터 다시 시작(모든 설정 초기화)
+let _pendingCompany = null;
+function onCompanyChange(el) {
+  const prev = el.dataset.prev || '';
+  const inProgress = maxReachedStep > 1 || hasDraftSaved;
+  if (!el.value || !inProgress || !prev) { el.dataset.prev = el.value; return; }
+  _pendingCompany = el.value;
+  document.getElementById('companyChangeModal').classList.add('open');
+}
+function cancelCompanyChange() {
+  const el = document.getElementById('adminCompany');
+  el.value = el.dataset.prev || '';
+  _pendingCompany = null;
+  document.getElementById('companyChangeModal').classList.remove('open');
+}
+function confirmCompanyChange() {
+  const c = _pendingCompany;
+  document.getElementById('companyChangeModal').classList.remove('open');
+  if (c) location.href = '진단_만들기.html?status=before&co=' + encodeURIComponent(c);
 }
 
 function cancelDiagTypeChange() {
@@ -4129,7 +4164,7 @@ function generateStep7Review() {
 
   const meta = stepDisplayMeta();
   const allRows = [
-    { step: 1, label: '진단 유형 선택',    value: selectedDiagnosticType === '사전사후' ? '사후진단' : '일반진단' },
+    { step: 1, label: '진단 유형 선택',    value: `대상 연수원: ${(() => { const el = document.getElementById('adminCompany'); const o = el && el.selectedOptions[0]; return el && el.value ? o.textContent : '(미선택)'; })()} / ${selectedDiagnosticType === '사전사후' ? '사후진단' : '일반진단'}` },
     { step: 2, label: selectedDiagnosticType === '사전사후' ? '사전진단 선택' : '진단지 선택',
       value: selectedDiagnosticType === '사전사후'
         ? (selectedPreDiag ? `${selectedPreDiag.name} (${qName}) · 진단지·응답자 유형·역량 점수 기준 자동 적용` : '(미선택)')
@@ -4243,7 +4278,7 @@ function validatePostDates() {
 }
 
 function nextStep() {
-  if (currentStep === 1) { const el = document.getElementById('adminCompany'); if (!el.value) { showToast('연수원을 선택해주세요.'); el.focus(); return; } el.disabled = true; }
+  if (currentStep === 1) { const el = document.getElementById('adminCompany'); if (!el.value) { showToast('연수원을 선택해주세요.'); el.focus(); return; } }
   if (currentStep === 2 && (selectedDiagnosticType === '사전사후' ? !selectedPreDiag : !selectedDiagnosticId)) {
     showToast(selectedDiagnosticType === '사전사후' ? '사전진단을 선택해주세요.' : '진단지를 선택해주세요.');
     return;
@@ -4481,6 +4516,7 @@ function applyStep5PartialLock(status) {
 
 function setDiagStatus(status) {
   _diagStatus = status;
+  { const el = document.getElementById('adminCompany'); if (el) el.disabled = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).includes(1); }
 
   /* ── after/expired/completed는 이미 생성(임시저장 완료)된 진단이므로 대상자 등록 잠금 해제 ── */
   /*    before는 데모용 초기 상태로, 아직 한 번도 임시저장하지 않은 신규 생성 흐름을 재현 ── */

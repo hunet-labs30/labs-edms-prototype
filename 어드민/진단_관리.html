@@ -516,8 +516,8 @@ const DT_NAMES = ['김민수','이서연','박지훈','최유진','정다은','�
 function dtMode(a){   // before / after(진행 후) / expired(마감 전) / completed(완료 후)
   if (a.status==='대기') return 'before';
   if (a.status==='진행중') return 'after';
-  if (a.status==='완료') return 'completed';
-  return 'expired';   // 마감 가능 · 리포트 생성중
+  if (a.status==='완료' || a.status==='리포트 생성중') return 'completed';   // 리포트 생성중: 마감 처리 완료 후이므로 완료 후 화면(변경 불가, 조회·다운로드만)
+  return 'expired';   // 마감 가능
 }
 function dtPeople(a){
   if (DT_CACHE[a.id]) return DT_CACHE[a.id];
