@@ -373,7 +373,7 @@ function copyQset(id){
 }
 function delQset(id){
   const q=QSETS.find(x=>x.id===id); const used=ASSESS.filter(a=>a.qset===id).length;
-  confirmBox('진단지 삭제', `'${esc(q.name)}' 진단지를 삭제하시겠습니까?<br><span style="color:#64748b;font-size:12px">${used?`이 진단지로 생성된 진단 ${used}건은 그대로 유지됩니다.`:'이미 생성된 진단에는 영향이 없습니다.'}</span>`, '삭제', ()=>{ ASSESS.filter(a=>a.qset===id).forEach(a=>a.qsnap={name:q.name,kind:q.kind}); QSETS=QSETS.filter(x=>x.id!==id); qsSearch(); toast('진단지가 삭제되었습니다.'); }, true);
+  confirmBox('진단지 삭제', `'${esc(q.name)}' 진단지를 삭제하시겠습니까?${used?`<br><span style="color:#64748b;font-size:12px">이 진단지로 생성된 진단 ${used}건은 그대로 유지됩니다.</span>`:''}`, '삭제', ()=>{ ASSESS.filter(a=>a.qset===id).forEach(a=>a.qsnap={name:q.name,kind:q.kind}); QSETS=QSETS.filter(x=>x.id!==id); qsSearch(); toast('진단지가 삭제되었습니다.'); }, true);
 }
 function nowStr(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
 
