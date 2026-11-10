@@ -262,13 +262,13 @@
     <section class="view" id="v-detail">
       <div class="page-header"><div class="page-title" id="dt-title">진단 상세</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리 &gt; 진단 상세</div></div>
       <div class="card" style="padding:0;overflow:hidden"><table class="main-table" id="dt-info"></table></div>
-      <div class="card" id="dt-filter-card">
-        <div class="search-row" id="dt-filters"></div>
-        <div class="search-actions"><button class="btn btn-reset" onclick="dtReset()">초기화</button><button class="btn btn-primary" onclick="dtRender()">검색</button></div>
+      <div class="card" id="dt-filter-card" style="background:#f5f5f5">
+        <div id="dt-filters" style="display:flex;flex-wrap:wrap;gap:16px 20px;align-items:flex-end"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="dtRender()">검색</button><button class="btn btn-outline" onclick="dtReset()">초기화</button></div>
       </div>
       <div class="card">
         <div class="result-header">
-          <div style="display:flex;align-items:center;gap:10px"><div class="result-count" id="dt-count-wrap">검색결과 <strong id="dt-count">0</strong><span id="dt-count-unit">건</span></div><span id="dt-sel" style="font-size:12px;color:#64748b"></span><select class="select btn-sm" id="dt-work" style="height:28px;width:120px" onchange="dtWork(this)"><option value="">작업 선택</option><option value="mail">메일 발송</option><option value="end">종료일 변경</option></select></div>
+          <div style="display:flex;align-items:center;gap:10px"><div class="result-count" id="dt-count-wrap">검색결과 <strong id="dt-count">0</strong><span id="dt-count-unit">건</span></div><span id="dt-sel" style="font-size:13px;font-weight:700"></span><select class="select" id="dt-work" style="width:250px" onchange="dtWork(this)"><option value="">작업 선택</option><option value="mail">메일 발송</option><option value="end">종료일 변경</option></select></div>
           <div style="display:flex;gap:6px" id="dt-btns"></div>
         </div>
         <div style="overflow-x:auto"><table class="main-table"><thead id="dt-head"></thead><tbody id="dt-body"></tbody></table></div>
@@ -561,14 +561,15 @@ function openDetail(id, from){
   go('detail');
 }
 function dtBuildFilters(a, mode){
-  const co = coName(a.co), fcard = $('dt-filter-card');
-  fcard.style.display = mode==='before' ? 'none' : '';   // BEFORE는 필터 미노출 (메일발송·진단진행상태 컬럼이 없음)
+  const co = coName(a.co);
+  $('dt-filter-card').style.display = mode==='before' ? 'none' : '';   // BEFORE는 필터 미노출 (메일발송·진단진행상태 컬럼이 없음)
+  const grp = (label, inner) => '<div><div style="font-weight:700;font-size:13px;margin-bottom:8px">'+label+'</div><div style="display:flex;gap:8px">'+inner+'</div></div>';
   const sel = (id, opts, w) => '<select class="select" id="'+id+'" style="width:'+w+'px">'+opts.map(o=>'<option value="'+(o==='전체'?'':o)+'">'+o+'</option>').join('')+'</select>';
   let h = '';
-  if (a.always) h += '<div class="search-label">응답상태</div><div class="search-body">'+sel('dt-prog',['전체','응답완료','응답중단'],140)+'</div>';
-  else h += '<div class="search-label">메일발송상태</div><div class="search-body">'+sel('dt-mail',['전체','발송완료','미발송'],140)+'</div><div class="search-label" style="margin-left:24px">진단진행상태</div><div class="search-body">'+sel('dt-prog',['전체','진행 전','진행중','완료','중단'],140)+'</div>';
-  h += '<div class="search-label" style="margin-left:24px">회사</div><div class="search-body"><select class="select" id="dt-co" style="width:200px"><option value="">전체</option><option>'+esc(co)+'</option><option>'+esc(co)+' 계열사</option></select></div>'
-     + '<div class="search-label" style="margin-left:24px">대상자/응답자</div><div class="search-body"><select class="select" id="dt-skey" style="width:90px"><option value="nm">이름</option><option value="no">사번</option><option value="id">아이디</option></select><input class="input" id="dt-sval" style="width:200px" onkeydown="if(event.key===\'Enter\')dtRender()"></div>';
+  if (a.always) h += grp('응답상태', sel('dt-prog',['전체','응답완료','응답중단'],180));
+  else h += grp('메일발송상태', sel('dt-mail',['전체','발송완료','미발송'],180)) + grp('진단진행상태', sel('dt-prog',['전체','진행 전','진행중','완료','중단'],180));
+  h += grp('회사', '<select class="select" id="dt-co" style="width:200px"><option value="">전체</option><option>'+esc(co)+'</option><option>'+esc(co)+' 계열사</option></select>')
+     + grp('대상자/응답자', '<select class="select" id="dt-skey" style="width:120px"><option value="nm">이름</option><option value="no">사번</option><option value="id">아이디</option></select><input class="input" id="dt-sval" style="width:220px" placeholder="검색어를 입력하세요." onkeydown="if(event.key===\'Enter\')dtRender()">');
   $('dt-filters').innerHTML = h;
 }
 function dtReset(){ ['dt-mail','dt-prog','dt-co','dt-sval'].forEach(i=>{ const e=$(i); if(e) e.value=''; }); $('dt-skey').value='nm'; dtRender(); }
@@ -598,6 +599,7 @@ function dtRender(){
   $('dt-count-unit').textContent = always ? '명' : '건';
   $('dt-work').style.display = (!always && (mode==='after'||mode==='expired')) ? '' : 'none';
   $('dt-sel').style.display = $('dt-work').style.display;
+  $('dt-count-wrap').style.display = (!always && mode!=='before') ? 'none' : '';   // 일반 진단 진행 후 화면은 검색결과 문구 없이 선택 건수만 노출
   if (always) {
     colspan = 10;
     if (mode==='before') {
@@ -637,7 +639,7 @@ function dtRender(){
   $('dt-btns').innerHTML = btns; dtUpdSel();
 }
 function dtChecked(){ return [...document.querySelectorAll('#dt-body .dt-ck:checked')].map(e=>+e.value); }
-function dtUpdSel(){ $('dt-sel').textContent = '선택 '+dtChecked().length+'건'; }
+function dtUpdSel(){ $('dt-sel').textContent = dtChecked().length+'명 선택'; }
 function dtAll(el){ document.querySelectorAll('#dt-body .dt-ck:not(:disabled)').forEach(c=>c.checked=el.checked); dtUpdSel(); }
 function dtDownload(){ toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.'); }
 function dtWork(sel){
