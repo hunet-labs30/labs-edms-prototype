@@ -414,12 +414,6 @@ body {
   .bulk-error-tbl td { padding: 10px 14px; border: 1px solid #f0f2f5; vertical-align: middle; }
   .bulk-error-tbl td:first-child { font-weight: 600; color: #1a1a2e; background: #fafbfc; text-align: center; white-space: nowrap; }
   .bulk-struct-note { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.6; }
-.preset-card { border: 1.5px solid var(--border); border-radius: 6px; padding: 12px 14px; cursor: pointer; margin-bottom: 10px; transition: all 0.15s; }
-.preset-card:hover { border-color: var(--primary); background: #f8faff; }
-.preset-card.selected { border-color: var(--primary); background: #eaf2fd; }
-.preset-title { font-weight: 700; font-size: 13px; color: #1a1a2e; margin-bottom: 4px; }
-.preset-desc { font-size: 11.5px; color: #666; margin-bottom: 6px; }
-.preset-stats { font-size: 11px; color: var(--primary); font-weight: 600; }
 
 /* 토스트 */
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: #fff; padding: 11px 18px; border-radius: 5px; font-size: 12.5px; z-index: 9999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
@@ -819,7 +813,6 @@ body {
             <h2>진단지 구조를 선택해주세요</h2>
             <p>진단지를 구성하는 단위를 먼저 선택하세요. 선택한 구조에 맞춰 다음 단계에서 항목을 등록합니다.<br>역량군은 항상 사용하고, 유형과 세부역량은 필요한 경우에만 사용합니다.</p>
             <div class="wiz-head-actions">
-              <button class="btn btn-outline" type="button" onclick="openPresetModal()">📋 기존 진단지 구조 가져오기</button>
               <button class="btn btn-outline" type="button" onclick="openBulkModal()">📥 진단지 일괄등록</button>
             </div>
           </div>
@@ -1189,29 +1182,6 @@ body {
   </div>
 </div>
 
-<!-- 기존 구조 가져오기 모달 -->
-<div class="modal-overlay" id="presetModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>기존 진단지 구조 가져오기</h3>
-      <button class="modal-close" onclick="closeModal('presetModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="font-size:12px;color:#666;margin-bottom:12px;">
-        완료된 진단지의 유형·역량군·세부역량 구조를 그대로 가져오고, 구조 선택도 해당 구조로 적용됩니다. 가져온 뒤 구조 등록 단계에서 자유롭게 수정할 수 있습니다.
-      </div>
-      <div class="preset-card" onclick="selectPreset('qset001')" data-preset="qset001">
-        <div class="preset-title">팀장 리더십 역량 진단</div>
-        <div class="preset-stats">유형 1개 · 역량군 3개 · 세부역량 10개 <span style="color:#bbb;margin-left:6px;">2026.09.17</span></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-gray" onclick="closeModal('presetModal')">취소</button>
-      <button class="btn btn-primary" onclick="applyPreset()">선택한 구조 가져오기</button>
-    </div>
-  </div>
-</div>
-
 <!-- 확인 팝업 -->
 <div class="modal-overlay ui-confirm" id="uiConfirm">
   <div class="modal-box">
@@ -1302,7 +1272,6 @@ function goToKey(key) {
 
 function showStep(key) {
   closeAddForm();
-  closeModal('presetModal');
   currentKey = key;
   document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
   document.getElementById('step-content-' + key).classList.add('active');
@@ -2118,7 +2087,6 @@ function updateS2Progress() {
 
 // ── STEP 1: 트리 상태 ──
 const autoCode = true;  // 코드는 항상 자동 생성, 수정 불가
-let selectedPreset = null;
 // useTypes / useItems: 유형·세부역량 사용 여부(진단지 전체 단위). 역량군은 항상 사용한다.
 const state = { types: [], useTypes: true, useItems: true };
 let seq = 1;
@@ -2759,53 +2727,8 @@ function refreshStats() {
 }
 
 // ── 예시 모달 ──
-function openPresetModal() { document.getElementById('presetModal').classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function selectPreset(key) {
-  selectedPreset = key;
-  document.querySelectorAll('.preset-card').forEach(c => {
-    c.classList.toggle('selected', c.dataset.preset === key);
-  });
-}
-
-const PRESETS = (() => {
-  const build = (typeName, groups) => ({
-    types: [{ name: typeName, code: 'TYPE_01', groups: groups.map(([gName, items], gi) => {
-      const gCode = `TYPE_01_G${String(gi + 1).padStart(2, '0')}`;
-      return { name: gName, code: gCode, items: items.map((n, ii) => ({ name: n, code: `${gCode}_I${String(ii + 1).padStart(2, '0')}` })) };
-    }) }]
-  });
-  return {
-    qset001: build('리더십', [
-      ['조직관리', ['방향설정', '가치전파', '변화관리', '목표관리']],
-      ['사람관리', ['신뢰형성', '경청과 피드백', '동기부여']],
-      ['성과관리', ['계획 수립', '실행 점검', '성과 평가']]
-    ])
-  };
-})();
-
-async function applyPreset() {
-  if (!selectedPreset) { toast('진단지를 선택해주세요.'); return; }
-  if (!isEmptyStruct() && !(await uiConfirm('현재 등록한 구조와 문항이 모두 지워지고 선택한 진단지의 구조로 교체됩니다.\n\n계속할까요?'))) return;
-
-  // 가져온 진단지는 유형·역량군·세부역량 3단계 구조이므로 구조 선택도 함께 맞춘다.
-  state.useTypes = true; state.useItems = true;
-  state.types = JSON.parse(JSON.stringify(PRESETS[selectedPreset].types));
-  state.types.forEach(t => {
-    t.id = makeId(); t._open = true;
-    t.groups.forEach(g => {
-      g.id = makeId(); g._open = true;
-      g.items.forEach(i => { i.id = makeId(); i.questions = []; });
-    });
-  });
-
-  closeModal('presetModal');
-  s2Selected = null;
-  renderModeTexts();
-  showStep('tree');
-  toast('기존 진단지 구조를 가져왔습니다. 구조 등록 단계에서 필요에 따라 수정하세요.');
-}
 async function resetAll() {
   if (isEmptyStruct()) return;
   if (!(await uiConfirm('STEP 2의 모든 구조를 초기화하시겠습니까? 문항도 함께 초기화됩니다.', '초기화'))) return;
@@ -3022,14 +2945,10 @@ showStep('struct');
 document.getElementById('qAddModal').addEventListener('click', function(e) {
   if (e.target === this) closeAddForm();
 });
-document.getElementById('presetModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal('presetModal');
-});
 document.getElementById('bulkModal').addEventListener('click', function(e) { if (e.target === this) closeBulkModal(); });
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (document.getElementById('qAddModal').classList.contains('open')) closeAddForm();
-    else if (document.getElementById('presetModal').classList.contains('open')) closeModal('presetModal');
     else if (document.getElementById('bulkModal').classList.contains('open')) closeBulkModal();
   }
 });
