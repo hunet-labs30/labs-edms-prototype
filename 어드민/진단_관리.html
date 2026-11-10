@@ -261,14 +261,18 @@
     <!-- ===== 진단 상세 ===== -->
     <section class="view" id="v-detail">
       <div class="page-header"><div class="page-title" id="dt-title">진단 상세</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리 &gt; 진단 상세</div></div>
-      <div class="info-box blue">EDMS 진단 상세와 동일한 화면·기능을 제공합니다. 대상자·응답자 관리, 종료일 변경, 시작·마감을 Admin에서도 수행할 수 있습니다. (프로토타입은 요약 화면)</div>
       <div class="card" style="padding:0;overflow:hidden"><table class="main-table" id="dt-info"></table></div>
+      <div class="card" id="dt-filter-card">
+        <div class="search-row" id="dt-filters"></div>
+        <div class="search-actions"><button class="btn btn-reset" onclick="dtReset()">초기화</button><button class="btn btn-primary" onclick="dtRender()">검색</button></div>
+      </div>
       <div class="card">
         <div class="result-header">
-          <div class="result-count"><span id="dt-count-label">대상자</span> <strong id="dt-count">0</strong>명</div>
+          <div style="display:flex;align-items:center;gap:10px"><div class="result-count" id="dt-count-wrap">검색결과 <strong id="dt-count">0</strong><span id="dt-count-unit">건</span></div><span id="dt-sel" style="font-size:12px;color:#64748b"></span><select class="select btn-sm" id="dt-work" style="height:28px;width:120px" onchange="dtWork(this)"><option value="">작업 선택</option><option value="mail">메일 발송</option><option value="end">종료일 변경</option></select></div>
           <div style="display:flex;gap:6px" id="dt-btns"></div>
         </div>
-        <table class="main-table"><thead id="dt-head"></thead><tbody id="dt-body"></tbody></table>
+        <div style="overflow-x:auto"><table class="main-table"><thead id="dt-head"></thead><tbody id="dt-body"></tbody></table></div>
+        <div class="table-footer" id="dt-foot"><div style="font-size:12px;color:#64748b">페이지당 <select class="select btn-sm" style="height:28px"><option>30</option><option selected>50</option><option>100</option><option>200</option></select>건</div><div><button class="pg-btn active">1</button></div></div>
       </div>
       <div><button class="btn btn-outline" onclick="go(detailFrom==='qdetail'?'qdetail':'assess')">목록</button></div>
     </section>
@@ -507,39 +511,152 @@ function manageAssess(id){
   const st = {'임시저장':'before&draft=1','대기':'before&draft=1','진행중':'after','마감 가능':'expired','리포트 생성중':'expired','완료':'completed'}[a.status];
   location.href = '진단_만들기.html?status='+st+'&co='+a.co+(qsetOf(a.qset)?'&qset='+a.qset:'')+'&step=8';
 }
+/* ===== 진단 상세 (EDMS 진단 상세 기획서 기준: 상태별 BEFORE / 진행 후 / 마감 전 / 완료 후, 상시진단 별도) ===== */
+let DT_ID = null; const DT_CACHE = {};
+const DT_NAMES = ['김민수','이서연','박지훈','최유진','정다은','한지호','오세린','윤도현'], DT_DEPTS = ['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'], DT_RANKS = ['사원','대리','과장','차장','부장'];
+function dtMode(a){   // before / after(진행 후) / expired(마감 전) / completed(완료 후)
+  if (a.status==='대기') return 'before';
+  if (a.status==='진행중') return 'after';
+  if (a.status==='완료') return 'completed';
+  return 'expired';   // 마감 가능 · 리포트 생성중
+}
+function dtPeople(a){
+  if (DT_CACHE[a.id]) return DT_CACHE[a.id];
+  const mode = dtMode(a), total = a.always ? a.done : a.targets, n = Math.min(total, 30), co = coName(a.co);
+  const dom = co==='휴넷' ? 'hunet.co.kr' : 'company.com', p = x=>String(x).padStart(2,'0');
+  const rows = Array.from({length:n},(_,i)=>{
+    const nm = DT_NAMES[i%8], wd = mode!=='before' && n>=3 && i===n-1;   // 마지막 1명은 탈퇴 행(응답중단)
+    let prog;
+    if (wd) prog = '중단';
+    else if (a.always || mode==='completed') prog = '완료';
+    else prog = mode==='expired' ? ['완료','진행중','완료','진행중'][i%4] : ['완료','진행중','진행 전','진행중','완료'][i%5];
+    const d = new Date(2026,10,9,18,0-i*7);
+    return { i, nm, wd, id:'u'+(1000+i)+'***@'+dom, no:'E'+(2000+i), co: i%4===3 ? co+' 계열사' : co, dept:DT_DEPTS[i%5], rank:DT_RANKS[(i+2)%5], tel:'010****'+String(1000+(i*377)%9000),
+      prog, mail: prog==='진행 전' ? '미발송' : '발송완료',
+      end: a.end.slice(0,10)+'T'+(a.end.slice(11)||'23:59'), last: d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()) };
+  });
+  return DT_CACHE[a.id] = rows;
+}
+function dtMask(n){ return n.length<=2 ? n[0]+'*' : n[0]+'*'+n.slice(-1); }
 function openDetail(id, from){
-  detailFrom = from || 'assess';
-  const a=ASSESS.find(x=>x.id===id); const q=aq(a);
+  detailFrom = from || 'assess'; DT_ID = id;
+  const a = ASSESS.find(x=>x.id===id), mode = dtMode(a), co = coName(a.co);
   $('dt-title').textContent = a.name;
-  // 상단 요약: 연수원명 / 진단명 / 진단 기간 / 진단 진행률(%) / 총 대상자 / 총 응답자 / 응답완료 / 응답중단
-  const started = a.status!=='임시저장' && a.status!=='대기';
-  const stop = started && !a.always ? Math.floor(Math.max(a.targets-a.done,0)*0.1) : (started ? Math.floor(a.done*0.05) : 0);
-  const resp = started ? a.done + stop : 0;
-  const pct = a.always ? '-' : (a.targets ? Math.round(a.done/a.targets*100)+'% ('+a.done.toLocaleString()+'/'+a.targets.toLocaleString()+')' : '0% (0/0)');
+  // 상단 기본 정보 (연수원명만 Admin 추가)
+  const started = mode!=='before', people = dtPeople(a);
+  const stop = !started ? 0 : Math.min(Math.floor((a.always?a.done:a.targets)*0.02), Math.max((a.always?a.done:a.targets)-a.done,0)) || (started && people.some(r=>r.wd) ? 1 : 0);
+  const total = a.always ? a.done : a.targets, resp = total;
+  const doneN = !started ? 0 : (a.always ? Math.max(a.done-stop,0) : a.done);
+  const denom = Math.max(resp-stop,0);
+  const pct = denom ? Math.round(doneN/denom*100)+'% ('+doneN.toLocaleString()+' / '+denom.toLocaleString()+')' : '0% (0 / 0)';
   const fmt = t => t.slice(0,10).replace(/-/g,'.')+' '+(t.slice(11)||'00:00');
-  $('dt-info').innerHTML = '<thead><tr><th>연수원명</th><th>진단명</th><th>진단 기간</th><th>진단 진행률(%)</th><th>총 대상자</th><th>총 응답자</th><th>응답완료</th><th>응답중단</th></tr></thead><tbody><tr>'
-    + '<td>'+esc(coName(a.co))+'</td><td><b>'+esc(a.name)+'</b></td><td>'+fmt(a.start)+' ~<br>'+fmt(a.end)+'</td><td><b>'+pct+'</b></td>'
-    + '<td><b>'+(a.always?'상시':a.targets.toLocaleString()+'명')+'</b></td><td><b>'+resp.toLocaleString()+'명</b></td><td><b>'+(started?a.done:0).toLocaleString()+'명</b></td><td><b>'+stop.toLocaleString()+'명</b></td></tr></tbody>';
-  const names = ['김민수','이서연','박지훈','최유진','정다은'];
-  const dom = coName(a.co)==='휴넷'?'hunet.co.kr':'company.com', depts=['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'];
-  const mask = n => n[0]+'*'+n.slice(-1);
-  if (a.always) {
-    // 상시 진단: 대상자 등록이 없으므로 응답을 완료한 참여자를 누적 목록으로 노출 (최근 응답일시 순)
-    $('dt-head').innerHTML = '<tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>진단진행상태</th><th>응답 완료일시</th></tr>';
-    const shown = Math.min(a.done, 50), p = x => String(x).padStart(2,'0');
-    const list = Array.from({length:shown},(_,i)=>{ const n=names[i%5]; const d=new Date(2026,10,9,18,0-i*7);
-      return '<tr><td>'+(a.done-i)+'</td><td>'+mask(n)+'</td><td>u'+(a.done-i)+'***@'+dom+'</td><td>'+depts[i%5]+'</td><td>완료</td><td>'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+'</td></tr>'; }).join('');
-    $('dt-body').innerHTML = list || '<tr class="empty-row"><td colspan="6">현재 조회된 데이터가 없습니다.</td></tr>';
-    $('dt-count-label').textContent = '응답 완료'; $('dt-count').textContent = a.done.toLocaleString();
-  } else {
-    $('dt-head').innerHTML = '<tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>메일발송상태</th><th>진단진행상태</th><th>진단종료일</th></tr>';
-    const wait = a.status==='임시저장'||a.status==='대기';
-    $('dt-body').innerHTML = names.map((n,i)=>'<tr><td>'+(i+1)+'</td><td>'+mask(n)+'</td><td>u'+(i+1)+'***@'+dom+'</td><td>'+depts[i]+'</td><td>'+(wait?'-':'발송완료')+'</td><td>'+(wait?'-':(i<a.done%5+1?'완료':'진행중'))+'</td><td>'+a.end.slice(0,10)+'</td></tr>').join('');
-    $('dt-count-label').textContent = '대상자'; $('dt-count').textContent = a.targets.toLocaleString();
-  }
-  const editable = a.status!=='마감 가능'&&a.status!=='리포트 생성중'&&a.status!=='완료';
-  $('dt-btns').innerHTML = `<button class="btn btn-outline btn-sm" onclick="toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.')">엑셀 다운로드</button>` + (editable&&!a.always?`<button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 대상자 관리 팝업이 열립니다.')">대상자 관리</button><button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 응답자 관리 팝업이 열립니다.')">응답자 관리</button>`:'');
+  const cols = [['연수원명',esc(co)],['진단명','<b>'+esc(a.name)+'</b>'],['진단 기간',fmt(a.start)+' ~<br>'+fmt(a.end)]];
+  if (!a.always) cols.push(['진단 진행률(%)','<b>'+pct+'</b>']);
+  cols.push(['총 대상자','<b>'+total.toLocaleString()+'명</b>'],['총 응답자','<b>'+resp.toLocaleString()+'명</b>'],['응답완료','<b>'+doneN.toLocaleString()+'명</b>'],['응답중단','<b>'+stop.toLocaleString()+'명</b>']);
+  $('dt-info').innerHTML = '<thead><tr>'+cols.map(c=>'<th>'+c[0]+'</th>').join('')+'</tr></thead><tbody><tr>'+cols.map(c=>'<td>'+c[1]+'</td>').join('')+'</tr></tbody>';
+  // 필터 초기화 후 렌더
+  $('dt-work').value='';
+  dtBuildFilters(a, mode);
+  dtRender();
   go('detail');
+}
+function dtBuildFilters(a, mode){
+  const co = coName(a.co), fcard = $('dt-filter-card');
+  fcard.style.display = mode==='before' ? 'none' : '';   // BEFORE는 필터 미노출 (메일발송·진단진행상태 컬럼이 없음)
+  const sel = (id, opts, w) => '<select class="select" id="'+id+'" style="width:'+w+'px">'+opts.map(o=>'<option value="'+(o==='전체'?'':o)+'">'+o+'</option>').join('')+'</select>';
+  let h = '';
+  if (a.always) h += '<div class="search-label">응답상태</div><div class="search-body">'+sel('dt-prog',['전체','응답완료','응답중단'],140)+'</div>';
+  else h += '<div class="search-label">메일발송상태</div><div class="search-body">'+sel('dt-mail',['전체','발송완료','미발송'],140)+'</div><div class="search-label" style="margin-left:24px">진단진행상태</div><div class="search-body">'+sel('dt-prog',['전체','진행 전','진행중','완료','중단'],140)+'</div>';
+  h += '<div class="search-label" style="margin-left:24px">회사</div><div class="search-body"><select class="select" id="dt-co" style="width:200px"><option value="">전체</option><option>'+esc(co)+'</option><option>'+esc(co)+' 계열사</option></select></div>'
+     + '<div class="search-label" style="margin-left:24px">대상자/응답자</div><div class="search-body"><select class="select" id="dt-skey" style="width:90px"><option value="nm">이름</option><option value="no">사번</option><option value="id">아이디</option></select><input class="input" id="dt-sval" style="width:200px" onkeydown="if(event.key===\'Enter\')dtRender()"></div>';
+  $('dt-filters').innerHTML = h;
+}
+function dtReset(){ ['dt-mail','dt-prog','dt-co','dt-sval'].forEach(i=>{ const e=$(i); if(e) e.value=''; }); $('dt-skey').value='nm'; dtRender(); }
+function dtFiltered(a, mode){
+  let rows = dtPeople(a);
+  if (mode==='before') return rows;
+  const v = i => ($(i)||{}).value || '', mail=v('dt-mail'), pr=v('dt-prog'), co=v('dt-co'), key=v('dt-skey')||'nm', q=v('dt-sval').trim();
+  const prMap = {'응답완료':'완료','응답중단':'중단'};
+  return rows.filter(r=>{
+    if (pr && r.prog !== (prMap[pr]||pr)) return false;
+    if (r.wd) return !mail && !co && !q;   // 탈퇴한 임직원은 회사·검색어·메일발송 조건에 매칭되지 않고 진행상태 조건에만 매칭
+    if (mail && r.mail!==mail) return false;
+    if (co && r.co!==co) return false;
+    if (q && !String({nm:r.nm,no:r.no,id:r.id}[key]).includes(q)) return false;
+    return true;
+  });
+}
+function dtRender(){
+  const a = ASSESS.find(x=>x.id===DT_ID), mode = dtMode(a), always = a.always, rows = dtFiltered(a, mode);
+  const tel = '<th>이름</th><th>아이디</th><th>사번</th><th>회사</th><th>부서/팀</th><th>직급</th><th>휴대번호</th>';
+  const dash = '<span style="color:#94a3b8">—</span>';
+  const bd = (t,c)=>'<span class="badge" style="background:'+c[0]+';color:'+c[1]+'">'+t+'</span>';
+  const PB = {'완료':['#dcfce7','#166534'],'진행중':['#dbeafe','#1e40af'],'진행 전':['#fef9c3','#854d0e'],'중단':['#fee2e2','#b91c1c']};
+  const person = r => r.wd ? '<td>(탈퇴한 임직원)</td>'+'<td>'+dash+'</td>'.repeat(6) : '<td>'+dtMask(r.nm)+'</td><td>'+r.id+'</td><td>'+r.no+'</td><td>'+esc(r.co)+'</td><td>'+r.dept+'</td><td>'+r.rank+'</td><td>'+r.tel+'</td>';
+  const dl = '<button class="btn btn-outline btn-sm" onclick="dtDownload()">엑셀다운로드</button>';
+  let head, body, btns = '', colspan;
+  $('dt-count-unit').textContent = always ? '명' : '건';
+  $('dt-work').style.display = (!always && (mode==='after'||mode==='expired')) ? '' : 'none';
+  $('dt-sel').style.display = $('dt-work').style.display;
+  if (always) {
+    colspan = 10;
+    if (mode==='before') {
+      head = '<tr><th>No.</th>'+tel+'</tr>'; colspan = 8;
+      body = '<tr class="empty-row"><td colspan="8">대상자·응답자를 선정하지 않는 진단입니다. 진단이 시작되면 응시한 임직원이 이곳에 실시간으로 표시됩니다.</td></tr>';
+      $('dt-count').textContent = 0; $('dt-foot').style.display = 'none';
+    } else {
+      head = '<tr><th rowspan="2">No.</th><th colspan="7">진단 대상자(응답자) 정보</th><th colspan="2">응답 현황</th></tr><tr>'+tel+'<th>응답상태</th><th>최종 응답일시</th></tr>';
+      const tot = a.done;
+      body = rows.map((r,k)=>'<tr'+(r.wd?' style="color:#94a3b8"':'')+'><td>'+(tot-r.i)+'</td>'+person(r)+'<td>'+bd(r.prog==='완료'?'응답완료':'응답중단', PB[r.prog])+'</td><td>'+r.last+'</td></tr>').join('');
+      $('dt-count').textContent = rows.length===dtPeople(a).length ? tot.toLocaleString() : rows.length;
+      $('dt-foot').style.display = '';
+      btns = dl;   // 상시: 작업 선택·대상자 관리·응답자 관리 미노출, 엑셀다운로드만
+    }
+  } else if (mode==='before') {
+    colspan = 14; const all = dtPeople(a);
+    head = '<tr><th><input type="checkbox" onclick="dtAll(this)"></th><th>No.</th>'+tel+'<th>응답자(본인)</th><th>응답자(상사)</th><th>응답자(구성원)</th><th>응답자(동료)</th></tr>';
+    body = all.map((r,k)=>'<tr><td><input type="checkbox" class="dt-ck" value="'+r.i+'" onclick="dtUpdSel()"></td><td>'+(k+1)+'</td>'+person(r)+'<td>'+dtMask(r.nm)+'</td><td><span class="link-cell" onclick="toast(\'응답자 설정 팝업이 열립니다. (EDMS와 동일)\')">'+(r.i%2?'1명':'설정')+'</span></td><td><span class="link-cell" onclick="toast(\'응답자 설정 팝업이 열립니다. (EDMS와 동일)\')">설정</span></td><td><span class="link-cell" onclick="toast(\'응답자 설정 팝업이 열립니다. (EDMS와 동일)\')">'+(r.i%3?'2명':'설정')+'</span></td></tr>').join('');
+    $('dt-count').textContent = all.length===Math.min(a.targets,30) ? a.targets.toLocaleString() : all.length; $('dt-foot').style.display = '';
+    btns = dl+'<button class="btn btn-outline btn-sm" style="color:#dc2626" onclick="dtDelete()">삭제</button><button class="btn btn-outline btn-sm" onclick="toast(\'대상자/응답자 일괄 등록 팝업이 열립니다. (EDMS와 동일)\')">일괄 등록</button><button class="btn btn-outline btn-sm" onclick="toast(\'대상자 관리 팝업이 열립니다. (EDMS와 동일)\')">대상자 관리</button><button class="btn btn-outline btn-sm" onclick="dtRespMgr()">응답자 관리</button>';
+  } else {
+    colspan = 20;
+    head = '<tr><th rowspan="2"><input type="checkbox" onclick="dtAll(this)"'+(mode==='completed'?' style="display:none"':'')+'></th><th rowspan="2">No.</th><th colspan="8">진단 대상자 정보</th><th colspan="7">응답자 정보</th><th colspan="3">진단 진행 관리</th></tr>'
+         +'<tr>'+tel+'<th>응답범위</th>'+tel.replace('<th>이름</th>','<th>이름</th>')+'<th>메일발송상태</th><th>진단진행상태</th><th>진단종료일</th></tr>';
+    const min = '2026-11-10T00:00';
+    body = rows.map((r,k)=>{
+      const editable = mode!=='completed' && (r.prog==='진행중'||r.prog==='진행 전');
+      const end = editable ? '<input type="datetime-local" class="input" style="height:26px;font-size:11px" value="'+r.end+'" min="'+min+'">' : r.end.slice(0,10).replace(/-/g,'.')+' '+r.end.slice(11);
+      const resp = r.wd ? '<td>'+dash+'</td>'.repeat(7) : '<td>'+dtMask(r.nm)+'</td><td>'+r.id+'</td><td>'+r.no+'</td><td>'+esc(r.co)+'</td><td>'+r.dept+'</td><td>'+r.rank+'</td><td>'+r.tel+'</td>';
+      return '<tr'+(r.wd?' style="color:#94a3b8"':'')+'><td><input type="checkbox" class="dt-ck" value="'+r.i+'" '+(r.wd?'disabled':'')+(mode==='completed'?' style="display:none"':'')+' onclick="dtUpdSel()"></td><td>'+(rows.length-k)+'</td>'+person(r)+'<td>'+bd('본인',['#e0e7ff','#3730a3'])+'</td>'+resp
+        +'<td>'+(r.wd?dash:bd(r.mail, r.mail==='발송완료'?['#dcfce7','#166534']:['#f1f5f9','#475569']))+'</td><td>'+bd(r.prog,PB[r.prog])+'</td><td style="white-space:nowrap">'+(r.wd?dash:end)+'</td></tr>'; }).join('');
+    $('dt-count').textContent = rows.length===dtPeople(a).length ? a.targets.toLocaleString() : rows.length; $('dt-foot').style.display = '';
+    btns = (mode==='after' ? '<button class="btn btn-outline btn-sm" onclick="toast(\'대상자 관리 팝업이 열립니다. (EDMS와 동일)\')">대상자 관리</button><button class="btn btn-outline btn-sm" onclick="dtRespMgr()">응답자 관리</button>' : '') + dl;
+  }
+  $('dt-head').innerHTML = head;
+  $('dt-body').innerHTML = body || '<tr class="empty-row"><td colspan="'+colspan+'">현재 조회된 데이터가 없습니다.</td></tr>';
+  $('dt-btns').innerHTML = btns; dtUpdSel();
+}
+function dtChecked(){ return [...document.querySelectorAll('#dt-body .dt-ck:checked')].map(e=>+e.value); }
+function dtUpdSel(){ $('dt-sel').textContent = '선택 '+dtChecked().length+'건'; }
+function dtAll(el){ document.querySelectorAll('#dt-body .dt-ck:not(:disabled)').forEach(c=>c.checked=el.checked); dtUpdSel(); }
+function dtDownload(){ toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.'); }
+function dtWork(sel){
+  const v = sel.value; sel.value = ''; if (!v) return;
+  const ids = dtChecked(); if (!ids.length) { toast('먼저 대상자를 선택해주세요.'); return; }
+  if (v==='mail') confirmBox('알림','선택 인원에게 메일을 전송하겠습니까?','확인',()=>toast('메일 전송이 완료되었습니다.'));
+  else toast('종료일 변경 팝업이 열립니다. (EDMS와 동일, 선택 행 중 가장 늦은 종료일이 min으로 설정됩니다.)');
+}
+function dtDelete(){
+  const ids = dtChecked(); if (!ids.length) { toast('삭제할 대상자를 선택하세요.'); return; }
+  const a = ASSESS.find(x=>x.id===DT_ID);
+  confirmBox('알림', ids.length+'명을 대상자에서 삭제하겠습니까? 등록된 응답자도 함께 삭제됩니다.', '확인', ()=>{
+    DT_CACHE[a.id] = dtPeople(a).filter(r=>!ids.includes(r.i)); a.targets = Math.max(a.targets-ids.length,0);
+    openDetail(a.id, detailFrom); toast(ids.length+'명이 삭제되었습니다.'); });
+}
+function dtRespMgr(){
+  const a = ASSESS.find(x=>x.id===DT_ID);
+  if (dtMode(a)==='before' && !dtPeople(a).length) { confirmBox('알림','등록된 진단 대상자가 없습니다. 대상자를 먼저 등록해주세요.','대상자 등록하기',()=>toast('대상자 관리 팝업이 열립니다. (EDMS와 동일)')); return; }
+  toast('응답자 관리 팝업이 열립니다. (EDMS와 동일)');
 }
 
 /* ===== 초기화 ===== */
