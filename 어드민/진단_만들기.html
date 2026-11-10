@@ -4623,6 +4623,8 @@ function adminSaveAssessAndGo() {
   }
   // 임시저장된 진단은 status=before여도 저장 이력이 있으므로 저장 상태를 복원
   if (params.get('draft') === '1') { hasDraftSaved = true; renderStep1(); }
+  // 수정 진입 시 마지막 단계(검토)로 이동
+  if (params.get('step') === '8') { maxReachedStep = 8; goToStep(8); }
 })();
 </script>
 

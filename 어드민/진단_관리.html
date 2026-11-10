@@ -435,7 +435,7 @@ function assessRow(a, no, o){
     if (st==='대기') stCell += `<div style="margin-top:4px">${a.always?'<span style="font-size:11px;color:#888">시작일에 자동 오픈</span>':`<button class="btn btn-primary btn-xs" onclick="startAssess(${a.id})">시작하기</button>`}</div>`;
     else if (st==='마감 가능') stCell += `<div style="margin-top:4px"><button class="btn btn-primary btn-xs" onclick="closeAssess(${a.id})">마감하기</button></div>`;
     // 관리 (진단 관리 / 임시저장만 삭제)
-    const act = `<div class="actions"><button class="btn btn-ghost btn-xs" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">진단 관리</button>${st==='임시저장'?`<button class="btn btn-ghost btn-xs" style="color:#dc2626" onclick="delAssess(${a.id})">삭제</button>`:''}</div>`;
+    const act = `<div class="actions"><button class="btn btn-ghost btn-xs" onclick="manageAssess(${a.id})">진단 관리</button>${st==='임시저장'?`<button class="btn btn-ghost btn-xs" style="color:#dc2626" onclick="delAssess(${a.id})">삭제</button>`:''}</div>`;
     return `<tr ${st==='임시저장'?'style="background:#fdf9ff"':''}><td>${no}</td><td>${coName(a.co)}</td><td>${period}</td>
       <td class="left"><span class="link-cell" onclick="openDetail(${a.id}${o.from?`,'${o.from}'`:''})">${esc(a.name)}</span></td><td>${q.q||'-'}</td>${typeCell}${o.noKind?'':`<td>${kindBadge(q.kind)}</td>`}${who}${prog}${dl}${res}<td>${stCell}</td><td style="font-size:11px">${a.reg}</td><td>${act}</td></tr>`;
 }
@@ -501,6 +501,12 @@ function qdSearch(){
 function qdReset(){ ['qd-company','qd-status','qd-type','qd-name'].forEach(i=>$(i).value=''); qdSearch(); }
 
 /* ===== 진단 상세 (요약) ===== */
+/* 관리 컬럼 [진단 관리] = 진단 만들기 수정 화면의 마지막 단계(검토)로 이동 (EDMS와 동일). 진단명 클릭 = 진단 상세 */
+function manageAssess(id){
+  const a=ASSESS.find(x=>x.id===id); if(!checkEnabled(a)) return;
+  const st = {'임시저장':'before&draft=1','대기':'before&draft=1','진행중':'after','마감 가능':'expired','리포트 생성중':'expired','완료':'completed'}[a.status];
+  location.href = '진단_만들기.html?status='+st+'&co='+a.co+(qsetOf(a.qset)?'&qset='+a.qset:'')+'&step=8';
+}
 function openDetail(id, from){
   detailFrom = from || 'assess';
   const a=ASSESS.find(x=>x.id===id); const q=aq(a);
