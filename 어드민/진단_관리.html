@@ -229,6 +229,7 @@
     <section class="view" id="v-assess">
       <div class="page-header"><div class="page-title">진단 관리</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리</div></div>
       <div class="tab-bar"><button class="tab-btn active" onclick="go('assess')">진단 관리</button><button class="tab-btn " onclick="go('qset')">진단지 관리</button></div>
+      <div class="stat-grid" id="as-stats"></div>
       <div class="card">
         <div class="search-row">
           <div class="search-label">연수원</div>
@@ -247,7 +248,6 @@
         </div>
         <div class="search-actions"><button class="btn btn-reset" onclick="asReset()">초기화</button><button class="btn btn-primary" onclick="asSearch()">검색</button></div>
       </div>
-      <div class="stat-grid" id="as-stats"></div>
       <div class="card">
         <div class="result-header">
           <div class="result-count">총 <strong id="as-count">0</strong>건</div>
@@ -442,10 +442,10 @@ function assessRow(a, no, o){
 
 function asSearch(){
   const rows = asFiltered(); const co=$('as-company').value;
-  const cnt = s => rows.filter(a=>s.includes(a.status)).length;
-  const scope = co ? coName(+co) : '전체 연수원';
+  const cnt = s => ASSESS.filter(a=>s.includes(a.status)).length;   // 요약 카드는 검색 조건과 무관하게 현시점 전체 진단 기준
+  const scope = '전체 연수원';
   const subs = { '전체 진단':'누적 진단 건', '대기':'진단 시작 전', '진행중':'응답 수집 중', '완료':'데이터 다운로드 가능' };
-  $('as-stats').innerHTML = [['전체 진단',rows.length],['대기',cnt(['대기'])],['진행중',cnt(['진행중'])],['완료',cnt(['완료'])]]
+  $('as-stats').innerHTML = [['전체 진단',ASSESS.length],['대기',cnt(['대기'])],['진행중',cnt(['진행중'])],['완료',cnt(['완료'])]]
     .map(([l,v])=>`<div class="card stat-card"><div class="stat-label">${l}</div><div class="stat-num">${v}</div><div class="stat-scope">${subs[l]} · ${scope}</div></div>`).join('');
   $('as-count').textContent = rows.length;
   $('as-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i)).join('') : `<tr class="empty-row"><td colspan="15">현재 조회된 데이터가 없습니다.</td></tr>`;
@@ -495,7 +495,7 @@ function qdSearch(){
   $('qd-stats').innerHTML = [['생성된 진단',rows.length+'건'],['진행중',cnt(['진행중'])+'건'],['완료',cnt(['완료'])+'건'],['총 응답 건수',resp.toLocaleString()+'건']]
     .map(([l,v])=>`<div class="card stat-card"><div class="stat-label">${l}</div><div class="stat-num">${v}</div><div class="stat-scope">${scope} 기준</div></div>`).join('');
   $('qd-count').textContent = rows.length;
-  $('qd-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i, {from:'qdetail', noKind:true})).join('') : `<tr class="empty-row"><td colspan="14">${($('qd-company').value||$('qd-status').value||$('qd-type').value||$('qd-name').value)?'검색 결과가 없습니다.':'이 진단지로 생성된 진단이 없습니다.'}</td></tr>`;
+  $('qd-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i, {from:'qdetail', noKind:true})).join('') : `<tr class="empty-row"><td colspan="14">현재 조회된 데이터가 없습니다.</td></tr>`;
 }
 function qdReset(){ ['qd-company','qd-status','qd-type','qd-name'].forEach(i=>$(i).value=''); qdSearch(); }
 
@@ -518,7 +518,7 @@ function openDetail(id, from){
 /* ===== 초기화 ===== */
 initCompanySelect();
 importNew();
-go(location.hash==='#assess'?'assess':'qset', true);
+go(location.hash==='#qset'?'qset':'assess', true);
 window.addEventListener('beforeunload', e=>{ if(dirty){ e.preventDefault(); e.returnValue=''; } });
 </script>
 </body>
