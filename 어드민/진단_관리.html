@@ -262,7 +262,7 @@
     <section class="view" id="v-detail">
       <div class="page-header"><div class="page-title" id="dt-title">진단 상세</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단 관리 &gt; 진단 상세</div></div>
       <div class="info-box blue">EDMS 진단 상세와 동일한 화면·기능을 제공합니다. 대상자·응답자 관리, 종료일 변경, 시작·마감을 Admin에서도 수행할 수 있습니다. (프로토타입은 요약 화면)</div>
-      <div class="card"><div class="detail-grid" id="dt-info"></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><table class="main-table" id="dt-info"></table></div>
       <div class="card">
         <div class="result-header">
           <div class="result-count"><span id="dt-count-label">대상자</span> <strong id="dt-count">0</strong>명</div>
@@ -511,8 +511,15 @@ function openDetail(id, from){
   detailFrom = from || 'assess';
   const a=ASSESS.find(x=>x.id===id); const q=aq(a);
   $('dt-title').textContent = a.name;
-  const cells = [['연수원',coName(a.co)],['진단 기간',`${a.start} ~ ${a.end}`],['상태',a.status],['진단유형',a.type+(a.always?' · 상시':'')],['진단지',q.name],['진단지 구분',q.kind],['총 대상자',a.always?'상시':a.targets.toLocaleString()+'명'],['응답완료',a.done.toLocaleString()+'명']];
-  $('dt-info').innerHTML = cells.map(([k,v])=>`<div class="detail-cell"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
+  // 상단 요약: 연수원명 / 진단명 / 진단 기간 / 진단 진행률(%) / 총 대상자 / 총 응답자 / 응답완료 / 응답중단
+  const started = a.status!=='임시저장' && a.status!=='대기';
+  const stop = started && !a.always ? Math.floor(Math.max(a.targets-a.done,0)*0.1) : (started ? Math.floor(a.done*0.05) : 0);
+  const resp = started ? a.done + stop : 0;
+  const pct = a.always ? '-' : (a.targets ? Math.round(a.done/a.targets*100)+'% ('+a.done.toLocaleString()+'/'+a.targets.toLocaleString()+')' : '0% (0/0)');
+  const fmt = t => t.slice(0,10).replace(/-/g,'.')+' '+(t.slice(11)||'00:00');
+  $('dt-info').innerHTML = '<thead><tr><th>연수원명</th><th>진단명</th><th>진단 기간</th><th>진단 진행률(%)</th><th>총 대상자</th><th>총 응답자</th><th>응답완료</th><th>응답중단</th></tr></thead><tbody><tr>'
+    + '<td>'+esc(coName(a.co))+'</td><td><b>'+esc(a.name)+'</b></td><td>'+fmt(a.start)+' ~<br>'+fmt(a.end)+'</td><td><b>'+pct+'</b></td>'
+    + '<td><b>'+(a.always?'상시':a.targets.toLocaleString()+'명')+'</b></td><td><b>'+resp.toLocaleString()+'명</b></td><td><b>'+(started?a.done:0).toLocaleString()+'명</b></td><td><b>'+stop.toLocaleString()+'명</b></td></tr></tbody>';
   const names = ['김민수','이서연','박지훈','최유진','정다은'];
   const dom = coName(a.co)==='휴넷'?'hunet.co.kr':'company.com', depts=['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'];
   const mask = n => n[0]+'*'+n.slice(-1);
