@@ -265,10 +265,10 @@
       <div class="card"><div class="detail-grid" id="dt-info"></div></div>
       <div class="card">
         <div class="result-header">
-          <div class="result-count">대상자 <strong id="dt-count">0</strong>명</div>
+          <div class="result-count"><span id="dt-count-label">대상자</span> <strong id="dt-count">0</strong>명</div>
           <div style="display:flex;gap:6px" id="dt-btns"></div>
         </div>
-        <table class="main-table"><thead><tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>메일발송상태</th><th>진단진행상태</th><th>진단종료일</th></tr></thead><tbody id="dt-body"></tbody></table>
+        <table class="main-table"><thead id="dt-head"></thead><tbody id="dt-body"></tbody></table>
       </div>
       <div><button class="btn btn-outline" onclick="go(detailFrom==='qdetail'?'qdetail':'assess')">목록</button></div>
     </section>
@@ -514,9 +514,22 @@ function openDetail(id, from){
   const cells = [['연수원',coName(a.co)],['진단 기간',`${a.start} ~ ${a.end}`],['상태',a.status],['진단유형',a.type+(a.always?' · 상시':'')],['진단지',q.name],['진단지 구분',q.kind],['총 대상자',a.always?'상시':a.targets.toLocaleString()+'명'],['응답완료',a.done.toLocaleString()+'명']];
   $('dt-info').innerHTML = cells.map(([k,v])=>`<div class="detail-cell"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
   const names = ['김민수','이서연','박지훈','최유진','정다은'];
-  const rows = a.always ? [] : names.map((n,i)=>`<tr><td>${i+1}</td><td>${n[0]}*${n.slice(-1)}</td><td>u${i+1}***@${coName(a.co)==='휴넷'?'hunet.co.kr':'company.com'}</td><td>${['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'][i]}</td><td>${a.status==='임시저장'||a.status==='대기'?'-':'발송완료'}</td><td>${a.status==='임시저장'||a.status==='대기'?'-':(i<a.done%5+1?'완료':'진행중')}</td><td>${a.end.slice(0,10)}</td></tr>`).join('');
-  $('dt-body').innerHTML = rows || `<tr class="empty-row"><td colspan="7">${a.always?'상시 진단은 대상자·응답자를 등록하지 않습니다. 응답은 실시간으로 누적됩니다.':'등록된 대상자가 없습니다.'}</td></tr>`;
-  $('dt-count').textContent = a.always ? 0 : a.targets.toLocaleString();
+  const dom = coName(a.co)==='휴넷'?'hunet.co.kr':'company.com', depts=['HR팀','마케팅팀','개발1팀','영업팀','전략기획팀'];
+  const mask = n => n[0]+'*'+n.slice(-1);
+  if (a.always) {
+    // 상시 진단: 대상자 등록이 없으므로 응답을 완료한 참여자를 누적 목록으로 노출 (최근 응답일시 순)
+    $('dt-head').innerHTML = '<tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>진단진행상태</th><th>응답 완료일시</th></tr>';
+    const shown = Math.min(a.done, 50), p = x => String(x).padStart(2,'0');
+    const list = Array.from({length:shown},(_,i)=>{ const n=names[i%5]; const d=new Date(2026,10,9,18,0-i*7);
+      return '<tr><td>'+(a.done-i)+'</td><td>'+mask(n)+'</td><td>u'+(a.done-i)+'***@'+dom+'</td><td>'+depts[i%5]+'</td><td>완료</td><td>'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+'</td></tr>'; }).join('');
+    $('dt-body').innerHTML = list || '<tr class="empty-row"><td colspan="6">현재 조회된 데이터가 없습니다.</td></tr>';
+    $('dt-count-label').textContent = '응답 완료'; $('dt-count').textContent = a.done.toLocaleString();
+  } else {
+    $('dt-head').innerHTML = '<tr><th>No</th><th>이름</th><th>아이디</th><th>부서</th><th>메일발송상태</th><th>진단진행상태</th><th>진단종료일</th></tr>';
+    const wait = a.status==='임시저장'||a.status==='대기';
+    $('dt-body').innerHTML = names.map((n,i)=>'<tr><td>'+(i+1)+'</td><td>'+mask(n)+'</td><td>u'+(i+1)+'***@'+dom+'</td><td>'+depts[i]+'</td><td>'+(wait?'-':'발송완료')+'</td><td>'+(wait?'-':(i<a.done%5+1?'완료':'진행중'))+'</td><td>'+a.end.slice(0,10)+'</td></tr>').join('');
+    $('dt-count-label').textContent = '대상자'; $('dt-count').textContent = a.targets.toLocaleString();
+  }
   const editable = a.status!=='마감 가능'&&a.status!=='리포트 생성중'&&a.status!=='완료';
   $('dt-btns').innerHTML = `<button class="btn btn-outline btn-sm" onclick="toast('엑셀 파일 생성 후 파일 다운로드 목록에서 내려받을 수 있습니다.')">엑셀 다운로드</button>` + (editable&&!a.always?`<button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 대상자 관리 팝업이 열립니다.')">대상자 관리</button><button class="btn btn-outline btn-sm" onclick="toast('EDMS 진단 상세와 동일한 응답자 관리 팝업이 열립니다.')">응답자 관리</button>`:'');
   go('detail');
