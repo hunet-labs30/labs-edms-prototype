@@ -489,10 +489,11 @@ function qdSearch(){
   const cells = [['진단지 구분',q.kind],['문항수',q.q+'개'],['공개여부',q.open?'공개':'비공개'],['최종수정일',q.mod]];
   $('qd-info').innerHTML = cells.map(([k,v])=>`<div class="detail-cell"><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join('');
   const rows = qdRows();
-  const cnt = s => rows.filter(a=>s.includes(a.status)).length;
-  const resp = rows.reduce((t,a)=>t+a.done,0);
-  const co=$('qd-company').value; const scope = co ? coName(+co) : '전체 연수원';
-  $('qd-stats').innerHTML = [['생성된 진단',rows.length+'건'],['진행중',cnt(['진행중'])+'건'],['완료',cnt(['완료'])+'건'],['총 응답 건수',resp.toLocaleString()+'건']]
+  const all = ASSESS.filter(a=>a.qset===QD_ID);   // 요약 카드는 검색 조건과 무관하게 이 진단지의 현시점 전체 진단 기준
+  const cnt = s => all.filter(a=>s.includes(a.status)).length;
+  const resp = all.reduce((t,a)=>t+a.done,0);
+  const scope = '전체 연수원';
+  $('qd-stats').innerHTML = [['생성된 진단',all.length+'건'],['진행중',cnt(['진행중'])+'건'],['완료',cnt(['완료'])+'건'],['총 응답 건수',resp.toLocaleString()+'건']]
     .map(([l,v])=>`<div class="card stat-card"><div class="stat-label">${l}</div><div class="stat-num">${v}</div><div class="stat-scope">${scope} 기준</div></div>`).join('');
   $('qd-count').textContent = rows.length;
   $('qd-body').innerHTML = rows.length ? rows.map((a,i)=>assessRow(a, rows.length-i, {from:'qdetail', noKind:true})).join('') : `<tr class="empty-row"><td colspan="14">현재 조회된 데이터가 없습니다.</td></tr>`;
