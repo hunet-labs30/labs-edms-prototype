@@ -2324,6 +2324,13 @@ function toggleStep1State() {
 
 // Admin 프로토타입: HRD아카이브용 샘플 진단지 (휴넷 전용 상품 샘플을 복제)
 (function(){ const b = QUESTIONNAIRES.find(q => q.id === 4); if (!b) return; QUESTIONNAIRES.push(Object.assign({}, b, { id: 104, name: 'HRD아카이브 사전진단', kind: 'archive', locked: true })); QUESTIONNAIRES.push(Object.assign({}, b, { id: 105, name: 'HRD아카이브 사후진단', kind: 'archive', locked: true })); })();
+// Admin 프로토타입: 사전진단 후보 샘플 (휴넷 전용 상품·HRD아카이브용 진단지 기반 진단)
+PRE_DIAGNOSES.push(
+  { id: 'D-2026-A004', name: '2026 4분기 AI리터러시 진단',                qid: 4,   start: '2026-10-12', end: '2026-11-06', respondents: { '본인': 0 } },
+  { id: 'D-2026-A003', name: '2026 3분기 AI리터러시 진단',                qid: 4,   start: '2026-07-06', end: '2026-07-24', respondents: { '본인': 0 } },
+  { id: 'D-2026-A002', name: '2026 HRD아카이브 사전진단 (9월 입과자)',      qid: 104, start: '2026-09-01', end: '2026-09-30', respondents: { '본인': 0 } },
+  { id: 'D-2026-A001', name: '2026 HRD아카이브 사전진단 (상시)',            qid: 104, start: '2026-11-01', end: '2027-03-31', respondents: { '본인': 0 }, runMode: 'ontime' }
+);
 function filterQuestionnaires() {
   // 선택된 진단유형에 호환되는 진단지만 필터링
   // 비공개/삭제 처리된 진단지는 신규 선택 목록에서 제외하되, 이미 선택된 상태(수정 진입 등)라면 계속 노출
@@ -2660,6 +2667,7 @@ function renderPreDiagList() {
   const yf = ySel ? ySel.value : '';
   const rows = PRE_DIAGNOSES
     .filter(p => preDiagStatus(p) !== '대기')
+    .filter(p => { const q = QUESTIONNAIRES.find(x => x.id === p.qid); return q && (q.locked || q.kind === 'archive'); })   // Admin: 휴넷 전용 상품·HRD아카이브용 진단지 기반 진단만 사전진단 후보로 노출
     .filter(p => (!kw || p.name.toLowerCase().includes(kw)) && (!yf || p.end.startsWith(yf)))
     .sort((a, b) => b.end.localeCompare(a.end));
 
