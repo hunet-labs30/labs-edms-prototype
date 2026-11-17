@@ -73,7 +73,7 @@ html,body{height:100%}
 .rc-head-more:hover{background:var(--pri);color:#fff}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--pri);background:var(--card);color:var(--pri);border-radius:var(--r-md);cursor:pointer;font:600 13px var(--font)}
 .btn:hover{background:var(--pri2)}
-/* 총평 */
+/* 종합평가 */
 .ov{display:flex;gap:28px;align-items:center;flex-wrap:wrap}.ov-chart{flex:1 1 300px;min-width:260px}.ov-side{flex:1 1 260px;border-left:1px solid var(--line2);padding-left:28px}
 .ov2-label{font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px}
 .headline-score{display:flex;align-items:center;gap:10px}.headline-score .num{font-size:34px;font-weight:800;color:var(--tx);line-height:1}.headline-score .denom{font-size:15px;font-weight:600;color:var(--text-400);margin-left:2px}
@@ -458,7 +458,7 @@ function ppA(){
  let L1=s1?`사전 대비 ${s1}입니다.`:'';
  if(allSame&&sg(d[0])>0)L1='사전 대비 모든 역량이 올랐습니다.';else if(allSame&&sg(d[0])<0)L1='사전 대비 모든 역량이 내렸습니다.';
  const L2=s2?`${s2}.`:'';   /* 점수 변화는 제목, 판정 변화는 서브타이틀 */
- /* 역량이 1개이면 핵심 메시지(제목·서브타이틀)는 노출하지 않음 — 총평 요약에서 사전 대비 변화를 안내 */
+ /* 역량이 1개이면 핵심 메시지(제목·서브타이틀)는 노출하지 않음 — 종합평가 요약에서 사전 대비 변화를 안내 */
  const c0=nm(UC[0]),eun=(()=>{const c=UC[0].charCodeAt(UC[0].length-1)-0xAC00;return c>=0&&c<11172&&c%28!=0?'은':'는'})();
  return hero(L1||L2||(nU==1?`${c0}${eun} 사전과 같은 수준입니다.`:'모든 역량이 사전과 같은 수준입니다.'),L1&&L2?[L2]:[])
  +how('회색 점이 사전, 파란 점이 사후입니다. 점이 기준 눈금을 넘으면 판정이 바뀝니다. 약점 · 보통 · 강점은 역량군별 기준점수로 판정한 결과입니다.')
@@ -594,7 +594,7 @@ function frameworkHTML(){
  if(!rows)return '';   /* 설명이 입력된 역량군이 없으면 영역 자체 미노출 */
  return `<div class="sec"><h2>역량 설명</h2><div class="section-card"><table><thead><tr><th class="ta-l" style="width:150px">역량군</th><th class="ta-l">설명</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
-const EVID=[['종합지수',evIndex,1],['상세 점수',evDetail]];   /* 주관식 응답은 근거 데이터에서 분리 — 다면진단의 별도 구역(우선 학습 역량 아래) */   /* 3번째 값 1 = 다면진단에서만 노출 (평가자 유형별 값이라 위 총평·위치 그래프와 겹치지 않음) */
+const EVID=[['종합지수',evIndex,1],['상세 점수',evDetail]];   /* 주관식 응답은 근거 데이터에서 분리 — 다면진단의 별도 구역(우선 학습 역량 아래) */   /* 3번째 값 1 = 다면진단에서만 노출 (평가자 유형별 값이라 위 종합평가·위치 그래프와 겹치지 않음) */
 const evList=t=>EVID.filter(e=>!e[2]||t.multi);
 function evidence(t){const L=evList(t);if(sub>=L.length)sub=0;return `<div class="cd-tabs" style="padding:0;margin-bottom:14px;flex-wrap:wrap">${L.map(([n],i)=>`<div class="cd-tab${i==sub?' active':''}" style="white-space:nowrap" onclick="sub=${i};drawEv()">${n}</div>`).join('')}</div>`+L[sub][1](t)}
 function drawEv(){document.getElementById('ev').innerHTML=evidence(TYPES[tp])}
@@ -627,7 +627,7 @@ function zoneLayout(){
  if(t.multi)flow.splice(t.pp?1:0,0,['zt','약점 · 맹점 확인','약점·맹점·강점·숨은 강점에 해당하는 역량','<div class="td-grid">'+termDefs().replace('<div class="td-t">약점 · 맹점 확인</div>','')+'</div>']);
  /* 주관식 응답: 다면진단만, 우선 학습 역량 바로 아래(해당 구역이 없으면 근거 데이터 앞) 별도 구역 */
  {const at=flow.findIndex(z=>z[1]=='우선 학습 역량');flow.splice(at<0?flow.length:at+1,0,['zo','주관식 응답',t.multi?'서술형 문항별 응답':'내가 작성한 서술형 응답',evOpen(t)])}   /* 본인진단: 본인 답변(나)만 / 다면진단: 본인 + 타 응답자 */
- const Z=[['z1','총평',topDesc,top]];
+ const Z=[['z1','종합평가',topDesc,top]];
  const fw=frameworkHTML();
  if(fw)Z.push(['z1b','역량 설명','진단에 사용한 역량군의 의미',fw]);
  Z.push(...flow,['z7','근거 데이터','종합지수·상세 점수','<div id="ev"></div>']);
@@ -641,7 +641,7 @@ function draw(){
  const t=TYPES[tp],secs=FLOW[tp].filter(f=>f[1]!==evidence&&(recOn||f[0]!='우선 학습 역량'));
  const mi=(l,v)=>`<div class="meta-item"><div class="meta-label">${l}</div><div class="meta-val">${v}</div></div>`;
  document.getElementById('meta').innerHTML=mi('진단명','2026 하반기 리더십 역량진단')+'<div class="meta-divider"></div>'+mi('진단대상자','홍길동')+'<div class="meta-divider"></div>'+mi('진단기간',t.pp?'사전 2026.03 / 사후 2026.09':'2026.09.01 ~ 2026.09.30');
- document.getElementById('secTop').innerHTML=`<div class="sec"><h2>총평</h2><div class="section-card"><div class="section-body">${overview(t)}</div></div></div>`;
+ document.getElementById('secTop').innerHTML=`<div class="sec"><h2>종합평가</h2><div class="section-card"><div class="section-body">${overview(t)}</div></div></div>`;
  document.getElementById('secFw').innerHTML=frameworkHTML();
  document.getElementById('panel').innerHTML=secs.map(([n,fn,lb])=>`<div class="sec"><h2>${n}${lb?`<span class="tag">${lb}</span>`:''}</h2>${fn(t)}</div>`).join('');
  document.getElementById('secEv').innerHTML='<div class="sec"><h2>근거 데이터</h2><div id="ev"></div></div>';
@@ -649,7 +649,7 @@ function draw(){
  drawEv();
  renderDr();
 }
-/* ================= 총평 (그래프 + 종합 점수 + 코멘트 한 카드) ================= */
+/* ================= 종합평가 (그래프 + 종합 점수 + 코멘트 한 카드) ================= */
 function radarSVG(t){
  /* 꼭지 = 역량군 (역량군 평균 점수) */
  const N=G.length,cx=200,cy=130,R=82,gv=(src,k)=>G.map(g=>gs(src,k,g));
@@ -684,7 +684,7 @@ function gaugeHTML(t){
  const me=avg(UPOST.me),org=avg(UPOST.all),pre=t.pp?avg(UPRE.me):null,p=v=>((v/5)*100).toFixed(1)+'%';
  return `<div class="gg"><div class="gg-track"><i class="gg-fill" style="width:${p(me)}"></i>${pre!==null?`<i class="gg-dot pre" style="left:${p(pre)}" title="사전 ${pre.toFixed(2)}"></i>`:''}${t.pp?'':`<i class="gg-org" style="left:${p(org)}" title="전체평균 ${org.toFixed(2)}"></i>`}<i class="gg-dot" style="left:${p(me)}" title="본인 ${me.toFixed(2)}"></i></div><div class="gg-ax">${[0,1,2,3,4,5].map(v=>`<span style="left:${p(v)}">${v}</span>`).join('')}</div></div><div class="legend" style="justify-content:center"><em style="background:var(--pri)"></em>본인 ${me.toFixed(2)}${pre!==null?`<em style="background:var(--c-mem)"></em>사전 ${pre.toFixed(2)}`:''}${t.pp?'':`<em style="background:#9ca3af"></em>전체평균 ${org.toFixed(2)}`}</div>`;
 }
-/* 다면진단 사전사후 총평: 본인 · 주변판정 각각 사전/사후 막대 + 사전 대비 변화 + 종합결과 요약 */
+/* 다면진단 사전사후 종합평가: 본인 · 주변판정 각각 사전/사후 막대 + 사전 대비 변화 + 종합결과 요약 */
 function multiPPCmp(me,ot,L){
  const pm=avg(UPRE.me),po=avg(UC.map((c,i)=>oth(UPRE,i))),r2=x=>Math.round(x*100)/100,sc=v=>(v/5*100).toFixed(1)+'%';
  const grp=(lab,col,pre,post)=>{const d=dif(post,pre),cls=d>0?'hi':d<0?'lo':'z';return `<div class="cp-g"><div class="cp-n" style="color:${col}">${lab}</div><div class="cp-main"><div>${[['사전',pre,.45],['사후',post,1]].map(([l,v,o])=>`<div class="cp-r"><span class="cp-l">${l}</span><div class="cp-t"><i style="width:${sc(v)};background:${col};opacity:${o}"></i></div><b class="${l=='사후'?'cp-post':''}">${v.toFixed(2)}</b></div>`).join('')}</div><div class="cp-brk"></div><div class="cp-d ${cls}">${d==0?'변화 없음':(d>0?'▲ ':'▼ ')+Math.abs(d).toFixed(2)+'점'}</div></div></div>`};
@@ -704,7 +704,7 @@ function termDefs(){
   +row(jtag('강점'),'나도 주변도 강점 기준 이상으로 평가한 역량','강점')
   +row(ktag('숨은 강점'),'주변은 강점, 나는 강점이 아닌(보통·약점) 것으로 평가한 역량','숨은 강점');
 }
-/* 다면진단(일반) 총평: 주변판정 · 본인 막대와 두 점수의 차이(본인 − 주변판정, 표시 점수 기준) + 종합결과 요약 */
+/* 다면진단(일반) 종합평가: 주변판정 · 본인 막대와 두 점수의 차이(본인 − 주변판정, 표시 점수 기준) + 종합결과 요약 */
 /* 비교 대상(주변판정·전체평균) 막대 + 본인 막대 + 차이(본인 − 비교 대상, 표시 점수 기준) 알약 */
 function gapBars(lab,ref,col,me){
  const r2=x=>Math.round(x*100)/100,sc=v=>(v/5*100).toFixed(1)+'%',m=r2(me),o=r2(ref),d=r2(m-o),cls=d>0?'hi':d<0?'lo':'z';
@@ -717,13 +717,13 @@ function multiGapCmp(me,ot,L){
  const rest=L.filter(s=>!(UC.length==1&&(s.startsWith('먼저 점검할 역량')||s.startsWith('나와 주변 모두 약점')||s.startsWith('나와 주변의 평가를 함께 보면'))));
  return gapBars('주변판정',ot,'var(--c-peer)',me)+`<div class="cp-sum"><h4>종합결과 요약</h4><ul>${rest.map(s=>`<li>${s}</li>`).join('')}</ul></div><div class="note" style="margin-top:8px">${MK('주변판정: 상사·동료·구성원 응답의 평균 점수입니다.','주변판정 : 상사·동료·구성원 응답의 평균 점수입니다.')}</div>`;
 }
-/* 다면진단 총평: 본인 점수 · 주변판정 점수 + 두 점수 차이 설명 + 주변판정 정의 */
+/* 다면진단 종합평가: 본인 점수 · 주변판정 점수 + 두 점수 차이 설명 + 주변판정 정의 */
 function multiOverview(t){
  const me=avg(UPOST.me),ot=avg(UC.map((c,i)=>oth(UPOST,i))),d=dif(me,ot),ad=Math.abs(d).toFixed(2);
  const L=[];
  L.push(d==0?'본인 점수와 주변판정 점수가 같습니다.':`본인 점수가 주변판정보다 <b class="${d>0?'hi':'lo'}">${ad}점 ${d>0?'높습니다':'낮습니다'}</b>.`);
  const info=priInfo(),by=n=>info.filter(r=>r.p==n),top=by(1).length?by(1):by(2);
- /* 총평 2번 문장: 약점·맹점이 있으면 점검할 역량, 모든 역량이 같은 구분이면 「모든 역량…」, 역량이 1개면 해당 역량의 구분 */
+ /* 종합평가 2번 문장: 약점·맹점이 있으면 점검할 역량, 모든 역량이 같은 구분이면 「모든 역량…」, 역량이 1개면 해당 역량의 구분 */
  const nUC=UC.length,qs=info.map(r=>r.q),jb=(s,a,b)=>{const c=s.charCodeAt(s.length-1)-0xAC00;return c>=0&&c<11172&&c%28!=0?a:b},allQ=q=>qs.every(x=>x==q);
  let s2='';
  /* 1개: 해당 구분 / 2개 이상이고 모두 같은 구분: 「모든 역량…」 / 그 외: 있는 구분만 먼저 점검(약점, 없으면 맹점) → 맹점 → 강점 → 숨은 강점 순으로 나열(각 최대 2개, 초과 시 「외 N개」), 구분이 하나도 없으면 없음 안내 */
