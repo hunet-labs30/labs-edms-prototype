@@ -863,6 +863,11 @@ body {
 </style>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
+<style>
+  /* 조회 모드(?view=1): 본문은 읽기 전용, 저장·생성 버튼 숨김 */
+  .view-only .wiz-card-body, .view-only .wiz-card-body * { pointer-events: none; }
+  .view-only .btn-draft, .view-only #draftSavedMsg, .view-only #step7-create-btn, .view-only #step7-save-btn { display: none !important; }
+</style>
 <body>
 
 <header class="top-header">
@@ -1896,6 +1901,20 @@ body {
   </div>
 </div>
 
+<!-- 진행 방식 변경(전 임직원 대상) 경고 팝업 — 대상자·응답자가 등록된 상태에서 「전 임직원 대상 및 응답 즉시 결과 노출」 선택 시 -->
+<div class="modal-overlay" id="runModeChangeModal">
+  <div class="modal-box" style="width:400px;">
+    <div class="modal-body" style="padding:24px 24px 20px;">
+      <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-bottom:14px;">안내</div>
+      <p style="font-size:13px; color:#555; line-height:1.7; text-align:center;">전 임직원 대상으로 변경하는 경우<br>기존 설정된 대상자와 응답자가 삭제됩니다.</p>
+    </div>
+    <div class="modal-footer" style="gap:8px;">
+      <button class="btn btn-gray" onclick="cancelRunModeChange()">취소</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmRunModeChange()">확인</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="../공통/emp-register-popup.js"></script>
@@ -2285,6 +2304,8 @@ const QUESTIONNAIRES = [
     ]
   }
 ];
+// 진단지 구분 샘플: HRD아카이브용 진단지 (휴넷 임직원 전용 노출, 상품형과 동일하게 잠금 대상)
+QUESTIONNAIRES.push({ ...QUESTIONNAIRES[0], id: 7, name: 'HRD아카이브 역량진단', kind: 'archive', locked: true, date: '2026-10-29' });
 
 // 구조 옵션: useTypes=false → 유형 노드는 하나뿐(implicit)이라 화면에 표시하지 않음,
 //            useSubs=false → 역량군마다 세부역량 1개(implicit, 이름=역량군명)이며 역량군 단위로 처리
@@ -2530,8 +2551,36 @@ function setViewerRole(hunet) {
   applyStepVisibility();
 }
 
+// 대상자·응답자가 등록된 상태인지 여부 — 저장된 지정 기간 진단(수정 진입)이거나 대상자를 등록한 경우 true
+let targetsRegistered = false;
+
 function setRunMode(mode) {
+  // 대상자·응답자가 등록된 상태에서 전 임직원 대상(상시)으로 변경하면 삭제 안내 팝업을 먼저 노출 (선택값은 확인 전까지 유지)
+  if (mode === 'ontime' && selectedRunMode === 'period' && targetsRegistered) {
+    document.querySelectorAll('input[name="runMode"]').forEach(r => { r.checked = r.value === selectedRunMode; });
+    document.getElementById('runModeChangeModal').classList.add('open');
+    return;
+  }
   selectedRunMode = mode;
+  applyStepVisibility();
+}
+
+function cancelRunModeChange() {
+  document.getElementById('runModeChangeModal').classList.remove('open');
+}
+
+function confirmRunModeChange() {
+  document.getElementById('runModeChangeModal').classList.remove('open');
+  // 기존 대상자·응답자 삭제 후 전 임직원 대상으로 변경
+  targetsRegistered = false;
+  Object.keys(MK_RESPONDENTS).forEach(k => delete MK_RESPONDENTS[k]);
+  document.querySelectorAll('#step6-tabs .tab-pane').forEach(pane => {
+    const tbody = pane.querySelector('tbody');
+    if (tbody) tbody.innerHTML = '';
+    const cnt = pane.querySelector('[id^="target-count-"]');
+    if (cnt) cnt.textContent = '0';
+  });
+  selectedRunMode = 'ontime';
   applyStepVisibility();
 }
 
@@ -2631,6 +2680,19 @@ function applyProductQsetLockUI(locked) {
   }
 }
 
+// 진단지 구분 배지 (휴넷 임직원에게만 노출) — 진단지 관리 목록의 구분 컬럼과 동일한 명칭·색상
+function qsetKindBadge(q) {
+  if (!isHunetViewer) return '';
+  const kind = q.kind || (q.locked ? 'hunet' : 'own');
+  const map = {
+    archive: { label: 'HRD아카이브용', style: 'background:#f3e8ff;color:#6b21a8;' },
+    hunet:   { label: '휴넷 전용 상품', style: 'background:#e3f2fd;color:#0d47a1;' },
+    own:     { label: '자체 진단지',   style: 'background:#f1f3f5;color:#666;' },
+  };
+  const m = map[kind] || map.own;
+  return `<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600;white-space:nowrap;${m.style}">${m.label}</span>`;
+}
+
 function renderStep1() {
   const cardList = document.getElementById('step1CardList');
   cardList.innerHTML = '';
@@ -2661,7 +2723,7 @@ function renderStep1() {
         ${overrideBadge}
       </div>
       <div class="diag-card-meta">${structMeta(q).join(' · ')}</div>
-      <div class="diag-card-date">등록일 ${q.date}</div>
+      <div class="diag-card-date" style="display:flex;align-items:center;gap:8px;">등록일 ${q.date}${qsetKindBadge(q)}</div>
     `;
 
     if (productLocked) {
@@ -3560,6 +3622,7 @@ function downloadRecommendedCourses() {
 }
 
 function uploadBulkFile() {
+  targetsRegistered = true;
   showToast('파일이 업로드되었습니다.');
   closeModal('bulkUploadModal');
 }
@@ -4468,6 +4531,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .filter(m => m.empno);
       },
       onRegister: (members) => {
+        targetsRegistered = true;
         const tabs = document.querySelectorAll('#step6-tabs .tab-pane');
         const pane = tabs[_currentTargetTabIdx];
         if (pane) {
@@ -4575,6 +4639,8 @@ function setDiagStatus(status) {
   /* ── after/expired/completed는 이미 생성(임시저장 완료)된 진단이므로 대상자 등록 잠금 해제 ── */
   /*    before는 데모용 초기 상태로, 아직 한 번도 임시저장하지 않은 신규 생성 흐름을 재현 ── */
   hasDraftSaved = (status !== 'before');
+  // 이미 생성된 지정 기간 진단은 대상자·응답자가 등록된 상태로 간주 (샘플 데이터 기준)
+  targetsRegistered = (status !== 'before') && selectedRunMode !== 'ontime';
 
   /* ── 수정/보기 모드에서는 모든 STEP 자유 이동 허용 ── */
   if (status !== 'before') {
@@ -4688,6 +4754,11 @@ function saveDiagEdit() {
 // 페이지 로드 시 URL 파라미터로 상태 초기화
 (function initFromUrl() {
   const params = new URLSearchParams(location.search);
+  // 조회 모드: 상위 회사에서 만든 진단은 진입은 가능하나 모든 입력·선택·저장이 불가 (단계 이동·미리보기만 가능)
+  if (params.get('view') === '1') {
+    document.body.classList.add('view-only');
+    document.querySelectorAll('.wiz-card-body input, .wiz-card-body select, .wiz-card-body textarea').forEach(el => { el.disabled = true; });
+  }
   const s = params.get('status');
   // 진단 관리 목록에서 상품형 진단지로 만든 진단으로 진입한 경우 해당 진단지를 선택된 상태로 복원
   const qset = Number(params.get('qset'));

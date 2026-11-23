@@ -829,6 +829,7 @@
       <p id="mg-msg" style="font-size:13px; color:#333; white-space:pre-line;"></p>
       <p id="mg-period" style="display:inline-block; font-size:12px; color:#666; background:#f0f2f5; border-radius:4px; padding:3px 10px; margin-top:10px;"></p>
       <p id="mg-count" style="font-size:13px; color:#333; margin-top:6px;"></p>
+      <p id="mg-scope-note" style="font-size:11.5px; color:#8a94a6; margin-top:8px; line-height:1.6;">목록에 표시된 인원과 달리, 이 인원은 소속 회사 범위와 관계없이<br>그룹사·계열사·하위 계열사 전체 대상자 기준입니다.<br>마감하면 모든 계열사의 응답이 함께 마감됩니다.</p>
     </div>
     <div class="modal-footer" style="justify-content:center; gap:8px;">
       <button class="btn btn-reset" onclick="closeMagamModal()">취소</button>
@@ -1112,7 +1113,7 @@
   ];
 
   // ── 상시진단 참여자 데이터 생성 (participantCount 만큼 실제 생성 — 검색·페이지네이션 데모용) ──
-  const ONTIME_COMPANIES = ['동아ST', '동아쏘시오홀딩스'];
+  const ONTIME_COMPANIES = ['동아ST', '동아쏘시오홀딩스', '동아ST랩스'];
   const ONTIME_SURNAMES = ['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권'];
   const ONTIME_GIVEN = ['도윤','서연','준혁','민서','하은','태양','소율','지호','예은','성민','하준','수아','재원','다인','우진','채원'];
   const ONTIME_DEPTS = ['인사팀','영업1팀','영업2팀','개발팀','마케팅팀','전략기획팀','재무팀','고객지원팀'];
@@ -1162,8 +1163,36 @@
     return diag.status;
   }
 
+  // ── [프로토타입] 소속 범위 기준 집계·권한 ──
+  // 목록의 인원 수(대상자·응답자·응답 현황·상시 참여 인원)는 로그인한 교육담당자의 소속 회사 범위 기준으로 집계한다.
+  // 샘플 데이터에는 회사별 인원이 없으므로 회사별 비율(그룹사 40% / 계열사 40% / 하위계열사 20%)로 나누어 시뮬레이션한다.
+  const DIAG_CO_RATIO = [['동아쏘시오홀딩스', 0.4], ['동아ST', 0.4], ['동아ST랩스', 0.2]];
+  function scopeShare(total) {
+    if (total === null || total === undefined) return total;
+    const names = _diagScopeCompanyNames();
+    let rem = total;
+    return DIAG_CO_RATIO.reduce((sum, [name, ratio], i) => {
+      const v = i === DIAG_CO_RATIO.length - 1 ? rem : Math.min(rem, Math.round(total * ratio));
+      rem -= v;
+      return sum + (names.includes(name) ? v : 0);
+    }, 0);
+  }
+  function scopedParticipantCount(diag) {
+    const list = ONTIME_PARTICIPANTS[diag.id];
+    if (list) { const names = _diagScopeCompanyNames(); return list.filter(p => names.includes(p.company)).length; }
+    return scopeShare(diag.participantCount);
+  }
+  // 진단을 만든 교육담당자의 소속 회사 (샘플: 대부분 그룹사가 생성, 일부는 계열사·하위계열사가 생성)
+  const DIAG_OWNER_OVERRIDE = { 11: '동아ST', 10: '동아ST', 5: '동아ST랩스' };
+  function diagOwnerCompany(diag) { return DIAG_OWNER_OVERRIDE[diag.id] || '동아쏘시오홀딩스'; }
+  // 시작·마감·수정(진단 관리)은 진단을 만든 회사 소속 이상의 교육담당자만 가능. 하위 회사 교육담당자는 조회만 가능
+  function canManageDiag(diag) { return _diagScopeCompanyNames().includes(diagOwnerCompany(diag)); }
+  const VIEW_ONLY_TIP = '상위 회사에서 생성한 진단입니다. 진단을 만든 회사 소속 교육담당자만 시작·마감할 수 있습니다.';
+  const VIEW_ONLY_ATTR = 'disabled title="' + VIEW_ONLY_TIP + '" style="opacity:.4;cursor:not-allowed;"';
+
   // ── 진단 테이블 렌더링 함수 ──
   function renderDiagnosticRow(diag, no) {
+    const manageable = canManageDiag(diag);
     const isOngoing = diag.ontime;
     const displayStatus = getEffectiveStatus(diag);
     const dateStr = diag.startDate && diag.endDate
@@ -1192,14 +1221,14 @@
       targetCell = `
         <td colspan="2" style="text-align:center;">
           <a class="diag-link" href="#" onclick="openParticipantModal('${diag.id}'); return false;" style="cursor:pointer;" title="실시간 집계된 참여 인원입니다(신규 입사자 포함).">
-            <span style="display:inline-block;padding:2px 7px;margin-right:4px;border-radius:10px;font-size:11px;font-weight:600;background:#e8f5e9;color:#2e7d32;">상시</span>${diag.participantCount}명
+            <span style="display:inline-block;padding:2px 7px;margin-right:4px;border-radius:10px;font-size:11px;font-weight:600;background:#e8f5e9;color:#2e7d32;">상시</span>${scopedParticipantCount(diag)}명
           </a>
         </td>
       `;
     } else {
       // 일반진단: 기존 대로 대상자/응답자를 각각 별도 컬럼에 표시
-      const memberDisplay = diag.memberCount || '설정';
-      const respondentDisplay = diag.respondentCount !== null ? diag.respondentCount : '설정';
+      const memberDisplay = diag.memberCount ? scopeShare(diag.memberCount) : '설정';
+      const respondentDisplay = diag.respondentCount !== null ? scopeShare(diag.respondentCount) : '설정';
       targetCell = `
         <td style="text-align:center;">
           <a class="diag-link" href="#" onclick="openDiagCell('${diag.id}', 'target', this); return false;" style="cursor:pointer;">
@@ -1221,13 +1250,15 @@
     } else if (displayStatus === '임시저장') {
       progressCell = '<td style="color:#bbb; font-size:11px;">-</td>';
     } else {
-      const totalLabel = diag.totalMembers || diag.memberCount || 0;
-      const progressColor = diag.progress >= 100 ? '#1a7a4a' : (diag.progress >= 80 ? '#f4b65a' : '#1a73e8');
+      const totalLabel = scopeShare(diag.totalMembers || diag.memberCount || 0);
+      const doneLabel = scopeShare(diag.respondentCount || 0);
+      const scopedProgress = totalLabel ? Math.round(doneLabel / totalLabel * 100) : 0;
+      const progressColor = scopedProgress >= 100 ? '#1a7a4a' : (scopedProgress >= 80 ? '#f4b65a' : '#1a73e8');
       progressCell = `
         <td>
           <div class="progress-wrap">
-            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${diag.progress || 0}%; background:${progressColor};"></div></div>
-            <span class="progress-text">${diag.respondentCount || 0}/${totalLabel} <span style="color:${progressColor};">(${diag.progress || 0}%)</span></span>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${scopedProgress}%; background:${progressColor};"></div></div>
+            <span class="progress-text">${doneLabel}/${totalLabel} <span style="color:${progressColor};">(${scopedProgress}%)</span></span>
           </div>
         </td>
       `;
@@ -1273,7 +1304,7 @@
         <td class="status-cell">
           <div class="status-stack">
             <span class="badge badge-orange">마감 가능</span>
-            <button class="status-action-btn action-magam" onclick="openMagamModal(this, '${diag.name}', ${diag.memberCount}, ${diag.respondentCount}, '${diag.startDate}', '${diag.endDate}')">마감하기</button>
+            <button class="status-action-btn action-magam" ${manageable ? '' : VIEW_ONLY_ATTR} onclick="openMagamModal(this, '${diag.name}', ${diag.memberCount}, ${diag.respondentCount}, '${diag.startDate}', '${diag.endDate}')">마감하기</button>
           </div>
         </td>
       `;
@@ -1284,7 +1315,7 @@
             <span class="badge badge-yellow">대기</span>
             ${diag.ontime
               ? '<span style="font-size:11px;color:#888;">시작일에 자동 오픈</span>'
-              : `<button class="status-action-btn action-start" onclick="openDaegiFlow(this, '${diag.name}', ${diag.memberCount}, '${diag.startDate}', '${diag.endDate}')">시작하기</button>`}
+              : `<button class="status-action-btn action-start" ${manageable ? '' : VIEW_ONLY_ATTR} onclick="openDaegiFlow(this, '${diag.name}', ${diag.memberCount}, '${diag.startDate}', '${diag.endDate}')">시작하기</button>`}
           </div>
         </td>
       `;
@@ -1301,18 +1332,20 @@
     const manageHref = diag.qsetId
       ? `edms_진단_만들기.html?status=${isSaved ? 'before&draft=1' : 'after'}&qset=${diag.qsetId}`
       : 'edms_진단_만들기.html';
+    // 상위 회사에서 만든 진단은 진입은 가능하되 조회 모드(수정 불가)로 열림
+    const manageHrefEff = manageable ? manageHref : manageHref + (manageHref.includes('?') ? '&' : '?') + 'view=1';
     let actionCell;
     if (displayStatus === '임시저장') {
       actionCell = `
         <td>
           <div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
-            <button class="btn btn-sm btn-gray" onclick="location.href='${manageHref}'">진단 관리</button>
+            <button class="btn btn-sm btn-gray" onclick="location.href='${manageHrefEff}'">진단 관리</button>
             <button class="btn btn-sm" style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;" onclick="openDraftDeleteModal('${diag.name}')">삭제</button>
           </div>
         </td>
       `;
     } else {
-      actionCell = `<td><button class="btn btn-sm btn-gray" onclick="location.href='${manageHref}'">진단 관리</button></td>`;
+      actionCell = `<td><button class="btn btn-sm btn-gray" onclick="location.href='${manageHrefEff}'">진단 관리</button></td>`;
     }
 
     return `
@@ -1347,7 +1380,7 @@
     if (!tbody) return;
     const total = DIAGNOSTIC_LIST.length;
     const cntEl = document.getElementById('mainResultCount');
-    if (cntEl) cntEl.innerHTML = '검색결과 <strong>' + total + '</strong>건';
+    if (cntEl) cntEl.innerHTML = '검색결과 <strong>' + total + '</strong>건 <span style="font-size:11px;color:#8a94a6;margin-left:8px;">※ 대상자·응답자·응답 현황·참여 인원은 로그인한 교육담당자의 소속 회사 범위 기준입니다. 상위 회사에서 만든 진단은 시작·마감이 불가하며 진단 관리는 조회만 가능합니다.</span>';
 
     const totalPages = Math.max(1, Math.ceil(total / _mainPageSize));
     if (_mainPage > totalPages) _mainPage = totalPages;
@@ -1471,7 +1504,7 @@
     const fmt = d => d.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\. /g,'-').replace('.','');
     document.getElementById('d3Name').textContent   = diagName + ' - 터닝포인트 CUBE®';
     document.getElementById('d3Period').textContent  = fmt(start) + ' ~ ' + fmt(end);
-    document.getElementById('d3Count').textContent  = '진단 대상자 : ' + count + '명';
+    document.getElementById('d3Count').textContent  = '진단 대상자 : ' + count + '명 (모든 계열사 포함 전체 기준)';
     document.getElementById('daegiModal3').classList.add('open');
   }
 
@@ -1537,11 +1570,11 @@
 
     const allDone = (completedCount >= totalCount);
     if (allDone) {
-      document.getElementById('mg-count').textContent = '진단 대상자 ' + totalCount + '명';
+      document.getElementById('mg-count').textContent = '진단 대상자 ' + totalCount + '명 (모든 계열사 포함)';
       document.getElementById('mg-msg').textContent = '마감 시 연장이 불가합니다.\n마감하겠습니까?';
     } else {
       const cannotCount = totalCount - completedCount;
-      document.getElementById('mg-count').textContent = '진단 대상자 ' + totalCount + '명 / 생성불가 대상 ' + cannotCount + '명';
+      document.getElementById('mg-count').textContent = '진단 대상자 ' + totalCount + '명 / 생성불가 대상 ' + cannotCount + '명 (모든 계열사 포함)';
       document.getElementById('mg-msg').textContent = '리포트 생성 조건에 부합하지 않는 대상자가 있습니다.\n진단을 마감하시겠습니까? 마감 시 연장이 불가합니다.';
     }
 
@@ -2195,6 +2228,7 @@ function diagSetScope(companyId) {
   } else {
     desc.textContent = '';
   }
+  if (typeof renderMainTable === 'function') renderMainTable();
 }
 document.addEventListener('DOMContentLoaded', _diagPopulateScopeSelect);
 
@@ -2843,7 +2877,7 @@ function openParticipantModal(diagId) {
   document.getElementById('pt-search-keyword').value = '';
   document.getElementById('pt-search-type').value = 'name';
   const companySel = document.getElementById('pt-search-company');
-  companySel.innerHTML = '<option value="">회사 전체</option>' + ONTIME_COMPANIES.map(c => `<option value="${c}">${c}</option>`).join('');
+  companySel.innerHTML = '<option value="">회사 전체</option>' + _diagScopeCompanyNames().map(c => `<option value="${c}">${c}</option>`).join('');
   companySel.value = '';
   participantRender();
   document.getElementById('participantModal').classList.add('open');
@@ -2884,8 +2918,9 @@ function participantGoToPage(p) {
 
 function participantRender() {
   const diag = DIAGNOSTIC_LIST.find(d => d.id === _ptDiagId);
-  const all = ONTIME_PARTICIPANTS[_ptDiagId] || [];
-  document.getElementById('pt-cnt').textContent = (diag ? diag.participantCount : all.length) + '명';
+  const scopeNames = _diagScopeCompanyNames();
+  const all = (ONTIME_PARTICIPANTS[_ptDiagId] || []).filter(p => scopeNames.includes(p.company));
+  document.getElementById('pt-cnt').textContent = all.length + '명';
 
   _ptFiltered = all.filter(p => {
     if (_ptSearchCompany && p.company !== _ptSearchCompany) return false;
