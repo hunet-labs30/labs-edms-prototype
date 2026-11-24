@@ -1183,11 +1183,12 @@
     return scopeShare(diag.participantCount);
   }
   // 진단을 만든 교육담당자의 소속 회사 (샘플: 대부분 그룹사가 생성, 일부는 계열사·하위계열사가 생성)
-  const DIAG_OWNER_OVERRIDE = { 11: '동아ST', 10: '동아ST', 5: '동아ST랩스' };
+  // '어드민'은 휴넷 임직원(어드민)이 생성한 진단 — 생성 회사 제한 없이 모든 교육담당자가 시작·마감·삭제 가능
+  const DIAG_OWNER_OVERRIDE = { 11: '동아ST', 10: '동아ST', 5: '동아ST랩스', 12: '어드민', 7: '어드민' };
   function diagOwnerCompany(diag) { return DIAG_OWNER_OVERRIDE[diag.id] || '동아쏘시오홀딩스'; }
   // 시작·마감·수정(진단 관리)은 진단을 만든 회사 소속 이상의 교육담당자만 가능. 하위 회사 교육담당자는 조회만 가능
-  function canManageDiag(diag) { return _diagScopeCompanyNames().includes(diagOwnerCompany(diag)); }
-  const VIEW_ONLY_TIP = '상위 회사에서 생성한 진단입니다. 진단을 만든 회사 소속 교육담당자만 시작·마감할 수 있습니다.';
+  function canManageDiag(diag) { const o = diagOwnerCompany(diag); return o === '어드민' || _diagScopeCompanyNames().includes(o); }
+  const VIEW_ONLY_TIP = '상위 회사에서 생성한 진단입니다. 진단을 만든 회사 소속 교육담당자만 시작·마감·삭제할 수 있습니다.';
   const VIEW_ONLY_ATTR = 'disabled title="' + VIEW_ONLY_TIP + '" style="opacity:.4;cursor:not-allowed;"';
 
   // ── 진단 테이블 렌더링 함수 ──
@@ -1340,7 +1341,7 @@
         <td>
           <div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:nowrap;">
             <button class="btn btn-sm btn-gray" onclick="location.href='${manageHrefEff}'">진단 관리</button>
-            <button class="btn btn-sm" style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;" onclick="openDraftDeleteModal('${diag.name}')">삭제</button>
+            <button class="btn btn-sm" ${manageable ? '' : 'disabled title="' + VIEW_ONLY_TIP + '"'} style="background:#fef2f2;color:#c0392b;border:1px solid #fca5a5;${manageable ? '' : 'opacity:.4;cursor:not-allowed;'}" onclick="openDraftDeleteModal('${diag.name}')">삭제</button>
           </div>
         </td>
       `;
@@ -1380,7 +1381,7 @@
     if (!tbody) return;
     const total = DIAGNOSTIC_LIST.length;
     const cntEl = document.getElementById('mainResultCount');
-    if (cntEl) cntEl.innerHTML = '검색결과 <strong>' + total + '</strong>건 <span style="font-size:11px;color:#8a94a6;margin-left:8px;">※ 대상자·응답자·응답 현황·참여 인원은 로그인한 교육담당자의 소속 회사 범위 기준입니다. 상위 회사에서 만든 진단은 시작·마감이 불가하며 진단 관리는 조회만 가능합니다.</span>';
+    if (cntEl) cntEl.innerHTML = '검색결과 <strong>' + total + '</strong>건 <span style="font-size:11px;color:#8a94a6;margin-left:8px;">※ 대상자·응답자·응답 현황·참여 인원은 로그인한 교육담당자의 소속 회사 범위 기준입니다. 상위 회사에서 만든 진단은 시작·마감·삭제가 불가하며 진단 관리는 조회만 가능합니다.</span>';
 
     const totalPages = Math.max(1, Math.ceil(total / _mainPageSize));
     if (_mainPage > totalPages) _mainPage = totalPages;
