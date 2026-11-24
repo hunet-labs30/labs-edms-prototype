@@ -4749,9 +4749,7 @@ function saveDiagEdit() {
 // 페이지 로드 시 URL 파라미터로 상태 초기화
 (function initFromUrl() {
   const params = new URLSearchParams(location.search);
-  // 조회 모드(?view=1): 상위 회사에서 만든 진단은 진입은 가능하나, 기존 진단 완료 상태의 보기 전용과 동일하게 모든 STEP 수정 불가
-  const viewOnly = params.get('view') === '1';
-  const s = viewOnly ? 'completed' : params.get('status');
+  const s = params.get('status');
   // 진단 관리 목록에서 상품형 진단지로 만든 진단으로 진입한 경우 해당 진단지를 선택된 상태로 복원
   const qset = Number(params.get('qset'));
   if (qset) {
@@ -4760,11 +4758,6 @@ function saveDiagEdit() {
   }
   if (s && ['before','after','expired','completed'].includes(s)) {
     setDiagStatus(s);
-  }
-  if (viewOnly) {
-    // 진단 완료 표기·사이드바 상태 버튼은 노출하지 않고, 보기 전용 화면만 재사용
-    const bn = document.getElementById('diag-status-banner'); if (bn) bn.style.display = 'none';
-    const sub = document.getElementById('wiz-aside-sub-text'); if (sub) sub.textContent = '보기 전용';
   }
   // 임시저장된 진단은 status=before여도 저장 이력이 있으므로 저장 상태를 복원
   if (params.get('draft') === '1') { hasDraftSaved = true; renderStep1(); }

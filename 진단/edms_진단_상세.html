@@ -428,7 +428,7 @@
 
     <!-- 기본 정보 (모든 상태 공통 노출) -->
     <div class="summary-stat-card" style="margin-bottom:16px;">
-      <div class="summary-stat-title">기본 정보 <span id="sumScopeNote" style="font-size:11px;font-weight:400;color:#8a94a6;margin-left:8px;">※ 진단 진행률·대상자·응답자·응답완료·응답중단은 로그인한 교육담당자의 소속 회사 범위 기준입니다.</span></div>
+      <div class="summary-stat-title">기본 정보</div>
       <table class="summary-stat-table">
         <thead>
           <tr>
@@ -905,6 +905,7 @@
       <span id="diag-resp-modal-title" style="font-size:14px;font-weight:700;">응답자 등록</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagRespListClose()">×</span>
     </div>
+    <div id="diag-resp-other-notice" style="display:none;padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함되어 있습니다.</div>
 
     <!-- 바디 (3-column) -->
     <div style="flex:1;display:flex;overflow:hidden;">
@@ -1042,6 +1043,7 @@
       <span id="tl-title" style="font-size:14px;font-weight:700;">대상자 목록 (0명)</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeTargetListModal()">×</span>
     </div>
+    <div id="tl-other-notice" style="display:none;padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함되어 있습니다.</div>
 
     <!-- 검색 영역 -->
     <div style="padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
@@ -1429,8 +1431,8 @@
     const filtered = ONTIME_ROWS
       .filter(r => {
         if (status && (status === '응답완료') !== (r[7] === 'done')) return false;
-        if (!_diagScopeCompanyNames().includes(r[3])) return false;   // 로그인 계정 소속 범위 밖 회사는 미노출 (탈퇴한 임직원도 소속 회사 기준으로 판정)
         if (r[7] === 'out') return !company && !kw;               // 탈퇴한 임직원은 회사·검색어 조건에 매칭되지 않음
+        if (!_diagScopeCompanyNames().includes(r[3])) return false;   // 로그인 계정 소속 범위 밖 회사는 미노출
         if (company && !/전체|선택/.test(company) && r[3] !== company) return false;
         if (kw) {
           const target = { name: r[0], loginId: r[1], empno: r[2] }[type] || '';
@@ -1451,14 +1453,6 @@
         </tr>`).join('')
       : '<tr><td colspan="10" style="text-align:center;padding:36px 0;color:#999;">조건에 맞는 인원이 없습니다.</td></tr>';
     if ($('ontimeResultCnt')) $('ontimeResultCnt').textContent = '검색결과 ' + rows.length + '명';
-    // 요약 카드: 소속 회사 범위 기준 (진행 전에는 0)
-    const isBefore = new URLSearchParams(window.location.search).get('state') === 'before';
-    const inScope = isBefore ? [] : ONTIME_ROWS.filter(r => _diagScopeCompanyNames().includes(r[3]));
-    const doneCnt = inScope.filter(r => r[7] === 'done').length;
-    $('sumTarget').textContent  = inScope.length;
-    $('sumResp').textContent    = inScope.length;
-    $('sumDone').textContent    = doneCnt;
-    $('sumStopped').textContent = inScope.length - doneCnt;
   }
 
   // ── 진단 기본 정보(진단명/진단 기간)는 모든 상태에서 텍스트로만 노출, 수정 불가 ──
@@ -1483,25 +1477,6 @@
     } else {
       s = { target: 10, resp: 13, done: 4,  stopped: 2 };
     }
-    window._summaryBase = s;   // 전체(모든 계열사) 기준 값 — 화면 표시는 renderSummaryStats()가 소속 회사 범위로 환산
-  }
-
-  // ── 소속 범위 기준 집계 (프로토타입: 회사별 비율 그룹사 40% / 계열사 40% / 하위계열사 20%) ──
-  function scopeShare(total) {
-    const ratios = [['동아쏘시오홀딩스', 0.4], ['동아ST', 0.4], ['동아ST랩스', 0.2]];
-    const names = _diagScopeCompanyNames();
-    let rem = total;
-    return ratios.reduce((sum, [name, ratio], i) => {
-      const v = i === ratios.length - 1 ? rem : Math.min(rem, Math.round(total * ratio));
-      rem -= v;
-      return sum + (names.includes(name) ? v : 0);
-    }, 0);
-  }
-  function renderSummaryStats() {
-    if (new URLSearchParams(window.location.search).get('type') === 'ontime') return;   // 상시진단은 renderOntimeRows에서 계산
-    const b = window._summaryBase;
-    if (!b) return;
-    const s = { target: scopeShare(b.target), resp: scopeShare(b.resp), done: scopeShare(b.done), stopped: scopeShare(b.stopped) };
     const rate = s.resp ? Math.round(s.done / s.resp * 100) : 0;
     document.getElementById('sumRate').textContent    = rate + '%';
     document.getElementById('sumRateSub').textContent = ' (' + s.done + '/' + s.resp + ')';
@@ -1510,7 +1485,6 @@
     document.getElementById('sumDone').textContent    = s.done;
     document.getElementById('sumStopped').textContent = s.stopped;
   }
-
 
   initState();
 
@@ -1585,6 +1559,7 @@
   function openRespSetModal(rowNo, type) {
     _diagRespCurrentRowNo = rowNo;
     _diagRespCurrentType  = '';
+    _showOtherCompanyNotice('diag-resp-other-notice');
     document.getElementById('diag-resp-list-modal').style.display = 'flex';
     diagRespSelectType(type);
   }
@@ -1730,7 +1705,19 @@
 
   // ── 진단 대상자 목록 팝업 ──
   // BEFORE STATE 테이블의 현재 데이터를 읽어 팝업에 렌더링
+  // 해당 진단에 로그인 계정 소속 범위 밖 회사(다른 계열사)의 임직원이 포함되어 있는지
+  function _hasOtherCompanyMembers() {
+    const scopeNames = _diagScopeCompanyNames();
+    return [...document.querySelectorAll('#state-before tbody tr.before-data-row')]
+      .some(tr => { const co = (tr.querySelectorAll('td')[5] || {}).textContent?.trim(); return co && co !== '—' && !scopeNames.includes(co); });
+  }
+  function _showOtherCompanyNotice(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = _hasOtherCompanyMembers() ? '' : 'none';
+  }
+
   function openTargetListModal() {
+    _showOtherCompanyNotice('tl-other-notice');
     _tlPopulateCompanySelect();
     _renderTargetList('');
     document.getElementById('tl-search-keyword').value = '';
@@ -1912,7 +1899,6 @@
   }
   // 진단 전/진행중 메인 테이블: 로그인 계정 소속 범위 밖 회사의 행은 숨김 (회사 정보가 없는 탈퇴 행은 항상 노출)
   function _applyScopeToMainTables() {
-    renderSummaryStats();
     const scopeNames = _diagScopeCompanyNames();
     document.querySelectorAll('#state-before tbody tr.before-data-row').forEach(tr => {
       const co = tr.querySelectorAll('td')[5]?.textContent.trim();
