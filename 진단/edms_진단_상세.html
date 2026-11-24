@@ -455,6 +455,8 @@
       </table>
     </div>
 
+    <div style="font-size:12px;color:#8a94a6;margin:-8px 0 16px;">기본 정보의 인원은 다른 계열사를 포함한 전체 기준이며, 아래 목록에는 소속 회사 범위의 임직원만 노출됩니다.</div>
+
     <!-- 검색 필터 (진단 진행 전은 해당 컬럼이 없어 미노출, 진행중/마감전/완료에서만 노출) -->
     <div id="afterFilterRow" class="search-row" style="margin-bottom:16px;background:#f8f9fb;padding:10px 12px;border-radius:4px;border:1px solid var(--border);">
       <span style="font-size:12px;font-weight:600;color:#555;white-space:nowrap;">메일발송상태</span>
@@ -905,7 +907,7 @@
       <span id="diag-resp-modal-title" style="font-size:14px;font-weight:700;">응답자 등록</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="diagRespListClose()">×</span>
     </div>
-    <div id="diag-resp-other-notice" style="display:none;padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함되어 있습니다.</div>
+    <div style="padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함될 수 있으며, 소속 회사 범위의 임직원만 조회됩니다.</div>
 
     <!-- 바디 (3-column) -->
     <div style="flex:1;display:flex;overflow:hidden;">
@@ -1043,7 +1045,7 @@
       <span id="tl-title" style="font-size:14px;font-weight:700;">대상자 목록 (0명)</span>
       <span style="cursor:pointer;font-size:20px;color:#aaa;line-height:1;" onclick="closeTargetListModal()">×</span>
     </div>
-    <div id="tl-other-notice" style="display:none;padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함되어 있습니다.</div>
+    <div style="padding:8px 20px;background:#fff8e1;border-bottom:1px solid #f4d58d;font-size:12px;color:#7a5a00;flex-shrink:0;">다른 계열사 임직원이 포함될 수 있으며, 소속 회사 범위의 임직원만 조회됩니다.</div>
 
     <!-- 검색 영역 -->
     <div style="padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0;background:#f8f9fb;">
@@ -1559,7 +1561,6 @@
   function openRespSetModal(rowNo, type) {
     _diagRespCurrentRowNo = rowNo;
     _diagRespCurrentType  = '';
-    _showOtherCompanyNotice('diag-resp-other-notice');
     document.getElementById('diag-resp-list-modal').style.display = 'flex';
     diagRespSelectType(type);
   }
@@ -1705,19 +1706,7 @@
 
   // ── 진단 대상자 목록 팝업 ──
   // BEFORE STATE 테이블의 현재 데이터를 읽어 팝업에 렌더링
-  // 해당 진단에 로그인 계정 소속 범위 밖 회사(다른 계열사)의 임직원이 포함되어 있는지
-  function _hasOtherCompanyMembers() {
-    const scopeNames = _diagScopeCompanyNames();
-    return [...document.querySelectorAll('#state-before tbody tr.before-data-row')]
-      .some(tr => { const co = (tr.querySelectorAll('td')[5] || {}).textContent?.trim(); return co && co !== '—' && !scopeNames.includes(co); });
-  }
-  function _showOtherCompanyNotice(id) {
-    const el = document.getElementById(id);
-    if (el) el.style.display = _hasOtherCompanyMembers() ? '' : 'none';
-  }
-
   function openTargetListModal() {
-    _showOtherCompanyNotice('tl-other-notice');
     _tlPopulateCompanySelect();
     _renderTargetList('');
     document.getElementById('tl-search-keyword').value = '';
