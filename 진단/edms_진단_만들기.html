@@ -2299,8 +2299,6 @@ const QUESTIONNAIRES = [
     ]
   }
 ];
-// 진단지 구분 샘플: HRD아카이브용 진단지 (휴넷 임직원 전용 노출, 상품형과 동일하게 잠금 대상)
-QUESTIONNAIRES.push({ ...QUESTIONNAIRES[0], id: 7, name: 'HRD아카이브 역량진단', kind: 'archive', locked: true, date: '2026-10-29' });
 
 // 구조 옵션: useTypes=false → 유형 노드는 하나뿐(implicit)이라 화면에 표시하지 않음,
 //            useSubs=false → 역량군마다 세부역량 1개(implicit, 이름=역량군명)이며 역량군 단위로 처리
@@ -2358,7 +2356,6 @@ let selectedRunMode = 'period';      // 진행 방식: period(지정 기간) | o
 let selectedPreDiag = null;
 const PRE_DIAGNOSES = [
   { id: 'D-2026-0515', name: '2026 4분기 리더십 역량진단(대기)',         qid: 1, start: '2026-11-10', end: '2026-11-28', respondents: { '본인': 0, '상사': 1 } },
-  { id: 'D-2026-0510', name: '2026 HRD아카이브 역량진단(상시)',           qid: 3, start: '2026-10-01', end: '2027-03-31', respondents: { '본인': 0 }, runMode: 'ontime' },
   { id: 'D-2026-0508', name: '2026 4분기 조직문화 진단',                 qid: 3, start: '2026-10-12', end: '2026-11-06', respondents: { '본인': 0 } },
   { id: 'D-2026-0505', name: '2026 AI 리터러시 진단(상시)',             qid: 3, start: '2026-09-01', end: '2026-09-30', respondents: { '본인': 0 }, runMode: 'ontime' },
   { id: 'D-2026-0492', name: '2026 조직문화 진단(생산본부)',            qid: 3, start: '2026-08-03', end: '2026-08-21', respondents: { '본인': 0 } },
@@ -2680,7 +2677,6 @@ function qsetKindBadge(q) {
   if (!isHunetViewer) return '';
   const kind = q.kind || (q.locked ? 'hunet' : 'own');
   const map = {
-    archive: { label: 'HRD아카이브용', style: 'background:#f3e8ff;color:#6b21a8;' },
     hunet:   { label: '휴넷 전용 상품', style: 'background:#e3f2fd;color:#0d47a1;' },
     own:     { label: '자체 진단지',   style: 'background:#f1f3f5;color:#666;' },
   };
