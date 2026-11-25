@@ -173,7 +173,7 @@
     <section class="view" id="v-qset">
       <div class="page-header"><div class="page-title">진단지 관리</div><div class="breadcrumb">부가서비스 &gt; 진단 관리 &gt; 진단지 관리</div></div>
       <div class="tab-bar"><button class="tab-btn " onclick="go('assess')">진단 관리</button><button class="tab-btn active" onclick="go('qset')">진단지 관리</button></div>
-      <div class="info-box blue">휴넷 전용 상품·HRD아카이브용 진단지를 관리합니다. 교육담당자가 만든 자체 진단지는 EDMS에서만 관리되며 이 목록에 노출되지 않습니다.</div>
+      <div class="info-box blue">휴넷 전용 상품 진단지를 관리합니다. 교육담당자가 만든 자체 진단지는 EDMS에서만 관리되며 이 목록에 노출되지 않습니다.</div>
       <div class="card">
         <div class="search-row">
           <div class="search-label">진단지명</div>
@@ -181,7 +181,7 @@
         </div>
         <div class="search-row">
           <div class="search-label">진단지 구분</div>
-          <div class="search-body"><select class="select" id="qs-kind" style="width:180px"><option value="">전체</option><option>휴넷 전용 상품</option><option>HRD아카이브용</option></select></div>
+          <div class="search-body"><select class="select" id="qs-kind" style="width:180px"><option value="">전체</option><option>휴넷 전용 상품</option></select></div>
           <div class="search-label" style="margin-left:24px">공개여부</div>
           <div class="search-body"><select class="select" id="qs-open" style="width:140px"><option value="">전체</option><option value="Y">공개</option><option value="N">비공개</option></select></div>
         </div>
@@ -291,8 +291,6 @@ const COMPANIES = [
 let QSETS = [
   { id:1, name:'AI리터러시 진단 (2026)', kind:'휴넷 전용 상품', q:42, mod:'2026-10-28 14:20', open:true },
   { id:2, name:'AI리터러시 진단 (간편형)', kind:'휴넷 전용 상품', q:20, mod:'2026-10-21 09:40', open:true },
-  { id:3, name:'HRD아카이브 사전진단', kind:'HRD아카이브용', q:18, mod:'2026-10-29 11:05', open:true },
-  { id:4, name:'HRD아카이브 사후진단', kind:'HRD아카이브용', q:24, mod:'2026-10-29 11:12', open:true },
   { id:5, name:'리더십 CUBE 진단 (검토중)', kind:'휴넷 전용 상품', q:60, mod:'2026-09-30 16:30', open:false }
 ];
 let ASSESS = [
@@ -302,8 +300,7 @@ let ASSESS = [
   { id:4, co:4, name:'LG화학 AI리터러시 상시 진단', qset:2, type:'일반', always:true, start:'2026-09-01 00:00', end:'2026-12-31 23:59', status:'진행중', targets:0, done:412, reg:'2026-08-28' },
   { id:5, co:3, name:'현대자동차 AI리터러시 진단', qset:1, type:'일반', always:false, start:'2026-09-20 09:00', end:'2026-10-31 18:00', status:'마감 가능', targets:850, done:790, reg:'2026-09-12' },
   { id:6, co:1, name:'휴넷 AI리터러시 파일럿', qset:2, type:'일반', always:false, start:'2026-08-01 09:00', end:'2026-08-31 18:00', status:'완료', targets:90, done:88, reg:'2026-07-25' },
-  { id:7, co:4, name:'LG화학 AI리터러시 진단 2차', qset:1, type:'일반', always:false, start:'2026-10-01 09:00', end:'2026-10-25 18:00', status:'리포트 생성중', targets:560, done:540, reg:'2026-09-24' },
-  { id:8, co:1, name:'HRD아카이브 최초 진단(사전)', qset:3, type:'사전', always:true, start:'2026-11-01 00:00', end:'2027-03-31 23:59', status:'진행중', targets:0, done:57, reg:'2026-10-30' }
+  { id:7, co:4, name:'LG화학 AI리터러시 진단 2차', qset:1, type:'일반', always:false, start:'2026-10-01 09:00', end:'2026-10-25 18:00', status:'리포트 생성중', targets:560, done:540, reg:'2026-09-24' }
 ];
 let nextQ = 100, nextA = 100;
 const REPORTS = ['일반진단 결과 리포트', 'AI리터러시 결과 리포트'];
@@ -351,7 +348,7 @@ function go(view, force){
 }
 
 /* ===== 진단지 관리 목록 ===== */
-function kindBadge(k){ return `<span class="badge ${k==='HRD아카이브용'?'b-hrd':'b-hunet'}">${k}</span>`; }
+function kindBadge(k){ return `<span class="badge b-hunet">${k}</span>`; }
 function qsSearch(){
   const n=$('qs-name').value.trim(), k=$('qs-kind').value, o=$('qs-open').value;
   const rows = QSETS.filter(q => (!n||q.name.includes(n)) && (!k||q.kind===k) && (!o||(o==='Y')===q.open))

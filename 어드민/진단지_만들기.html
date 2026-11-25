@@ -1044,7 +1044,6 @@ body {
                   <label>진단지 구분 <span style="color:#d32f2f;">*</span></label>
                   <div class="radio-group" style="display:flex;gap:20px;flex-wrap:wrap;">
                     <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;"><input type="radio" name="s3SheetType" value="hunet" onchange="renderS3Summary()"> 휴넷 전용 상품 진단지</label>
-                    <label style="display:inline-flex;align-items:center;gap:6px;font-weight:400;cursor:pointer;"><input type="radio" name="s3SheetType" value="archive" onchange="renderS3Summary()"> HRD아카이브용 진단지</label>
                   </div>
                   <div class="form-hint">등록 후에는 진단지 구분을 변경할 수 없습니다.</div>
                 </div>
@@ -1365,7 +1364,7 @@ function renderS3Summary() {
       <span class="s3-summary-val" style="color:${questions>0?'var(--primary)':'#c0392b'}">${questions}개</span>
     </div>
     ${qTypeRows ? `<div class="s3-summary-section-title">유형별</div>${qTypeRows}` : ''}
-    ${(() => { const r = document.querySelector('input[name="s3SheetType"]:checked'); const nm = { own:'자체 진단지', hunet:'휴넷 전용 상품', archive:'HRD아카이브용' }[r ? r.value : 'own']; if (!r || r.value === 'own') return ''; return `<div class="s3-summary-section-title">진단지 구분</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">유형</span><span class="s3-summary-val">${nm}</span></div>`; })()}
+    ${(() => { const r = document.querySelector('input[name="s3SheetType"]:checked'); const nm = { own:'자체 진단지', hunet:'휴넷 전용 상품' }[r ? r.value : 'own']; if (!r || r.value === 'own') return ''; return `<div class="s3-summary-section-title">진단지 구분</div><div class="s3-summary-row"><span class="s3-summary-label" style="font-size:11px;">유형</span><span class="s3-summary-val">${nm}</span></div>`; })()}
     ${warnHtml}`;
 }
 
@@ -1456,7 +1455,7 @@ function saveAll() {
   toast(`'${name}' 진단지가 저장되었습니다.`);
   try {
     const k = document.querySelector('input[name="s3SheetType"]:checked').value;
-    localStorage.setItem('adminNewQset', JSON.stringify({ editId: window.__ADMIN_EDIT || null, name, kind: k === 'archive' ? 'HRD아카이브용' : '휴넷 전용 상품', q: totalQuestions }));
+    localStorage.setItem('adminNewQset', JSON.stringify({ editId: window.__ADMIN_EDIT || null, name, kind: '휴넷 전용 상품', q: totalQuestions }));
   } catch (e) {}
   setTimeout(() => { window.location.href = '진단_관리.html#qset'; }, 1200);
 }
@@ -2963,7 +2962,7 @@ document.addEventListener('keydown', function(e) {
   setTimeout(async () => {
     await window.__bulkApply('edit');
     const nm = document.getElementById('s3Name'); if (nm) nm.value = p.get('name') || '';
-    const kind = p.get('kind') === 'HRD아카이브용' ? 'archive' : 'hunet';
+    const kind = 'hunet';
     const r = document.querySelector('input[name="s3SheetType"][value="' + kind + '"]'); if (r) { r.checked = true; r.disabled = true; const o = document.querySelector('input[name="s3SheetType"]:not(:checked)'); if (o) o.disabled = true; }
     if (typeof renderS3Summary === 'function') renderS3Summary();
   }, 400);
