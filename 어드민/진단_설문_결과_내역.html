@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>진단/설문 결과 내역</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--line:#e2e6ec;--text:#1f2937;--sub:#6b7280;--primary:#2f5bea;--danger:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.gnb{background:#1b2540;color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;gap:28px}
+.gnb b{font-size:16px}.gnb span{opacity:.7}.gnb span.on{opacity:1;font-weight:700}
+.page{max-width:1400px;margin:0 auto;padding:24px}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.ph h1{font-size:20px;margin:0}.bc{color:var(--sub);font-size:13px}.bc b{color:var(--text)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:0 18px 18px}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:0 -18px 16px;padding:0 18px}
+.tab{padding:13px 24px;border:0;background:none;cursor:pointer;font:inherit;color:var(--sub);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--primary);font-weight:700;border-color:var(--primary)}
+.filter{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px;margin-bottom:14px}
+.filter .f{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.filter label{width:76px;color:var(--sub);flex:none}
+select,input{height:32px;border:1px solid var(--line);border-radius:4px;padding:0 8px;font:inherit;background:#fff;min-width:0}
+.f input[type=text]{flex:1}
+.q button{height:32px;padding:0 10px;border:1px solid var(--line);background:#fff;border-radius:4px;cursor:pointer;font:inherit;font-size:13px}
+.q button.on{border-color:var(--primary);color:var(--primary);background:#eef2ff}
+.btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px}
+.btn{height:32px;padding:0 16px;border-radius:4px;border:1px solid var(--line);background:#fff;cursor:pointer;font:inherit}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn:disabled{background:#f1f3f6;color:#b4bac4;border-color:var(--line);cursor:not-allowed}
+.tb{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;white-space:nowrap}
+thead th{background:#f1f4f8;font-weight:600;border-top:1px solid var(--line)}
+.c{text-align:center}.l{text-align:left}
+.state{padding:60px 0;text-align:center;color:var(--sub)}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--primary);border-radius:50%;margin:0 auto 12px;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.pg{display:flex;justify-content:center;gap:4px;margin-top:14px}
+.pg button{min-width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:4px;cursor:pointer}
+.pg button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.dim{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;z-index:10}
+.dim.on{display:flex}
+.mini{background:#fff;border-radius:10px;padding:26px 28px;width:min(440px,92vw);text-align:center}
+.mini p{margin:0 0 20px;line-height:1.6}.mini .row{display:flex;gap:8px;justify-content:center}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 18px;border-radius:6px;z-index:40;display:none}
+.hint{color:var(--sub);font-size:12px;margin-top:10px}
+
+.c{text-align:center}.l{text-align:left}.r{text-align:right}
+.lk{border:1px solid var(--line);background:#fff;border-radius:4px;height:28px;padding:0 10px;cursor:pointer;font:inherit;font-size:13px;color:var(--primary)}
+.lk:hover{background:#eef2ff;border-color:var(--primary)}.lk:disabled{color:#b4bac4;background:#f1f3f6;cursor:not-allowed}
+.modal{background:#fff;border-radius:10px;width:min(980px,94vw);max-height:88vh;display:flex;flex-direction:column}
+.modal .mh{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--line)}
+.badge{display:inline-block;padding:2px 10px;border-radius:10px;font-size:12px;color:#fff}.b-done{background:#6b7280}.b-ing{background:#16a34a}.b-wait{background:#d97706}
+.mf{padding:12px 22px;border-top:1px solid var(--line);justify-content:flex-end}
+.mini{background:#fff;border-radius:10px;padding:26px 28px;width:min(440px,92vw);text-align:center}.mini p{margin:0 0 20px;line-height:1.6}.mini .row{display:flex;gap:8px;justify-content:center}
+.modal .mh h2{margin:0;font-size:17px}.modal .mb{padding:18px 22px;overflow:auto}
+.x{border:0;background:none;font-size:22px;cursor:pointer;color:var(--sub)}
+.sum{background:#f8fafc;border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px 20px;margin-bottom:14px}
+.sum b{display:block;color:var(--sub);font-weight:500;font-size:12px}
+.bar{height:10px;background:#e8ecf3;border-radius:5px;overflow:hidden;min-width:140px}.bar i{display:block;height:100%;background:var(--primary)}
+.note{color:var(--sub);font-size:12px;margin-top:10px}
+</style></head><body>
+<div class="gnb"><b>HUNET ADMIN</b><span>연수원</span><span>학습</span><span class="on">부가서비스</span><span>설정</span></div>
+<div class="page">
+  <div class="ph"><h1>진단/설문 결과 내역</h1><div class="bc">홈 › 부가서비스 › <b>진단/설문 결과 내역</b></div></div>
+  <div class="card">
+    <div class="tabs"><button class="tab on" id="t0" onclick="setTab(0)">설문 결과</button><button class="tab" id="t1" onclick="setTab(1)">진단 결과</button></div>
+    <div id="svyPane" class="state">설문 결과 탭은 [ADMIN] 설문 결과 내역 문서의 화면을 따릅니다.</div>
+    <div id="diagPane" style="display:none">
+      <div class="filter">
+        <div class="f"><label>연수원 검색</label>
+          <select id="fInstK"><option value="inst">연수원명</option><option value="instCode">연수원코드</option></select>
+          <input type="text" id="fInst" placeholder="검색어를 입력해주세요."></div>
+        <div class="btns"><button class="btn p" id="bSearch">검색</button><button class="btn" id="bReset">초기화</button></div>
+      </div>
+      <div class="tb"><div id="cnt"></div><div><select id="fSize"><option value="30">30건</option><option value="50" selected>50건</option><option value="100">100건</option><option value="200">200건</option></select></div></div>
+      <div class="scroll"><table>
+        <thead><tr><th rowspan="2">No.</th><th rowspan="2">연수원코드</th><th rowspan="2">연수원명</th><th colspan="4">사전진단</th><th colspan="4">사후진단</th></tr>
+        <tr><th>진행 상태</th><th>대상 / 응답</th><th colspan="2">결과 보기</th><th>진행 상태</th><th>대상 / 응답</th><th colspan="2">결과 보기</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table></div>
+      <div id="msg" class="state" style="display:none"></div>
+      <div class="hint">※ 연수원 1건당 사전진단 1건, 사후진단 1건이 노출됩니다. 근무상태 재직 회원만 집계합니다(모니터링 · 퇴사자 제외).</div>
+    </div>
+  </div>
+</div>
+<div class="dim" id="dim"><div class="modal">
+  <div class="mh"><h2 id="mTitle"></h2><button class="x" onclick="closeM()">×</button></div>
+  <div class="mb" id="mBody"></div>
+  <div class="mf" id="mFoot" style="display:none"><button class="btn p" onclick="xls()">엑셀 다운로드</button></div>
+</div></div>
+<div class="dim" id="dim2" style="z-index:20"><div class="mini"><p>엑셀 파일 생성이 시작되었습니다.<br>생성 상태와 다운로드는 파일 다운로드 페이지에서 확인할 수 있습니다.</p><div class="row"><button class="btn" onclick="$('#dim2').classList.remove('on')">팝업에 머물기</button><button class="btn p" onclick="$('#dim2').classList.remove('on');closeM();toast('파일 다운로드 페이지로 이동합니다.')">파일 다운로드로 이동</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);
+const SUR=['홍','김','이','박','최','정','강','조','윤','장'],GIV=['길동','민수','서연','지훈','유리','다은','현우','소영','태민','하늘'];
+const CORPS=['가나다전자','라마바솔루션','사아자건설','차카타물산','파하거래은행','나다라제약'];
+const CS=['2026.09.01','2026.10.01','2026.04.01','2026.11.10','2026.09.15','2026.10.20'],CE=['2026.12.31','2027.03.31','2026.11.20','2027.05.31','2026.12.31','2027.01.31'];
+const addD=(d,n)=>{const t=new Date(d.split('.').join('-')+'T00:00:00');t.setDate(t.getDate()+n);return t.getFullYear()+'.'+String(t.getMonth()+1).padStart(2,'0')+'.'+String(t.getDate()).padStart(2,'0')};
+const PER=(gi,kind)=>kind==='pre'?[CS[gi],CE[gi]]:[addD(CS[gi],30),CE[gi]];
+const TODAYD='2026.11.25';
+const ST=(gi,kind)=>{const [a,b]=PER(gi,kind);return TODAYD<a?['대기','b-wait']:(TODAYD>b?['완료','b-done']:['진행중','b-ing'])};
+const stBadge=(gi,kind)=>{const t=ST(gi,kind);return '<span class="badge '+t[1]+'">'+t[0]+'</span>'};
+const DEPTS=["인사팀","영업1팀","마케팅팀","개발팀","재무팀","고객지원팀","기획팀","경영지원팀"];
+const maskName=n=>n.length<=2?n[0]+'*':n[0]+'*'.repeat(n.length-2)+n[n.length-1];
+const maskId=i=>{const[a,b]=i.split('@');return a[0]+'*'.repeat(Math.max(a.length-1,2))+'@'+b};
+const p2=x=>String(x).padStart(2,'0');
+const ROWS=CORPS.map((c,k)=>({corp:c,corpCode:'K'+(2201+k*131),inst:c.slice(0,3)+' 연수원',instCode:'C'+(1042+k*83),members:[]}));
+for(let i=0;i<90;i++){const k=i%6;ROWS[k].members.push({name:SUR[i%10]+GIV[Math.floor(i/10)%10],id:'user'+p2(i+1)+'@hunet.co.kr',status:i%13===5?'모니터링':(i%17===9?'퇴사':'재직'),
+  pre:{at:'2026.10.'+p2(1+i%28)+' '+p2(8+i%10)+':'+p2((i*7)%60),score:(3+((i*37+53)%190)/100).toFixed(2)},
+  post:i%3===2?null:{at:'2026.11.'+p2(1+i%24)+' '+p2(9+i%9)+':'+p2((i*11)%60),score:(3+((i*37+106)%190)/100).toFixed(2)}})}
+const stat=(r,kind)=>{const t=r.members.filter(m=>m.status==='재직');const w=ST(ROWS.indexOf(r),kind)[0]==='대기';return {total:t.length,done:w?0:t.filter(m=>m[kind]).length,list:w?[]:t.filter(m=>m[kind]).sort((x,y)=>y[kind].at.localeCompare(x[kind].at))}};
+let tab=0,list=[],size=50,busy=false;
+function setTab(t){tab=t;$('#t0').classList.toggle('on',t===0);$('#t1').classList.toggle('on',t===1);$('#svyPane').style.display=t===0?'block':'none';$('#diagPane').style.display=t===1?'block':'none';if(t===1){reset();run()}}
+function reset(){$('#fInstK').value='inst';$('#fInst').value=''}
+function run(){if(busy)return;busy=true;$('#bSearch').disabled=true;$('#tbody').innerHTML='';$('#msg').style.display='block';$('#msg').innerHTML='<div class="spin"></div>불러오는 중입니다.';
+  setTimeout(()=>{const k=$('#fInstK').value,v=$('#fInst').value.trim();list=ROWS.filter(r=>!v||r[k].includes(v));busy=false;$('#bSearch').disabled=false;draw()},300)}
+function draw(){size=+$('#fSize').value;const n=list.length;$('#cnt').innerHTML='검색결과 <b>'+n+'</b>건';
+  $('#tbody').innerHTML=list.slice(0,size).map((r,i)=>{const a=stat(r,'pre'),b=stat(r,'post');const gi=ROWS.indexOf(r);
+    const cell=(s,kind)=>'<td class="c">'+stBadge(gi,kind)+'</td><td class="c">'+s.total+'명 / '+s.done+'명</td><td class="c"><button class="lk" '+(s.done?'':'disabled')+' onclick="openP('+gi+',\''+kind+'\')">개인별 결과 보기</button></td><td class="c"><button class="lk" '+(s.done?'':'disabled')+' onclick="openT('+gi+',\''+kind+'\')">통합 결과 보기</button></td>';
+    return '<tr><td class="c">'+(n-i)+'</td><td class="c">'+r.instCode+'</td><td class="l">'+r.inst+'</td>'+cell(a,'pre')+cell(b,'post')+'</tr>'}).join('');
+  $('#msg').style.display=n?'none':'block';if(!n)$('#msg').textContent='현재 조회된 데이터가 없습니다.'}
+const KN={pre:'사전진단',post:'사후진단'};
+function open_(title,body,foot){$('#mTitle').textContent=title;$('#mBody').innerHTML=body;$('#mFoot').style.display=foot?'flex':'none';$('#dim').classList.add('on')}
+function closeM(){$('#dim').classList.remove('on')}
+function sumBox(r,kind,s){return '<div class="sum"><div><b>연수원</b>'+r.inst+' ('+r.instCode+')</div><div><b>진단 구분</b>'+KN[kind]+'</div><div><b>진단 기간</b>'+PER(ROWS.indexOf(r),kind).join(' ~ ')+'</div><div><b>진행 상태</b>'+stBadge(ROWS.indexOf(r),kind)+'</div><div><b>대상 인원</b>'+s.total+'명</div><div><b>응답 인원</b>'+s.done+'명</div><div><b>참여율</b>'+(s.total?Math.round(s.done/s.total*1000)/10+'%':'-')+'</div></div>'}
+function openP(gi,kind){const r=ROWS[gi],s=stat(r,kind);
+  open_(KN[kind]+' 개인별 결과',sumBox(r,kind,s)+'<div class="scroll"><table><thead><tr><th>No.</th><th>아이디</th><th>이름</th><th>기업</th><th>부서</th><th>제출일시</th><th>결과 리포트</th></tr></thead><tbody>'+s.list.map((m,i)=>'<tr><td class="c">'+(s.list.length-i)+'</td><td class="c">'+maskId(m.id)+'</td><td class="c">'+maskName(m.name)+'</td><td class="c">'+r.corp+'</td><td class="c">'+DEPTS[r.members.indexOf(m)%DEPTS.length]+'</td><td class="c">'+m[kind].at+'</td><td class="c"><button class="lk" onclick="openR('+gi+',\''+kind+'\','+r.members.indexOf(m)+')">리포트 보기</button></td></tr>').join('')+'</tbody></table></div><div class="note">※ 개인별 결과 리포트는 기존 EDMS 진단 결과 리포트와 동일합니다.</div>')}
+function openR(gi,kind,mi){const r=ROWS[gi],m=r.members[mi];
+  open_(KN[kind]+' 개인 결과 리포트 · '+maskName(m.name),'<div class="sum"><div><b>아이디</b>'+maskId(m.id)+'</div><div><b>제출일시</b>'+m[kind].at+'</div><div><b>기업</b>'+r.corp+'</div><div><b>부서</b>'+DEPTS[mi%DEPTS.length]+'</div></div><div class="state" style="padding:40px 0">기존 EDMS 진단 결과 리포트와 동일한 화면이 노출됩니다. (샘플)</div>')}
+const QS=[
+'나는 업무 목표에 맞게 체계적으로 계획을 세우고 이를 명확한 문서로 작성할 수 있다.',
+'나는 내 생각을 명확히 전달하고 상대방의 의견을 효과적으로 이해할 수 있다.',
+'나는 업무 관련 데이터를 수집하고 의미 있는 결과를 도출하여 활용할 수 있다.',
+'나는 AI와 생성형 AI 도구를 업무 효율화와 문제 해결에 활용할 수 있다.',
+'나는 조직의 비효율적인 부분을 발견하고 실질적인 개선 방안을 제시할 수 있다.',
+'나는 팀원들에게 명확한 방향을 제시하고 동기를 부여하여 성과를 이끌어낼 수 있다.',
+'나는 기본적인 재무제표를 이해하고 예산 관리 및 의사결정에 활용할 수 있다.',
+'나는 고객의 니즈를 파악하고 이에 맞는 제품/서비스 가치를 효과적으로 전달할 수 있다.',
+'나는 고객과 신뢰 관계를 구축하고 제품/서비스의 가치를 효과적으로 제안할 수 있다.',
+'나는 인적 자원의 효과적인 관리와 개발을 위한 방법을 이해하고 적용할 수 있다.',
+'나는 업무에 필요한 IT 시스템과 도구를 효과적으로 활용할 수 있다.',
+'나는 업무 상황에서 필요한 외국어로 효과적으로 의사소통할 수 있다.',
+'나는 전달 목적을 명확히 설정하고, 핵심 메시지를 중심으로 논리적이고 구조화된 스토리라인을 구성할 수 있다.',
+'나는 자신의 생각, 감정, 행동을 돌아보고 이를 바탕으로 지속적으로 성장하고 개선할 수 있다.',
+'나는 주어진 직급에 요구되는 권한과 책임 범위를 명확히 이해하고, 기대 수준에 부합하는 의사결정을 수행할 수 있다.',
+'나는 AI와 생성형 AI 도구를 직무에 적합하게 적용하여 업무 생산성 향상과 문제 해결 성과를 창출할 수 있다.',
+'나는 금융 관련 전문지식과 시장 이해를 바탕으로 합리적인 판단을 내릴 수 있다.',
+'나는 법률 전문지식과 규제 이해를 바탕으로 법적 리스크를 예방·관리하고, 이를 실무에 올바르게 적용할 수 있다.'];
+const OPT=['전혀 그렇지 않다','그렇지 않다','보통이다','그렇다','매우 그렇다'];
+function dist(n,w){const t=w.reduce((x,y)=>x+y,0);const c=w.map(x=>Math.floor(n*x/t));let r=n-c.reduce((x,y)=>x+y,0);for(let i=0;r>0;i=(i+1)%c.length,r--)c[i]++;return c}
+const pct=(c,n)=>n?(Math.round(c/n*1000)/10)+'%':'-';
+function openT(gi,kind){const r=ROWS[gi],s=stat(r,kind),n=s.done;
+  const body=QS.map((q,qi)=>{const c=dist(n,[1,2,4,5,3].map((v,k)=>v+((qi+k)%3)));const avg=n?c.reduce((a,x,k)=>a+x*(k+1),0)/n:0;
+    return '<div style="margin-bottom:18px"><div style="font-weight:600;margin-bottom:6px">'+(qi+1)+'. '+q+' <span style="float:right;font-weight:500;white-space:nowrap;margin-left:12px">평균 '+avg.toFixed(1)+' / 5</span></div><table><thead><tr><th>보기</th><th>점수</th><th>응답 수</th><th>비율</th><th></th></tr></thead><tbody>'+OPT.map((o,k)=>'<tr><td class="l">'+(k+1)+'. '+o+'</td><td class="c">'+(k+1)+'</td><td class="r">'+c[k]+'명</td><td class="r">'+pct(c[k],n)+'</td><td><div class="bar"><i style="width:'+(n?c[k]/n*100:0)+'%"></i></div></td></tr>').join('')+'</tbody></table></div>'}).join('');
+  open_(KN[kind]+' 통합 결과',sumBox(r,kind,s)+body,true)}
+function xls(){$('#dim2').classList.add('on')}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1800)}
+$('#bSearch').onclick=run;$('#bReset').onclick=()=>{reset();run()};$('#fSize').onchange=draw;
+document.querySelectorAll('.filter input[type=text]').forEach(e=>e.addEventListener('keydown',ev=>{if(ev.key==='Enter')run()}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+$('#dim').addEventListener('click',e=>{if(e.target.id==='dim')closeM()});
+</script></body></html>
