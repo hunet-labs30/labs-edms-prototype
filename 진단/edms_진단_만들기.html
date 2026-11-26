@@ -1335,7 +1335,6 @@ body {
                       <span style="font-size:12px;color:#888;">~</span>
                       <input class="form-input w-date" id="diagEndDate" type="date">
                       <input class="form-input" id="diagEndTime" type="time" style="width:100px;" value="23:59">
-                      <span id="step5-enddate-hint" style="display:none;font-size:11px;color:#e65100;font-weight:600;">← 종료일만 변경 가능</span>
                     </div>
                   </td>
                 </tr>
@@ -4579,25 +4578,6 @@ const STEP_LOCK_MAP = {
   completed: { 일반: [1, 2, 3, 4, 5, 6, 7], 사전사후: [1, 2, 3, 4, 5, 6, 7] },
 };
 
-// 진단유형별로 실제 노출되는 스텝만 대상으로 잠금 안내 문구를 생성 (상시진단은 STEP3·7이 존재하지 않음)
-function stepLockDesc(status) {
-  if (status === 'completed') return '모든 항목 수정 불가 · 보기 전용';
-  const meta = stepDisplayMeta();
-  // STEP8(검토 및 생성)은 항상 접근 가능한 요약 화면이라 잠금 대상 안내에서 제외
-  const visible = [];
-  for (let i = 1; i <= 7; i++) if (!meta.hidden.includes(i)) visible.push(i);
-  const locked = (STEP_LOCK_MAP[status]?.[selectedDiagnosticType] || []).filter(i => visible.includes(i));
-  const hasStep6 = visible.includes(6);
-  const fullyUnlocked = visible.filter(i => !locked.includes(i) && i !== 6);
-
-  const parts = [];
-  if (fullyUnlocked.length) parts.push(`STEP ${fullyUnlocked.map(i => meta.map[i]).join('·')} 수정 가능`);
-  if (hasStep6) parts.push(`STEP ${meta.map[6]} 일부 항목만 수정 가능(종료일시·소개)`);
-  if (!fullyUnlocked.length && !hasStep6) return '모든 항목 수정 불가';
-  parts.push('나머지 수정 불가');
-  return parts.join(' / ');
-}
-
 // STEP 6(진단 기본 설정)는 진행 중·마감 전 상태에서 "부분 수정" — 진단명·시작일시는 잠그고, 종료일시·소개는 계속 편집 가능
 function applyStep5PartialLock(status) {
   const lockNameStart = (status === 'after' || status === 'expired' || status === 'completed');
@@ -4611,26 +4591,7 @@ function applyStep5PartialLock(status) {
   [nameEl, sDateEl, sTimeEl].forEach(el => { if (el) el.disabled = lockNameStart; });
   [eDateEl, eTimeEl, descEl, ...['postStartDate','postStartTime','postEndDate','postEndTime'].map(id => document.getElementById(id))].forEach(el => { if (el) el.disabled = lockEndDesc; });
 
-  // STEP6 헤드에 "부분 수정 가능" 안내 배지 (완전잠금 상태에서는 기존 🔒 배지가 별도로 붙으므로 제외)
-  const head = document.querySelector('#step-content-6 .wiz-card-head');
-  if (head) {
-    const old = head.querySelector('.step-partial-badge');
-    if (old) old.remove();
-    if (status === 'after' || status === 'expired') {
-      head.style.display = 'flex';
-      head.style.justifyContent = 'space-between';
-      head.style.alignItems = 'flex-start';
-      const badge = document.createElement('span');
-      badge.className = 'step-partial-badge';
-      badge.innerHTML = '🔓 일부 항목만 수정 가능';
-      badge.style.cssText = 'font-size:12px;font-weight:700;color:#b8860b;background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:4px 10px;white-space:nowrap;';
-      head.appendChild(badge);
-    }
-  }
-
-  // 진단 기간 행 옆 "종료일만 변경 가능" 힌트 — 부분잠금(진행 중/마감 전) 상태에서만 노출
-  const endDateHint = document.getElementById('step5-enddate-hint');
-  if (endDateHint) endDateHint.style.display = (status === 'after' || status === 'expired') ? '' : 'none';
+  // 수정 가능 여부는 안내 배지·힌트 없이 입력 항목 활성·비활성으로만 구분
 }
 
 function setDiagStatus(status) {
@@ -4670,23 +4631,9 @@ function setDiagStatus(status) {
   if (titleEl) titleEl.textContent = t;
   if (subEl)   subEl.textContent   = s;
 
-  /* ── 상태 배너 ── */
+  /* ── 상태 배너: 수정 가능 여부는 안내 문구 없이 입력 항목 활성·비활성으로만 구분 ── */
   const banner = document.getElementById('diag-status-banner');
-  if (banner) {
-    if (status === 'before') {
-      banner.style.display = 'none';
-      banner.className = '';
-    } else {
-      const labels = {
-        after:     { cls: 'status-after',     icon: '🔵', label: '진단 진행 중' },
-        expired:   { cls: 'status-expired',   icon: '🟠', label: '진단 마감 전' },
-        completed: { cls: 'status-completed', icon: '🔴', label: '진단 완료' },
-      }[status];
-      banner.style.display = 'flex';
-      banner.className = labels.cls;
-      banner.innerHTML = `<strong>${labels.icon} ${labels.label}</strong><span class="banner-desc">${stepLockDesc(status)}</span>`;
-    }
-  }
+  if (banner) { banner.style.display = 'none'; banner.className = ''; }
 
   /* ── STEP 잠금 처리: wiz-card-body에 투명 overlay 삽입, head에 배지 추가 ── */
   /*    상시진단은 STEP3·7 자체가 없으므로 잠금 대상에서 제외 ── */
@@ -4708,17 +4655,6 @@ function setDiagStatus(status) {
         const overlay = document.createElement('div');
         overlay.className = 'step-lock-overlay';
         body.appendChild(overlay);
-      }
-      // wiz-card-head 우측에 🔒 배지
-      const head = stepEl.querySelector('.wiz-card-head');
-      if (head) {
-        head.style.display = 'flex';
-        head.style.justifyContent = 'space-between';
-        head.style.alignItems = 'flex-start';
-        const badge = document.createElement('span');
-        badge.className = 'step-lock-badge';
-        badge.innerHTML = '🔒 수정 불가';
-        head.appendChild(badge);
       }
     } else {
       // 잠금 해제: body position·overlay 정리
