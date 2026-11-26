@@ -2497,7 +2497,8 @@ const REPORT_NAMES = ['일반진단 결과 리포트', 'AI리터러시 결과 �
 
 // 진단 조건에 따른 기본 리포트와 변경 가능 여부
 function autoReportInfo() {
-  if (selectedQuestionnaire && selectedQuestionnaire.resultTemplate === 'ai_literacy') {
+  // AI리터러시 결과 리포트는 본인 점수·전체평균만 정의되어 있어 응답자 유형이 본인만일 때만 적용 (본인 외 유형 포함 시 일반진단 결과 리포트로 고정)
+  if (selectedQuestionnaire && selectedQuestionnaire.resultTemplate === 'ai_literacy' && isSelfOnlyRespondent()) {
     return { name: 'AI리터러시 결과 리포트', fixed: false, hint: '휴넷 전용 상품 진단지는 상품 전용 리포트가 기본으로 선택되며, 필요 시 일반 결과 리포트로 변경할 수 있습니다.' };
   }
   if (selectedDiagnosticType === '사전사후') {
@@ -2510,15 +2511,23 @@ function autoReportInfo() {
 
 function currentReportName() {
   const sel = document.getElementById('reportSelect');
-  return sel && sel.value ? sel.value : autoReportInfo().name;
+  const info = autoReportInfo();
+  if (!isSelfOnlyRespondent() && !info.fixed) return info.name;
+  return sel && sel.value ? sel.value : info.name;
 }
 
 function applyReportRow() {
   const row = document.getElementById('step6-report-row');
   if (!row) return;
-  row.style.display = isHunetViewer ? '' : 'none';
-  if (!isHunetViewer) return;
   const info = autoReportInfo();
+  // 본인 외 응답자 유형이 포함되면 결과 리포트 선택 영역 숨김 (일반진단 결과 리포트 고정, 사전사후 비교 리포트 고정은 기존대로 노출)
+  const hideForMulti = !isSelfOnlyRespondent() && !info.fixed;
+  row.style.display = (isHunetViewer && !hideForMulti) ? '' : 'none';
+  if (!isHunetViewer || hideForMulti) {
+    const s = document.getElementById('reportSelect');
+    if (hideForMulti && s) { s.value = info.name; s.dataset.manual = ''; }
+    return;
+  }
   const sel = document.getElementById('reportSelect');
   const prev = sel.value;
   const names = REPORT_NAMES.includes(info.name) ? REPORT_NAMES : [info.name];
